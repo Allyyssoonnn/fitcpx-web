@@ -4,11 +4,13 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { parseCookies, setCookie } from "nookies";
 import { useEffect } from "react";
-
+import { useRecoilState } from "recoil";
+import { stateUsuario } from '../states/usuario';
 
 function Login() {
     const { handleSubmit, register } = useForm();
     const navigate = useNavigate();
+    const [usuario, setusuario] = useRecoilState(stateUsuario);
 
     useEffect(() => {
         const cookies = parseCookies(null);
@@ -21,10 +23,11 @@ function Login() {
     async function login(data) {
         const resp = await post('/usuario/login', data);
         if (resp.status) {
-            toast.success(`Bem vindo ${resp.nome_usuario}!`);
-            setCookie(null, 'token', resp.token, { maxAge: 30000 });
+            // toast.success(`Bem vindo ${resp.nome_usuario}!`);
+            // setCookie(null, 'token', resp.token, { maxAge: 30000 });
+            setusuario({ cod_usuario: resp.cod_usuario, nome_usuario: resp.nome_usuario, email_usuario: data.email });
+            console.log(usuario);
             navigate('/');
-            console.log(resp);
         } else {
             toast.error(resp?.msg);
         }
