@@ -23,8 +23,9 @@ function Login() {
     async function login(data) {
         const resp = await post('/usuario/login', data);
         if (resp.status) {
-            // toast.success(`Bem vindo ${resp.nome_usuario}!`);
-            // setCookie(null, 'token', resp.token, { maxAge: 30000 });
+            toast.success(`Bem vindo ${resp.nome_usuario}!`);
+            setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });
+            setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
             setusuario({ cod_usuario: resp.cod_usuario, nome_usuario: resp.nome_usuario, email_usuario: data.email });
             console.log(usuario);
             navigate('/');

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { setAluno } from '../api/aluno';
@@ -101,12 +101,12 @@ function CadAluno() {
 
                 <div className='row g-3'>
                     <div className="col-md-3">
-                        <label for="exampleInputEmail1" className="form-label">E-mail*</label>
+                        <label className="form-label">E-mail*</label>
                         <input { ...register('email_aluno', { required: 'O e-mail é obrigatório' }) } type="email" className="form-control" aria-describedby="emailHelp" />
                         <div id="emailHelp" className="form-text">O aluno usará para acessar a plataforma</div>
                     </div>
                     <div className="col-md-3">
-                        <label for="exampleInputPassword1" className="form-label">Senha</label>
+                        <label className="form-label">Senha</label>
                         <input { ...register('senha_aluno') } type="password" className="form-control" id="exampleInputPassword1" />
                     </div>
                 </div>

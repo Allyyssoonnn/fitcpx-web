@@ -46,13 +46,13 @@ function Alunos() {
 
                             <tbody className="table-group-divider">
                                 {alunos.map((aluno) => (
-                                    <tr key={aluno.cod_aluno} onClick={() => editarAluno(aluno)}>
+                                    <tr key={aluno.cod_aluno} onClick={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}>
                                         <th scope="row">{aluno.nome_aluno}</th>
                                         <td>{calcularIdade(aluno.data_nascimento_aluno)}</td>
                                         <td>{aluno.telefone_aluno}</td>
                                         <td>{aluno.email_aluno}</td>
                                         <td>
-                                            <Button className="btn btn-white btn-sm">
+                                            <Button className="btn btn-white btn-sm" onClick={() => editarAluno(aluno)}>
                                                 <i className="bi bi-pencil"></i>
                                             </Button>
                                         </td>
