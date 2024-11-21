@@ -7,7 +7,7 @@ import { useRecoilState } from "recoil";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getValues } = useForm();
+    const { handleSubmit, register, setValue, getFieldState } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
@@ -50,8 +50,8 @@ function CadAvaliacao() {
         if (match) {
             const field = match[1].toLowerCase(); // O nome do campo (em minúsculo)
             const value = match[2]; // O valor a ser inserido
-
-            if (getValues(field)) {
+                        
+            if (getFieldState(field)) {
                 setValue(field, value);
                 console.log(`Alterando ${field} para: ${value}`);
             } else {

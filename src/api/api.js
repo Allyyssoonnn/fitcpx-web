@@ -1,9 +1,11 @@
 import axios from "axios";
 import { parseCookies, setCookie } from 'nookies';
-const PRODUCAO = true;
+const PRODUCAO = false;
+
+const baseURL = PRODUCAO ? 'https://api.alyson.site' : 'http://localhost:8070';
 
 const api = axios.create({
-    baseURL: PRODUCAO ? 'https://api.alyson.site/' : 'http://localhost:8070',
+    baseURL: baseURL,
 });
 
 api.interceptors.response.use((response) => response, async (error) => {
@@ -13,7 +15,7 @@ api.interceptors.response.use((response) => response, async (error) => {
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
-        const refreshResponse = await axios.post('/usuario/refreshToken', {
+        const refreshResponse = await axios.post(baseURL + '/usuario/refreshToken', {
             refreshToken: cookies.refreshToken,
         });
 
