@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Tab, Tabs } from "react-bootstrap";
-import { stateUsuario } from "../states/usuario";
+import { Tab, Tabs } from "react-bootstrap";
+import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getFieldState } = useForm();
+    const { handleSubmit, register, setValue, getFieldState, getValues } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
@@ -16,9 +16,12 @@ function CadAvaliacao() {
     const [isListening, setIsListening] = useState(false);
     const [activeTab, setActiveTab] = useState("perimetro");
     const [perimetros, setPerimetros] = useState(perimetroFields);
+    const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
+    const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
 
-    const [isEditable, setIsEditable] = useState(false);
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
+
+    const [protocolo, setProtocolo] = useState("");
 
     useEffect(() => {
         setValue("cod_usuario", usuario?.cod_usuario);
@@ -35,30 +38,53 @@ function CadAvaliacao() {
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
+    const loadFromLocalStorage = (key, setter) => {
+        const savedData = localStorage.getItem(key);
+        if (savedData) setter(JSON.parse(savedData));
+    };
+
     useEffect(() => {
         // Detecta se o navegador é compatível com SpeechRecognition
         const isSupported = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
         if (!isSupported) {
             alert('Seu navegador não suporta reconhecimento de fala.');
         }
+        loadFromLocalStorage("perimetros", setPerimetros);
+        loadFromLocalStorage("perimetrosDireito", setPerimetrosDireito);
+        loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
     }, []);
 
-    function processVoiceCommand(command) {
-        const regex = /alterar\s(\w+)\spara\s(.*)/i;
-        const match = command.match(regex);
+    function normalizeString(str) {
+        return str
+        .normalize('NFD') // Normaliza para decompor os caracteres acentuados
+        .replace(/[\u0300-\u036f]/g, '') // Remove os acentos
+        .replace(/\s+/g, '_') // Substitui espaços por underscores
+        .toLowerCase(); // Converte para minúsculo
+    }
 
+    function processVoiceCommand(command) {
+        // const regex = /alterar\s(\w+)\spara\s(.*)/i;
+        // const regex = /alterar\s([\w\s_]+)\spara\s(.*)/i;
+        const regex = /alterar\s([a-zA-Z0-9_áéíóúãõ\s]+)\spara\s(.*)/i;
+        const match = command.normalize('NFD').replace(/[\u0300-\u036f]/g, '').match(regex);
+        
         if (match) {
-            const field = match[1].toLowerCase(); // O nome do campo (em minúsculo)
-            const value = match[2]; // O valor a ser inserido
-                        
-            if (getFieldState(field)) {
+            const field = normalizeString(match[1]);
+            const value = match[2];
+    
+            if (field === 'diametro_punho' && getFieldState('biestiloide_punho')) setValue('biestiloide_punho', value);
+            if (field === 'diametro_umeral' && getFieldState('biepicondilo_umeral')) setValue('biepicondilo_umeral', value);
+            if (field === 'diametro_femoral' && getFieldState('biepicondilo_femoral')) setValue('biepicondilo_femoral', value);
+            
+            // eslint-disable-next-line no-prototype-builtins
+            if (getValues().hasOwnProperty(field)) {
                 setValue(field, value);
                 console.log(`Alterando ${field} para: ${value}`);
             } else {
-                alert('Campo não encontrado!');
+                // alert('Campo não encontrado!');
             }
         } else {
-            alert('Comando inválido. Tente algo como "Alterar peso para 70"');
+            // alert('Comando inválido. Tente algo como "Alterar peso para 70"');
         }
     }
 
@@ -98,11 +124,35 @@ function CadAvaliacao() {
         const { destination, source } = result;
         if (!destination) return;
 
-        const updatedPerimetros = Array.from(perimetros);
-        const [removed] = updatedPerimetros.splice(source.index, 1);
-        updatedPerimetros.splice(destination.index, 0, removed);
-        setPerimetros(updatedPerimetros);
+        if (source.droppableId === "perimetros") {
+            const updatedPerimetros = Array.from(perimetros);
+            const [removed] = updatedPerimetros.splice(source.index, 1);
+            updatedPerimetros.splice(destination.index, 0, removed);
+            setPerimetros(updatedPerimetros);
+            localStorage.setItem("perimetros", JSON.stringify(updatedPerimetros));
+        } else if (source.droppableId === "perimetrosDireito") {
+            const updatedPerimetros = Array.from(perimetrosDireito);
+            const [removed] = updatedPerimetros.splice(source.index, 1);
+            updatedPerimetros.splice(destination.index, 0, removed);
+            setPerimetrosDireito(updatedPerimetros);
+            localStorage.setItem("perimetrosDireito", JSON.stringify(updatedPerimetros));
+        } else if (source.droppableId === "perimetrosEsquerdo") {
+            const updatedPerimetros = Array.from(perimetrosEsquerdo);
+            const [removed] = updatedPerimetros.splice(source.index, 1);
+            updatedPerimetros.splice(destination.index, 0, removed);
+            setPerimetrosEsquerdo(updatedPerimetros);
+            localStorage.setItem("perimetrosEsquerdo", JSON.stringify(updatedPerimetros));
+        }
     };
+
+    const resetOrdering = () => {
+        localStorage.removeItem('perimetros');
+        localStorage.removeItem('perimetrosDireito');
+        localStorage.removeItem('perimetrosEsquerdo');
+        setPerimetros(perimetroFields);
+        setPerimetrosDireito(perimetroDireitoFields);
+        setPerimetrosEsquerdo(perimetroEsquerdoFields);
+    }
 
     const startSpeechRecognition = (inputName) => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -131,31 +181,44 @@ function CadAvaliacao() {
         <div className="container-fluid">
             <div className="card">
                 <form className="card-body" onSubmit={handleSubmit(confirma)}>
-                    <Button
-                        href="javascript:history.back()"
-                        className="btn btn-danger mb-3 me-3"
-                    >
+                    <button href="javascript:history.back()" className="btn btn-danger mb-3 me-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
-                    </Button>
+                    </button>
 
-                    <button
-                        type="button"
-                        className="btn btn-info mb-3 me-3"
-                        onClick={startListening}
+                    {/* <button type="button" className="btn btn-info mb-3 me-3" onClick={startListening}>
+                        <i className="bi bi-mic me-2"></i>
+                        {isListening ? 'Ouvindo...' : 'Ativar Comando de Voz'}
+                    </button> */}
+
+                    <button style={{ zIndex: 1050 }} className="btn btn-primary position-fixed bottom-0 end-0 m-3"
+                        onClick={e => { e.preventDefault(); startListening(); }}
                     >
                         <i className="bi bi-mic me-2"></i>
                         {isListening ? 'Ouvindo...' : 'Ativar Comando de Voz'}
                     </button>
 
-                    <button
-                        type="button"
-                        className={`btn ${isEditingEnabled ? 'btn-warning' : 'btn-warning'} mb-3`}
-                        onClick={() => setIsEditingEnabled(!isEditingEnabled)}
-                    >
-                        <i className="bi bi-pen me-2"></i>
-                        {isEditingEnabled ? 'Desativar edição' : 'Editar ordem'}
-                    </button>
+                    {activeTab === 'perimetro' && (
+                        <button
+                            type="button"
+                            className={`btn ${isEditingEnabled ? 'btn-warning' : 'btn-warning'} mb-3 me-3`}
+                            onClick={() => setIsEditingEnabled(!isEditingEnabled)}
+                        >
+                            <i className="bi bi-pen me-2"></i>
+                            {isEditingEnabled ? 'Desativar edição' : 'Editar ordem'}
+                        </button>
+                    )}
+
+                    {(activeTab === 'perimetro' && isEditingEnabled) && (
+                        <button
+                            type="button"
+                            className={`btn ${isEditingEnabled ? 'btn-danger' : 'btn-warning'} mb-3`}
+                            onClick={resetOrdering}
+                        >
+                            <i className="bi bi-back me-2"></i>
+                            Resetar ordenação
+                        </button>
+                    )}
 
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
 
@@ -201,6 +264,60 @@ function CadAvaliacao() {
                         onSelect={(tab) => setActiveTab(tab)}
                         className="mb-3"
                     >
+                        <Tab eventKey="dobras" title={<><i className="bi bi-rulers me-2"></i>Dobras cutâneas</>}>
+                            <div className="row g-3">
+                                <div className="col-md-10">
+                                    <label className="form-label">Protocolo</label>
+                                    <select {...register('protocolo_dobras')} className="form-control" onChange={e => setProtocolo(e.target.value)}>
+                                        <option value="">Selecione um protocolo</option>
+                                        <option value="pollock_7">Pollock - 7 Dobras</option>
+                                        <option value="pollock_3">Pollock - 3 Dobras</option>
+                                        <option value="faulkner_4">Faulkner - 4 Dobras</option>
+                                        <option value="weltman">Weltman - Obesos</option>
+                                        <option value="deurenberg">Deurenberg</option>
+                                        <option value="guedes_3">Guedes - 3 Dobras</option>
+                                    </select>
+                                </div>
+
+                                {["pollock_7", "pollock_3", "weltman", "faulkner_4", "guedes_3"].includes(protocolo) && (
+                                    <>
+                                        {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"]
+                                            .filter((campo) => {
+                                                const protocolosCampos = {
+                                                    pollock_7: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
+                                                    pollock_3: ["peitoral", "abdominal", "coxa"],
+                                                    weltman: ["abdominal"],
+                                                    faulkner_4: ["triciptal", "subescapular", "abdominal", "supra_iliaca"],
+                                                    guedes_3: ["triciptal", "abdominal", "supra_iliaca"],
+                                                };
+                                                return protocolosCampos[protocolo]?.includes(campo);
+                                            })
+                                            .map((campo) => (
+                                                <div className="col-md-4" key={campo}>
+                                                    <label className="form-label">{campo.replace("_", " ")} (mm)</label>
+                                                    <div className="input-group">
+                                                        <input
+                                                            {...register(campo)}
+                                                            type="number"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-outline-success"
+                                                            onClick={() => startSpeechRecognition(campo)}
+                                                        >
+                                                            <i className="bi bi-mic"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        }
+                                    </>
+                                )}
+                            </div>
+                        </Tab>
+                        
                         <Tab eventKey="perimetro" title={<><i className="bi bi-rulers me-2"></i>Perímetro</>}>
                             <div className="row g-3">
                                 <DragDropContext onDragEnd={onDragEnd}>
@@ -214,27 +331,14 @@ function CadAvaliacao() {
                                                 {perimetros.map((field, index) => (
                                                     <Draggable key={field.name} draggableId={field.name} index={index}>
                                                         {(provided) => (
-                                                            <div
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                className="col-md-4"
-                                                            >
+                                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
                                                                 <div className="d-flex align-items-center mb-2">
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                {/* <label className="form-label">{field.label}</label> */}
                                                                 <div className="input-group">
-                                                                    <input
-                                                                        {...register(field.name)}
-                                                                        type="number"
-                                                                        step="0.1"
-                                                                        className="form-control"
-                                                                    />
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-outline-success"
+                                                                    <input {...register(field.name)} type="number" step="0.1" className="form-control" />
+                                                                    <button type="button" className="btn btn-outline-success"
                                                                         onClick={() => startSpeechRecognition(field.name)}
                                                                     >
                                                                         <i className="bi bi-mic"></i>
@@ -247,17 +351,74 @@ function CadAvaliacao() {
                                                 {provided.placeholder}
                                             </div>
                                         )}
-                                        {/* {perimetros.map(({ label, name }) => (
-                                            <div key={name} className="col-md-4">
-                                                <label className="form-label">{label}</label>
-                                                <input
-                                                    {...register(name)}
-                                                    type="number"
-                                                    step="0.1"
-                                                    className="form-control"
-                                                />
+                                    </Droppable>
+
+                                    <h5 className="text-muted">Lado direito</h5>
+
+                                    <Droppable droppableId="perimetrosDireito" isDropDisabled={!isEditingEnabled}>
+                                        {(provided) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.droppableProps}
+                                                className="row g-3"
+                                            >
+                                                {perimetrosDireito.map((field, index) => (
+                                                    <Draggable key={field.name} draggableId={field.name} index={index}>
+                                                        {(provided) => (
+                                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
+                                                                <div className="d-flex align-items-center mb-2">
+                                                                    <i className={`${field.icon} me-2`}></i>
+                                                                    <label className="form-label">{field.label}</label>
+                                                                </div>
+                                                                <div className="input-group">
+                                                                    <input {...register(field.name)} type="number" step="0.1" className="form-control" />
+                                                                    <button type="button" className="btn btn-outline-success"
+                                                                        onClick={() => startSpeechRecognition(field.name)}
+                                                                    >
+                                                                        <i className="bi bi-mic"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
                                             </div>
-                                        ))} */}
+                                        )}
+                                    </Droppable>
+
+                                    <h5 className="text-muted">Lado esquerdo</h5>
+
+                                    <Droppable droppableId="perimetrosEsquerdo" isDropDisabled={!isEditingEnabled}>
+                                        {(provided) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.droppableProps}
+                                                className="row g-3"
+                                            >
+                                                {perimetrosEsquerdo.map((field, index) => (
+                                                    <Draggable key={field.name} draggableId={field.name} index={index}>
+                                                        {(provided) => (
+                                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
+                                                                <div className="d-flex align-items-center mb-2">
+                                                                    <i className={`${field.icon} me-2`}></i>
+                                                                    <label className="form-label">{field.label}</label>
+                                                                </div>
+                                                                <div className="input-group">
+                                                                    <input {...register(field.name)} type="number" step="0.1" className="form-control" />
+                                                                    <button type="button" className="btn btn-outline-success"
+                                                                        onClick={() => startSpeechRecognition(field.name)}
+                                                                    >
+                                                                        <i className="bi bi-mic"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
                                     </Droppable>
                                 </DragDropContext>
                             </div>
@@ -270,6 +431,40 @@ function CadAvaliacao() {
                                 </div>
                                 <div className="flex-fill ms-md-2">
                                     <TabReferencia2 />
+                                </div>
+                            </div>
+                        </Tab>
+
+                        <Tab eventKey="diametro" title={<><i className="bi bi-rulers me-2"></i>Diametro</>}>
+                            <div className="row g-3">
+                                <div className="col-md-4">
+                                    <label className="form-label">Biestilóide punho (cm)</label>
+                                    <div className="input-group">
+                                        <input {...register('biestiloide_punho')} type="number" step="0.1" className="form-control" />
+                                        <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition('triciptal')}>
+                                            <i className="bi bi-mic"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-4">
+                                    <label className="form-label">Biepicôndilo Umeral (cm)</label>
+                                    <div className="input-group">
+                                        <input {...register('biepicondilo_umeral')} type="number" step="0.1" className="form-control" />
+                                        <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition('triciptal')}>
+                                            <i className="bi bi-mic"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-4">
+                                    <label className="form-label">Biepicôndilo femoral (cm)</label>
+                                    <div className="input-group">
+                                        <input {...register('biepicondilo_femoral')} type="number" step="0.1" className="form-control" />
+                                        <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition('triciptal')}>
+                                            <i className="bi bi-mic"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </Tab>
@@ -351,34 +546,32 @@ function TabReferencia2() {
             <h6 className="fw-semibold">Tabela de Referência - RCQ (Razão Cintura-Quadril)</h6>
             <p>RCQ: Perímetro da cintura (cm) / Perímetro do quadril (cm)</p>
 
-            {/* <div className="col-md-6 table-wraper"> */}
-                <table style={{ fontSize: '0.7rem' }} className="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Índice de Risco</th>
-                            <th>Homens</th>
-                            <th>Mulheres</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Baixo</td>
-                            <td>&lt; 94cm</td>
-                            <td>&lt; 80cm</td>
-                        </tr>
-                        <tr>
-                            <td>Aumentado</td>
-                            <td>94cm a 101cm</td>
-                            <td>80cm a 87cm</td>
-                        </tr>
-                        <tr>
-                            <td>Muito aumentado</td>
-                            <td>&gt; 101cm</td>
-                            <td>&gt; 87cm</td>
-                        </tr>
-                    </tbody>
-                </table>
-            {/* </div> */}
+            <table style={{ fontSize: '0.7rem' }} className="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Índice de Risco</th>
+                        <th>Homens</th>
+                        <th>Mulheres</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Baixo</td>
+                        <td>&lt; 94cm</td>
+                        <td>&lt; 80cm</td>
+                    </tr>
+                    <tr>
+                        <td>Aumentado</td>
+                        <td>94cm a 101cm</td>
+                        <td>80cm a 87cm</td>
+                    </tr>
+                    <tr>
+                        <td>Muito aumentado</td>
+                        <td>&gt; 101cm</td>
+                        <td>&gt; 87cm</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     )
 }
@@ -388,23 +581,25 @@ const perimetroFields = [
     { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
     { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
     { name: 'torax_expirado', label: 'Tórax expirado (cm)', icon: 'bi bi-body' },
-    { name: 'peitoral', label: 'Peitoral (cm)', icon: 'bi bi-body' },
     { name: 'punho', label: 'Punho (cm)', icon: 'bi bi-shoe-prints' },
-    { name: 'cintura_escapular', label: 'Cintura escapular (cm)', icon: 'bi bi-rulers' },
     { name: 'cintura', label: 'Cintura (cm)', icon: 'bi bi-body' },
     { name: 'abdomen', label: 'Abdômen (cm)', icon: 'bi bi-body' },
     { name: 'quadril', label: 'Quadril (cm)', icon: 'bi bi-body' },
-    { name: 'biestiloide_punho', label: 'Biestilóide punho (cm)', icon: 'bi bi-shoe-prints' },
-    { name: 'biepicondilo_femural', label: 'Biepicôndilo femural (cm)', icon: 'bi bi-shoe-prints' },
+];
+
+const perimetroDireitoFields = [
     { name: 'braco_relaxado_direito', label: 'Braço relaxado direito (cm)', icon: 'bi bi-body' },
-    { name: 'braco_relaxado_esquerdo', label: 'Braço relaxado esquerdo (cm)', icon: 'bi bi-body' },
     { name: 'braco_contraido_direito', label: 'Braço contraído direito (cm)', icon: 'bi bi-body' },
-    { name: 'braco_contraido_esquerdo', label: 'Braço contraído esquerdo (cm)', icon: 'bi bi-body' },
     { name: 'antebraco_direito', label: 'Antebraço direito (cm)', icon: 'bi bi-rulers' },
-    { name: 'antebraco_esquerdo', label: 'Antebraço esquerdo (cm)', icon: 'bi bi-rulers' },
     { name: 'coxa_direita', label: 'Coxa direita (cm)', icon: 'bi bi-shoe-prints' },
-    { name: 'coxa_esquerda', label: 'Coxa esquerda (cm)', icon: 'bi bi-shoe-prints' },
     { name: 'panturrilha_direita', label: 'Panturrilha direita (cm)', icon: 'bi bi-shoe-prints' },
+];
+
+const perimetroEsquerdoFields = [
+    { name: 'braco_relaxado_esquerdo', label: 'Braço relaxado esquerdo (cm)', icon: 'bi bi-body' },
+    { name: 'braco_contraido_esquerdo', label: 'Braço contraído esquerdo (cm)', icon: 'bi bi-body' },
+    { name: 'antebraco_esquerdo', label: 'Antebraço esquerdo (cm)', icon: 'bi bi-rulers' },
+    { name: 'coxa_esquerda', label: 'Coxa esquerda (cm)', icon: 'bi bi-shoe-prints' },
     { name: 'panturrilha_esquerda', label: 'Panturrilha esquerda (cm)', icon: 'bi bi-shoe-prints' },
 ];
 

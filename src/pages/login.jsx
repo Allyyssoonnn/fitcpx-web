@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { parseCookies, setCookie } from "nookies";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from '../states/usuario';
+import { stateUsuario } from '../states/states';
 
 function Login() {
     const { handleSubmit, register } = useForm();
@@ -21,7 +21,7 @@ function Login() {
     }, []);
 
     async function login(data) {
-        const resp = await post('/usuario/login', data);
+      const resp = await post('/usuario/login', data);
         if (resp.status) {
             toast.success(`Bem vindo ${resp.nome_usuario}!`);
             setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });

@@ -15,14 +15,18 @@ api.interceptors.response.use((response) => response, async (error) => {
     if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
-        const refreshResponse = await axios.post(baseURL + '/usuario/refreshToken', {
-            refreshToken: cookies.refreshToken,
-        });
-
-        if (refreshResponse.data.status) {
-            setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
-            originalRequest.headers['Authorization'] = refreshResponse.data.token;
-            return api(originalRequest);
+        try {
+            const refreshResponse = await axios.post(baseURL + '/usuario/refreshToken', {
+                refreshToken: cookies.refreshToken,
+            });
+            
+            if (refreshResponse.data.status) {
+                setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
+                originalRequest.headers['Authorization'] = refreshResponse.data.token;
+                return api(originalRequest);
+            }
+        } catch (e) {
+            window.location.replace('/entrar');
         }
     }
 

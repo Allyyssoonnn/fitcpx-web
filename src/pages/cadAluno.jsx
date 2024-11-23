@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { setAluno } from '../api/aluno';
 import { Button } from 'react-bootstrap';
-import { stateUsuario } from '../states/usuario';
+import { stateUsuario } from '../states/states';
 import { useRecoilState } from 'recoil';
 
 function CadAluno() {
@@ -93,7 +93,10 @@ function CadAluno() {
                     </div>
                     <div className="col-md-3">
                         <label className="form-label">Sexo</label>
-                        <input { ...register('sexo_aluno') } type="text" className="form-control" />
+                        <select {...register('sexo_aluno')} className="form-control">
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
+                        </select>
                     </div>
                 </div>
 

@@ -1,4 +1,8 @@
+import { useToggleSidebar } from "../states/states";
+
 function Sidebar() {
+    const { toggleSidebar } = useToggleSidebar();
+
     return (
         <aside className="left-sidebar">
             <div>
@@ -7,7 +11,7 @@ function Sidebar() {
                         <img src="../assets/images/logos/log.png" alt="" width='200' style={{ padding: '10px' }} />
                         {/* <h1>EducApp</h1> */}
                     </a>
-                    <div className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                    <div onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                         <i className="ti ti-x fs-8"></i>
                     </div>
                 </div>
@@ -55,19 +59,19 @@ function Sidebar() {
 
 
                     <div className="unlimited-access hide-menu bg-primary-subtle position-relative mb-7 mt-7 rounded-3"> 
-                        <div className="d-flex">
-                        <div className="unlimited-access-title me-3">
-                            <h6 className="fw-semibold fs-4 mb-6 text-dark w-75">Libere mais acessos</h6>
-                            <a href="#" target="_blank"
-                            className="btn btn-primary fs-2 fw-semibold lh-sm">Liberar</a>
-                        </div>
-                        <div className="unlimited-access-img">
-                            <img src="../assets/images/backgrounds/rocket.png" alt="" className="img-fluid" />
-                        </div>
-                        </div>
+                        {/* <div className="d-flex"> */}
+                            {/* <div className="unlimited-access-title me-3"> */}
+                                {/* <h6 className="fw-semibold fs-4 mb-6 text-dark w-75">Libere mais acessos</h6> */}
+                                {/* <a href="#" target="_blank" className="btn btn-primary fs-2 fw-semibold lh-sm">Liberar</a> */}
+                            {/* </div> */}
+                            
+                            {/* <div className="unlimited-access-img">
+                                <img src="../assets/images/backgrounds/rocket.png" alt="" className="img-fluid" />
+                            </div> */}
+                        {/* </div> */}
                     </div>
                     
-                    </nav>
+                </nav>
             </div>
         </aside>
     );

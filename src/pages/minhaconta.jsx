@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { useRecoilState } from 'recoil';
-import { stateUsuario } from '../states/usuario';
+import { stateUsuario } from '../states/states';
 
 function MinhaConta() {
     const navigate = useNavigate();
