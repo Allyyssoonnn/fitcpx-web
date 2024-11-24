@@ -1,0 +1,217 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import ptLocale from "@fullcalendar/core/locales/pt";
+import { Modal } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { stateUsuario } from "../states/states";
+import { useRecoilState } from "recoil";
+import { getAgenda, setAgenda } from "../api/agenda";
+import { useQuery } from "react-query";
+import { getAlunos } from "../api/aluno";
+
+function Agenda() {
+    const navigate = useNavigate();
+
+    return (
+        <div className="container-fluid">
+            <div className="card">
+                <div className="card-header">
+                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
+                        <i className="bi bi-backspace me-2"></i>
+                        Voltar
+                    </button>
+                </div>
+
+                <div className="card-body calender-sidebar app-calendar">
+                    <Calendario />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function Calendario() {
+    const [usuario] = useRecoilState(stateUsuario);
+    const { handleSubmit, register, setValue, watch } = useForm();
+    const { data: alunos } = useQuery({
+        queryKey: ['alunos', usuario.cod_usuario],
+        queryFn: () => getAlunos(usuario.cod_usuario),
+        initialData: [],
+    });
+    const { data: agenda } = useQuery({
+        queryKey: ['agenda', usuario.cod_usuario],
+        queryFn: async () => {
+            const resp = await getAgenda(usuario.cod_usuario)
+            const data = resp.map(e => ({
+                id: e.cod_evento,
+                cod_aluno: e.cod_aluno,
+                title: e.nome_evento,
+                start: e.data_inicio,
+                end: e.data_fim,
+                extendedProps: { calendar: "Primary" },
+            }));
+            return data;
+        },
+        initialData: [],
+    });
+    const calendarRef = useRef(null);
+
+    // Estado para controlar o modal
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        const calendarApi = calendarRef.current.getApi();
+
+        // Exemplo de callback ao clicar em evento
+        calendarApi.on("eventClick", (info) => {
+            const event = info.event;
+    
+            // Preenche os campos do formulário com os dados do evento
+            setValue('nome_evento', event.title);
+            setValue('cod_aluno', event.cod_aluno);
+            setValue('tipo_evento', event.extendedProps.calendar);
+            setValue('data_inicio', event.start.toISOString().slice(0, 16));  // Formato de data para datetime-local
+            setValue('data_fim', event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));  // Caso tenha um horário de término
+    
+            // Abre o modal
+            setShowModal(true);
+        });
+
+        // Função de redimensionamento da janela
+        const handleResize = () => {
+        const isSmallScreen = window.innerWidth <= 1199;
+        if (isSmallScreen) {
+            calendarApi.changeView("listWeek");
+            calendarApi.setOption("height", 900);
+        } else {
+            calendarApi.changeView("dayGridMonth");
+            calendarApi.setOption("height", 1052);
+        }
+        };
+
+        // Adiciona listener para resize
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+        window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    // Função para mostrar o modal e preencher a data de início
+    const handleAddEvent = async (data) => {
+        await setAgenda({ ...data, cod_usuario: usuario.cod_usuario });
+        setShowModal(false);
+    };
+
+    const handleDateClick = (info) => {
+        const clickedDate = new Date(info.start);
+
+        // Ajustar para o formato YYYY-MM-DDTHH:MM (sem segundos)
+        const start = clickedDate.toISOString().slice(0, 16); // Pegando até minutos
+        const end = new Date(clickedDate.getTime() + 60 * 60 * 1000).toISOString().slice(0, 16); // Pegando 1 hora após
+
+        // Verifica se a data formatada é válida
+        if (isNaN(new Date(start).getTime()) || isNaN(new Date(end).getTime())) {
+            console.error("Datas formatadas inválidas:", start, end);
+            return;
+        }
+
+        setValue('inicio', start);
+        setValue('fim', end);
+        setShowModal(true);
+    };
+
+    return (
+        <div style={{ height: "900px" }}>
+            <FullCalendar
+                locale="pt"
+                ref={calendarRef}
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                selectable={true}
+                events={agenda}
+                customButtons={{
+                    addEventButton: {
+                        text: "Novo evento",
+                        click: () => {
+                            setShowModal(true)
+                        },
+                    },
+                }}
+                select={handleDateClick}
+                headerToolbar={{
+                    left: "prev,next addEventButton",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay",
+                }}
+                height={window.innerWidth <= 1199 ? 900 : 1052}
+                eventClassNames={({ event }) => {
+                    const colorClass = `fc-bg-${event.extendedProps.calendar.toLowerCase()}`;
+                    return ["event-fc-color", colorClass];
+                }}
+            />
+
+            <Modal show={showModal} className="modal fade" id="eventModal" aria-labelledby="eventModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-scrollable modal-lg">
+                    <form onSubmit={handleSubmit(handleAddEvent)} className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="eventModalLabel">Evento</h5>
+                            <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <label className="form-label">Nome do evento</label>
+                                    <input { ...register('nome_evento', { required: 'O nome do evento é obrigatório' }) } id="event-title" type="text" className="form-control" />
+                                </div>
+
+                                <div className="col-md-12 mt-6">
+                                    <label className="form-label">Tipo do evento</label>
+                                    <select {...register('tipo_evento')} className="form-control">
+                                        <option value="danger">Treino</option>
+                                        <option value="success">Avaliação</option>
+                                        <option value="primary">Reunião</option>
+                                        <option value="warning">Visita</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-md-12 mt-6">
+                                    <label className="form-label">Aluno (opcional)</label>
+                                    <select {...register('cod_aluno')} className="form-control">
+                                        <option value=''>Selecione o aluno</option>
+                                        {alunos.map((aluno) => (
+                                            // eslint-disable-next-line react/jsx-key
+                                            <option value={aluno.cod_aluno}>{aluno.nome_aluno}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="col-md-12 mt-6">
+                                    <label className="form-label">Inicio</label>
+                                    <input { ...register('data_inicio', { required: 'A data de inicio é obrigatória' }) } id="event-start-date" type="datetime-local" className="form-control" />
+                                </div>
+
+                                <div className="col-md-12 mt-6">
+                                    <label className="form-label">Fim</label>
+                                    <input { ...register('data_fim', { required: 'A data de fim é obrigatória' }) } id="event-end-date" type="datetime-local" className="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="modal-footer">
+                            <button className="btn bg-danger-subtle text-danger" type="button" onClick={() => setShowModal(false)}>Fechar</button>
+                            <button className="btn btn-success" type="submit">Confirmar</button>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
+        </div>
+    );
+}
+
+export default Agenda;

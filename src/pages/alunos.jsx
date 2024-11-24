@@ -12,7 +12,6 @@ function Alunos() {
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
         queryFn: () => getAlunos(usuario.cod_usuario),
-        // enabled: !usuario.cod_usuario,
         initialData: [],
     });
 

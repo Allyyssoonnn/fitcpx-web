@@ -46,6 +46,15 @@ function Sidebar() {
                             </a>
                         </li>
 
+                        <li className="sidebar-item">
+                            <a className="sidebar-link" href="/agenda" aria-expanded="false">
+                                <span>
+                                <iconify-icon icon="tabler:calendar-check" className="fs-6"></iconify-icon>
+                                </span>
+                                <span className="hide-menu">Agenda</span>
+                            </a>
+                        </li>
+
                         {/* <li className="sidebar-item">
                             <a className="sidebar-link" href="/avaliacoes" aria-expanded="false">
                                 <span>

@@ -19,12 +19,14 @@ function Aluno() {
     return (
         <div className="container-fluid">
             <div className='card'>
-                <div className='card-body'>
+                <div className='card-header'>
                     <Button href='javascript:history.back()' className="btn btn-danger mb-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
                     </Button>
+                </div>
 
+                <div className='card-body'>
                     <div className='row mb-4'>
                         <div className='col-sm-3 position-relative'>
                             <img
@@ -58,7 +60,12 @@ function Aluno() {
                         onSelect={(k) => setKey(k)}
                         className="mb-3"
                     >
-                        <Tab eventKey="informacoesPessoais" title={<><i className="bi bi-person me-2"></i>Informações Pessoais</>}>
+                        <Tab eventKey="informacoesPessoais" title={
+                            <>
+                                <span className="d-none d-md-block"><i className="bi bi-person me-2"></i>Informações Pessoais</span>
+                                <span className="d-block d-md-none"><i className="bi bi-person me-2"></i>Info</span>
+                            </>
+                        }>
                             <div>
                                 <div className="p-3 bg-light rounded">
                                     <h5>Detalhes Pessoais</h5>
@@ -75,9 +82,14 @@ function Aluno() {
                             </div>
                         </Tab>
 
-                        <Tab eventKey="avaliacaoFisica" title={<><i className="bi bi-clipboard-data me-2"></i>Avaliação Física</>} >
+                        <Tab eventKey="avaliacaoFisica" title={
+                            <>
+                                <span className="d-none d-md-block"><i className="bi bi-clipboard-data me-2"></i>Avaliação Física</span>
+                                <span className="d-block d-md-none"><i className="bi bi-clipboard-data me-2"></i>Avaliação</span>
+                            </>
+                        } >
                             <div>
-                                <button className='btn btn-primary' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
+                                <button className='btn btn-primary' onClick={() => navigate('/cadavaliacao', { state: { cod_aluno: cod_aluno } })}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Avaliação
                                 </button>
@@ -85,7 +97,48 @@ function Aluno() {
                                 <div className="p-3 bg-light rounded mt-3">
                                     <h5>Avaliações</h5>
                                     
-                                    
+                                    <div className="table-responsive">
+                                        <table id="basic-datatables" className="display table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Opções</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {aluno?.avaliacao?.map((avaliacao) => {
+                                                    return (
+                                                        <tr key={avaliacao.cod_aluno}>
+                                                            <th scope="row" className="d-flex">
+                                                                <div className="col-md-3 d-flex flex-column">
+                                                                    <label>{avaliacao.data_avaliacao}</label>
+                                                                </div>
+
+                                                                <div className="col-md-3 d-flex flex-column">
+                                                                    <label>{avaliacao.altura} M</label>
+                                                                </div>
+
+                                                                <div className="col-md-3 d-flex flex-column">
+                                                                    <label>{avaliacao.peso} KG</label>
+                                                                </div>
+                                                            </th>
+                                                            <td className='col-md-3'>
+                                                                <Button className="btn btn-white btn-sm me-3" onClick={() => navigate('/cadavaliacao', { state: { avaliacao } })}>
+                                                                    <i className="bi bi-pencil"></i>
+                                                                </Button>
+
+                                                                <Button className="btn btn-white btn-sm" onClick={() => navigate('/cadavaliacao', { state: { avaliacao } })}>
+                                                                    <i className="bi bi-printer me-2"></i>
+                                                                    Ver resultado
+                                                                </Button>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </Tab>

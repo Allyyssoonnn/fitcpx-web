@@ -5,26 +5,47 @@ import { Tab, Tabs } from "react-bootstrap";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { setAvaliacao } from "../api/aluno";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getFieldState, getValues } = useForm();
+    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
     const avaliacaoRecebida = location.state?.avaliacao;
 
+    const formValues = watch();
+
     const [isListening, setIsListening] = useState(false);
-    const [activeTab, setActiveTab] = useState("perimetro");
+    const [activeTab, setActiveTab] = useState("dobras");
     const [perimetros, setPerimetros] = useState(perimetroFields);
     const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
     const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
-
+    const [metodoDobras, setMetodoDobras] = useState('normal');
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
-
     const [protocolo, setProtocolo] = useState("");
+
+    const [restaurouCache, setRestaurouCache] = useState(false);
+
+    useEffect(() => {
+        if (!formValues || !restaurouCache) return;
+        localStorage.setItem('avaliacaoCache', JSON.stringify(formValues));
+    }, [formValues, restaurouCache]);
+
+    useEffect(() => {
+        const avaliacaoCache = localStorage.getItem('avaliacaoCache');
+        if (avaliacaoCache) {
+            const cacheAvaliacaoObj = JSON.parse(avaliacaoCache);
+            Object.keys(cacheAvaliacaoObj).forEach((key) => {
+                setValue(key, cacheAvaliacaoObj[key]); // Restaura cada campo
+            });
+            setRestaurouCache(true);
+        }
+    }, [setValue]);
 
     useEffect(() => {
         setValue("cod_usuario", usuario?.cod_usuario);
+        setValue("cod_aluno", location.state?.cod_aluno);
 
         if (avaliacaoRecebida) {
             Object.keys(avaliacaoRecebida).forEach((key) => {
@@ -34,8 +55,9 @@ function CadAvaliacao() {
     }, [avaliacaoRecebida, setValue, usuario]);
 
     async function confirma(data) {
+        await setAvaliacao(data);
         // await setAvaliacaoFisica(data);
-        navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
+        // navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
     const loadFromLocalStorage = (key, setter) => {
@@ -160,8 +182,7 @@ function CadAvaliacao() {
             alert('Seu navegador não suporta a API de reconhecimento de fala.');
             return;
         }
-
-
+        
         const recognition = new SpeechRecognition();
         recognition.lang = "pt-BR";  // Defina o idioma, pode ser 'en-US' para inglês, 'pt-BR' para português
         recognition.start();
@@ -180,16 +201,11 @@ function CadAvaliacao() {
     return (
         <div className="container-fluid">
             <div className="card">
-                <form className="card-body" onSubmit={handleSubmit(confirma)}>
-                    <button href="javascript:history.back()" className="btn btn-danger mb-3 me-3">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
                     </button>
-
-                    {/* <button type="button" className="btn btn-info mb-3 me-3" onClick={startListening}>
-                        <i className="bi bi-mic me-2"></i>
-                        {isListening ? 'Ouvindo...' : 'Ativar Comando de Voz'}
-                    </button> */}
 
                     <button style={{ zIndex: 1050 }} className="btn btn-primary position-fixed bottom-0 end-0 m-3"
                         onClick={e => { e.preventDefault(); startListening(); }}
@@ -220,6 +236,29 @@ function CadAvaliacao() {
                         </button>
                     )}
 
+                    <div className="dropdown">
+                        <button
+                            className="btn btn-light dropdown-toggle"
+                            type="button"
+                            id="dropdownMenuButton"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <i className="bi bi-three-dots"></i>
+                        </button>
+
+                        <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                            <li>
+                                <button className="dropdown-item" onClick={() => { reset(); localStorage.removeItem('avaliacaoCache'); }}>
+                                    <i className="bi bi-trash me-3"></i>
+                                    Limpar
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <form className="card-body" onSubmit={handleSubmit(confirma)}>
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
 
                     <div className="row g-3">
@@ -239,8 +278,8 @@ function CadAvaliacao() {
                                 {...register("peso", {
                                     required: "O peso é obrigatório",
                                 })}
-                                type="number"
-                                step="0.1"
+                                // type="number"
+                                // step="0.11,7"
                                 className="form-control"
                             />
                         </div>
@@ -250,8 +289,8 @@ function CadAvaliacao() {
                                 {...register("altura", {
                                     required: "A altura é obrigatória",
                                 })}
-                                type="number"
-                                step="0.1"
+                                // type="number"
+                                // step="0.11,2"
                                 className="form-control"
                             />
                         </div>
@@ -266,7 +305,7 @@ function CadAvaliacao() {
                     >
                         <Tab eventKey="dobras" title={<><i className="bi bi-rulers me-2"></i>Dobras cutâneas</>}>
                             <div className="row g-3">
-                                <div className="col-md-10">
+                                <div className="col-md-8">
                                     <label className="form-label">Protocolo</label>
                                     <select {...register('protocolo_dobras')} className="form-control" onChange={e => setProtocolo(e.target.value)}>
                                         <option value="">Selecione um protocolo</option>
@@ -276,6 +315,14 @@ function CadAvaliacao() {
                                         <option value="weltman">Weltman - Obesos</option>
                                         <option value="deurenberg">Deurenberg</option>
                                         <option value="guedes_3">Guedes - 3 Dobras</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <label className="form-label">Metódo</label>
+                                    <select value={metodoDobras} onChange={e => setMetodoDobras(e.target.value)} className="form-control">
+                                        <option value='normal'>Normal</option>
+                                        <option value='media'>Média</option>
                                     </select>
                                 </div>
 
@@ -295,21 +342,14 @@ function CadAvaliacao() {
                                             .map((campo) => (
                                                 <div className="col-md-4" key={campo}>
                                                     <label className="form-label">{campo.replace("_", " ")} (mm)</label>
-                                                    <div className="input-group">
-                                                        <input
-                                                            {...register(campo)}
-                                                            type="number"
-                                                            step="0.1"
-                                                            className="form-control"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-outline-success"
-                                                            onClick={() => startSpeechRecognition(campo)}
-                                                        >
-                                                            <i className="bi bi-mic"></i>
-                                                        </button>
-                                                    </div>
+                                                    <MediaInput
+                                                        campo1={campo}
+                                                        campo2={campo + "_2"}
+                                                        register={register}
+                                                        setValue={setValue}
+                                                        startSpeechRecognition={startSpeechRecognition}
+                                                        metodo={metodoDobras}
+                                                    />
                                                 </div>
                                             ))
                                         }
@@ -479,6 +519,56 @@ function CadAvaliacao() {
         </div>
     );
 }
+
+const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo }) => {
+    const [valor1, setValor1] = useState("");
+    const [valor2, setValor2] = useState("");
+    const [valor3, setValor3] = useState("");
+
+    const [medirNovamente, setMedirNovamente] = useState(false);
+
+    const [media, setMedia] = useState("");
+  
+    // Calcula a média quando os valores 1 ou 2 mudam
+    useEffect(() => {
+        if (metodo === "media" && valor1 && valor2) {
+            setMedia(((parseFloat(valor1) + parseFloat(valor2)) / 2).toFixed(1));
+            //Calcular aqui
+            setValue(campo1, ((parseFloat(valor1) + parseFloat(valor2)) / 2).toFixed(1));
+
+            const diff = Math.abs(parseFloat(valor1) - parseFloat(valor2));
+            setMedirNovamente(diff > 1);
+        } else {
+            setMedia(""); // Limpa a média se o método for normal
+            setValue(campo1, "");
+        }
+    }, [valor1, valor2, metodo]);
+  
+    return (
+        <div className="input-group">
+        {/* Exibe dois campos de entrada se o método for 'media', ou um único campo caso contrário */}
+        {metodo === "media" ? (
+            <>
+                <input type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
+                <input type="number" step="0.1" className="form-control" value={valor2} onChange={(e) => setValor2(e.target.value)} />
+                {medirNovamente && (
+                    <input type="number" step="0.1" className="form-control" value={valor3} onChange={(e) => setValor3(e.target.value)} />
+                )}
+                <input type="text" className="form-control" value={media} readOnly placeholder="Média" />
+            </>
+        ) : (
+            <input {...register(campo1, { required: true })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
+        )}
+
+        {metodo === "normal" && (
+            <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition(campo1)}>
+                <i className="bi bi-mic"></i>
+            </button>
+        )}
+
+        </div>
+    );
+};
 
 function TabReferencia1() {
     return (

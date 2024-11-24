@@ -17,3 +17,15 @@ export const setAluno = async (aluno) => {
     if (resp.status) return resp.aluno;
     throw new Error("Erro ao carregar alunos");
 };
+
+export const getAvaliacao = async (codAluno) => {
+    const resp = await post('/aluno/getAvaliacao', { cod_aluno: codAluno });
+    if (resp.status) return resp.aluno;
+    throw new Error("Erro ao carregar aluno");
+};
+
+export const setAvaliacao = async (avaliacao) => {
+    const resp = await post('/aluno/setAvaliacao', { avaliacao });
+    if (resp.status) return resp.avaliacao;
+    throw new Error("Erro ao carregar alunos");
+};

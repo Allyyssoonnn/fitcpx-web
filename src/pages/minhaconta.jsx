@@ -3,13 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { useRecoilState } from 'recoil';
 import { stateUsuario } from '../states/states';
+import { destroyCookie } from 'nookies';
 
 function MinhaConta() {
     const navigate = useNavigate();
 
     const [usuario] = useRecoilState(stateUsuario);
     console.log(usuario);
-    
+
+    function sair() {
+        destroyCookie(null, 'token');
+        navigate('/entrar');
+    }    
 
     // Exemplo de dados do usuário (substitua com dados reais de um usuário logado)
     // const usuario = {
@@ -54,7 +59,7 @@ function MinhaConta() {
                         </Button>
                         <Button 
                             className="btn btn-danger"
-                            onClick={() => navigate('/entrar')}  // Redireciona para login (simulando logout)
+                            onClick={sair}  // Redireciona para login (simulando logout)
                         >
                             <i className="bi bi-box-arrow-left me-2"></i>Sair
                         </Button>

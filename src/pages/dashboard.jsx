@@ -1,6 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { stateUsuario } from "../states/states";
+import { useQuery } from "react-query";
+import { getAlunos } from "../api/aluno";
 
 function Dashboard() {
+    const [usuario] = useRecoilState(stateUsuario);
+
+    const { data: alunos } = useQuery({
+        queryKey: ['alunos', usuario.cod_usuario],
+        queryFn: () => getAlunos(usuario.cod_usuario),
+        initialData: [],
+    });
 
     useEffect(() => {
         var chart = {
@@ -81,9 +92,9 @@ function Dashboard() {
 
     return (
         <div className="container-fluid">
-            <div class="row">
+            <div className="row">
 
-                <div class="col-lg-8">
+                {/* <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title d-flex align-items-center gap-2 mb-4">
@@ -96,7 +107,9 @@ function Dashboard() {
                         <div id="traffic-overview" >
                         </div>
                     </div>
-                </div>
+                </div> */}
+
+                <UltimasAvaliacoes alunos={alunos} />
 
                 <div class="col-lg-4">
                     <div class="card">
@@ -109,95 +122,7 @@ function Dashboard() {
                     </div>
                 </div>
 
-                <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Agenda de avaliações</h5>
-
-                            <div class="table-responsive">
-                                <table class="table text-nowrap align-middle mb-0">
-                                    <thead>
-                                        <tr class="border-2 border-bottom border-primary border-0"> 
-                                            <th scope="col" class="ps-0">Aluno</th>
-                                            <th scope="col" >Idade</th>
-                                            <th scope="col" class="text-center">Última avaliação</th>
-                                            <th scope="col" class="text-center">Data</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody class="table-group-divider">
-                                        <tr>
-                                            <th scope="row" class="ps-0 fw-medium">
-                                            <span class="table-link1 text-truncate d-block">
-                                                Alyson Henrique
-                                            </span>
-                                            </th>
-                                            <td>
-                                            <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">23</a>
-                                            </td>
-                                            <td class="text-center fw-medium">13/09/2024</td>
-                                            <td class="text-center fw-medium">15/11/2024</td>
-                                        </tr>
-
-                                        <tr>
-                                            <th scope="row" class="ps-0 fw-medium">
-                                            <span class="table-link1 text-truncate d-block">
-                                                Milton G.
-                                            </span>
-                                            </th>
-                                            <td>
-                                            <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">31</a>
-                                            </td>
-                                            <td class="text-center fw-medium">04/05/2024</td>
-                                            <td class="text-center fw-medium">20/11/2024</td>
-                                        </tr>
-
-                                        <tr>
-                                            <th scope="row" class="ps-0 fw-medium">
-                                            <span class="table-link1 text-truncate d-block">
-                                                Rafaela
-                                            </span>
-                                            </th>
-                                            <td>
-                                            <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">21</a>
-                                            </td>
-                                            <td class="text-center fw-medium">04/07/2024</td>
-                                            <td class="text-center fw-medium">25/11/2024</td>
-                                        </tr>
-
-                                        <tr>
-                                            <th scope="row" class="ps-0 fw-medium">
-                                            <span class="table-link1 text-truncate d-block">
-                                                Sem
-                                            </span>
-                                            </th>
-                                            <td>
-                                            <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">25</a>
-                                            </td>
-                                            <td class="text-center fw-medium">04/07/2024</td>
-                                            <td class="text-center fw-medium">25/11/2024</td>
-                                        </tr>
-
-                                        <tr>
-                                            <th scope="row" class="ps-0 fw-medium border-0">
-                                            <span class="table-link1 text-truncate d-block">
-                                                Ideia
-                                            </span>
-                                            </th>
-                                            <td class="border-0">
-                                            <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">26</a>
-                                            </td>
-                                            <td class="text-center fw-medium border-0">04/07/2024</td>
-                                            <td class="text-center fw-medium border-0">25/11/2024</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
+                {/* <div class="col-lg-4">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title d-flex align-items-center gap-2 mb-5 pb-3">
@@ -258,9 +183,9 @@ function Dashboard() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
-                <div class="col-lg-4">
+                {/* <div class="col-lg-4">
                     <div class="card overflow-hidden hover-img">
                         <div class="position-relative">
                             <a href="javascript:void(0)">
@@ -280,9 +205,9 @@ function Dashboard() {
                                     <i class="ti ti-eye text-dark fs-5"></i>9
                                 </div>
 
-                                {/* <div class="d-flex align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
                                     <i class="ti ti-message-2 text-dark fs-5"></i>3
-                                </div> */}
+                                </div>
 
                                 <div class="d-flex align-items-center fs-2 ms-auto">
                                     <i class="ti ti-point text-dark"></i>Seg, Nov 11
@@ -290,9 +215,9 @@ function Dashboard() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
-                <div class="col-lg-4">
+                {/* <div class="col-lg-4">
                     <div class="card overflow-hidden hover-img">
                         <div class="position-relative">
                             <a href="javascript:void(0)">
@@ -314,9 +239,9 @@ function Dashboard() {
                                     <i class="ti ti-eye text-dark fs-5"></i>11
                                 </div>
 
-                                {/* <div class="d-flex align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
                                     <i class="ti ti-message-2 text-dark fs-5"></i>38
-                                </div> */}
+                                </div>
 
                                 <div class="d-flex align-items-center fs-2 ms-auto">
                                     <i class="ti ti-point text-dark"></i>Seg, Nov 11
@@ -324,40 +249,9 @@ function Dashboard() {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* <div class="col-lg-4">
-                    <div class="card overflow-hidden hover-img">
-                        <div class="position-relative">
-                            <a href="javascript:void(0)">
-                                <img src="../assets/images/blog/blog-img3.jpg" class="card-img-top" alt="matdash-img" />
-                            </a>
-                            <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">2
-                                min Read</span>
-                            <img src="../assets/images/profile/user-3.jpg" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero" />
-                        </div>
-
-                        <div class="card-body p-4">
-                            <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">Health</span>
-                            <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">COVID outbreak deepens as more
-                                lockdowns
-                                loom in China</a>
-                            <div class="d-flex align-items-center gap-4">
-                                <div class="d-flex align-items-center gap-2">
-                                <i class="ti ti-eye text-dark fs-5"></i>9,480
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                <i class="ti ti-message-2 text-dark fs-5"></i>12
-                                </div>
-                                <div class="d-flex align-items-center fs-2 ms-auto">
-                                <i class="ti ti-point text-dark"></i>Sat, Dec 17
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div> */}
 
-                <div class="col-lg-4">
+                {/* <div class="col-lg-4">
                     <div class="card overflow-hidden hover-img">
                         <div class="position-relative">
                             <a href="javascript:void(0)">
@@ -377,15 +271,64 @@ function Dashboard() {
                                     <i class="ti ti-eye text-dark fs-5"></i>9
                                 </div>
 
-                                {/* <div class="d-flex align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
                                     <i class="ti ti-message-2 text-dark fs-5"></i>3
-                                </div> */}
+                                </div>
 
                                 <div class="d-flex align-items-center fs-2 ms-auto">
                                     <i class="ti ti-point text-dark"></i>Seg, Nov 11
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div> */}
+            </div>
+        </div>
+    );
+}
+
+function UltimasAvaliacoes({ alunos }) {
+
+    const [avaliacoes, setAvaliacoes] = useState([]);
+
+    useEffect(() => {
+        if (!alunos) return;
+        const avaliacoes = alunos?.reduce((todasAvaliacoes, aluno) => {
+            const avaliacoesComNome = aluno.avaliacao.map(avaliacao => ({ ...avaliacao, nome_aluno: aluno?.nome_aluno }));
+            return todasAvaliacoes.concat(avaliacoesComNome);
+        }, []);
+        if (avaliacoes) setAvaliacoes(avaliacoes);
+    }, [alunos]);
+
+    return (
+        <div className="col-lg-8">
+            <div className="card">
+                <div className="card-body">
+                    <h5 className="card-title">Últimas avaliações</h5>
+
+                    <div className="table-responsive">
+                        <table className="table text-nowrap align-middle mb-0">
+                            <thead>
+                                <tr className="border-2 border-bottom border-primary border-0"> 
+                                    <th scope="col" className="ps-0">Aluno</th>
+                                    <th scope="col" className="ps-0">Data</th>
+                                    <th scope="col" >Altura</th>
+                                    <th scope="col" className="text-center">Peso</th>
+                                </tr>
+                            </thead>
+
+                            <tbody className="table-group-divider">
+                                {avaliacoes.map((avaliacao) => (
+                                    // eslint-disable-next-line react/jsx-key
+                                    <tr>
+                                        <th scope="row" className="ps-0 fw-medium">{avaliacao.nome_aluno}</th>
+                                        <th scope="row" className="ps-0 fw-medium">{avaliacao.data_avaliacao}</th>
+                                        <td>{avaliacao.altura} M</td>
+                                        <td className="text-center fw-medium">{avaliacao.peso} KG</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
