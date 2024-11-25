@@ -128,7 +128,7 @@ function Aluno() {
                                                                     <i className="bi bi-pencil"></i>
                                                                 </Button>
 
-                                                                <Button className="btn btn-white btn-sm" onClick={() => navigate('/cadavaliacao', { state: { avaliacao } })}>
+                                                                <Button className="btn btn-white btn-sm" onClick={() => navigate('/avaliacao', { state: { avaliacao } })}>
                                                                     <i className="bi bi-printer me-2"></i>
                                                                     Ver resultado
                                                                 </Button>

@@ -4,7 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import ptLocale from "@fullcalendar/core/locales/pt";
+import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { stateUsuario } from "../states/states";
@@ -12,6 +12,7 @@ import { useRecoilState } from "recoil";
 import { getAgenda, setAgenda } from "../api/agenda";
 import { useQuery } from "react-query";
 import { getAlunos } from "../api/aluno";
+
 
 function Agenda() {
     const navigate = useNavigate();
@@ -128,7 +129,7 @@ function Calendario() {
     return (
         <div style={{ height: "900px" }}>
             <FullCalendar
-                locale="pt"
+                locale={ptBrLocale}
                 ref={calendarRef}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -148,15 +149,17 @@ function Calendario() {
                     center: "title",
                     right: "dayGridMonth,timeGridWeek,timeGridDay",
                 }}
-                height={window.innerWidth <= 1199 ? 900 : 1052}
-                eventClassNames={({ event }) => {
-                    const colorClass = `fc-bg-${event.extendedProps.calendar.toLowerCase()}`;
-                    return ["event-fc-color", colorClass];
-                }}
+                // height={window.innerWidth <= 1199 ? 900 : 1052}
+                height={900}
+                // height="auto"
+                // eventClassNames={({ event }) => {
+                //     const colorClass = `fc-bg-${event.extendedProps.calendar.toLowerCase()}`;
+                //     return ["event-fc-color", colorClass];
+                // }}
             />
 
             <Modal show={showModal} className="modal fade" id="eventModal" aria-labelledby="eventModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-scrollable modal-lg">
+                <div className="modal-dialog-scrollable modal-lg">
                     <form onSubmit={handleSubmit(handleAddEvent)} className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="eventModalLabel">Evento</h5>

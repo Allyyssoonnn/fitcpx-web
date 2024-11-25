@@ -1,7 +1,15 @@
-import { useToggleSidebar } from "../states/states";
+import { useEffect } from "react";
+import { stateApp, useToggleSidebar } from "../states/states";
+import { useRecoilState } from "recoil";
 
 function Sidebar() {
     const { toggleSidebar } = useToggleSidebar();
+    const [{ openedSidebar }] = useRecoilState(stateApp);
+
+    useEffect(() => {
+        //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
+        if (window.screen.width > 900 && !openedSidebar) toggleSidebar();
+    }, []);
 
     return (
         <aside className="left-sidebar">
@@ -67,7 +75,7 @@ function Sidebar() {
                     </ul>
 
 
-                    <div className="unlimited-access hide-menu bg-primary-subtle position-relative mb-7 mt-7 rounded-3"> 
+                    {/* <div className="unlimited-access hide-menu bg-primary-subtle position-relative mb-7 mt-7 rounded-3">  */}
                         {/* <div className="d-flex"> */}
                             {/* <div className="unlimited-access-title me-3"> */}
                                 {/* <h6 className="fw-semibold fs-4 mb-6 text-dark w-75">Libere mais acessos</h6> */}
@@ -78,7 +86,7 @@ function Sidebar() {
                                 <img src="../assets/images/backgrounds/rocket.png" alt="" className="img-fluid" />
                             </div> */}
                         {/* </div> */}
-                    </div>
+                    {/* </div> */}
                     
                 </nav>
             </div>

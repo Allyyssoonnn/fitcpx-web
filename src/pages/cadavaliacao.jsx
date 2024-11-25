@@ -39,7 +39,7 @@ function CadAvaliacao() {
             Object.keys(cacheAvaliacaoObj).forEach((key) => {
                 setValue(key, cacheAvaliacaoObj[key]); // Restaura cada campo
             });
-            setRestaurouCache(true);
+            setRestaurouCache(true);            
         }
     }, [setValue]);
 
@@ -51,13 +51,13 @@ function CadAvaliacao() {
             Object.keys(avaliacaoRecebida).forEach((key) => {
                 setValue(key, avaliacaoRecebida[key]);
             });
+            setProtocolo(avaliacaoRecebida.protocolo_dobras);
         }
     }, [avaliacaoRecebida, setValue, usuario]);
 
     async function confirma(data) {
         await setAvaliacao(data);
-        // await setAvaliacaoFisica(data);
-        // navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
+        navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
     const loadFromLocalStorage = (key, setter) => {
@@ -326,35 +326,7 @@ function CadAvaliacao() {
                                     </select>
                                 </div>
 
-                                {["pollock_7", "pollock_3", "weltman", "faulkner_4", "guedes_3"].includes(protocolo) && (
-                                    <>
-                                        {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"]
-                                            .filter((campo) => {
-                                                const protocolosCampos = {
-                                                    pollock_7: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
-                                                    pollock_3: ["peitoral", "abdominal", "coxa"],
-                                                    weltman: ["abdominal"],
-                                                    faulkner_4: ["triciptal", "subescapular", "abdominal", "supra_iliaca"],
-                                                    guedes_3: ["triciptal", "abdominal", "supra_iliaca"],
-                                                };
-                                                return protocolosCampos[protocolo]?.includes(campo);
-                                            })
-                                            .map((campo) => (
-                                                <div className="col-md-4" key={campo}>
-                                                    <label className="form-label">{campo.replace("_", " ")} (mm)</label>
-                                                    <MediaInput
-                                                        campo1={campo}
-                                                        campo2={campo + "_2"}
-                                                        register={register}
-                                                        setValue={setValue}
-                                                        startSpeechRecognition={startSpeechRecognition}
-                                                        metodo={metodoDobras}
-                                                    />
-                                                </div>
-                                            ))
-                                        }
-                                    </>
-                                )}
+                                <Dobras protocolo={protocolo} metodoDobras={metodoDobras} register={register} setValue={setValue} startSpeechRecognition={startSpeechRecognition} />
                             </div>
                         </Tab>
                         
@@ -520,6 +492,43 @@ function CadAvaliacao() {
     );
 }
 
+const Dobras = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras }) => {
+
+    return (
+        <>
+            {["pollock_7", "pollock_3", "weltman", "faulkner_4", "guedes_3"].includes(protocolo) && (
+                <>
+                    {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"]
+                        .filter((campo) => {
+                            const protocolosCampos = {
+                                pollock_7: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
+                                pollock_3: ["peitoral", "abdominal", "coxa"],
+                                weltman: ["abdominal"],
+                                faulkner_4: ["triciptal", "subescapular", "abdominal", "supra_iliaca"],
+                                guedes_3: ["triciptal", "abdominal", "supra_iliaca"],
+                            };
+                            return protocolosCampos[protocolo]?.includes(campo);
+                        })
+                        .map((campo) => (
+                            <div className="col-md-4" key={campo}>
+                                <label className="form-label">{campo.replace("_", " ")} (mm)</label>
+                                <MediaInput
+                                    campo1={campo}
+                                    campo2={campo + "_2"}
+                                    register={register}
+                                    setValue={setValue}
+                                    startSpeechRecognition={startSpeechRecognition}
+                                    metodo={metodoDobras}
+                                />
+                            </div>
+                        ))
+                    }
+                </>
+            )}
+        </>
+    )
+}
+
 const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo }) => {
     const [valor1, setValor1] = useState("");
     const [valor2, setValor2] = useState("");
@@ -666,7 +675,7 @@ function TabReferencia2() {
     )
 }
 
-const perimetroFields = [
+export const perimetroFields = [
     { name: 'pescoco', label: 'Pescoço (cm)', icon: 'bi bi-body' },
     { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
     { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
@@ -677,7 +686,7 @@ const perimetroFields = [
     { name: 'quadril', label: 'Quadril (cm)', icon: 'bi bi-body' },
 ];
 
-const perimetroDireitoFields = [
+export const perimetroDireitoFields = [
     { name: 'braco_relaxado_direito', label: 'Braço relaxado direito (cm)', icon: 'bi bi-body' },
     { name: 'braco_contraido_direito', label: 'Braço contraído direito (cm)', icon: 'bi bi-body' },
     { name: 'antebraco_direito', label: 'Antebraço direito (cm)', icon: 'bi bi-rulers' },
@@ -685,7 +694,7 @@ const perimetroDireitoFields = [
     { name: 'panturrilha_direita', label: 'Panturrilha direita (cm)', icon: 'bi bi-shoe-prints' },
 ];
 
-const perimetroEsquerdoFields = [
+export const perimetroEsquerdoFields = [
     { name: 'braco_relaxado_esquerdo', label: 'Braço relaxado esquerdo (cm)', icon: 'bi bi-body' },
     { name: 'braco_contraido_esquerdo', label: 'Braço contraído esquerdo (cm)', icon: 'bi bi-body' },
     { name: 'antebraco_esquerdo', label: 'Antebraço esquerdo (cm)', icon: 'bi bi-rulers' },
