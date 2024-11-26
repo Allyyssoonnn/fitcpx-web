@@ -8,7 +8,7 @@ function Sidebar() {
 
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
-        if (window.screen.width > 900 && !openedSidebar) toggleSidebar();
+        if (window.screen.width > 1600 && !openedSidebar) toggleSidebar();
     }, []);
 
     return (

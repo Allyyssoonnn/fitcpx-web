@@ -22,6 +22,7 @@ function CadAvaliacao() {
     const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
     const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
     const [metodoDobras, setMetodoDobras] = useState('normal');
+    const [metodoPerimetro, setMetodoPerimetro] = useState('normal');
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
     const [protocolo, setProtocolo] = useState("");
 
@@ -309,6 +310,7 @@ function CadAvaliacao() {
                                     <label className="form-label">Protocolo</label>
                                     <select {...register('protocolo_dobras')} className="form-control" onChange={e => setProtocolo(e.target.value)}>
                                         <option value="">Selecione um protocolo</option>
+                                        <option value="todas">Todas dobras</option>
                                         <option value="pollock_7">Pollock - 7 Dobras</option>
                                         <option value="pollock_3">Pollock - 3 Dobras</option>
                                         <option value="faulkner_4">Faulkner - 4 Dobras</option>
@@ -333,6 +335,16 @@ function CadAvaliacao() {
                         <Tab eventKey="perimetro" title={<><i className="bi bi-rulers me-2"></i>Perímetro</>}>
                             <div className="row g-3">
                                 <DragDropContext onDragEnd={onDragEnd}>
+                                    <div className="col-md-3">
+                                        <label className="form-label">Metódo</label>
+                                        <select value={metodoPerimetro} onChange={e => setMetodoPerimetro(e.target.value)} className="form-control">
+                                            <option value='normal'>Normal</option>
+                                            <option value='media'>Média</option>
+                                        </select>
+                                    </div>
+
+                                    <h5 className="text-muted">Geral</h5>
+
                                     <Droppable droppableId="perimetros" isDropDisabled={!isEditingEnabled}>
                                         {(provided) => (
                                             <div
@@ -348,14 +360,22 @@ function CadAvaliacao() {
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                <div className="input-group">
+                                                                {/* <div className="input-group">
                                                                     <input {...register(field.name)} type="number" step="0.1" className="form-control" />
                                                                     <button type="button" className="btn btn-outline-success"
                                                                         onClick={() => startSpeechRecognition(field.name)}
                                                                     >
                                                                         <i className="bi bi-mic"></i>
                                                                     </button>
-                                                                </div>
+                                                                </div> */}
+                                                                <MediaInput
+                                                                    campo1={field.name}
+                                                                    campo2={field.name + "_2"}
+                                                                    register={register}
+                                                                    setValue={setValue}
+                                                                    startSpeechRecognition={startSpeechRecognition}
+                                                                    metodo={metodoPerimetro}
+                                                                />
                                                             </div>
                                                         )}
                                                     </Draggable>
@@ -382,14 +402,22 @@ function CadAvaliacao() {
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                <div className="input-group">
+                                                                {/* <div className="input-group">
                                                                     <input {...register(field.name)} type="number" step="0.1" className="form-control" />
                                                                     <button type="button" className="btn btn-outline-success"
                                                                         onClick={() => startSpeechRecognition(field.name)}
                                                                     >
                                                                         <i className="bi bi-mic"></i>
                                                                     </button>
-                                                                </div>
+                                                                </div> */}
+                                                                <MediaInput
+                                                                    campo1={field.name}
+                                                                    campo2={field.name + "_2"}
+                                                                    register={register}
+                                                                    setValue={setValue}
+                                                                    startSpeechRecognition={startSpeechRecognition}
+                                                                    metodo={metodoPerimetro}
+                                                                />
                                                             </div>
                                                         )}
                                                     </Draggable>
@@ -416,14 +444,22 @@ function CadAvaliacao() {
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                <div className="input-group">
+                                                                {/* <div className="input-group">
                                                                     <input {...register(field.name)} type="number" step="0.1" className="form-control" />
                                                                     <button type="button" className="btn btn-outline-success"
                                                                         onClick={() => startSpeechRecognition(field.name)}
                                                                     >
                                                                         <i className="bi bi-mic"></i>
                                                                     </button>
-                                                                </div>
+                                                                </div> */}
+                                                                <MediaInput
+                                                                    campo1={field.name}
+                                                                    campo2={field.name + "_2"}
+                                                                    register={register}
+                                                                    setValue={setValue}
+                                                                    startSpeechRecognition={startSpeechRecognition}
+                                                                    metodo={metodoPerimetro}
+                                                                />
                                                             </div>
                                                         )}
                                                     </Draggable>
@@ -496,11 +532,12 @@ const Dobras = ({ protocolo, register, setValue, startSpeechRecognition, metodoD
 
     return (
         <>
-            {["pollock_7", "pollock_3", "weltman", "faulkner_4", "guedes_3"].includes(protocolo) && (
+            {["todas", "pollock_7", "pollock_3", "weltman", "faulkner_4", "guedes_3"].includes(protocolo) && (
                 <>
-                    {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"]
+                    {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"]
                         .filter((campo) => {
                             const protocolosCampos = {
+                                todas: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"],
                                 pollock_7: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
                                 pollock_3: ["peitoral", "abdominal", "coxa"],
                                 weltman: ["abdominal"],
@@ -546,35 +583,44 @@ const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo
             setValue(campo1, ((parseFloat(valor1) + parseFloat(valor2)) / 2).toFixed(1));
 
             const diff = Math.abs(parseFloat(valor1) - parseFloat(valor2));
+            if (diff > 1 && valor3) {
+                setValue(campo1, ((parseFloat(valor1) + parseFloat(valor2) + parseFloat(valor3)) / 3).toFixed(1));
+                setMedia(((parseFloat(valor1) + parseFloat(valor2) + parseFloat(valor3)) / 3).toFixed(1));
+            }
             setMedirNovamente(diff > 1);
         } else {
             setMedia(""); // Limpa a média se o método for normal
             setValue(campo1, "");
         }
-    }, [valor1, valor2, metodo]);
+    }, [valor1, valor2, valor3, metodo]);
   
     return (
         <div className="input-group">
-        {/* Exibe dois campos de entrada se o método for 'media', ou um único campo caso contrário */}
-        {metodo === "media" ? (
-            <>
-                <input type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
-                <input type="number" step="0.1" className="form-control" value={valor2} onChange={(e) => setValor2(e.target.value)} />
-                {medirNovamente && (
-                    <input type="number" step="0.1" className="form-control" value={valor3} onChange={(e) => setValor3(e.target.value)} />
+            <div className="input-group">
+                {/* Exibe dois campos de entrada se o método for 'media', ou um único campo caso contrário */}
+                {metodo === "media" ? (
+                    <>
+                        <input type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
+                        <input type="number" step="0.1" className="form-control" value={valor2} onChange={(e) => setValor2(e.target.value)} />
+                        {medirNovamente && (
+                            <input type="number" step="0.1" className="form-control" value={valor3} onChange={(e) => setValor3(e.target.value)} />
+                        )}
+                        <input type="text" className="form-control bg-success" value={media} readOnly placeholder="Média" />
+                    </>
+                ) : (
+                    <input {...register(campo1, { required: true })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
                 )}
-                <input type="text" className="form-control" value={media} readOnly placeholder="Média" />
-            </>
-        ) : (
-            <input {...register(campo1, { required: true })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
-        )}
 
-        {metodo === "normal" && (
-            <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition(campo1)}>
-                <i className="bi bi-mic"></i>
-            </button>
-        )}
+                {metodo === "normal" && (
+                    <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition(campo1)}>
+                        <i className="bi bi-mic"></i>
+                    </button>
+                )}
+            </div>
 
+            {medirNovamente && (
+                <div id="mediahelp" className="form-text">3º medida necessária</div>
+            )}
         </div>
     );
 };
