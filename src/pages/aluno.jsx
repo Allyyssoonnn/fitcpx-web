@@ -45,7 +45,7 @@ function Aluno() {
 
                         <div className='col-sm-8'>
                             <h3>{aluno?.nome_aluno}</h3>
-                            <p>Idade: {calcularIdade(aluno?.data_nascimento_aluno)}</p>
+                            <p>{aluno?.etnia_aluno}, {calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
                             <p>Email: {aluno?.email_aluno}</p>
                             <Button variant="warning" onClick={() => navigate('/cadaluno', { state: { aluno } })}>
                                 <i className="bi bi-pencil me-2"></i>
@@ -89,7 +89,7 @@ function Aluno() {
                             </>
                         } >
                             <div>
-                                <button className='btn btn-primary' onClick={() => navigate('/cadavaliacao', { state: { cod_aluno: cod_aluno } })}>
+                                <button className='btn btn-primary' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Avaliação
                                 </button>
@@ -128,7 +128,7 @@ function Aluno() {
                                                                     <i className="bi bi-pencil"></i>
                                                                 </Button>
 
-                                                                <Button className="btn btn-white btn-sm" onClick={() => navigate('/avaliacao', { state: { avaliacao } })}>
+                                                                <Button className="btn btn-white btn-sm" onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}>
                                                                     <i className="bi bi-printer me-2"></i>
                                                                     Ver resultado
                                                                 </Button>

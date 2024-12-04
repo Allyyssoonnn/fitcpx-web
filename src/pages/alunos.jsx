@@ -51,7 +51,7 @@ function Alunos() {
                                                 />
                                                 <div className="col-md-3 d-flex flex-column">
                                                     <label>{aluno.nome_aluno}</label>
-                                                    <label className="text-muted">{idade > 0 ? `${idade} anos` : '-'}</label>
+                                                    <label className="text-muted">{aluno?.etnia_aluno ?? ''} - {idade > 0 ? `${idade} anos` : '-'}</label>
                                                 </div>
                                             </th>
                                             <td>

@@ -7,19 +7,22 @@ function Layout() {
     const { openedSidebar } = useToggleSidebar();
 
     return (
-        <div className={`page-wrapper ${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+        <div className={`${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper" data-layout="vertical" data-sidebartype="full">
             <Sidebar />
 
-            <div className="body-wrapper">
-                <Header />
+            <div className='page-wrapper'>
 
-                <Conteudo />
+                <div className="body-wrapper">
+                    <Header />
+                    
+                    <Conteudo/>
 
-                <div className="py-6 px-6 text-center">
-                    <p className="mb-0 fs-4">Desenvolvido por Alyson H.</p>
-                {/* <p class="mb-0 fs-4">Desenvolvido por <a href="https://adminmart.com/" target="_blank"
-                    class="pe-1 text-primary text-decoration-underline">Alyson H.</a>Distribuido por <a href="https://themewagon.com/" target="_blank"
-                    class="pe-1 text-primary text-decoration-underline">Milton G.</a></p> */}
+                    <div className="py-6 px-6 text-center">
+                        <p className="mb-0 fs-4">Desenvolvido por Ape Sys LTDA - 46.852.606.0001-56</p>
+                    {/* <p class="mb-0 fs-4">Desenvolvido por <a href="https://adminmart.com/" target="_blank"
+                        class="pe-1 text-primary text-decoration-underline">Alyson H.</a>Distribuido por <a href="https://themewagon.com/" target="_blank"
+                        class="pe-1 text-primary text-decoration-underline">Milton G.</a></p> */}
+                    </div>
                 </div>
             </div>
         </div>

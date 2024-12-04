@@ -72,8 +72,8 @@ function CadAluno() {
 
                 <div className="row g-3">
                     <div className="col-md-3">
-                        <label className="form-label">Nome*</label>
-                        <input { ...register('nome_aluno', { required: 'O nome é obrigatório' }) } type="text" className="form-control" />
+                        <label className="form-label fw-bold">Nome *</label>
+                        <input { ...register('nome_aluno', { required: 'O nome é obrigatório' }) } type="text" className="form-control"/>
                     </div>
                     <div className="col-md-3">
                         <label className="form-label">CPF</label>
@@ -84,18 +84,26 @@ function CadAluno() {
                         <input { ...register('rg_aluno') } type="text" className="form-control" />
                     </div>
                     <div className="col-md-3">
-                        <label className="form-label">Telefone</label>
-                        <input { ...register('telefone_aluno') } type="text" className="form-control" />
+                        <label className="form-label fw-bold">Telefone *</label>
+                        <input { ...register('telefone_aluno', { required: 'O telefone é obrigatório' }) } type="text" className="form-control" />
                     </div>
                     <div className="col-md-3">
-                        <label className="form-label">Data de nascimento</label>
-                        <input { ...register('data_nascimento_aluno') } type="date" className="form-control" />
+                        <label className="form-label fw-bold">Data de nascimento *</label>
+                        <input { ...register('data_nascimento_aluno', { required: 'A data de nascimento é obrigatória' }) } type="date" className="form-control" />
                     </div>
                     <div className="col-md-3">
-                        <label className="form-label">Sexo</label>
-                        <select {...register('sexo_aluno')} className="form-control">
+                        <label className="form-label fw-bold">Sexo *</label>
+                        <select {...register('sexo_aluno', { required: 'O sexo é obrigatório' })} className="form-control">
                             <option value="M">Masculino</option>
                             <option value="F">Feminino</option>
+                        </select>
+                    </div>
+                    <div className="col-md-3">
+                        <label className="form-label fw-bold">Etnia *</label>
+                        <select {...register('etnia_aluno', { required: 'A raça é obrigatória' })} className="form-control">
+                            <option value="Caucasiano">Caucasiano</option>
+                            <option value="Negro">Negro</option>
+                            <option value="Asiático">Asiático</option>
                         </select>
                     </div>
                 </div>
@@ -104,13 +112,13 @@ function CadAluno() {
 
                 <div className='row g-3'>
                     <div className="col-md-3">
-                        <label className="form-label">E-mail*</label>
+                        <label className="form-label fw-bold">E-mail *</label>
                         <input { ...register('email_aluno', { required: 'O e-mail é obrigatório' }) } type="email" className="form-control" aria-describedby="emailHelp" />
                         <div id="emailHelp" className="form-text">O aluno usará para acessar a plataforma</div>
                     </div>
                     <div className="col-md-3">
-                        <label className="form-label">Senha</label>
-                        <input { ...register('senha_aluno') } type="password" className="form-control" id="exampleInputPassword1" />
+                        <label className="form-label fw-bold">Senha *</label>
+                        <input { ...register('senha_aluno', { required: 'A senha é obrigatória' }) } type="password" className="form-control" id="exampleInputPassword1" />
                     </div>
                 </div>
 

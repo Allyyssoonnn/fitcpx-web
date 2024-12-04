@@ -1,23 +1,31 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Tab, Tabs } from "react-bootstrap";
+import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { setAvaliacao } from "../api/aluno";
+import { useQuery } from "react-query";
+import { getProtocolos } from '../api/usuario';
 
 function CadAvaliacao() {
     const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
-    const avaliacaoRecebida = location.state?.avaliacao;
+
+    const { data: protocolos } = useQuery({
+        queryKey: ['protocolo', ],
+        queryFn: () => getProtocolos(usuario.cod_usuario),
+        initialData: [],
+    });
 
     const formValues = watch();
-
+    const [aluno, setAluno] = useState();
     const [isListening, setIsListening] = useState(false);
-    const [activeTab, setActiveTab] = useState("dobras");
+    const [activeTab, setActiveTab] = useState("perimetro");
     const [perimetros, setPerimetros] = useState(perimetroFields);
     const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
     const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
@@ -28,11 +36,22 @@ function CadAvaliacao() {
 
     const [restaurouCache, setRestaurouCache] = useState(false);
 
+    //Trata configurações inicias como o carregamento da avaliação caso for uma edição
     useEffect(() => {
-        if (!formValues || !restaurouCache) return;
-        localStorage.setItem('avaliacaoCache', JSON.stringify(formValues));
-    }, [formValues, restaurouCache]);
-
+        const avaliacaoRecebida = location.state?.avaliacao;
+        const alunoRecebido = location.state?.aluno;
+        setValue("cod_usuario", usuario?.cod_usuario);
+        setValue("cod_aluno", alunoRecebido?.cod_aluno);
+        if (alunoRecebido) setAluno(alunoRecebido);
+        if (avaliacaoRecebida) {
+            Object.keys(avaliacaoRecebida).forEach((key) => {
+                setValue(key, avaliacaoRecebida[key]);
+            });
+            setProtocolo(avaliacaoRecebida.protocolo_dobras);
+        }
+    }, [location, setValue, usuario]);
+    
+    //Carrega o cache salvo caso necessário
     useEffect(() => {
         const avaliacaoCache = localStorage.getItem('avaliacaoCache');
         if (avaliacaoCache) {
@@ -40,33 +59,22 @@ function CadAvaliacao() {
             Object.keys(cacheAvaliacaoObj).forEach((key) => {
                 setValue(key, cacheAvaliacaoObj[key]); // Restaura cada campo
             });
-            setRestaurouCache(true);            
+            setRestaurouCache(true);     
         }
     }, [setValue]);
 
+    //Salva os campos em cache
     useEffect(() => {
-        setValue("cod_usuario", usuario?.cod_usuario);
-        setValue("cod_aluno", location.state?.cod_aluno);
-
-        if (avaliacaoRecebida) {
-            Object.keys(avaliacaoRecebida).forEach((key) => {
-                setValue(key, avaliacaoRecebida[key]);
-            });
-            setProtocolo(avaliacaoRecebida.protocolo_dobras);
-        }
-    }, [avaliacaoRecebida, setValue, usuario]);
-
-    async function confirma(data) {
-        await setAvaliacao(data);
-        navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
-    }
-
-    const loadFromLocalStorage = (key, setter) => {
-        const savedData = localStorage.getItem(key);
-        if (savedData) setter(JSON.parse(savedData));
-    };
+        if (!formValues || !restaurouCache) return;
+        localStorage.setItem('avaliacaoCache', JSON.stringify(formValues));
+    }, [formValues, restaurouCache]);
 
     useEffect(() => {
+        const loadFromLocalStorage = (key, setter) => {
+            const savedData = localStorage.getItem(key);
+            if (savedData) setter(JSON.parse(savedData));
+        };
+
         // Detecta se o navegador é compatível com SpeechRecognition
         const isSupported = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
         if (!isSupported) {
@@ -77,17 +85,20 @@ function CadAvaliacao() {
         loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
     }, []);
 
-    function normalizeString(str) {
-        return str
-        .normalize('NFD') // Normaliza para decompor os caracteres acentuados
-        .replace(/[\u0300-\u036f]/g, '') // Remove os acentos
-        .replace(/\s+/g, '_') // Substitui espaços por underscores
-        .toLowerCase(); // Converte para minúsculo
+    async function confirma(data) {
+        await setAvaliacao(data);
+        navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
     function processVoiceCommand(command) {
-        // const regex = /alterar\s(\w+)\spara\s(.*)/i;
-        // const regex = /alterar\s([\w\s_]+)\spara\s(.*)/i;
+        function normalizeString(str) {
+            return str
+            .normalize('NFD') // Normaliza para decompor os caracteres acentuados
+            .replace(/[\u0300-\u036f]/g, '') // Remove os acentos
+            .replace(/\s+/g, '_') // Substitui espaços por underscores
+            .toLowerCase(); // Converte para minúsculo
+        }
+
         const regex = /alterar\s([a-zA-Z0-9_áéíóúãõ\s]+)\spara\s(.*)/i;
         const match = command.normalize('NFD').replace(/[\u0300-\u036f]/g, '').match(regex);
         
@@ -123,24 +134,14 @@ function CadAvaliacao() {
         recognition.interimResults = false;
 
         recognition.start();
-
-        recognition.onstart = () => {
-            setIsListening(true);
-        };
-
+        recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             console.log('Comando reconhecido:', transcript);
             processVoiceCommand(transcript);
         };
-
-        recognition.onerror = (event) => {
-            console.error('Erro no reconhecimento de fala:', event.error);
-        };
-
-        recognition.onend = () => {
-            setIsListening(false);
-        };
+        recognition.onerror = (event) => console.error('Erro no reconhecimento de fala:', event.error);
+        recognition.onend = () => setIsListening(false);
     }
 
     const onDragEnd = (result) => {
@@ -193,11 +194,32 @@ function CadAvaliacao() {
             console.log('Comando reconhecido:', transcript);
             setValue(inputName, transcript); // Preenche o campo com o texto reconhecido
         };
-
-        recognition.onerror = (event) => {
-            console.error("Erro no reconhecimento de voz:", event.error);
-        };
+        recognition.onerror = (event) => console.error("Erro no reconhecimento de voz:", event.error);
     };
+
+    const tooltip = (
+        <Tooltip id="tooltip">
+            <div>
+                <strong>Simples:</strong> Será apresentado a distribuição corporal em gordura e massa magra, utilizando um menor número de medidas.
+            </div>
+            <p></p>
+            <div>
+                <strong>Complexo:</strong> Será detalhada a composição corporal em termos de gordura, músculo, osso e peso residual, utilizando um maior número de medidas.
+            </div>
+        </Tooltip>
+    );
+
+    const tooltipMetodo = (
+        <Tooltip id="tooltip">
+            <div>
+                <strong>Normal:</strong> Apenas um campo para preencher medidas é liberado.
+            </div>
+            <p></p>
+            <div>
+                <strong>Média:</strong> É liberado 2 campos para informar 2 medidas, caso a diferença seja mais de 1mm é aberto o terceiro campo para média.
+            </div>
+        </Tooltip>
+    );
 
     return (
         <div className="container-fluid">
@@ -261,37 +283,77 @@ function CadAvaliacao() {
 
                 <form className="card-body" onSubmit={handleSubmit(confirma)}>
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
-
+                    
                     <div className="row g-3">
                         <div className="col-md-3">
-                            <label className="form-label">Data da Avaliação*</label>
-                            <input
-                                {...register("data_avaliacao", {
-                                    required: "A data é obrigatória",
-                                })}
+                            <label className="form-label">Aluno</label>
+                            <input value={aluno?.nome_aluno} disabled className="form-control" />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label fw-bold">Protocolo *</label>
+                            <select {...register('cod_protocolo', { required: 'Protocolo necessário!' })} className="form-control" onChange={e => setProtocolo(Number(e.target.value))}>
+                                <option value="">Selecione um protocolo</option>
+                                {Object.keys(protocolos).map(categoria => (
+                                    <optgroup key={categoria} label={categoria}>
+                                        {protocolos[categoria].map(protocolo => (
+                                            <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
+                                                {protocolo.nome_protocolo}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label fw-bold">Tipo *
+                                <OverlayTrigger placement="bottom" overlay={tooltip}>
+                                    <i 
+                                        className="bi bi-info-circle ms-2 text-primary"
+                                        style={{ cursor: 'pointer' }}
+                                    ></i>
+                                </OverlayTrigger>
+                            </label>
+                            <select {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} className="form-control" onChange={e => setProtocolo(Number(e.target.value))}>
+                                <option value="simples">Simples</option>
+                                <option value="Completo">Complexo</option>
+                            </select>
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label fw-bold">Data da Avaliação *</label>
+                            <input {...register("data_avaliacao", { required: "A data é obrigatória" })}
                                 type="date"
                                 className="form-control"
                             />
                         </div>
                         <div className="col-md-3">
-                            <label className="form-label">Peso (kg)*</label>
-                            <input
-                                {...register("peso", {
-                                    required: "O peso é obrigatório",
-                                })}
-                                // type="number"
-                                // step="0.11,7"
+                            <label className="form-label fw-bold">Peso (kg) *</label>
+                            <input {...register("peso", { required: "O peso é obrigatório" })}
+                                type="number"
+                                step="0.01"
                                 className="form-control"
                             />
                         </div>
                         <div className="col-md-3">
-                            <label className="form-label">Altura (cm)*</label>
-                            <input
-                                {...register("altura", {
-                                    required: "A altura é obrigatória",
-                                })}
-                                // type="number"
-                                // step="0.11,2"
+                            <label className="form-label fw-bold">Altura (cm) *</label>
+                            <input {...register("altura", { required: "A altura é obrigatória" })}
+                                type="number"
+                                step="0.01"
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label">Metabolismo basal</label>
+                            <input {...register("metabolismo_basal", { required: "A altura é obrigatória" })}
+                                type="number"
+                                step="0.01"
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label">Gordura viceral</label>
+                            <input {...register("gordura_viceral", { required: "A altura é obrigatória" })}
+                                type="number"
+                                step="0.01"
                                 className="form-control"
                             />
                         </div>
@@ -306,27 +368,24 @@ function CadAvaliacao() {
                     >
                         <Tab eventKey="dobras" title={<><i className="bi bi-rulers me-2"></i>Dobras cutâneas</>}>
                             <div className="row g-3">
-                                <div className="col-md-8">
-                                    <label className="form-label">Protocolo</label>
-                                    <select {...register('protocolo_dobras')} className="form-control" onChange={e => setProtocolo(e.target.value)}>
-                                        <option value="">Selecione um protocolo</option>
-                                        <option value="todas">Todas dobras</option>
-                                        <option value="pollock_7">Pollock - 7 Dobras</option>
-                                        <option value="pollock_3">Pollock - 3 Dobras</option>
-                                        <option value="faulkner_4">Faulkner - 4 Dobras</option>
-                                        <option value="weltman">Weltman - Obesos</option>
-                                        <option value="deurenberg">Deurenberg</option>
-                                        <option value="guedes_3">Guedes - 3 Dobras</option>
-                                    </select>
-                                </div>
-
                                 <div className="col-md-3">
-                                    <label className="form-label">Metódo</label>
+                                    <label className="form-label">
+                                        Metódo
+
+                                        <OverlayTrigger placement="bottom" overlay={tooltipMetodo}>
+                                            <i
+                                                className="bi bi-info-circle ms-2 text-primary"
+                                                style={{ cursor: 'pointer' }}
+                                            ></i>
+                                        </OverlayTrigger>
+                                    </label>
                                     <select value={metodoDobras} onChange={e => setMetodoDobras(e.target.value)} className="form-control">
                                         <option value='normal'>Normal</option>
                                         <option value='media'>Média</option>
                                     </select>
                                 </div>
+
+                                <h5 className="text-muted">Dobras</h5>
 
                                 <Dobras protocolo={protocolo} metodoDobras={metodoDobras} register={register} setValue={setValue} startSpeechRecognition={startSpeechRecognition} />
                             </div>
@@ -336,7 +395,15 @@ function CadAvaliacao() {
                             <div className="row g-3">
                                 <DragDropContext onDragEnd={onDragEnd}>
                                     <div className="col-md-3">
-                                        <label className="form-label">Metódo</label>
+                                        <label className="form-label">
+                                            Metódo
+                                            <OverlayTrigger placement="bottom" overlay={tooltipMetodo}>
+                                                <i
+                                                    className="bi bi-info-circle ms-2 text-primary"
+                                                    style={{ cursor: 'pointer' }}
+                                                ></i>
+                                            </OverlayTrigger>    
+                                        </label>
                                         <select value={metodoPerimetro} onChange={e => setMetodoPerimetro(e.target.value)} className="form-control">
                                             <option value='normal'>Normal</option>
                                             <option value='media'>Média</option>
@@ -360,17 +427,8 @@ function CadAvaliacao() {
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                {/* <div className="input-group">
-                                                                    <input {...register(field.name)} type="number" step="0.1" className="form-control" />
-                                                                    <button type="button" className="btn btn-outline-success"
-                                                                        onClick={() => startSpeechRecognition(field.name)}
-                                                                    >
-                                                                        <i className="bi bi-mic"></i>
-                                                                    </button>
-                                                                </div> */}
                                                                 <MediaInput
                                                                     campo1={field.name}
-                                                                    campo2={field.name + "_2"}
                                                                     register={register}
                                                                     setValue={setValue}
                                                                     startSpeechRecognition={startSpeechRecognition}
@@ -402,17 +460,8 @@ function CadAvaliacao() {
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                {/* <div className="input-group">
-                                                                    <input {...register(field.name)} type="number" step="0.1" className="form-control" />
-                                                                    <button type="button" className="btn btn-outline-success"
-                                                                        onClick={() => startSpeechRecognition(field.name)}
-                                                                    >
-                                                                        <i className="bi bi-mic"></i>
-                                                                    </button>
-                                                                </div> */}
                                                                 <MediaInput
                                                                     campo1={field.name}
-                                                                    campo2={field.name + "_2"}
                                                                     register={register}
                                                                     setValue={setValue}
                                                                     startSpeechRecognition={startSpeechRecognition}
@@ -444,17 +493,8 @@ function CadAvaliacao() {
                                                                     <i className={`${field.icon} me-2`}></i>
                                                                     <label className="form-label">{field.label}</label>
                                                                 </div>
-                                                                {/* <div className="input-group">
-                                                                    <input {...register(field.name)} type="number" step="0.1" className="form-control" />
-                                                                    <button type="button" className="btn btn-outline-success"
-                                                                        onClick={() => startSpeechRecognition(field.name)}
-                                                                    >
-                                                                        <i className="bi bi-mic"></i>
-                                                                    </button>
-                                                                </div> */}
                                                                 <MediaInput
                                                                     campo1={field.name}
-                                                                    campo2={field.name + "_2"}
                                                                     register={register}
                                                                     setValue={setValue}
                                                                     startSpeechRecognition={startSpeechRecognition}
@@ -529,29 +569,31 @@ function CadAvaliacao() {
 }
 
 const Dobras = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras }) => {
+    console.log(protocolo);
+    
+    //Evita uma renderização caso protocolo não esteja definido
+    if (!protocolo) return <></>;
+    console.log('Renderizou dobras' + metodoDobras + protocolo);    
+
+    const protocolosCampos = {
+        1: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"],
+        2: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
+        3: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
+        4: ["peitoral", "abdominal", "coxa"],
+        5: []
+    };
 
     return (
         <>
-            {["todas", "pollock_7", "pollock_3", "weltman", "faulkner_4", "guedes_3"].includes(protocolo) && (
+            {[1, 2, 3, 4, 5].includes(protocolo) && (
                 <>
                     {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"]
-                        .filter((campo) => {
-                            const protocolosCampos = {
-                                todas: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"],
-                                pollock_7: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
-                                pollock_3: ["peitoral", "abdominal", "coxa"],
-                                weltman: ["abdominal"],
-                                faulkner_4: ["triciptal", "subescapular", "abdominal", "supra_iliaca"],
-                                guedes_3: ["triciptal", "abdominal", "supra_iliaca"],
-                            };
-                            return protocolosCampos[protocolo]?.includes(campo);
-                        })
+                        .filter((campo) => protocolosCampos[protocolo]?.includes(campo))
                         .map((campo) => (
                             <div className="col-md-4" key={campo}>
                                 <label className="form-label">{campo.replace("_", " ")} (mm)</label>
                                 <MediaInput
                                     campo1={campo}
-                                    campo2={campo + "_2"}
                                     register={register}
                                     setValue={setValue}
                                     startSpeechRecognition={startSpeechRecognition}
@@ -593,7 +635,7 @@ const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo
             setValue(campo1, "");
         }
     }, [valor1, valor2, valor3, metodo]);
-  
+
     return (
         <div className="input-group">
             <div className="input-group">
@@ -610,6 +652,13 @@ const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo
                 ) : (
                     <input {...register(campo1, { required: true })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
                 )}
+                <input
+                    {...register(campo1, { required: true })}
+                    type="number"
+                    step="0.1"
+                    className='form-control d-none'
+                    value={valor1} onChange={(e) => setValor1(e.target.value)}
+                />
 
                 {metodo === "normal" && (
                     <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition(campo1)}>
@@ -721,7 +770,7 @@ function TabReferencia2() {
     )
 }
 
-export const perimetroFields = [
+const perimetroFields = [
     { name: 'pescoco', label: 'Pescoço (cm)', icon: 'bi bi-body' },
     { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
     { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
@@ -732,7 +781,7 @@ export const perimetroFields = [
     { name: 'quadril', label: 'Quadril (cm)', icon: 'bi bi-body' },
 ];
 
-export const perimetroDireitoFields = [
+const perimetroDireitoFields = [
     { name: 'braco_relaxado_direito', label: 'Braço relaxado direito (cm)', icon: 'bi bi-body' },
     { name: 'braco_contraido_direito', label: 'Braço contraído direito (cm)', icon: 'bi bi-body' },
     { name: 'antebraco_direito', label: 'Antebraço direito (cm)', icon: 'bi bi-rulers' },
@@ -740,7 +789,7 @@ export const perimetroDireitoFields = [
     { name: 'panturrilha_direita', label: 'Panturrilha direita (cm)', icon: 'bi bi-shoe-prints' },
 ];
 
-export const perimetroEsquerdoFields = [
+const perimetroEsquerdoFields = [
     { name: 'braco_relaxado_esquerdo', label: 'Braço relaxado esquerdo (cm)', icon: 'bi bi-body' },
     { name: 'braco_contraido_esquerdo', label: 'Braço contraído esquerdo (cm)', icon: 'bi bi-body' },
     { name: 'antebraco_esquerdo', label: 'Antebraço esquerdo (cm)', icon: 'bi bi-rulers' },

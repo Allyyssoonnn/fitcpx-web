@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -15,18 +14,9 @@ import { getAlunos } from "../api/aluno";
 
 
 function Agenda() {
-    const navigate = useNavigate();
-
     return (
         <div className="container-fluid">
             <div className="card">
-                <div className="card-header">
-                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
-                        <i className="bi bi-backspace me-2"></i>
-                        Voltar
-                    </button>
-                </div>
-
                 <div className="card-body calender-sidebar app-calendar">
                     <Calendario />
                 </div>
@@ -37,7 +27,7 @@ function Agenda() {
 
 function Calendario() {
     const [usuario] = useRecoilState(stateUsuario);
-    const { handleSubmit, register, setValue, watch } = useForm();
+    const { handleSubmit, register, setValue } = useForm();
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
         queryFn: () => getAlunos(usuario.cod_usuario),

@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { stateApp, useToggleSidebar } from "../states/states";
 import { useRecoilState } from "recoil";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar() {
+    const navigate = useNavigate();
     const { toggleSidebar } = useToggleSidebar();
     const [{ openedSidebar }] = useRecoilState(stateApp);
 
@@ -12,16 +14,16 @@ function Sidebar() {
     }, []);
 
     return (
-        <aside className="left-sidebar">
+        <aside className="left-sidebar with-vertical">
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between">
                     <a href="/" className="text-nowrap logo-img ">
                         <img src="../assets/images/logos/log.png" alt="" width='200' style={{ padding: '10px' }} />
                         {/* <h1>EducApp</h1> */}
                     </a>
-                    <div onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-                        <i className="ti ti-x fs-8"></i>
-                    </div>
+                    <a onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                        <i className="bi bi-x fs-8"></i>
+                    </a>
                 </div>
 
                 <nav className="sidebar-nav scroll-sidebar" data-simplebar="">
@@ -32,34 +34,28 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a className="sidebar-link" href="/" aria-expanded="false">
-                                <span>
-                                <iconify-icon icon="solar:home-smile-bold-duotone" className="fs-6"></iconify-icon>
-                                </span>
-                                <span className="hide-menu">Dashboard</span>
+                            <a href="#" className="sidebar-link p-3" onClick={() => navigate('/')} aria-expanded="false">
+                                <i className="bi bi-house-fill fs-6"></i>
+                                <span className="hide-menu ps-1">Dashboard</span>
                             </a>
                         </li>
 
                         <li className="nav-small-cap">
                             <i className="ti ti-dots nav-small-cap-icon fs-6"></i>
-                            <span className="hide-menu">Menu</span>
+                            <span className="hide-menu ps-1">Menu</span>
                         </li>
 
                         <li className="sidebar-item">
-                            <a className="sidebar-link" href="/alunos" aria-expanded="false">
-                                <span>
-                                <iconify-icon icon="solar:layers-minimalistic-bold-duotone" className="fs-6"></iconify-icon>
-                                </span>
-                                <span className="hide-menu">Lista de alunos</span>
+                            <a href="#" className="sidebar-link p-3" onClick={() => navigate('/alunos')} aria-expanded="false">
+                                <i className="bi bi-person-lines-fill fs-6"></i>
+                                <span className="hide-menu ps-1">Lista de alunos</span>
                             </a>
                         </li>
 
                         <li className="sidebar-item">
-                            <a className="sidebar-link" href="/agenda" aria-expanded="false">
-                                <span>
-                                <iconify-icon icon="tabler:calendar-check" className="fs-6"></iconify-icon>
-                                </span>
-                                <span className="hide-menu">Agenda</span>
+                            <a href="#" className="sidebar-link p-3" onClick={() => navigate('/agenda')} aria-expanded="false">
+                                <i className="bi bi-calendar-check-fill fs-6"></i>
+                                <span className="hide-menu ps-1">Agenda</span>
                             </a>
                         </li>
 
