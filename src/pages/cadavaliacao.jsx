@@ -31,6 +31,7 @@ function CadAvaliacao() {
     const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
     const [metodoDobras, setMetodoDobras] = useState('normal');
     const [metodoPerimetro, setMetodoPerimetro] = useState('normal');
+    const [tipoAvaliacao, setTipoAvaliacao] = useState('simples');
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
     const [protocolo, setProtocolo] = useState("");
 
@@ -313,9 +314,9 @@ function CadAvaliacao() {
                                     ></i>
                                 </OverlayTrigger>
                             </label>
-                            <select {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} className="form-control" onChange={e => setProtocolo(Number(e.target.value))}>
-                                <option value="simples">Simples</option>
-                                <option value="Completo">Complexo</option>
+                            <select {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} value={tipoAvaliacao} onChange={e => setTipoAvaliacao(e.target.value)} className="form-control">
+                                <option value='simples'>Simples</option>
+                                <option value='complexo'>Complexo</option>
                             </select>
                         </div>
                         <div className="col-md-3">
@@ -387,7 +388,7 @@ function CadAvaliacao() {
 
                                 <h5 className="text-muted">Dobras</h5>
 
-                                <Dobras protocolo={protocolo} metodoDobras={metodoDobras} register={register} setValue={setValue} startSpeechRecognition={startSpeechRecognition} />
+                                <Dobras tipoAvaliacao={tipoAvaliacao} protocolo={protocolo} metodoDobras={metodoDobras} register={register} setValue={setValue} startSpeechRecognition={startSpeechRecognition} />
                             </div>
                         </Tab>
                         
@@ -568,27 +569,30 @@ function CadAvaliacao() {
     );
 }
 
-const Dobras = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras }) => {
-    console.log(protocolo);
-    
+const Dobras = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras, tipoAvaliacao }) => {    
     //Evita uma renderização caso protocolo não esteja definido
     if (!protocolo) return <></>;
-    console.log('Renderizou dobras' + metodoDobras + protocolo);    
 
     const protocolosCampos = {
-        1: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"],
-        2: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
-        3: ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca"],
-        4: ["peitoral", "abdominal", "coxa"],
-        5: []
+        1: [],
+        2: ["subescapular", "triciptal", "peitoral", "axilar_media", "supra_iliaca", "coxa", "supra_iliaca", "abdominal", "coxa"],
+        3: ["supra_iliaca", "peitoral", "coxa"],
+        4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
+        5: ["triciptal", "coxa", "panturrilha"],
     };
+
+    const dobrasDisponiveis = ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"];
+
+    const camposParaExibir = tipoAvaliacao === "complexo" 
+        ? [...new Set([...protocolosCampos[protocolo], "triciptal", "coxa", "panturrilha"])]
+        : protocolosCampos[protocolo] || [];
 
     return (
         <>
             {[1, 2, 3, 4, 5].includes(protocolo) && (
                 <>
-                    {["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"]
-                        .filter((campo) => protocolosCampos[protocolo]?.includes(campo))
+                    {dobrasDisponiveis
+                        .filter((campo) => camposParaExibir?.includes(campo))
                         .map((campo) => (
                             <div className="col-md-4" key={campo}>
                                 <label className="form-label">{campo.replace("_", " ")} (mm)</label>
@@ -650,10 +654,10 @@ const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo
                         <input type="text" className="form-control bg-success" value={media} readOnly placeholder="Média" />
                     </>
                 ) : (
-                    <input {...register(campo1, { required: true })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
+                    <input {...register(campo1, { required: 'Dobras obrigatórias!' })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
                 )}
                 <input
-                    {...register(campo1, { required: true })}
+                    {...register(campo1, { required: 'Dobras obrigatórias!' })}
                     type="number"
                     step="0.1"
                     className='form-control d-none'

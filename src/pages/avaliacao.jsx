@@ -133,8 +133,8 @@ function Avaliacao() {
 
                     <AreaMagraGorda avaliacao={avaliacao} />
                     <Perimetro avaliacao={avaliacao} />
-                    <Diametro avaliacao={avaliacao} />
                     <Dobras avaliacao={avaliacao} />
+                    <Diametro avaliacao={avaliacao} />
                 </div>
             </div>
         </div>
@@ -228,13 +228,14 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
             <div className="card-body">
                 <div style={{ height: '400px' }}>
                     <ResponsivePie
+                        enableArcLinkLabels={window.innerWidth < 900 ? false : true}
                         data={[
                             { id: 'Gordura', label: 'Gordura', value: calculaPorcentagemGordura(aluno, avaliacao), color: '#FF9999' },
                             { id: 'Músculo', label: 'Músculo', value: calculaPorcentagemMusculo(aluno, avaliacao), color: '#99FF99' },
                             { id: 'Osso', label: 'Osso', value: calculaPorcentagemOsseo(avaliacao), color: '#CCCCCC' },
                             { id: 'Residual', label: 'Residual', value: calculaPorcentagemResidual(aluno, avaliacao), color: '#99CCFF' },
                         ]}
-                        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+                        margin={window.innerWidth > 900 ? { top: 40, right: 80, bottom: 80, left: 80 } : {}}
                         innerRadius={0.5}
                         padAngle={0.7}
                         cornerRadius={3}
@@ -248,6 +249,21 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
                         radialLabelsTextColor="#333333"
                         // valueFormat={value => `${Number(value)} %`}
                         activeOuterRadiusOffset={8}
+                        legends={window.innerWidth < 900 ? [
+                            {
+                                anchor: 'top-left',
+                                direction: 'column',
+                                justify: false,
+                                translateX: 0,
+                                translateY: 0,
+                                itemWidth: 100,
+                                itemHeight: 20,
+                                itemsSpacing: 0,
+                                symbolSize: 20,
+                                itemDirection: 'left-to-right'
+                            }
+                        ] : []}
+                        valueFormat={(value) => `${Number(value)}%`}
                     />
                 </div>
                 
@@ -425,7 +441,7 @@ function Perimetro({ avaliacao }) {
     return (
         <div className="card no-print">
             <div className="card-header">
-                <h4>Perímetro</h4>
+                <h4>Perimetria (cm)</h4>
             </div>
 
             <div className="card-body">
@@ -475,7 +491,7 @@ function Diametro({ avaliacao }) {
     return (
         <div className="card no-print">
             <div className="card-header">
-                <h4>Diamêtro</h4>
+                <h4>Diamêtros Osséos</h4>
             </div>
 
             <div className="card-body">
@@ -493,22 +509,28 @@ function Dobras({ avaliacao }) {
     return (
         <div className="card no-print">
             <div className="card-header">
-                <h4>Dobras cutâneas</h4>
+                <h4>Dobras Cutâneas</h4>
             </div>
             
             <div className="card-body">
-                <ul className="mt-3">
-                    <li><strong>Triciptal:</strong> {avaliacao.triciptal || '-'} cm</li>
-                    <li><strong>Peitoral:</strong> {avaliacao.peitoral || '-'} cm</li>
-                    <li><strong>Subescapular:</strong> {avaliacao.subescapular || '-'} cm</li>
-                    <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || '-'} cm</li>
-                    <li><strong>Abdominal:</strong> {avaliacao.abdominal || '-'} cm</li>
-                    <li><strong>Coxa:</strong> {avaliacao.coxa || '-'} cm</li>
-                    <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || '-'} cm</li>
-                    <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || '-'} cm</li>
-                    <li><strong>Biciptal:</strong> {avaliacao.biciptal || '-'} cm</li>
-                    <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || '-'} cm</li>
-                </ul>
+                <row className="row g-3">
+                    <ul className="mt-3 col-md-3">
+                        <li><strong>Peitoral:</strong> {avaliacao.peitoral || '-'} cm</li>
+                        <li><strong>Bíceps:</strong> {avaliacao.biciptal || '-'} cm</li>
+                        <li><strong>Tríceps:</strong> {avaliacao.triciptal || '-'} cm</li>
+                        <li><strong>Subescapular:</strong> {avaliacao.subescapular || '-'} cm</li>
+                        <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || '-'} cm</li>
+                        <li><strong>Abdominal:</strong> {avaliacao.abdominal || '-'} cm</li>
+                        <li><strong>Coxa:</strong> {avaliacao.coxa || '-'} cm</li>
+                        <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || '-'} cm</li>
+                        <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || '-'} cm</li>
+                        <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || '-'} cm</li>
+                    </ul>
+
+                    <div className="mt-3 col-md-3">
+                        <img style={{ height: '400px' }} src="/assets/images/app/dobras.png" />
+                    </div>
+                </row>
             </div>
         </div>
     )
