@@ -1,3 +1,13 @@
 .left-sidebar {
-  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 4px 0 8px rgba(0, 0, 0, 0.05); */
+  box-shadow: 4px 0 8px rgba(133, 212, 70, 0.05);
+}
+
+.navbar-expand-lg {
+  flex-wrap: nowrap;
+}
+
+.cropper-crop-box,
+.cropper-view-box {
+    border-radius: 50%; /* Define o círculo */
 }

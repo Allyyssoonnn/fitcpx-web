@@ -6,6 +6,7 @@ import Aluno from "../pages/aluno";
 import CadAvaliacao from "../pages/cadavaliacao";
 import Avaliacao from "../pages/avaliacao";
 import Agenda from "../pages/agenda";
+import CompareAvaliacao from "../pages/compareAvaliacao";
 
 
 const routes = [
@@ -16,6 +17,7 @@ const routes = [
     { path: '/cadaluno', name: 'Alunos', element: CadAluno },
     { path: '/cadavaliacao', name: 'Alunos', element: CadAvaliacao },
     { path: '/avaliacao', name: 'Avaliação', element: Avaliacao },
+    { path: '/compareavaliacao', name: 'Avaliação', element: CompareAvaliacao },
     { path: '/minhaconta', name: 'Alunos', element: MinhaConta },
     { path: '/agenda', name: 'Agenda', element: Agenda },
 ]

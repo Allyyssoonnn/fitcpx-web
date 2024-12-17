@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaDensidade, calculaKGGordura, calculaKGMCM, calculaKGMusculo, calculaKGOsseo, calculaKGResidual, calculaPorcentagemGordura, calculaPorcentagemMCM, calculaPorcentagemMusculo, calculaPorcentagemOsseo, calculaPorcentagemResidual, getAreaMagraGorda, getIMC } from "../utils";
+import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMusculo, calculaKGOsseo, calculaKGResidual, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMusculo, calculaPorcentagemOsseo, calculaPorcentagemResidual, getAreaMagraGorda, getIMC, verificaCamposProtocolo } from "../utils";
 import { useQuery } from "react-query";
 import { getProtocolos } from "../api/usuario";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveBar } from "@nivo/bar";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function Avaliacao() {
     const navigate = useNavigate();
@@ -15,19 +16,20 @@ function Avaliacao() {
     const [usuario] = useRecoilState(stateUsuario);
 
     const { data: protocolos } = useQuery({
-        queryKey: ['protocolo', ],
+        queryKey: ['protocolo'],
         queryFn: () => getProtocolos(usuario.cod_usuario),
         initialData: [],
     });
 
     const [avaliacao, setAvaliacao] = useState({});
-    const [aluno, setAluno] = useState({});
+    const [aluno, setAluno] = useState({});    
 
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
         avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate('/alunos');        
         alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
     if (!avaliacao) {
@@ -65,11 +67,15 @@ function Avaliacao() {
             avaliacao.biciptal,
             avaliacao.panturrilha,
         ];
-        
-        return dobras.reduce((total, valor) => {
-            return total + (parseFloat(valor) || 0);
-        }, 0);
+        const result = dobras.reduce((total, valor) => total + (parseFloat(valor) || 0), 0);
+        return result.toFixed(2);
     }
+
+    const tooltip = (
+        <Tooltip id="tooltip">
+            <div>Somente estará disponível os protocolos cujo os campos obrigatórios estiverem preenchidos na avaliação.</div>
+        </Tooltip>
+    );
 
     return (
         <div className="container-fluid">
@@ -79,9 +85,18 @@ function Avaliacao() {
                         <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
                             <i className="bi bi-arrow-left-circle me-2"></i> Voltar
                         </button>
-                        <button onClick={imprimirResultados} className="btn btn-primary mb-3">
-                            <i className="bi bi-printer me-2"></i> Imprimir
-                        </button>
+
+                        <div className="d-flex gap-2">
+                            <button onClick={() => navigate('/compareavaliacao', { state: { avaliacao, aluno } })} className="btn btn-warning mb-3">
+                                <i className="bi bi-graph-up-arrow"></i>
+                                <span className="d-none d-md-inline-block ms-2">Comparar</span>
+                            </button>
+
+                            <button onClick={imprimirResultados} className="btn btn-primary mb-3">
+                                <i className="bi bi-printer"></i>
+                                <span className="d-none d-md-inline-block ms-2">Imprimir</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -92,24 +107,39 @@ function Avaliacao() {
                         </div>
 
                         <div className="card-body">
-                            <div className="col-md-5 no-print">
+                            <div className="col-md-5 no-print mb-3">
                                 <label className="form-label">Protocolo</label>
-                                <select onChange={e => setAvaliacao(prev => ({ ...prev, cod_protocolo: Number(e.target.value) }))} value={avaliacao.cod_protocolo} className="form-control">
-                                    <option value="">Selecione um protocolo</option>
-                                    {Object.keys(protocolos).map(categoria => (
-                                        <optgroup key={categoria} label={categoria}>
-                                            {protocolos[categoria].map(protocolo => (
-                                                <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
-                                                    {protocolo.nome_protocolo}
-                                                </option>
-                                            ))}
-                                        </optgroup>
-                                    ))}
-                                </select>
+
+                                <div className="d-flex align-items-center">
+                                    <select onChange={e => setAvaliacao(prev => ({ ...prev, cod_protocolo: Number(e.target.value) }))} value={avaliacao.cod_protocolo} className="form-control">
+                                        <option value="">Selecione um protocolo</option>
+                                        {Object.keys(protocolos).map(categoria => (
+                                            <optgroup key={categoria} label={categoria}>
+                                                {protocolos[categoria].map(protocolo => (
+                                                    <option disabled={!verificaCamposProtocolo(avaliacao, protocolo.cod_protocolo)}
+                                                        className={`${verificaCamposProtocolo(avaliacao, protocolo.cod_protocolo) ? '' : 'bg-light'}`}
+                                                        key={protocolo.cod_protocolo}
+                                                        value={protocolo.cod_protocolo}
+                                                    >
+                                                        {protocolo.nome_protocolo}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+                                        ))}
+                                    </select>
+
+                                    <OverlayTrigger placement="bottom" overlay={tooltip}>
+                                        <i 
+                                            className="bi bi-info-circle ms-2 text-primary"
+                                            style={{ cursor: 'pointer' }}
+                                        ></i>
+                                    </OverlayTrigger>
+                                </div>
                             </div>
 
                             {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
                             <p><strong>Data da Avaliação:</strong> {avaliacao.data_avaliacao}</p>
+                            <p><strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}</p>
                             <p><strong>Peso:</strong> {avaliacao.peso} kg</p>
                             <p><strong>Altura:</strong> {avaliacao.altura} cm</p>
                             <p><strong>Sexo:</strong> {aluno.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
@@ -187,7 +217,7 @@ function AreaMagraGorda({ avaliacao }) {
                             {resultados?.coxa?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
-                                    <th>{campo.valor}</th>
+                                    <th>{campo.valor} {campo.prefix}</th>
                                 </tr>
                             ))}
                         </tbody>
@@ -206,7 +236,7 @@ function AreaMagraGorda({ avaliacao }) {
                             {resultados?.panturrilha?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
-                                    <th>{campo.valor}</th>
+                                    <th>{campo.valor} {campo.prefix}</th>
                                 </tr>
                             ))}
                         </tbody>
@@ -229,11 +259,14 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
                 <div style={{ height: '400px' }}>
                     <ResponsivePie
                         enableArcLinkLabels={window.innerWidth < 900 ? false : true}
-                        data={[
+                        data={avaliacao.tipo_avaliacao === 'complexo' ? [
                             { id: 'Gordura', label: 'Gordura', value: calculaPorcentagemGordura(aluno, avaliacao), color: '#FF9999' },
                             { id: 'Músculo', label: 'Músculo', value: calculaPorcentagemMusculo(aluno, avaliacao), color: '#99FF99' },
                             { id: 'Osso', label: 'Osso', value: calculaPorcentagemOsseo(avaliacao), color: '#CCCCCC' },
                             { id: 'Residual', label: 'Residual', value: calculaPorcentagemResidual(aluno, avaliacao), color: '#99CCFF' },
+                        ] : [
+                            { id: 'Gordura', label: 'Gordura', value: calculaPorcentagemGordura(aluno, avaliacao), color: '#FF9999' },
+                            { id: 'Massa magra', label: 'Massa magra', value: calculaPorcentagemMassaMagra(aluno, avaliacao), color: '#99FF99' },
                         ]}
                         margin={window.innerWidth > 900 ? { top: 40, right: 80, bottom: 80, left: 80 } : {}}
                         innerRadius={0.5}
@@ -280,26 +313,36 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
                             <th>{calculaKGGordura(aluno, avaliacao)} KG</th>
                             <th>{calculaPorcentagemGordura(aluno, avaliacao)} %</th>
                         </tr>
-                        <tr>
-                            <th>Musc.</th>
-                            <th>{calculaKGMusculo(aluno, avaliacao)} KG</th>
-                            <th>{calculaPorcentagemMusculo(aluno, avaliacao)} %</th>
-                        </tr>
-                        <tr>
-                            <th>Óssea.</th>
-                            <th>{calculaKGOsseo(avaliacao)} KG</th>
-                            <th>{calculaPorcentagemOsseo(avaliacao)} %</th>
-                        </tr>
-                        <tr>
-                            <th>Resi.</th>
-                            <th>{calculaKGResidual(aluno, avaliacao)} KG</th>
-                            <th>{calculaPorcentagemResidual(aluno, avaliacao)} %</th>
-                        </tr>
-                        <tr>
-                            <th>MCM</th>
-                            <th>{calculaKGMCM(aluno, avaliacao)} KG</th>
-                            <th>{calculaPorcentagemMCM(aluno, avaliacao)} %</th>
-                        </tr>
+                        {avaliacao.tipo_avaliacao === 'complexo' ? (
+                            <>
+                                <tr>
+                                    <th>Musc.</th>
+                                    <th>{calculaKGMusculo(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemMusculo(aluno, avaliacao)} %</th>
+                                </tr>
+                                <tr>
+                                    <th>Óssea.</th>
+                                    <th>{calculaKGOsseo(avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemOsseo(avaliacao)} %</th>
+                                </tr>
+                                <tr>
+                                    <th>Resi.</th>
+                                    <th>{calculaKGResidual(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemResidual(aluno, avaliacao)} %</th>
+                                </tr>
+                                <tr>
+                                    <th>MCM</th>
+                                    <th>{calculaKGMCM(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemMCM(aluno, avaliacao)} %</th>
+                                </tr>
+                            </>
+                        ) : (
+                            <tr>
+                                <th>Massa Magra</th>
+                                <th>{calculaKGMassaMagra(aluno, avaliacao)} KG</th>
+                                <th>{calculaPorcentagemMassaMagra(aluno, avaliacao)} %</th>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -338,7 +381,7 @@ function SimetriaMembro({ avaliacao }) {
     return (
         <div className="card table-responsive">
             <div className="card-header">
-                <h4>Simetria dos membros</h4>
+                <h4>Simetria dos membros (cm)</h4>
             </div>
 
             <div className="card-body">
@@ -399,7 +442,7 @@ function SimetriaMembro({ avaliacao }) {
 
                     <tbody>
                         <tr>
-                            <th>Braço (cm)</th>
+                            <th>Braço</th>
                             <th>{avaliacao.braco_relaxado_direito || '-'}</th>
                             <th
                                 className={getDifferenceClass(avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito)}
@@ -407,7 +450,7 @@ function SimetriaMembro({ avaliacao }) {
                             <th>{avaliacao.braco_relaxado_esquerdo || '-'}</th>
                         </tr>
                         <tr>
-                            <th>Braço contraido (cm)</th>
+                            <th>Braço contraido</th>
                             <th>{avaliacao.braco_contraido_direito || '-'}</th>
                             <th
                                 className={getDifferenceClass(avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo)}
@@ -415,7 +458,7 @@ function SimetriaMembro({ avaliacao }) {
                             <th>{avaliacao.braco_contraido_esquerdo || '-'}</th>
                         </tr>
                         <tr>
-                            <th>Antebraço (cm)</th>
+                            <th>Antebraço</th>
                             <th>{avaliacao.antebraco_direito || '-'}</th>
                             <th
                                 className={getDifferenceClass(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo)}
@@ -423,7 +466,7 @@ function SimetriaMembro({ avaliacao }) {
                             <th>{avaliacao.antebraco_esquerdo || '-'}</th>
                         </tr>
                         <tr>
-                            <th>Coxa (cm)</th>
+                            <th>Coxa</th>
                             <th>{avaliacao.coxa_direita || '-'}</th>
                             <th
                                 className={getDifferenceClass(avaliacao.coxa_direita - avaliacao.coxa_esquerda)}
@@ -449,36 +492,36 @@ function Perimetro({ avaliacao }) {
                     <div className="card col-md-4">
                         <h6>Geral</h6>
                         <ul>
-                            <li><strong>Pescoço:</strong> {avaliacao.pescoco || '-'} cm</li>
-                            <li><strong>Ombro:</strong> {avaliacao.ombro || '-'} cm</li>
-                            <li><strong>Tórax Inspirado:</strong> {avaliacao.torax_inspirado || '-'} cm</li>
-                            <li><strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || '-'} cm</li>
-                            <li><strong>Punho:</strong> {avaliacao.punho || '-'} cm</li>
-                            <li><strong>Cintura:</strong> {avaliacao.cintura || '-'} cm</li>
-                            <li><strong>Abdômen:</strong> {avaliacao.abdomen || '-'} cm</li>
-                            <li><strong>Quadril:</strong> {avaliacao.quadril || '-'} cm</li>
+                            <li><strong>Pescoço:</strong> {avaliacao.pescoco || 'Não informado'}</li>
+                            <li><strong>Ombro:</strong> {avaliacao.ombro || 'Não informado'}</li>
+                            <li><strong>Tórax Inspirado:</strong> {avaliacao.torax_inspirado || 'Não informado'}</li>
+                            <li><strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || 'Não informado'}</li>
+                            <li><strong>Punho:</strong> {avaliacao.punho || 'Não informado'}</li>
+                            <li><strong>Cintura:</strong> {avaliacao.cintura || 'Não informado'}</li>
+                            <li><strong>Abdômen:</strong> {avaliacao.abdomen || 'Não informado'}</li>
+                            <li><strong>Quadril:</strong> {avaliacao.quadril || 'Não informado'}</li>
                         </ul>
                     </div>
 
                     <div className="card col-md-4">
                         <h6>Lado direito</h6>
                         <ul>
-                            <li><strong>Braço Relaxado Direito:</strong> {avaliacao.braco_relaxado_direito || '-'} cm</li>
-                            <li><strong>Braço Contraído Direito:</strong> {avaliacao.braco_contraido_direito || '-'} cm</li>
-                            <li><strong>Antebraço Direito:</strong> {avaliacao.antebraco_direito || '-'} cm</li>
-                            <li><strong>Coxa Direita:</strong> {avaliacao.coxa_direita || '-'} cm</li>
-                            <li><strong>Panturrilha Direita:</strong> {avaliacao.panturrilha_direita || '-'} cm</li>
+                            <li><strong>Braço Relaxado Direito:</strong> {avaliacao.braco_relaxado_direito || 'Não informado'}</li>
+                            <li><strong>Braço Contraído Direito:</strong> {avaliacao.braco_contraido_direito || 'Não informado'}</li>
+                            <li><strong>Antebraço Direito:</strong> {avaliacao.antebraco_direito || 'Não informado'}</li>
+                            <li><strong>Coxa Direita:</strong> {avaliacao.coxa_direita || 'Não informado'}</li>
+                            <li><strong>Panturrilha Direita:</strong> {avaliacao.panturrilha_direita || 'Não informado'}</li>
                         </ul>
                     </div>
 
                     <div className="card col-md-4">
                         <h6>Lado esquerdo</h6>
                         <ul>
-                            <li><strong>Braço Relaxado Esquerdo:</strong> {avaliacao.braco_relaxado_esquerdo || '-'} cm</li>
-                            <li><strong>Braço Contraído Esquerdo:</strong> {avaliacao.braco_contraido_esquerdo || '-'} cm</li>
-                            <li><strong>Antebraço Esquerdo:</strong> {avaliacao.antebraco_esquerdo || '-'} cm</li>
-                            <li><strong>Coxa Esquerda:</strong> {avaliacao.coxa_esquerda || '-'} cm</li>
-                            <li><strong>Panturrilha Esquerda:</strong> {avaliacao.panturrilha_esquerda || '-'} cm</li>
+                            <li><strong>Braço Relaxado Esquerdo:</strong> {avaliacao.braco_relaxado_esquerdo || 'Não informado'}</li>
+                            <li><strong>Braço Contraído Esquerdo:</strong> {avaliacao.braco_contraido_esquerdo || 'Não informado'}</li>
+                            <li><strong>Antebraço Esquerdo:</strong> {avaliacao.antebraco_esquerdo || 'Não informado'}</li>
+                            <li><strong>Coxa Esquerda:</strong> {avaliacao.coxa_esquerda || 'Não informado'}</li>
+                            <li><strong>Panturrilha Esquerda:</strong> {avaliacao.panturrilha_esquerda || 'Não informado'}</li>
                         </ul>
                     </div>
                 </div>
@@ -509,26 +552,26 @@ function Dobras({ avaliacao }) {
     return (
         <div className="card no-print">
             <div className="card-header">
-                <h4>Dobras Cutâneas</h4>
+                <h4>Dobras Cutâneas (cm)</h4>
             </div>
             
             <div className="card-body">
                 <row className="row g-3">
                     <ul className="mt-3 col-md-3">
-                        <li><strong>Peitoral:</strong> {avaliacao.peitoral || '-'} cm</li>
-                        <li><strong>Bíceps:</strong> {avaliacao.biciptal || '-'} cm</li>
-                        <li><strong>Tríceps:</strong> {avaliacao.triciptal || '-'} cm</li>
-                        <li><strong>Subescapular:</strong> {avaliacao.subescapular || '-'} cm</li>
-                        <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || '-'} cm</li>
-                        <li><strong>Abdominal:</strong> {avaliacao.abdominal || '-'} cm</li>
-                        <li><strong>Coxa:</strong> {avaliacao.coxa || '-'} cm</li>
-                        <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || '-'} cm</li>
-                        <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || '-'} cm</li>
-                        <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || '-'} cm</li>
+                        <li><strong>Peitoral:</strong> {avaliacao.peitoral || 'Não informado'}</li>
+                        <li><strong>Bíceps:</strong> {avaliacao.biciptal || 'Não informado'}</li>
+                        <li><strong>Tríceps:</strong> {avaliacao.triciptal || 'Não informado'}</li>
+                        <li><strong>Subescapular:</strong> {avaliacao.subescapular || 'Não informado'}</li>
+                        <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || 'Não informado'}</li>
+                        <li><strong>Abdominal:</strong> {avaliacao.abdominal || 'Não informado'}</li>
+                        <li><strong>Coxa:</strong> {avaliacao.coxa || 'Não informado'}</li>
+                        <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || 'Não informado'}</li>
+                        <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || 'Não informado'}</li>
+                        <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || 'Não informado'}</li>
                     </ul>
 
                     <div className="mt-3 col-md-3">
-                        <img style={{ height: '400px' }} src="/assets/images/app/dobras.png" />
+                        {/* <img className="img-fluid" src="/assets/images/app/dobras.png" /> */}
                     </div>
                 </row>
             </div>

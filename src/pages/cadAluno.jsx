@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { setAluno } from '../api/aluno';
-import { Button } from 'react-bootstrap';
 import { stateUsuario } from '../states/states';
 import { useRecoilState } from 'recoil';
+import { limpaForm } from '../utils';
 
 function CadAluno() {
     const { handleSubmit, register, setValue, watch } = useForm();
@@ -55,7 +55,7 @@ function CadAluno() {
     }, [alunoRecebido, setValue]);
 
     async function confirma(data) {
-        await setAluno(data);
+        await setAluno(limpaForm(data));
         navigate('/alunos');
     }
 
@@ -63,10 +63,10 @@ function CadAluno() {
         <div className="container-fluid">
             <div className="card">
             <form className="card-body" onSubmit={handleSubmit(confirma)}>
-                <Button href='javascript:history.back()' className="btn btn-danger mb-3">
+                <button onClick={e => { e.preventDefault(); navigate(-1) }} className="btn btn-danger mb-3">
                     <i className="bi bi-backspace me-2"></i>
                     Voltar
-                </Button>
+                </button>
 
                 <h5 className="card-title fw-semibold mb-4">Informações pessoais</h5>
 

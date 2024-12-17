@@ -56,8 +56,21 @@ async function get(url) {
     return resp.data;
 }
 
+async function postImage(url, img, data) {
+    const cookies = parseCookies(null);
+    const resp = await api.post(url, img, {
+        headers: {
+            Authorization: cookies.token, "Access-Control-Allow-Origin": '*',
+            ...data
+        },
+    });
+
+    return resp.data;
+}
+
 export {
     api,
     post,
     get,
+    postImage,
 };

@@ -1,70 +1,154 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { useRecoilState } from 'recoil';
 import { stateUsuario } from '../states/states';
 import { destroyCookie } from 'nookies';
+import ImageCropModal from '../components/cutImg';
+import { dataURLToBlob } from '../utils';
+import { changeUsuarioIMG, setUsuario } from '../api/usuario';
+import { useForm } from 'react-hook-form';
 
 function MinhaConta() {
+    const { handleSubmit, register, setValue, watch } = useForm();
     const navigate = useNavigate();
 
-    const [usuario] = useRecoilState(stateUsuario);
-    console.log(usuario);
+    const [usuario, setusuario] = useRecoilState(stateUsuario);
+    const [showModal, setShowModal] = useState(false);
+    const [image, setImage] = useState(null);
+    const [cropper, setCropper] = useState(null);
+    const [editing, setEditing] = useState(false);
+
+    useEffect(() => {
+        Object.keys(usuario).forEach((key) => {
+            setValue(key, usuario[key]);
+        });
+    }, [usuario]);
 
     function sair() {
         destroyCookie(null, 'token');
         navigate('/entrar');
-    }    
+    }
 
-    // Exemplo de dados do usuário (substitua com dados reais de um usuário logado)
-    // const usuario = {
-    //     nome: "João Silva",
-    //     email: "joao.silva@example.com",
-    //     telefone: "(11) 98765-4321",
-    //     endereco: "Rua Exemplo, 123 - São Paulo, SP"
-    // };
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setImage(event.target.result);
+            setShowModal(true); // Open the modal
+        };
+    
+        reader.readAsDataURL(file);
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+        if (cropper) {
+            cropper.destroy();
+        }
+        setCropper(null);
+    };
+
+    const handleModalConfirm = (croppedImage) => {
+        if (croppedImage) {
+            const croppedBlob = dataURLToBlob(croppedImage);
+
+            const formData = new FormData();
+            formData.append('image', croppedBlob, 'cropped_image.jpg'); 
+            
+            // Save the cropped image
+            changeUsuarioIMG(formData, { cod_usuario: usuario.cod_usuario }).then(resp => {
+                if (resp.id) setusuario({ ...usuario, imagem_usuario: resp.id });
+                setShowModal(false);
+                setCropper(null);
+            }).catch((error) => {
+                console.error('Erro ao salvar imagem recortada:', error);
+            });
+        }
+    };
+
+    async function HandleConfirm(data) {
+        const usuario = await setUsuario(data);
+        setusuario(usuario);
+    }
 
     return (
         <div className="container-fluid">
+            <ImageCropModal
+                show={showModal}
+                image={image}
+                onConfirm={handleModalConfirm}
+                onCancel={handleModalClose}
+            />
+
             <div className="card">
-                <div className="card-body">
+                <form onSubmit={HandleConfirm} className="card-body">
                     <h5 className="card-title fw-semibold mb-4">Minha Conta</h5>
-                    <div className="card mb-3">
-                        <div className="card-body">
+
+                    <div className='row mb-5'>
+                        <div className='col-sm-5 text-center flex-column d-flex align-items-center justify-content-center'>
+                            <img
+                                src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://via.placeholder.com/150'}
+                                alt="Foto do Usuário" 
+                                className="img-fluid rounded-circle shadow-md"
+                                style={{ width: '150px', height: '150px' }}
+                                loading="lazy"
+                            />
+                            <label className='btn btn-sm btn-info mt-2' htmlFor='img_aluno'>
+                                <i className="bi bi-camera me-2"></i>
+                                Carregar
+                            </label>
+                            
+                            <input id='img_aluno' className='d-none' type="file" onChange={handleFileChange} />
+                        </div>
+
+                        <div className={`col-sm-5 mt-4`}>
                             <div className="mb-3">
                                 <label className="form-label">Nome</label>
-                                <p>{usuario.nome_usuario}</p>
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.nome_usuario}</p>
+                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('nome_usuario')} />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">E-mail</label>
-                                <p>{usuario.email_usuario}</p>
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.email_usuario}</p>
+                                <p className={`${!editing ? 'd-none' : ''}`}>Não é possível editar o E-mail de cadastro</p>
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">Telefone</label>
-                                {/* <p>{usuario.telefone}</p> */}
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.telefone_usuario || 'Não informado'}</p>
+                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('telefone_usuario')} />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">Celular</label>
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.celular_usuario || 'Não informado'}</p>
+                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('celular_usuario')} />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">Endereço</label>
-                                {/* <p>{usuario.endereco}</p> */}
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.cep_usuario}</p>
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.endereco_usuario || 'Não informado'} {usuario.numero_usuario} {usuario.complemento_usuario}</p>
+                                <p className={`${editing ? 'd-none' : ''}`}>{usuario.cidade_usuario} {usuario.estado_usuario}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="d-flex justify-content-between">
-                        <Button 
-                            className="btn btn-warning"
-                            onClick={() => navigate('/editar-conta')}
-                        >
-                            <i className="bi bi-pencil me-2"></i>Editar
-                        </Button>
-                        <Button 
-                            className="btn btn-danger"
-                            onClick={sair}  // Redireciona para login (simulando logout)
-                        >
-                            <i className="bi bi-box-arrow-left me-2"></i>Sair
-                        </Button>
+                        {!editing ? (
+                            <button className='btn btn-warning' onClick={e => { e.preventDefault(); setEditing(true) }}>
+                                <i className="bi bi-pencil me-2"></i>Editar
+                            </button>
+                        ) : (
+                            <button className='btn btn-success' type='submit'>
+                                <i className="bi bi-pencil me-2"></i>Confirmar
+                            </button>
+                        )}
+                        <button className="btn btn-danger" onClick={sair}>
+                            <i className="bi bi-box-arrow-left me-2"></i>Sair da conta
+                        </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     );

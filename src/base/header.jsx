@@ -1,11 +1,13 @@
 import { destroyCookie } from "nookies";
 import { useNavigate } from "react-router-dom";
-import { useToggleSidebar } from "../states/states";
+import { stateUsuario, useToggleSidebar } from "../states/states";
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 
 function Header() {
     const { toggleSidebar } = useToggleSidebar();
     const navigate = useNavigate();
+    const [usuario, setusuario] = useRecoilState(stateUsuario);
 
     const [tema, setTema] = useState(localStorage.getItem('tema') ?? 'light');
 
@@ -47,12 +49,12 @@ function Header() {
 
                 <div className="navbar-collapse justify-content-end px-0" id="navbarNav">
                     <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                        <a href="#" onClick={() => navigate('/cadaluno')} className="btn btn-success me-2">
+                        <a href="#" onClick={() => navigate('/cadaluno')} className="btn btn-success me-2 d-none d-md-block">
                             <span className="d-none d-md-block"><i className="bi bi-plus-circle me-2"></i>Novo aluno</span>
                             <span className="d-block d-md-none"><i className="bi bi-plus-circle me-2"></i>Aluno</span>
                         </a>
 
-                        <button onClick={alteraTema} className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex">
+                        <button onClick={alteraTema} className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex me-2">
                             {/* <iconify-icon icon="solar:moon-bold-duotone" className="moon fs-6 d-flex"></iconify-icon> */}
                             {localStorage.getItem('tema') === 'light'
                                 ? <i className="bi bi-moon-fill"></i>
@@ -63,29 +65,34 @@ function Header() {
                         {/* <a href="#" target="_blank"
                             className="btn btn-success"><span className="d-none d-md-block">Financeiro</span> <span className="d-block d-md-none">Fin.</span></a> */}
                     
-                        <li className="nav-item dropdown">
-                            <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <img src="../assets/images/profile/user-1.jpg" alt="" width="35" height="35" className="rounded-circle" />
+                        <li className="nav-item dropdown me-2">
+                            <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img
+                                    src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : '../assets/images/profile/user-1.jpg'}
+                                    alt=""
+                                    width="35" height="35"
+                                    className="rounded-circle"
+                                    loading="lazy"
+                                />
                             </a>
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
-                            <div className="message-body">
-                                <a href="minhaconta" className="d-flex align-items-center gap-2 dropdown-item">
-                                <i className="bi bi-person-fill fs-6"></i>
-                                <p className="mb-0 fs-3">Minha conta</p>
-                                </a>
-                                {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
-                                <i className="ti ti-mail fs-6"></i>
-                                <p className="mb-0 fs-3">My Account</p>
-                                </a> */}
-                                {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
-                                <i className="ti ti-list-check fs-6"></i>
-                                <p className="mb-0 fs-3">My Task</p>
-                                </a> */}
-                                <a className="btn btn-outline-danger mx-3 mt-2 d-block" onClick={sair}>
-                                    <i className="bi bi-box-arrow-left me-2"></i>Sair
-                                </a>
-                            </div>
+                                <div className="message-body">
+                                    <a href="minhaconta" className="d-flex align-items-center gap-2 dropdown-item">
+                                    <i className="bi bi-person-fill fs-6"></i>
+                                    <p className="mb-0 fs-3">Minha conta</p>
+                                    </a>
+                                    {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
+                                    <i className="ti ti-mail fs-6"></i>
+                                    <p className="mb-0 fs-3">My Account</p>
+                                    </a> */}
+                                    {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
+                                    <i className="ti ti-list-check fs-6"></i>
+                                    <p className="mb-0 fs-3">My Task</p>
+                                    </a> */}
+                                    <a className="btn btn-outline-danger mx-3 mt-2 d-block" onClick={sair}>
+                                        <i className="bi bi-box-arrow-left me-2"></i>Sair da conta
+                                    </a>
+                                </div>
                             </div>
                         </li>
                     </ul>

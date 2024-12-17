@@ -1,31 +1,40 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { setAvaliacao } from "../api/aluno";
+import { sendAvaliacaoIMG, setAvaliacao } from "../api/aluno";
 import { useQuery } from "react-query";
 import { getProtocolos } from '../api/usuario';
+import { dataURLToBlob } from "../utils";
+import Imagens from "./cadAvaliacao/imagens";
+import { toast } from "react-toastify";
+import Dobras from "./cadAvaliacao/dobras";
+import Perimetros from "./cadAvaliacao/perimetros";
+import Diametros from "./cadAvaliacao/diametros";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset } = useForm();
+    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
 
-    const { data: protocolos } = useQuery({
+    const { data: protocolos, isLoading } = useQuery({
         queryKey: ['protocolo', ],
         queryFn: () => getProtocolos(usuario.cod_usuario),
         initialData: [],
     });
 
     const formValues = watch();
+    const [capturedImages, setCapturedImages] = useState({});
+    const [imageDescriptions, setImageDescriptions] = useState({});
+    const [deletedImages, setDeletedImages] = useState({});
+
     const [aluno, setAluno] = useState();
     const [isListening, setIsListening] = useState(false);
-    const [activeTab, setActiveTab] = useState("perimetro");
+    const [activeTab, setActiveTab] = useState("perimetros");
     const [perimetros, setPerimetros] = useState(perimetroFields);
     const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
     const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
@@ -34,9 +43,9 @@ function CadAvaliacao() {
     const [tipoAvaliacao, setTipoAvaliacao] = useState('simples');
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
     const [protocolo, setProtocolo] = useState("");
-
+    const [ocultarCampos, setOcultarCampos] = useState(false);
     const [restaurouCache, setRestaurouCache] = useState(false);
-
+    
     //Trata configurações inicias como o carregamento da avaliação caso for uma edição
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
@@ -48,21 +57,33 @@ function CadAvaliacao() {
             Object.keys(avaliacaoRecebida).forEach((key) => {
                 setValue(key, avaliacaoRecebida[key]);
             });
-            setProtocolo(avaliacaoRecebida.protocolo_dobras);
+            setProtocolo(avaliacaoRecebida.cod_protocolo);
+            setTipoAvaliacao(avaliacaoRecebida.tipo_avaliacao);
+            avaliacaoRecebida?.imagem?.map((img, index) => {
+                setCapturedImages((prevImages) => ({
+                    ...prevImages,
+                    [index + 1]: img.url_imagem,
+                }));
+                setImageDescriptions((prevDescriptions) => ({
+                    ...prevDescriptions,
+                    [index + 1]: img.descricao_imagem,
+                }));
+            })
         }
     }, [location, setValue, usuario]);
     
     //Carrega o cache salvo caso necessário
     useEffect(() => {
+        const avaliacaoRecebida = location.state?.avaliacao;
         const avaliacaoCache = localStorage.getItem('avaliacaoCache');
-        if (avaliacaoCache) {
+        if (avaliacaoCache && !avaliacaoRecebida) {
             const cacheAvaliacaoObj = JSON.parse(avaliacaoCache);
             Object.keys(cacheAvaliacaoObj).forEach((key) => {
                 setValue(key, cacheAvaliacaoObj[key]); // Restaura cada campo
             });
             setRestaurouCache(true);     
         }
-    }, [setValue]);
+    }, [setValue, location]);
 
     //Salva os campos em cache
     useEffect(() => {
@@ -84,12 +105,49 @@ function CadAvaliacao() {
         loadFromLocalStorage("perimetros", setPerimetros);
         loadFromLocalStorage("perimetrosDireito", setPerimetrosDireito);
         loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
+    
+    if (isLoading) return <></>;
 
     async function confirma(data) {
-        await setAvaliacao(data);
+        var cancel = false;
+        //Verifica se todas as imagens tem descrição
+        Object.entries(capturedImages).forEach(([key, imageData]) => {
+            if (!imageDescriptions[key]) {
+                toast.error(`Adicionar descrição na imagem ${key}`);
+                cancel = true;
+            }
+        });
+        if (cancel) return;
+
+        const av = await setAvaliacao(data);
+        await enviaImagens(av.cod_avaliacao);
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
+
+    const enviaImagens = async (cod_avaliacao) => {
+        if (!cod_avaliacao) return;
+        const formData = new FormData();
+
+        // Iterar sobre as imagens capturadas e adicioná-las ao FormData
+        Object.entries(capturedImages).forEach(([key, imageData]) => {
+            if (!imageData.includes('amazonaws.com')) {
+                const imageBlob = dataURLToBlob(imageData);
+                formData.append('image', imageBlob, `${imageDescriptions[key]}_${key}.jpg`);
+            }
+        });
+
+        try {
+            const resp = await sendAvaliacaoIMG(formData, { cod_avaliacao, deletedImages: JSON.stringify(deletedImages) });
+    
+            resp.status
+            ? console.log('Imagens enviadas com sucesso!')
+            : console.error('Erro ao enviar as imagens:', resp.msg);
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+        }
+    };
 
     function processVoiceCommand(command) {
         function normalizeString(str) {
@@ -116,10 +174,10 @@ function CadAvaliacao() {
                 setValue(field, value);
                 console.log(`Alterando ${field} para: ${value}`);
             } else {
-                // alert('Campo não encontrado!');
+                console.log('Campo não encontrado!');
             }
         } else {
-            // alert('Comando inválido. Tente algo como "Alterar peso para 70"');
+            console.log('Comando inválido. Tente algo como "Alterar peso para 70"');
         }
     }
 
@@ -144,32 +202,7 @@ function CadAvaliacao() {
         recognition.onerror = (event) => console.error('Erro no reconhecimento de fala:', event.error);
         recognition.onend = () => setIsListening(false);
     }
-
-    const onDragEnd = (result) => {
-        const { destination, source } = result;
-        if (!destination) return;
-
-        if (source.droppableId === "perimetros") {
-            const updatedPerimetros = Array.from(perimetros);
-            const [removed] = updatedPerimetros.splice(source.index, 1);
-            updatedPerimetros.splice(destination.index, 0, removed);
-            setPerimetros(updatedPerimetros);
-            localStorage.setItem("perimetros", JSON.stringify(updatedPerimetros));
-        } else if (source.droppableId === "perimetrosDireito") {
-            const updatedPerimetros = Array.from(perimetrosDireito);
-            const [removed] = updatedPerimetros.splice(source.index, 1);
-            updatedPerimetros.splice(destination.index, 0, removed);
-            setPerimetrosDireito(updatedPerimetros);
-            localStorage.setItem("perimetrosDireito", JSON.stringify(updatedPerimetros));
-        } else if (source.droppableId === "perimetrosEsquerdo") {
-            const updatedPerimetros = Array.from(perimetrosEsquerdo);
-            const [removed] = updatedPerimetros.splice(source.index, 1);
-            updatedPerimetros.splice(destination.index, 0, removed);
-            setPerimetrosEsquerdo(updatedPerimetros);
-            localStorage.setItem("perimetrosEsquerdo", JSON.stringify(updatedPerimetros));
-        }
-    };
-
+    
     const resetOrdering = () => {
         localStorage.removeItem('perimetros');
         localStorage.removeItem('perimetrosDireito');
@@ -192,32 +225,25 @@ function CadAvaliacao() {
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            console.log('Comando reconhecido:', transcript);
+            console.log('Comando reconhecido:', inputName, transcript);
             setValue(inputName, transcript); // Preenche o campo com o texto reconhecido
         };
         recognition.onerror = (event) => console.error("Erro no reconhecimento de voz:", event.error);
     };
 
-    const tooltip = (
+    const tooltipErros = (
         <Tooltip id="tooltip">
             <div>
-                <strong>Simples:</strong> Será apresentado a distribuição corporal em gordura e massa magra, utilizando um menor número de medidas.
-            </div>
-            <p></p>
-            <div>
-                <strong>Complexo:</strong> Será detalhada a composição corporal em termos de gordura, músculo, osso e peso residual, utilizando um maior número de medidas.
-            </div>
-        </Tooltip>
-    );
-
-    const tooltipMetodo = (
-        <Tooltip id="tooltip">
-            <div>
-                <strong>Normal:</strong> Apenas um campo para preencher medidas é liberado.
-            </div>
-            <p></p>
-            <div>
-                <strong>Média:</strong> É liberado 2 campos para informar 2 medidas, caso a diferença seja mais de 1mm é aberto o terceiro campo para média.
+                {Object.keys(errors).length > 0 && (
+                    <ul style={{ margin: 0, padding: '0 10px', listStyleType: 'disc' }}>
+                        {Object.entries(errors).map(([field, error]) => (
+                            <li key={field}>
+                                {/* {error.message || `Erro no campo ${field}`} */}
+                                {field}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </Tooltip>
     );
@@ -238,7 +264,7 @@ function CadAvaliacao() {
                         {isListening ? 'Ouvindo...' : 'Ativar Comando de Voz'}
                     </button>
 
-                    {activeTab === 'perimetro' && (
+                    {activeTab === 'perimetros' && (
                         <button
                             type="button"
                             className={`btn ${isEditingEnabled ? 'btn-warning' : 'btn-warning'} mb-3 me-3`}
@@ -249,7 +275,7 @@ function CadAvaliacao() {
                         </button>
                     )}
 
-                    {(activeTab === 'perimetro' && isEditingEnabled) && (
+                    {(activeTab === 'perimetros' && isEditingEnabled) && (
                         <button
                             type="button"
                             className={`btn ${isEditingEnabled ? 'btn-danger' : 'btn-warning'} mb-3`}
@@ -308,10 +334,7 @@ function CadAvaliacao() {
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Tipo *
                                 <OverlayTrigger placement="bottom" overlay={tooltip}>
-                                    <i 
-                                        className="bi bi-info-circle ms-2 text-primary"
-                                        style={{ cursor: 'pointer' }}
-                                    ></i>
+                                    <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: 'pointer' }}></i>
                                 </OverlayTrigger>
                             </label>
                             <select {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} value={tipoAvaliacao} onChange={e => setTipoAvaliacao(e.target.value)} className="form-control">
@@ -324,6 +347,7 @@ function CadAvaliacao() {
                             <input {...register("data_avaliacao", { required: "A data é obrigatória" })}
                                 type="date"
                                 className="form-control"
+                                defaultValue={new Date().toISOString().split('T')[0]}
                             />
                         </div>
                         <div className="col-md-3">
@@ -335,7 +359,7 @@ function CadAvaliacao() {
                             />
                         </div>
                         <div className="col-md-3">
-                            <label className="form-label fw-bold">Altura (cm) *</label>
+                            <label className="form-label fw-bold">Altura (m) *</label>
                             <input {...register("altura", { required: "A altura é obrigatória" })}
                                 type="number"
                                 step="0.01"
@@ -359,419 +383,97 @@ function CadAvaliacao() {
                             />
                         </div>
                     </div>
+                    <div className="row g-3 m-1">
+                        <div className="form-check">
+                            <input value={ocultarCampos} onChange={e => setOcultarCampos(e.target.checked)} type="checkbox" className="form-check-input" id="ocultarCampos"/>
+                            <label className="form-check-label" htmlFor="ocultarCampos">
+                                Ocultar campos não obrigatórios
+                            </label>
+                            <OverlayTrigger placement="bottom" overlay={tooltipCampos}>
+                                <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: 'pointer' }}></i>
+                            </OverlayTrigger>
+                        </div>
+                    </div>
 
                     <h5 className="card-title fw-semibold mb-4 mt-4">Avaliação</h5>
+                    <h6 className={`text-danger ${protocolo ? 'd-none' : ''}`}>Selecione um protocolo</h6>
 
                     <Tabs
                         activeKey={activeTab}
                         onSelect={(tab) => setActiveTab(tab)}
                         className="mb-3"
                     >
-                        <Tab eventKey="dobras" title={<><i className="bi bi-rulers me-2"></i>Dobras cutâneas</>}>
-                            <div className="row g-3">
-                                <div className="col-md-3">
-                                    <label className="form-label">
-                                        Metódo
-
-                                        <OverlayTrigger placement="bottom" overlay={tooltipMetodo}>
-                                            <i
-                                                className="bi bi-info-circle ms-2 text-primary"
-                                                style={{ cursor: 'pointer' }}
-                                            ></i>
-                                        </OverlayTrigger>
-                                    </label>
-                                    <select value={metodoDobras} onChange={e => setMetodoDobras(e.target.value)} className="form-control">
-                                        <option value='normal'>Normal</option>
-                                        <option value='media'>Média</option>
-                                    </select>
-                                </div>
-
-                                <h5 className="text-muted">Dobras</h5>
-
-                                <Dobras tipoAvaliacao={tipoAvaliacao} protocolo={protocolo} metodoDobras={metodoDobras} register={register} setValue={setValue} startSpeechRecognition={startSpeechRecognition} />
-                            </div>
+                        <Tab eventKey="dobras" title={<><i className="bi bi-arrows-collapse me-2"></i>Dobras cutâneas</>}>
+                            <Dobras
+                                getValues={getValues}
+                                metodoDobras={metodoDobras}
+                                ocultarCampos={ocultarCampos}
+                                protocolo={protocolo}
+                                register={register}
+                                setMetodoDobras={setMetodoDobras}
+                                setValue={setValue}
+                                startSpeechRecognition={startSpeechRecognition}
+                                tipoAvaliacao={tipoAvaliacao}
+                                watch={watch}
+                            />
                         </Tab>
                         
-                        <Tab eventKey="perimetro" title={<><i className="bi bi-rulers me-2"></i>Perímetro</>}>
-                            <div className="row g-3">
-                                <DragDropContext onDragEnd={onDragEnd}>
-                                    <div className="col-md-3">
-                                        <label className="form-label">
-                                            Metódo
-                                            <OverlayTrigger placement="bottom" overlay={tooltipMetodo}>
-                                                <i
-                                                    className="bi bi-info-circle ms-2 text-primary"
-                                                    style={{ cursor: 'pointer' }}
-                                                ></i>
-                                            </OverlayTrigger>    
-                                        </label>
-                                        <select value={metodoPerimetro} onChange={e => setMetodoPerimetro(e.target.value)} className="form-control">
-                                            <option value='normal'>Normal</option>
-                                            <option value='media'>Média</option>
-                                        </select>
-                                    </div>
-
-                                    <h5 className="text-muted">Geral</h5>
-
-                                    <Droppable droppableId="perimetros" isDropDisabled={!isEditingEnabled}>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.droppableProps}
-                                                className="row g-3"
-                                            >
-                                                {perimetros.map((field, index) => (
-                                                    <Draggable key={field.name} draggableId={field.name} index={index}>
-                                                        {(provided) => (
-                                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
-                                                                <div className="d-flex align-items-center mb-2">
-                                                                    <i className={`${field.icon} me-2`}></i>
-                                                                    <label className="form-label">{field.label}</label>
-                                                                </div>
-                                                                <MediaInput
-                                                                    campo1={field.name}
-                                                                    register={register}
-                                                                    setValue={setValue}
-                                                                    startSpeechRecognition={startSpeechRecognition}
-                                                                    metodo={metodoPerimetro}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-                                            </div>
-                                        )}
-                                    </Droppable>
-
-                                    <h5 className="text-muted">Lado direito</h5>
-
-                                    <Droppable droppableId="perimetrosDireito" isDropDisabled={!isEditingEnabled}>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.droppableProps}
-                                                className="row g-3"
-                                            >
-                                                {perimetrosDireito.map((field, index) => (
-                                                    <Draggable key={field.name} draggableId={field.name} index={index}>
-                                                        {(provided) => (
-                                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
-                                                                <div className="d-flex align-items-center mb-2">
-                                                                    <i className={`${field.icon} me-2`}></i>
-                                                                    <label className="form-label">{field.label}</label>
-                                                                </div>
-                                                                <MediaInput
-                                                                    campo1={field.name}
-                                                                    register={register}
-                                                                    setValue={setValue}
-                                                                    startSpeechRecognition={startSpeechRecognition}
-                                                                    metodo={metodoPerimetro}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-                                            </div>
-                                        )}
-                                    </Droppable>
-
-                                    <h5 className="text-muted">Lado esquerdo</h5>
-
-                                    <Droppable droppableId="perimetrosEsquerdo" isDropDisabled={!isEditingEnabled}>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.droppableProps}
-                                                className="row g-3"
-                                            >
-                                                {perimetrosEsquerdo.map((field, index) => (
-                                                    <Draggable key={field.name} draggableId={field.name} index={index}>
-                                                        {(provided) => (
-                                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
-                                                                <div className="d-flex align-items-center mb-2">
-                                                                    <i className={`${field.icon} me-2`}></i>
-                                                                    <label className="form-label">{field.label}</label>
-                                                                </div>
-                                                                <MediaInput
-                                                                    campo1={field.name}
-                                                                    register={register}
-                                                                    setValue={setValue}
-                                                                    startSpeechRecognition={startSpeechRecognition}
-                                                                    metodo={metodoPerimetro}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-                                            </div>
-                                        )}
-                                    </Droppable>
-                                </DragDropContext>
-                            </div>
-
-                            <h5 className="card-title fw-semibold mt-5">* Referências *</h5>
-
-                            <div className="d-flex flex-column flex-md-row justify-content-between">
-                                <div className="flex-fill mb-4 mb-md-0 me-md-2">
-                                    <TabReferencia1 />
-                                </div>
-                                <div className="flex-fill ms-md-2">
-                                    <TabReferencia2 />
-                                </div>
-                            </div>
+                        <Tab eventKey="perimetros" title={<><i className="bi bi-rulers me-2"></i>Perímetros</>}>
+                            <Perimetros
+                                getValues={getValues}
+                                isEditingEnabled={isEditingEnabled}
+                                metodoPerimetro={metodoPerimetro}
+                                ocultarCampos={ocultarCampos}
+                                perimetros={perimetros}
+                                perimetrosDireito={perimetrosDireito}
+                                perimetrosEsquerdo={perimetrosEsquerdo}
+                                register={register}
+                                setMetodoPerimetro={setMetodoPerimetro}
+                                setValue={setValue}
+                                startSpeechRecognition={startSpeechRecognition}
+                                tipoAvaliacao={tipoAvaliacao}
+                                setPerimetros={setPerimetros}
+                                setPerimetrosEsquerdo={setPerimetrosEsquerdo}
+                                setPerimetrosDireito={setPerimetrosDireito}
+                                watch={watch}
+                            />
                         </Tab>
 
-                        <Tab eventKey="diametro" title={<><i className="bi bi-rulers me-2"></i>Diametro</>}>
-                            <div className="row g-3">
-                                <div className="col-md-4">
-                                    <label className="form-label">Biestilóide punho (cm)</label>
-                                    <div className="input-group">
-                                        <input {...register('biestiloide_punho')} type="number" step="0.1" className="form-control" />
-                                        <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition('triciptal')}>
-                                            <i className="bi bi-mic"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                        <Tab eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
+                            <Diametros
+                                ocultarCampos={ocultarCampos}
+                                register={register}
+                                startSpeechRecognition={startSpeechRecognition}
+                                tipoAvaliacao={tipoAvaliacao}
+                            />
+                        </Tab>
 
-                                <div className="col-md-4">
-                                    <label className="form-label">Biepicôndilo Umeral (cm)</label>
-                                    <div className="input-group">
-                                        <input {...register('biepicondilo_umeral')} type="number" step="0.1" className="form-control" />
-                                        <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition('triciptal')}>
-                                            <i className="bi bi-mic"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="col-md-4">
-                                    <label className="form-label">Biepicôndilo femoral (cm)</label>
-                                    <div className="input-group">
-                                        <input {...register('biepicondilo_femoral')} type="number" step="0.1" className="form-control" />
-                                        <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition('triciptal')}>
-                                            <i className="bi bi-mic"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        <Tab eventKey='imagens' title={<><i className="bi bi-camera me-2"></i>Imagens</>}>
+                            <Imagens
+                                capturedImages={capturedImages}
+                                setCapturedImages={setCapturedImages}
+                                imageDescriptions={imageDescriptions}
+                                setImageDescriptions={setImageDescriptions}
+                                deletedImages={deletedImages}
+                                setDeletedImages={setDeletedImages}
+                            />
                         </Tab>
                     </Tabs>
 
-                    <button type="submit" className="btn btn-success mt-4">
-                        <i className="bi bi-check me-2"></i>
-                        Confirmar
-                    </button>
+                    <div className="d-flex align-items-center mt-4 gap-3">
+                        <OverlayTrigger placement="top" overlay={tooltipErros}>
+                            <i className={`bi bi-exclamation-octagon ms-2 text-danger ${Object.keys(errors).length > 0 ? '' : 'd-none'}`} style={{ cursor: 'pointer' }}></i>
+                        </OverlayTrigger>
+                        
+                        <button type="submit" className="btn btn-success">
+                            <i className="bi bi-check me-2"></i>
+                            Confirmar
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     );
-}
-
-const Dobras = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras, tipoAvaliacao }) => {    
-    //Evita uma renderização caso protocolo não esteja definido
-    if (!protocolo) return <></>;
-
-    const protocolosCampos = {
-        1: [],
-        2: ["subescapular", "triciptal", "peitoral", "axilar_media", "supra_iliaca", "coxa", "supra_iliaca", "abdominal", "coxa"],
-        3: ["supra_iliaca", "peitoral", "coxa"],
-        4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
-        5: ["triciptal", "coxa", "panturrilha"],
-    };
-
-    const dobrasDisponiveis = ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"];
-
-    const camposParaExibir = tipoAvaliacao === "complexo" 
-        ? [...new Set([...protocolosCampos[protocolo], "triciptal", "coxa", "panturrilha"])]
-        : protocolosCampos[protocolo] || [];
-
-    return (
-        <>
-            {[1, 2, 3, 4, 5].includes(protocolo) && (
-                <>
-                    {dobrasDisponiveis
-                        .filter((campo) => camposParaExibir?.includes(campo))
-                        .map((campo) => (
-                            <div className="col-md-4" key={campo}>
-                                <label className="form-label">{campo.replace("_", " ")} (mm)</label>
-                                <MediaInput
-                                    campo1={campo}
-                                    register={register}
-                                    setValue={setValue}
-                                    startSpeechRecognition={startSpeechRecognition}
-                                    metodo={metodoDobras}
-                                />
-                            </div>
-                        ))
-                    }
-                </>
-            )}
-        </>
-    )
-}
-
-const MediaInput = ({ campo1, register, setValue, startSpeechRecognition, metodo }) => {
-    const [valor1, setValor1] = useState("");
-    const [valor2, setValor2] = useState("");
-    const [valor3, setValor3] = useState("");
-
-    const [medirNovamente, setMedirNovamente] = useState(false);
-
-    const [media, setMedia] = useState("");
-  
-    // Calcula a média quando os valores 1 ou 2 mudam
-    useEffect(() => {
-        if (metodo === "media" && valor1 && valor2) {
-            setMedia(((parseFloat(valor1) + parseFloat(valor2)) / 2).toFixed(1));
-            //Calcular aqui
-            setValue(campo1, ((parseFloat(valor1) + parseFloat(valor2)) / 2).toFixed(1));
-
-            const diff = Math.abs(parseFloat(valor1) - parseFloat(valor2));
-            if (diff > 1 && valor3) {
-                setValue(campo1, ((parseFloat(valor1) + parseFloat(valor2) + parseFloat(valor3)) / 3).toFixed(1));
-                setMedia(((parseFloat(valor1) + parseFloat(valor2) + parseFloat(valor3)) / 3).toFixed(1));
-            }
-            setMedirNovamente(diff > 1);
-        } else {
-            setMedia(""); // Limpa a média se o método for normal
-            setValue(campo1, "");
-        }
-    }, [valor1, valor2, valor3, metodo]);
-
-    return (
-        <div className="input-group">
-            <div className="input-group">
-                {/* Exibe dois campos de entrada se o método for 'media', ou um único campo caso contrário */}
-                {metodo === "media" ? (
-                    <>
-                        <input type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
-                        <input type="number" step="0.1" className="form-control" value={valor2} onChange={(e) => setValor2(e.target.value)} />
-                        {medirNovamente && (
-                            <input type="number" step="0.1" className="form-control" value={valor3} onChange={(e) => setValor3(e.target.value)} />
-                        )}
-                        <input type="text" className="form-control bg-success" value={media} readOnly placeholder="Média" />
-                    </>
-                ) : (
-                    <input {...register(campo1, { required: 'Dobras obrigatórias!' })} type="number" step="0.1" className="form-control" value={valor1} onChange={(e) => setValor1(e.target.value)} />
-                )}
-                <input
-                    {...register(campo1, { required: 'Dobras obrigatórias!' })}
-                    type="number"
-                    step="0.1"
-                    className='form-control d-none'
-                    value={valor1} onChange={(e) => setValor1(e.target.value)}
-                />
-
-                {metodo === "normal" && (
-                    <button type="button" className="btn btn-outline-success" onClick={() => startSpeechRecognition(campo1)}>
-                        <i className="bi bi-mic"></i>
-                    </button>
-                )}
-            </div>
-
-            {medirNovamente && (
-                <div id="mediahelp" className="form-text">3º medida necessária</div>
-            )}
-        </div>
-    );
-};
-
-function TabReferencia1() {
-    return (
-        <div className="mt-4">
-            <h6 className="fw-semibold">Tabela de Referência - RCQ (Razão Cintura-Quadril)</h6>
-            <p>RCQ: Perímetro da cintura (cm) / Perímetro do quadril (cm)</p>
-
-            {/* <div className="col-md-6 table-wraper"> */}
-                <table style={{ fontSize: '0.7rem' }} className="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Idade</th>
-                            <th>Baixo</th>
-                            <th>Moderado</th>
-                            <th>Alto</th>
-                            <th>Muito Alto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>20 a 29</td>
-                            <td>&lt; 0.83%</td>
-                            <td>0.83% a 0.88%</td>
-                            <td>0.89% a 0.94%</td>
-                            <td>&gt; 0.94%</td>
-                        </tr>
-                        <tr>
-                            <td>30 a 39</td>
-                            <td>&lt; 0.84%</td>
-                            <td>0.84% a 0.91%</td>
-                            <td>0.92% a 0.96%</td>
-                            <td>&gt; 0.96%</td>
-                        </tr>
-                        <tr>
-                            <td>40 a 49</td>
-                            <td>&lt; 0.88%</td>
-                            <td>0.88% a 0.95%</td>
-                            <td>0.96% a 1.00%</td>
-                            <td>&gt; 1.00%</td>
-                        </tr>
-                        <tr>
-                            <td>50 a 59</td>
-                            <td>&lt; 0.90%</td>
-                            <td>0.90% a 0.96%</td>
-                            <td>0.97% a 1.02%</td>
-                            <td>&gt; 1.02%</td>
-                        </tr>
-                        <tr>
-                            <td>60 a 69</td>
-                            <td>&lt; 0.91%</td>
-                            <td>0.91% a 0.98%</td>
-                            <td>0.99% a 1.03%</td>
-                            <td>&gt; 1.03%</td>
-                        </tr>
-                    </tbody>
-                </table>
-            {/* </div> */}
-        </div>
-    )
-}
-
-function TabReferencia2() {
-    return (
-        <div className="mt-4">
-            <h6 className="fw-semibold">Tabela de Referência - RCQ (Razão Cintura-Quadril)</h6>
-            <p>RCQ: Perímetro da cintura (cm) / Perímetro do quadril (cm)</p>
-
-            <table style={{ fontSize: '0.7rem' }} className="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Índice de Risco</th>
-                        <th>Homens</th>
-                        <th>Mulheres</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Baixo</td>
-                        <td>&lt; 94cm</td>
-                        <td>&lt; 80cm</td>
-                    </tr>
-                    <tr>
-                        <td>Aumentado</td>
-                        <td>94cm a 101cm</td>
-                        <td>80cm a 87cm</td>
-                    </tr>
-                    <tr>
-                        <td>Muito aumentado</td>
-                        <td>&gt; 101cm</td>
-                        <td>&gt; 87cm</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    )
 }
 
 const perimetroFields = [
@@ -779,7 +481,7 @@ const perimetroFields = [
     { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
     { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
     { name: 'torax_expirado', label: 'Tórax expirado (cm)', icon: 'bi bi-body' },
-    { name: 'punho', label: 'Punho (cm)', icon: 'bi bi-shoe-prints' },
+    // { name: 'punho', label: 'Punho (cm)', icon: 'bi bi-shoe-prints' },
     { name: 'cintura', label: 'Cintura (cm)', icon: 'bi bi-body' },
     { name: 'abdomen', label: 'Abdômen (cm)', icon: 'bi bi-body' },
     { name: 'quadril', label: 'Quadril (cm)', icon: 'bi bi-body' },
@@ -800,5 +502,25 @@ const perimetroEsquerdoFields = [
     { name: 'coxa_esquerda', label: 'Coxa esquerda (cm)', icon: 'bi bi-shoe-prints' },
     { name: 'panturrilha_esquerda', label: 'Panturrilha esquerda (cm)', icon: 'bi bi-shoe-prints' },
 ];
+
+const tooltip = (
+    <Tooltip id="tooltip">
+        <div>
+            <strong>Simples:</strong> Será apresentado a distribuição corporal em gordura e massa magra, utilizando um menor número de medidas.
+        </div>
+        <p></p>
+        <div>
+            <strong>Complexo:</strong> Será detalhada a composição corporal em termos de gordura, músculo, osso e peso residual, utilizando um maior número de medidas.
+        </div>
+    </Tooltip>
+);
+
+const tooltipCampos = (
+    <Tooltip id="tooltip">
+        <div>
+            <strong></strong> Marcar essa opção vai ocultar todos os campos não obrigatórios para o protocolo selecionado.
+        </div>
+    </Tooltip>
+);
 
 export default CadAvaliacao;

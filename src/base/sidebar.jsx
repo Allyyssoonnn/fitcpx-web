@@ -13,8 +13,13 @@ function Sidebar() {
         if (window.screen.width > 1600 && !openedSidebar) toggleSidebar();
     }, []);
 
+    function go(route) {
+        toggleSidebar();
+        navigate(route);
+    }
+
     return (
-        <aside className="left-sidebar with-vertical">
+        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between">
                     <a href="/" className="text-nowrap logo-img ">
@@ -34,7 +39,7 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => navigate('/')} aria-expanded="false">
+                            <a href="#" className="sidebar-link p-3" onClick={() => go('/')} aria-expanded="false">
                                 <i className="bi bi-house-fill fs-6"></i>
                                 <span className="hide-menu ps-1">Dashboard</span>
                             </a>
@@ -46,14 +51,14 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => navigate('/alunos')} aria-expanded="false">
+                            <a href="#" className="sidebar-link p-3" onClick={() => go('/alunos')} aria-expanded="false">
                                 <i className="bi bi-person-lines-fill fs-6"></i>
                                 <span className="hide-menu ps-1">Lista de alunos</span>
                             </a>
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => navigate('/agenda')} aria-expanded="false">
+                            <a href="#" className="sidebar-link p-3" onClick={() => go('/agenda')} aria-expanded="false">
                                 <i className="bi bi-calendar-check-fill fs-6"></i>
                                 <span className="hide-menu ps-1">Agenda</span>
                             </a>
@@ -70,19 +75,20 @@ function Sidebar() {
 
                     </ul>
 
-
-                    {/* <div className="unlimited-access hide-menu bg-primary-subtle position-relative mb-7 mt-7 rounded-3">  */}
-                        {/* <div className="d-flex"> */}
-                            {/* <div className="unlimited-access-title me-3"> */}
-                                {/* <h6 className="fw-semibold fs-4 mb-6 text-dark w-75">Libere mais acessos</h6> */}
-                                {/* <a href="#" target="_blank" className="btn btn-primary fs-2 fw-semibold lh-sm">Liberar</a> */}
-                            {/* </div> */}
+                    {/* bg-light-subtle */}
+                    <div className="hide-menu bg-light position-relative mt-7 rounded-3">
+                        <div className="d-flex p-2">
+                            <div className="mt-2">
+                                <h4 className="mb-6 text-dark">Uso gratuito</h4>
+                                <h6 className="fw-semibold fs-3 mb-6 text-dark">Complete seu cadastro e ganhe +10 dias de teste</h6>
+                                <button onClick={() => navigate('/minhaconta')} className="btn btn-success fs-2 fw-semibold lh-sm">Cadastrar</button>
+                            </div>
                             
-                            {/* <div className="unlimited-access-img">
-                                <img src="../assets/images/backgrounds/rocket.png" alt="" className="img-fluid" />
-                            </div> */}
-                        {/* </div> */}
-                    {/* </div> */}
+                            <div>
+                                <img height={100} width={100} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
+                            </div>
+                        </div>
+                    </div>
                     
                 </nav>
             </div>
