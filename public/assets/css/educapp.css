@@ -11,3 +11,30 @@
 .cropper-view-box {
     border-radius: 50%; /* Define o círculo */
 }
+
+aside::-webkit-scrollbar {
+  width: 1px;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: #CECECE;
+  border-radius: 1px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* .btn {
+  background-color: #00a650;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn:hover {
+  background-color: #008f4c;
+} */

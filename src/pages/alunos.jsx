@@ -22,7 +22,7 @@ function Alunos() {
 
     const filteredAlunos = useMemo(() => {
         return alunos.filter((aluno) =>
-            aluno.nome_aluno.toLowerCase().includes(searchTerm.toLowerCase())
+            aluno.nome_aluno?.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [alunos, searchTerm]);
         
@@ -32,7 +32,7 @@ function Alunos() {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header d-flex justify-content-between align-items-center">
-                            <h4 className="card-title">Lista de alunos</h4>
+                            <h4 className="card-title d-none d-md-block">Lista de alunos</h4>
                             <input
                                 type="text"
                                 className="form-control w-25"
@@ -44,13 +44,6 @@ function Alunos() {
 
                         <div className="table-responsive">
                             <table id="basic-datatables" className="display table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Aluno</th>
-                                        <th>Editar</th>
-                                    </tr>
-                                </thead>
-
                                 <tbody>
                                     {filteredAlunos.map((aluno) => {
                                         let idade = calcularIdade(aluno.data_nascimento_aluno);
@@ -70,9 +63,18 @@ function Alunos() {
                                                 </div>
                                             </th>
                                             <td>
-                                                <button className="btn btn-primary btn-sm" onClick={() => editarAluno(aluno)}>
-                                                    <i className="bi bi-pencil"></i>
-                                                </button>
+                                                <div className="dropdown">
+                                                    <button onClick={e => e.stopPropagation()} className="btn border-0" data-bs-toggle="dropdown">
+                                                        <i className="bi bi-three-dots-vertical"></i>
+                                                    </button>
+
+                                                    <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
+                                                        <a onClick={e => { e.stopPropagation(); editarAluno(aluno) }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
+                                                            <i className="bi bi-pencil"></i>
+                                                            <p className="mb-0">Editar</p>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     )})}

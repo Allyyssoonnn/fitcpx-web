@@ -78,13 +78,13 @@ function Header() {
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div className="message-body">
                                     <a href="minhaconta" className="d-flex align-items-center gap-2 dropdown-item">
-                                    <i className="bi bi-person-fill fs-6"></i>
-                                    <p className="mb-0 fs-3">Minha conta</p>
+                                        <i className="bi bi-person-fill fs-6"></i>
+                                        <p className="mb-0 fs-3">Minha conta</p>
                                     </a>
-                                    {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
-                                    <i className="ti ti-mail fs-6"></i>
-                                    <p className="mb-0 fs-3">My Account</p>
-                                    </a> */}
+                                    <a href="licenca" className="d-flex align-items-center gap-2 dropdown-item">
+                                        <i className="bi bi-unlock fs-6"></i>
+                                        <p className="mb-0 fs-3">Licença</p>
+                                    </a>
                                     {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
                                     <i className="ti ti-list-check fs-6"></i>
                                     <p className="mb-0 fs-3">My Task</p>

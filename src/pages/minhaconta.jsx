@@ -133,22 +133,22 @@ function MinhaConta() {
                             </div>
                         </div>
                     </div>
-
-                    <div className="d-flex justify-content-between">
-                        {!editing ? (
-                            <button className='btn btn-warning' onClick={e => { e.preventDefault(); setEditing(true) }}>
-                                <i className="bi bi-pencil me-2"></i>Editar
-                            </button>
-                        ) : (
-                            <button className='btn btn-success' type='submit'>
-                                <i className="bi bi-pencil me-2"></i>Confirmar
-                            </button>
-                        )}
-                        <button className="btn btn-danger" onClick={sair}>
-                            <i className="bi bi-box-arrow-left me-2"></i>Sair da conta
-                        </button>
-                    </div>
                 </form>
+
+                <div className="card-footer d-flex justify-content-between">
+                    {!editing ? (
+                        <button className='btn btn-warning' onClick={e => { e.preventDefault(); setEditing(true) }}>
+                            <i className="bi bi-pencil me-2"></i>Editar
+                        </button>
+                    ) : (
+                        <button className='btn btn-success' type='submit'>
+                            <i className="bi bi-pencil me-2"></i>Confirmar
+                        </button>
+                    )}
+                    <button className="btn btn-danger" onClick={sair}>
+                        <i className="bi bi-box-arrow-left me-2"></i>Sair da conta
+                    </button>
+                </div>
             </div>
         </div>
     );

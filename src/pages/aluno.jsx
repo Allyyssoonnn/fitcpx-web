@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab } from 'react-bootstrap';
-import { calcularIdade, dataURLToBlob } from "../utils";
+import { calcularIdade, dataURLToBlob, getSexo } from "../utils";
 import { useQuery } from "react-query";
 import { changeAlunoIMG, getAluno } from '../api/aluno';
+import { getTreinos } from '../api/treino';
 import ImageCropModal from '../components/cutImg';
 
 function Aluno() {
@@ -14,10 +15,19 @@ function Aluno() {
     const [showModal, setShowModal] = useState(false);
     const [image, setImage] = useState(null);
     const [cropper, setCropper] = useState(null);
+    // const [treinos] = useState([
+    //     { nome_treino: '3x Musc.', nivel_treino: 'Avançado', sexo_treino: 'Masculino', nome_usuario: 'Alyson' },
+    // ]);
 
     const { data: aluno, isLoading } = useQuery({
         queryKey: ['aluno'],
         queryFn: () => getAluno(cod_aluno),
+    });
+
+    const { data: treinos } = useQuery({
+        queryKey: ['treinos'],
+        queryFn: () => getTreinos({ cod_aluno }),
+        initialData: []
     });
 
     const handleFileChange = async (e) => {
@@ -160,13 +170,31 @@ function Aluno() {
                             </>
                         } >
                             <div className='text-center'>
-                                {/* <button className='btn btn-success' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
+                                <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Avaliação
-                                </button> */}
+                                </button>
 
                                 {aluno?.avaliacao?.map((avaliacao, index) => (
                                     <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} />
+                                ))}
+                            </div>
+                        </Tab>
+
+                        <Tab eventKey="treino" title={
+                            <>
+                                <span className="d-none d-md-block"><i className="bi bi-card-checklist me-2"></i>Treinos</span>
+                                <span className="d-block d-md-none"><i className="bi bi-card-checklist me-2"></i>Treinos</span>
+                            </>
+                        } >
+                            <div className='text-center'>
+                                <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadtreino', { state: { aluno } })}>
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Adicionar Treino
+                                </button>
+
+                                {treinos?.map((treino, index) => (
+                                    <CardTreino key={index} treino={treino} aluno={aluno} />
                                 ))}
                             </div>
                         </Tab>
@@ -175,6 +203,51 @@ function Aluno() {
             </div>
         </div>
     );
+}
+
+function CardTreino({ treino, aluno }) {
+    const navigate = useNavigate();
+    
+    return (
+        <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>
+            <div style={{ borderTop: '0.30rem solid #85D446' }} className='card-body rounded-3'>
+                <h5 className="card-title">{treino.nome_treino}</h5>
+                <div className='row'>
+                    <div className='col-md-3'>
+                        {/* <strong>Responsável:</strong> */}
+                        <label className="badge bg-dark">{treino.usuario?.nome_usuario}</label>
+                    </div>
+                    <div className='col-md-3'>
+                        {/* <strong>Nível:</strong> */}
+                        <label className="badge bg-dark">{treino.nivel_treino}</label>
+                    </div>
+                    <div className='col-md-3'>
+                        {/* <strong>Sexo:</strong> */}
+                        <label className="badge bg-dark">{getSexo(treino.sexo_treino)}</label>
+                    </div>
+                    <div className='col-md-3'>
+                        {/* <strong>Sexo:</strong> */}
+                        <label className="badge bg-dark">{treino?.sessoes?.length} {treino?.sessoes?.length > 1 ? 'Sessões' : 'Sessão'}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div className='card-footer bg-light d-flex justify-content-around py-3'>
+                <button
+                    className="btn btn-primary d-flex align-items-center"
+                    onClick={() => navigate('/cadtreino', { state: { treino } })}
+                >
+                    <i className="bi bi-pencil me-2"></i> Editar
+                </button>
+                <button
+                    className="btn btn-warning d-flex align-items-center"
+                    onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}
+                >
+                    <i className="bi bi-printer me-2"></i> Ver treino
+                </button>
+            </div>
+        </div>
+    )
 }
 
 function CardAvaliacao({ avaliacao, aluno }) {

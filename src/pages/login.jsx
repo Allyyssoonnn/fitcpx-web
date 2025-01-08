@@ -42,9 +42,9 @@ function Login() {
                     <div className="col-md-8 col-lg-6 col-xxl-3">
                         <div className="card mb-0">
                             <div className="card-body">
-                                <a href="./index.html" className="text-nowrap logo-img text-center d-block py-3 w-100">
+                                <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
                                     {/* <img src="../assets/images/logos/logo-light.svg" alt="" /> */}
-                                    <h1>EducApp</h1>
+                                    <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>FitNGen</h1>
                                 </a>
                                 <p className="text-center">Renove seu profissionalismo</p>
                                 <form onSubmit={handleSubmit(login)}>

@@ -15,6 +15,7 @@
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@mercadopago/sdk-react": "^0.0.20",
     "@nivo/bar": "^0.88.0",
     "@nivo/line": "^0.88.0",
     "@nivo/pie": "^0.88.0",

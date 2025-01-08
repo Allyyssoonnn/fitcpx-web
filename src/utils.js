@@ -6,6 +6,18 @@ export const protocolosCampos = {
     5: ["triciptal", "coxa", "panturrilha"],
 };
 
+export function getSexo(s) {
+    if (!s) return 'Sem sexo informado';
+    return s === 'M' ? 'Masculino' : 'Feminino';
+}
+
+export const getYouTubeEmbedUrl = (url) => {
+    if (!url) return('');
+    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : "";
+};
+
 export function calcularIdade(dataNascimento) {
     if (!dataNascimento) return '-';
     const hoje = new Date();
