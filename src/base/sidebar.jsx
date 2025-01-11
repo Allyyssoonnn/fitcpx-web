@@ -68,6 +68,13 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
+                            <a href="#" className="sidebar-link p-3" onClick={() => go('/planilha')} aria-expanded="false">
+                                <i className="bi bi-journal-bookmark-fill fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">Planilha de treino</span>
+                            </a>
+                        </li>
+
+                        <li className="sidebar-item">
                             <a className={`sidebar-link p-3 has-arrow ${dropTreino ? 'active' : ''}`} href="#" onClick={() => setDropTreino(!dropTreino)}>
                                 <i className="bi bi-card-checklist fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">Treino</span>

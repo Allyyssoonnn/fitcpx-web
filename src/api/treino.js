@@ -66,8 +66,8 @@ export const recoveryExercicio = async (cod_exercicio) => {
 //     throw new Error("Erro ao carregar sessoes");
 // };
 
-export const setSessao = async (sessoes, cod_treino, cod_usuario, cod_empresa) => {
-    const resp = await post('/treino/setSessoes', { sessoes, cod_treino, cod_usuario, cod_empresa });
+export const setSessao = async (sessoes, cod_treino, cod_usuario, cod_empresa, removidos) => {
+    const resp = await post('/treino/setSessoes', { sessoes, cod_treino, cod_usuario, cod_empresa, removidos });
     if (resp.status) return resp.sessoes;
     throw new Error("Erro ao carregar sessao");
 };

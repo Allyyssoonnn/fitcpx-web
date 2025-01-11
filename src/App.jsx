@@ -5,6 +5,7 @@ import Login from './pages/login';
 import Register from './pages/register';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PlanilhaTreino from './pages/planilhaTreino';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                     <Route name='Inicio' path='*' element={<Layout />} />
                     <Route path='/entrar' element={<Login />} />
                     <Route path='/registrar' element={<Register />} />
+                    <Route path='/planilhatreino' element={<PlanilhaTreino />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>

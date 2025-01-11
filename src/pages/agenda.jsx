@@ -148,7 +148,7 @@ function Calendario() {
                 // }}
             />
 
-            <Modal show={showModal} className="modal fade" id="eventModal" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <Modal show={showModal} className="modal-fade" id="eventModal" aria-labelledby="eventModalLabel" aria-hidden="true">
                 <div className="modal-dialog-scrollable modal-lg">
                     <form onSubmit={handleSubmit(handleAddEvent)} className="modal-content">
                         <div className="modal-header">

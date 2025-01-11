@@ -17,6 +17,7 @@ import CadGrupoExercicio from "../pages/cadGrupoExercicio";
 import CadExercicio from "../pages/cadExercicio";
 // import Sessoes from "../pages/sessoes";
 import CadSessao from "../pages/cadSessao";
+import Planilha from "../pages/planilha";
 
 const routes = [
     { path: '/', exact: true, name: 'Home' },
@@ -33,6 +34,7 @@ const routes = [
     { path: '/licenca', name: 'Licença', element: Licenca },
     { path: '/financeiro', name: 'Licença', element: Financeiro },
     { path: '/treinos', name: 'Licença', element: Treinos },
+    { path: '/planilha', name: 'Licença', element: Planilha },
     { path: '/exercicios', name: 'Licença', element: Exercicios },
     { path: '/grupoexercicios', name: 'Licença', element: GrupoExercicios },
     { path: '/cadgrupoexercicio', name: 'Licença', element: CadGrupoExercicio },

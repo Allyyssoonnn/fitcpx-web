@@ -23,13 +23,13 @@ const EditableText = ({ text, onUpdate }) => {
             autoFocus
         />
     ) : (
-        <h4>
+        <h5>
             {text}
             <button className="btn btn-sm btn-outline-primary ms-2" onClick={() => setIsEditing(true)}>
                 <i className="bi bi-pencil me-2"></i>
                 Renomear
             </button>
-        </h4>
+        </h5>
     );
 };
 

@@ -11,6 +11,8 @@ function Exercicios() {
     const [searchTerm, setSearchTerm] = useState("");
     const [deleted, setDeleted] = useState(false);
 
+    const [exerciciosFiltrados, setExerciciosFiltrados] = useState([]);
+
     const { data: exercicios, refetch } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
         queryFn: () => getExercicios(usuario.cod_usuario, deleted),
@@ -28,17 +30,17 @@ function Exercicios() {
         await deleteExercicio(cod_exercicio);
         refetch();
     }
-    const recoveryExec = async (cod_exercicio) => {
-            await recoveryExercicio(cod_exercicio);
-            refetch();
-        }
-    
 
+    const recoveryExec = async (cod_exercicio) => {
+        await recoveryExercicio(cod_exercicio);
+        refetch();
+    }
+    
     const filteredExercicios = useMemo(() => {
-        return exercicios.filter((treino) =>
+        return exerciciosFiltrados.filter((treino) =>
             treino.nome_exercicio?.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [exercicios, searchTerm]);
+    }, [exerciciosFiltrados, searchTerm]);
         
     return (
         <div className="container-fluid">
@@ -72,7 +74,7 @@ function Exercicios() {
                             </div>
 
                             <div className="row g-3">
-                                <FiltroExercicio exercicios={exercicios} />
+                                <FiltroExercicio exercicios={exercicios} setExerciciosFiltrados={setExerciciosFiltrados} />
                             </div>
                         </div>
 

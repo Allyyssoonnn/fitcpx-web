@@ -217,7 +217,7 @@ function UltimasAvaliacoes({ alunos }) {
     useEffect(() => {
         if (!alunos) return;
         const avaliacoes = alunos?.reduce((todasAvaliacoes, aluno) => {
-            const avaliacoesComNome = aluno.avaliacao.map(avaliacao => ({ ...avaliacao, nome_aluno: aluno?.nome_aluno }));
+            const avaliacoesComNome = aluno?.avaliacao?.map(avaliacao => ({ ...avaliacao, nome_aluno: aluno?.nome_aluno }));
             return todasAvaliacoes.concat(avaliacoesComNome);
         }, []);
         if (avaliacoes) setAvaliacoes(avaliacoes);

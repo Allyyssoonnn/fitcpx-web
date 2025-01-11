@@ -1,6 +1,6 @@
 import axios from "axios";
 import { parseCookies, setCookie } from 'nookies';
-const PRODUCAO = false;
+const PRODUCAO = true;
 
 const baseURL = PRODUCAO ? 'https://api.alyson.site' : 'http://localhost:8070';
 
