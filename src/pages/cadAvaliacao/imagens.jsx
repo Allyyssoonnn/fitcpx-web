@@ -208,10 +208,10 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
         }
         //Preenche caso já tenha salvo uma imagem para que seja deletada
         if (capturedImages[option].includes('amazonaws.com')) {
-            setDeletedImages((prevImages) => ({
+            setDeletedImages((prevImages) => ([
                 ...prevImages,
-                [currentOption]: capturedImages[option],
-            }));
+                capturedImages[option],
+            ]));
         }
         setCapturedImages((prevImages) => {
             const updatedImages = { ...prevImages };
@@ -219,7 +219,7 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
             return updatedImages;
         });
     };
-
+    
     // Função para atualizar a descrição de uma imagem
     const updateDescription = (option, description) => {
         setImageDescriptions((prevDescriptions) => ({

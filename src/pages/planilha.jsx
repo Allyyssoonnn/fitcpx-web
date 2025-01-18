@@ -36,7 +36,7 @@ function Planilha() {
     }, [alunos, searchTerm]);
 
     const abrirPlanilha = async () => {
-        const alunosFiltrado = alunos.filter((_, index) => selecionados.includes(index))
+        const alunosFiltrado = alunos.filter((aluno, index) => selecionados.includes(aluno.cod_aluno))
         .map((aluno) => ({
             cod_aluno: aluno.cod_aluno,
             nome_aluno: aluno.nome_aluno,
@@ -49,8 +49,8 @@ function Planilha() {
             const treinos = await getTreinos({ cod_aluno: aluno.cod_aluno });
             aluno.treinos = treinos;
         }
-
-        navigate('/planilhatreino', { state: { alunos: alunosFiltrado } });
+        localStorage.setItem('planilhatreino', JSON.stringify(alunosFiltrado));
+        navigate('/planilhatreino');
     }
 
     return (
@@ -63,13 +63,15 @@ function Planilha() {
                         <h4 className="card-title d-none d-md-block ms-3">{selecionados.length}/15</h4>
                     </div>
 
-                    <input
-                        type="text"
-                        className="form-control w-25"
-                        placeholder="Pesquisar aluno"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <div className="col-md-3 col-12">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Pesquisar aluno"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 <div className="table-responsive">
@@ -78,11 +80,11 @@ function Planilha() {
                             {filteredAlunos.map((aluno, index) => {
                                 let idade = calcularIdade(aluno.data_nascimento_aluno);
                                 return (
-                                <tr key={aluno.cod_aluno} onClick={() => toggleSelecao(index)}>
+                                <tr key={aluno.cod_aluno} onClick={() => toggleSelecao(aluno.cod_aluno)}>
                                     <th scope="row" className="d-flex align-items-center">
-                                        <input checked={selecionados.includes(index)} className="me-3" type="checkbox" />
+                                        <input checked={selecionados.includes(aluno.cod_aluno)} className="me-3" type="checkbox" />
                                         <img
-                                            src={aluno.imagem_aluno ? `${aluno.imagem_aluno}` : 'https://via.placeholder.com/150'}
+                                            src={aluno.imagem_aluno ? `${aluno.imagem_aluno}` : 'https://placehold.co/150x150?text=img'}
                                             alt="Foto do Aluno" 
                                             className="img-fluid rounded-circle me-3" 
                                             style={{ width: '50px', height: '50px' }}

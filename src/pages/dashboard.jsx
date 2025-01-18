@@ -244,10 +244,10 @@ function UltimasAvaliacoes({ alunos }) {
                                 {avaliacoes.map((avaliacao) => (
                                     // eslint-disable-next-line react/jsx-key
                                     <tr>
-                                        <th scope="row" className="ps-0 fw-medium">{avaliacao.nome_aluno}</th>
-                                        <th scope="row" className="ps-0 fw-medium">{avaliacao.data_avaliacao}</th>
-                                        <td>{avaliacao.altura} M</td>
-                                        <td className="text-center fw-medium">{avaliacao.peso} KG</td>
+                                        <th scope="row" className="ps-0 fw-medium">{avaliacao?.nome_aluno}</th>
+                                        <th scope="row" className="ps-0 fw-medium">{avaliacao?.data_avaliacao}</th>
+                                        <td>{avaliacao?.altura} M</td>
+                                        <td className="text-center fw-medium">{avaliacao?.peso} KG</td>
                                     </tr>
                                 ))}
                             </tbody>

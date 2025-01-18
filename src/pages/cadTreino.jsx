@@ -20,7 +20,10 @@ function CadTreino() {
     const [removidos, setRemovidos] = useState([]);
 
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         const treinoRecebido = location.state?.treino;
+        const alunoRecebido = location.state?.aluno;
+        if (alunoRecebido) setValue('cod_aluno', alunoRecebido.cod_aluno);
         if (treinoRecebido) {
             Object.keys(treinoRecebido).forEach((key) => {
                 setValue(key, treinoRecebido[key]);
@@ -46,7 +49,7 @@ function CadTreino() {
 
     async function confirma(data) {
         const cod_usuario = usuario.cod_usuario;
-        const respTreino = await setTreino({ ...data, cod_usuario });
+        const respTreino = await setTreino({ ...data, cod_usuario, cod_empresa: usuario.cod_empresa });
         if (respTreino.cod_treino) await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos);
         navigate(-1);
     }
@@ -154,7 +157,8 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
         initialData: [],
     });
     
-    const addSessao = () => {
+    const addSessao = e => {
+        e.preventDefault();
         if (sessoes.length >= 15) return;
         const newKey = (sessoes.length + 1).toString();
         setSessoes([

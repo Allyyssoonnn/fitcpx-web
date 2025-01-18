@@ -90,7 +90,7 @@ function MinhaConta() {
                     <div className='row mb-5'>
                         <div className='col-sm-5 text-center flex-column d-flex align-items-center justify-content-center'>
                             <img
-                                src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://via.placeholder.com/150'}
+                                src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                 alt="Foto do Usuário" 
                                 className="img-fluid rounded-circle shadow-md"
                                 style={{ width: '150px', height: '150px' }}

@@ -165,10 +165,37 @@ function Avaliacao() {
                     <Perimetro avaliacao={avaliacao} />
                     <Dobras avaliacao={avaliacao} />
                     <Diametro avaliacao={avaliacao} />
+                    <Imagens avaliacao={avaliacao} />
                 </div>
             </div>
         </div>
     );
+}
+
+function Imagens({ avaliacao }) {
+    return (
+        <div className="card">
+            <div className="card-header">
+                <h4>Imagens</h4>
+            </div>
+            
+            <div className="card-body">
+                <div className="row g-3">
+                    {avaliacao?.imagem?.map((img, index) => (
+                        <div key={index} className="col-md-3">
+                            <div className="text-center">
+                                <img
+                                    src={img?.url_imagem}
+                                    style={{ width: '100%', border: '1px solid black' }}
+                                />
+                                <h4 className="mt-2">{img?.descricao_imagem}</h4>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function AreaMagraGorda({ avaliacao }) {

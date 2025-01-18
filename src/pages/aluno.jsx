@@ -92,7 +92,7 @@ function Aluno() {
                     <div className='row mb-5'>
                         <div className='col-sm-3 text-center flex-column d-flex align-items-center'>
                             <img
-                                src={aluno.imagem_aluno ? `${aluno.imagem_aluno}?&t=${new Date().getTime()}` : 'https://via.placeholder.com/150'}
+                                src={aluno?.imagem_aluno ? `${aluno?.imagem_aluno}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                 alt="Foto do Aluno" 
                                 className="img-fluid rounded-circle shadow-md" 
                                 style={{ width: '150px', height: '150px' }}

@@ -28,7 +28,12 @@ function MediaInput({ campo, register, setValue, startSpeechRecognition, metodo,
             setMedirNovamente(diff > 1);
         } else setMedirNovamente(false);
     }, [valor1, valor2, valor3, metodo]);
-
+    
+    
+    function changeValue(e) {
+        setMedia(e.target.value);
+    }
+    
     return (
         <div className="input-group">
             <div className="input-group">
@@ -46,13 +51,13 @@ function MediaInput({ campo, register, setValue, startSpeechRecognition, metodo,
 
                 <input
                     value={media}
-                    onChange={(e) => setMedia(e.target.value)}
+                    onChange={changeValue}
                     readOnly={metodo === "media"}
                     {...register(campo, { required: required ? 'Dobras obrigatórias!' : false })}
                     type="number"
                     step="0.1"
                     className="form-control"
-                    onKeyDown={e => e.preventDefault()}
+                    // onKeyDown={e => e.preventDefault()}
                 />
 
                 {metodo === "normal" && (

@@ -39,7 +39,7 @@ function Dobras({ metodoDobras, setMetodoDobras, getValues, ocultarCampos, tipoA
 
 const DobrasCampos = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras, tipoAvaliacao, ocultarCampos, getValues, watch }) => {    
     const dobrasDisponiveis = ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"];
-
+    
     const camposParaExibir = tipoAvaliacao === "complexo" 
     ? [...new Set([...protocolosCampos[protocolo], "triciptal", "coxa", "panturrilha"])]
     : protocolosCampos[protocolo] || [];

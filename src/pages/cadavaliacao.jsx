@@ -8,7 +8,7 @@ import { useRecoilState } from "recoil";
 import { sendAvaliacaoIMG, setAvaliacao } from "../api/aluno";
 import { useQuery } from "react-query";
 import { getProtocolos } from '../api/usuario';
-import { dataURLToBlob } from "../utils";
+import { calcularIdade, dataURLToBlob, getSexo } from "../utils";
 import Imagens from "./cadAvaliacao/imagens";
 import { toast } from "react-toastify";
 import Dobras from "./cadAvaliacao/dobras";
@@ -30,7 +30,7 @@ function CadAvaliacao() {
     const formValues = watch();
     const [capturedImages, setCapturedImages] = useState({});
     const [imageDescriptions, setImageDescriptions] = useState({});
-    const [deletedImages, setDeletedImages] = useState({});
+    const [deletedImages, setDeletedImages] = useState([]);
 
     const [aluno, setAluno] = useState();
     const [isListening, setIsListening] = useState(false);
@@ -122,7 +122,7 @@ function CadAvaliacao() {
         if (cancel) return;
 
         const av = await setAvaliacao(data);
-        await enviaImagens(av.cod_avaliacao);
+        enviaImagens(av.cod_avaliacao);
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
@@ -314,7 +314,7 @@ function CadAvaliacao() {
                     <div className="row g-3">
                         <div className="col-md-3">
                             <label className="form-label">Aluno</label>
-                            <input value={aluno?.nome_aluno} disabled className="form-control" />
+                            <input value={`${calcularIdade(aluno?.data_nascimento_aluno)} - Anos / ${aluno?.nome_aluno}`} disabled className="form-control" />
                         </div>
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Protocolo *</label>
@@ -337,7 +337,7 @@ function CadAvaliacao() {
                                     <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: 'pointer' }}></i>
                                 </OverlayTrigger>
                             </label>
-                            <select {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} value={tipoAvaliacao} onChange={e => setTipoAvaliacao(e.target.value)} className="form-control">
+                            <select disabled={!protocolo} {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} value={tipoAvaliacao} onChange={e => setTipoAvaliacao(e.target.value)} className="form-control">
                                 <option value='simples'>Simples</option>
                                 <option value='complexo'>Complexo</option>
                             </select>

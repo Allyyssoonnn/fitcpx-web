@@ -68,7 +68,7 @@ function Header() {
                         <li className="nav-item dropdown me-2">
                             <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img
-                                    src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : '../assets/images/profile/user-1.jpg'}
+                                    src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                     alt=""
                                     width="35" height="35"
                                     className="rounded-circle"

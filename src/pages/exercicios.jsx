@@ -48,25 +48,26 @@ function Exercicios() {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="w-50 bg-light">
-                                    <h4 className="card-title d-none d-md-block">Exercícios</h4>
+                            <div className="d-flex justify-content-between">
+                                <h4 className="card-title d-none d-md-block">Exercícios</h4>
+                                
+                                <div className="col-md-3 col-12">
                                     <input
                                         type="text"
-                                        className="form-control w-60"
+                                        className="form-control"
                                         placeholder="Pesquisar"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
-
-                                    <div className="row g-3 mt-1">
-                                        <div className="col-md-5">
-                                            <input checked={deleted} onClick={() => setDeleted(!deleted)} className="form-checkbox-control" type="checkbox" id="deleted" />
-                                            <label className="form-label ms-1" htmlFor="deleted">Registros deletados</label>
-                                        </div>
-                                    </div>
                                 </div>
-                                
+                            </div>
+
+                            <div className="d-flex align-items-center justify-content-between mt-3 mb-3">
+                                <div>
+                                    <input checked={deleted} onClick={() => setDeleted(!deleted)} className="form-checkbox-control" type="checkbox" id="deleted" />
+                                    <label className="form-label ms-1" htmlFor="deleted">Registros deletados</label>
+                                </div>
+
                                 <button className="btn btn-success" onClick={() => navigate('/cadexercicio')}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Novo exercício

@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMusculo, calculaKGOsseo, calculaKGResidual, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMusculo, calculaPorcentagemOsseo, calculaPorcentagemResidual, calcularIdade, getAreaMagraGorda, getIMC, verificaCamposProtocolo } from "../utils";
-import { useQuery } from "react-query";
-import { getProtocolos } from "../api/usuario";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
-import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveBar } from "@nivo/bar";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ResponsiveLine } from "@nivo/line";
 
 function CompareAvaliacao() {
@@ -26,8 +22,8 @@ function CompareAvaliacao() {
         const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
         avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate('/alunos');
-
         avaliacaoRecebida ? setAvaliacao2(avaliacaoRecebida) : navigate('/alunos');
+        avaliacaoRecebida ? setAvaliacao3(avaliacaoRecebida) : navigate('/alunos');
         
         alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
         if (alunoRecebido.avaliacao) {
@@ -41,15 +37,18 @@ function CompareAvaliacao() {
         }
     }, []);
 
-    function selecionaAvaliacao(cod_avaliacao, numero) {
-        if (numero === 1) setAvaliacao1(avaliacoes.find((v) => v.cod_avaliacao === cod_avaliacao));
-        if (numero === 2) setAvaliacao2(avaliacoes.find((v) => v.cod_avaliacao === cod_avaliacao));
-        if (numero === 3) setAvaliacao3(avaliacoes.find((v) => v.cod_avaliacao === cod_avaliacao));
+    function selecionaAvaliacao(index, numero) {
+        if (numero === 1) setAvaliacao1({ ...avaliacoes[index], index });
+        if (numero === 2) setAvaliacao2({ ...avaliacoes[index], index });
+        if (numero === 3) setAvaliacao3({ ...avaliacoes[index], index });
     }
 
     if (!avaliacao || !aluno) {
         return <div>Carregando...</div>;
     }
+
+    console.log(avaliacao1, avaliacao2, avaliacao3);
+    
 
     return (
         <div className="container-fluid">
@@ -70,28 +69,28 @@ function CompareAvaliacao() {
                     <div className="row g-3 mb-5 justify-content-center">
                         <div className="col-md-3">
                             <label className="form-label">Avaliação 1</label>
-                            <select value={avaliacao1?.cod_avaliacao} onChange={e => selecionaAvaliacao(e.target.value, 1)} className="form-control">
+                            <select value={avaliacao1?.index} onChange={e => selecionaAvaliacao(e.target.value, 1)} className="form-control">
                                 <option value="">Selecione uma avaliação</option>
                                 {avaliacoes.map((av, index) => (
-                                    <option key={index} value={av.cod_avaliacao}>{av.data_avaliacao}</option>
+                                    <option key={index} value={index}>{av.data_avaliacao}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="col-md-3">
                             <label className="form-label">Avaliação 2</label>
-                            <select value={avaliacao2?.cod_avaliacao} onChange={e => selecionaAvaliacao(e.target.value, 2)} className="form-control">
+                            <select value={avaliacao2?.index} onChange={e => selecionaAvaliacao(e.target.value, 2)} className="form-control">
                                 <option value="">Selecione uma avaliação</option>
                                 {avaliacoes.map((av, index) => (
-                                    <option key={index} value={av.cod_avaliacao}>{av.data_avaliacao}</option>
+                                    <option key={index} value={index}>{av.data_avaliacao}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="col-md-3">
                             <label className="form-label">Avaliação 3</label>
-                            <select value={avaliacao3?.cod_avaliacao} onChange={e => selecionaAvaliacao(e.target.value, 3)} className="form-control">
+                            <select value={avaliacao3?.index} onChange={e => selecionaAvaliacao(e.target.value, 3)} className="form-control">
                                 <option value="">Selecione uma avaliação</option>
                                 {avaliacoes.map((av, index) => (
-                                    <option key={index} value={av.cod_avaliacao}>{av.data_avaliacao}</option>
+                                    <option key={index} value={index}>{av.data_avaliacao}</option>
                                 ))}
                             </select>
                         </div>
@@ -244,10 +243,125 @@ function CompareAvaliacao() {
                     <SimetriaMembro avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
                     <Dobras avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
                     <Diametro avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
+                    <Imagens avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
                 </div>
             </div>
         </div>
     );
+}
+
+function Imagens({ avaliacao, avaliacoes }) {
+    const [tipoColagem, setTipoColagem] = useState(2);
+
+    const [indexImg, setIndexImg] = useState([0, 0, 0]);
+
+    function changeIndex(value, index) {
+        setIndexImg(prev => prev.map((v, i) =>
+            index == i ? Number(value) : v
+        ));
+    }
+    
+    const handleSalvarColagem = async () => {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+    
+            // Carregar as imagens e obter seus tamanhos
+            const images = await Promise.all(
+                avaliacoes.slice(0, tipoColagem).map(async (av, index) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous'; // Habilita CORS
+                    img.src = av.imagem[indexImg[index]]?.url_imagem || '';
+    
+                    return new Promise((resolve, reject) => {
+                        img.onload = () => resolve({ img, width: img.width, height: img.height });
+                        img.onerror = () => reject(new Error(`Erro ao carregar imagem ${index} ${av.imagem[indexImg[index]]?.url_imagem}`));
+                    });
+                })
+            );
+    
+            // Encontrar as menores dimensões de largura e altura
+            const minWidth = Math.min(...images.map(({ width }) => width));
+            const minHeight = Math.min(...images.map(({ height }) => height));
+    
+            // Calcular a largura total do canvas baseado no número de imagens
+            const totalWidth = images.length * minWidth;
+            canvas.width = totalWidth;
+            canvas.height = minHeight;
+    
+            // Desenhar as imagens no canvas, redimensionando proporcionalmente
+            let currentX = 0;
+            images.forEach(({ img, width, height }) => {
+                const scale = Math.min(minWidth / width, minHeight / height); // Redimensionamento proporcional
+                const newWidth = width * scale;  // Nova largura proporcional
+                const newHeight = height * scale; // Nova altura proporcional
+    
+                const xOffset = (minWidth - newWidth) / 2; // Centraliza a imagem na largura
+                const yOffset = (minHeight - newHeight) / 2; // Centraliza a imagem na altura
+    
+                // Desenhar imagem redimensionada no canvas
+                ctx.drawImage(img, currentX + xOffset, yOffset, newWidth, newHeight);
+                currentX += minWidth; // Mover para a próxima posição
+            });
+    
+            // Gerar imagem do canvas
+            const dataURL = canvas.toDataURL('image/png');
+    
+            // Criar link para download
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'colagem.png';
+            link.click();
+    
+        } catch (error) {
+            console.error('Erro ao salvar a colagem:', error);
+            alert('Ocorreu um erro ao salvar a colagem. Verifique as imagens e tente novamente.');
+        }
+    };
+
+    return (
+        <div className="card">
+            <div className="card-header d-flex gap-3">
+                <h4>Comparação visual</h4>
+
+                <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" className="btn-check" name="btnradio" id="btnradio-2" checked={tipoColagem == 2} onClick={() => setTipoColagem(2)} />
+                    <label className="btn btn-outline-primary" htmlFor="btnradio-2">2 Fotos</label>
+
+                    <input type="radio" className="btn-check" name="btnradio" id="btnradio-3" checked={tipoColagem == 3} onClick={() => setTipoColagem(3)} />
+                    <label className="btn btn-outline-primary" htmlFor="btnradio-3">3 Fotos</label>
+                </div>
+
+                <button className="btn btn-info" onClick={handleSalvarColagem}>Salvar</button>
+            </div>
+            
+            <div className="card-body">
+                <div className={`row g-3 ${tipoColagem === 3 ? 'row-cols-3' : 'row-cols-2'}`}>
+                    {avaliacoes?.slice(0, tipoColagem).map((av, index) => (
+                        <div key={index} className="col-md-3">
+                            <div className="text-center">
+                                <div>
+                                    <label className="form-label fw-bold">Imagem</label>
+                                    <select className="form-control" onChange={e => changeIndex(e.target.value, index)}>
+                                        {av?.imagem?.map((img, i) => (
+                                            <option key={i} value={i}>{img.descricao_imagem}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                {av?.imagem && (
+                                    <img
+                                        src={av?.imagem[indexImg[index]]?.url_imagem || ''}
+                                        style={{ width: '100%', border: '1px solid black' }}
+                                    />
+                                )}
+                                <h4 className="mt-2">{av?.descricao_imagem}</h4>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function AreaMagraGorda({ avaliacao, avaliacoes }) {
