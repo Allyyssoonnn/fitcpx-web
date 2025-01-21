@@ -30,8 +30,9 @@ function Calendario() {
     const { handleSubmit, register, setValue } = useForm();
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
-        queryFn: () => getAlunos(usuario.cod_usuario),
+        queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
         initialData: [],
+        enabled: !!usuario.cod_empresa
     });
     const { data: agenda } = useQuery({
         queryKey: ['agenda', usuario.cod_usuario],

@@ -1,8 +1,8 @@
 import { toast } from "react-toastify";
 import { post, postImage } from "./api";
 
-export const getAlunos = async (codUsuario, cod_empresa) => {
-    const resp = await post('/aluno/getAlunos', { cod_usuario: codUsuario, cod_empresa });
+export const getAlunos = async (codUsuario, cod_empresa, deleted) => {
+    const resp = await post('/aluno/getAlunos', { cod_usuario: codUsuario, cod_empresa, deleted });
     if (resp.status) return resp.alunos;
     throw new Error("Erro ao carregar alunos");
 };

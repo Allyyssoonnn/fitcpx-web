@@ -24,6 +24,7 @@ function Register() {
         if (resp.status) {
             toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
             setCookie(null, 'token', resp.token, { maxAge: 30000 });
+            setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
             navigate('/');
         } else {
             toast.error(resp?.msg);

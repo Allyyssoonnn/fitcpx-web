@@ -25,11 +25,6 @@ function MinhaConta() {
         });
     }, [usuario]);
 
-    function sair() {
-        destroyCookie(null, 'token');
-        navigate('/entrar');
-    }
-
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -145,9 +140,6 @@ function MinhaConta() {
                             <i className="bi bi-pencil me-2"></i>Confirmar
                         </button>
                     )}
-                    <button className="btn btn-danger" onClick={sair}>
-                        <i className="bi bi-box-arrow-left me-2"></i>Sair da conta
-                    </button>
                 </div>
             </div>
         </div>

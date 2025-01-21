@@ -4,11 +4,27 @@ import Header from './header';
 import Sidebar from './sidebar';
 
 function Layout() {
-    const { openedSidebar } = useToggleSidebar();
+    const { openedSidebar, toggleSidebar } = useToggleSidebar();
 
     return (
         <div className={`${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper" data-layout="vertical" data-sidebartype="full">
             <Sidebar />
+
+            {openedSidebar && (
+                <div
+                    onClick={toggleSidebar}
+                    className='d-xl-none d-block'
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        zIndex: 998,
+                    }}
+                ></div>
+            )}
 
             <div className='page-wrapper'>
 

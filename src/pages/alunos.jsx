@@ -4,18 +4,24 @@ import { calcularIdade } from "../utils";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from '../states/states';
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function Alunos() {
     const [usuario] = useRecoilState(stateUsuario);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("A");
+    const [deleted, setDeleted] = useState(false);
 
-    const { data: alunos } = useQuery({
+    const { data: alunos, refetch } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
-        queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
+        queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa, deleted),
         initialData: [],
+        enabled: !!usuario.cod_empresa,
     });
+
+    useEffect(() => {
+        refetch();
+    }, [deleted]);
 
     const navigate = useNavigate();
     
@@ -49,12 +55,19 @@ function Alunos() {
 
                             <div className="d-flex align-items-center justify-content-between mt-3">
                                 <div className="col-md-3 col-6">
-                                    <label className="form-label fw-bold">Status</label>
-                                    <select className="form-control" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-                                        <option value="A">Ativos</option>
-                                        <option value="I">Inativos</option>
-                                        <option value="B">Bloqueados</option>
-                                    </select>
+                                    <div>
+                                        <input checked={deleted} onClick={() => setDeleted(!deleted)} className="form-checkbox-control" type="checkbox" id="deleted" />
+                                        <label className="form-label ms-1" htmlFor="deleted">Registros deletados</label>
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="form-label fw-bold">Status</label>
+                                        <select className="form-control" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                                            <option value="A">Ativos</option>
+                                            <option value="I">Inativos</option>
+                                            <option value="B">Bloqueados</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <label>{filteredAlunos?.length} Alunos</label>

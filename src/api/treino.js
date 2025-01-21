@@ -72,6 +72,18 @@ export const setSessao = async (sessoes, cod_treino, cod_usuario, cod_empresa, r
     throw new Error("Erro ao carregar sessao");
 };
 
+export const deleteTreino = async (cod_treino) => {
+    const resp = await post('/treino/deleteTreino', { cod_treino });
+    if (resp.status) return resp.sessao;
+    throw new Error("Erro ao carregar sessao");
+};
+
+export const recoveryTreino = async (cod_treino) => {
+    const resp = await post('/treino/recoveryTreino', { cod_treino });
+    if (resp.status) return resp.sessao;
+    throw new Error("Erro ao carregar sessao");
+};
+
 export const deleteSessao = async (cod_sessao) => {
     const resp = await post('/treino/deleteSessao', { cod_sessao });
     if (resp.status) return resp.sessao;

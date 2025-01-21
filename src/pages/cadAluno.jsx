@@ -146,6 +146,10 @@ function CadAluno() {
                         <input { ...register('numero_aluno') } type="text" className="form-control" />
                     </div>
                     <div className="col-md-3">
+                        <label className="form-label">Bairro</label>
+                        <input { ...register('bairro_aluno') } type="text" className="form-control" />
+                    </div>
+                    <div className="col-md-3">
                         <label className="form-label">Complemento</label>
                         <input { ...register('complemento_aluno') } type="text" className="form-control" />
                     </div>

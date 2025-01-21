@@ -6,6 +6,7 @@ import Register from './pages/register';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PlanilhaTreino from './pages/planilhaTreino';
+import LoginAluno from './appAluno/loginApp';
 
 function App() {
     return (
@@ -23,6 +24,9 @@ function App() {
                     <Route path='/entrar' element={<Login />} />
                     <Route path='/registrar' element={<Register />} />
                     <Route path='/planilhatreino' element={<PlanilhaTreino />} />
+                    
+                    {/* APP ALUNO */}
+                    <Route path='/app/login' element={<LoginAluno />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>

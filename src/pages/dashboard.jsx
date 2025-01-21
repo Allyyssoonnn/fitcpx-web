@@ -9,8 +9,9 @@ function Dashboard() {
 
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
-        queryFn: () => getAlunos(usuario.cod_usuario),
+        queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
         initialData: [],
+        enabled: !!usuario.cod_empresa
     });
     
     return (

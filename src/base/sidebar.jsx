@@ -9,6 +9,7 @@ function Sidebar() {
     const [{ openedSidebar }] = useRecoilState(stateApp);
 
     const [dropTreino, setDropTreino] = useState(false);
+    const [dropAdmin, setDropAdmin] = useState(false);
 
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
@@ -17,12 +18,13 @@ function Sidebar() {
 
     function go(route) {
         toggleSidebar();
-        setDropTreino(false)
+        setDropTreino(false);
+        setDropAdmin(false);
         navigate(route);
     }
 
     return (
-        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden' }}>
+        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between">
                     <a href="/" className="text-nowrap logo-img d-flex">
@@ -103,6 +105,22 @@ function Sidebar() {
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/treinos')} aria-expanded="false">
                                         <i className="bi bi-card-checklist fs-6 me-1"></i>
                                         <span className="hide-menu ps-1">Treinos</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li className="sidebar-item">
+                            <a className={`sidebar-link p-3 has-arrow ${dropAdmin ? 'active' : ''}`} href="#" onClick={() => setDropAdmin(!dropAdmin)}>
+                                <i className="bi bi-person-vcard fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">ADMIN</span>
+                            </a>
+
+                            <ul className={`collapse first-level ${dropAdmin ? 'in' : ''}`}>
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
+                                        <i className="bi bi-person-lines-fill fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Lista de usuários</span>
                                     </a>
                                 </li>
                             </ul>

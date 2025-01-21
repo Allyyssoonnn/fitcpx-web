@@ -15,10 +15,11 @@ function Planilha() {
     const [selecionados, setSelecionados] = useState([]);
 
     const { data: alunos } = useQuery({
-            queryKey: ['alunos', usuario.cod_usuario],
-            queryFn: () => getAlunos(usuario.cod_usuario),
-            initialData: [],
-        });
+        queryKey: ['alunos', usuario.cod_usuario],
+        queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
+        initialData: [],
+        enabled: !!usuario.cod_empresa
+    });
 
     const toggleSelecao = (index) => {
         if (selecionados.length == 15) return;
@@ -31,7 +32,7 @@ function Planilha() {
 
     const filteredAlunos = useMemo(() => {
         return alunos.filter((aluno) =>
-            aluno.nome_aluno?.toLowerCase().includes(searchTerm.toLowerCase())
+            aluno.nome_aluno?.toLowerCase().includes(searchTerm.toLowerCase()) && aluno.status_aluno === "A"
         );
     }, [alunos, searchTerm]);
 
@@ -63,7 +64,7 @@ function Planilha() {
                         <h4 className="card-title d-none d-md-block ms-3">{selecionados.length}/15</h4>
                     </div>
 
-                    <div className="col-md-3 col-12">
+                    <div className="col-md-3 col-8">
                         <input
                             type="text"
                             className="form-control"

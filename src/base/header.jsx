@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { stateUsuario, useToggleSidebar } from "../states/states";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function Header() {
     const { toggleSidebar } = useToggleSidebar();
@@ -12,7 +13,10 @@ function Header() {
     const [tema, setTema] = useState(localStorage.getItem('tema') ?? 'light');
 
     function sair() {
+        destroyCookie(null, 'user');
         destroyCookie(null, 'token');
+        destroyCookie(null, 'refreshToken');
+        setusuario({});
         navigate('/entrar');
     }
 
@@ -29,6 +33,12 @@ function Header() {
         setTema(novoTema);
         document.documentElement.setAttribute("data-bs-theme", novoTema);
     }
+
+    const tooltip = (
+        <Tooltip id="tooltip">
+            <div>Admin</div>
+        </Tooltip>
+    );
 
     return (
         <header className="app-header">
@@ -64,17 +74,21 @@ function Header() {
                         
                         {/* <a href="#" target="_blank"
                             className="btn btn-success"><span className="d-none d-md-block">Financeiro</span> <span className="d-block d-md-none">Fin.</span></a> */}
-                    
+
                         <li className="nav-item dropdown me-2">
                             <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img
                                     src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                     alt=""
                                     width="35" height="35"
-                                    className="rounded-circle"
+                                    className={`rounded-circle ${usuario.admin_usuario == 'S' ? 'border border-danger' : ''}`}
                                     loading="lazy"
                                 />
+                                <OverlayTrigger placement="bottom" overlay={tooltip}>
+                                    <i className={`bi bi-unlock-fill text-danger ms-2 ${usuario.admin_usuario == 'S' ? '' : 'd-none'}`}></i>
+                                </OverlayTrigger>
                             </a>
+
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div className="message-body">
                                     <a href="minhaconta" className="d-flex align-items-center gap-2 dropdown-item">
