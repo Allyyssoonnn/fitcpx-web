@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
 import { useRecoilState } from 'recoil';
 import { stateUsuario } from '../states/states';
-import { destroyCookie } from 'nookies';
 import ImageCropModal from '../components/cutImg';
 import { dataURLToBlob } from '../utils';
 import { changeUsuarioIMG, setUsuario } from '../api/usuario';

@@ -27,10 +27,11 @@ function Sidebar() {
         <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between">
-                    <a href="/" className="text-nowrap logo-img d-flex">
-                        <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>S-FitApp</h1>
+                    <img src="../assets/images/logos/logo_horizontal.png" alt="" width='220' />
+                    {/* <a href="/" className="text-nowrap logo-img d-flex">
+                        <h3 style={{ borderLeft: '0.30rem solid #85D446' }}>FitComplex</h3>
                     </a>
-                    <img src="../assets/images/app/logo2.png" alt="" width='60' style={{ padding: '10px' }} />
+                    <img src="../assets/images/app/logo2.png" alt="" width='60' style={{ padding: '10px' }} /> */}
                     <a onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                         <i className="bi bi-x fs-8"></i>
                     </a>

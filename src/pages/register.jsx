@@ -43,7 +43,8 @@ function Register() {
                   <div className="card-body">
                       <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
                         {/* <img src="../assets/images/logos/logo-light.svg" alt="" /> */}
-                        <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>FitNGen</h1>
+                        {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>FitNGen</h1> */}
+                        <img src="../assets/images/logos/logo_horizontal.png" width='220' alt="" />
                       </a>
                     <p className="text-center">Renove seu profissionalismo</p>
                     <form onSubmit={handleSubmit(registrar)}>

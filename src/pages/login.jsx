@@ -17,6 +17,8 @@ function Login() {
         if (cookies.token) {
             toast.success('Bem vindo de volta!');
             navigate('/');
+        } else {
+            setusuario({});
         }
     }, []);
 
@@ -43,8 +45,8 @@ function Login() {
                             <div className="card mb-0">
                                 <div className="card-body">
                                     <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
-                                        {/* <img src="../assets/images/logos/logo-light.svg" alt="" /> */}
-                                        <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>S-FitApp</h1>
+                                        <img src="../assets/images/logos/logo_horizontal.png" width='220' alt="" />
+                                        {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>S-FitApp</h1> */}
                                     </a>
                                     
                                     <p className="text-center">Renove seu profissionalismo</p>
