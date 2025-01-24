@@ -12,6 +12,8 @@ function CadUsuario() {
 
     useEffect(() => {
         const usuarioRecebido = location.state?.usuario;
+        console.log(location.state);
+        
         if (usuarioRecebido) {
             Object.keys(usuarioRecebido).forEach((key) => {
                 setValue(key, usuarioRecebido[key]);

@@ -23,7 +23,11 @@ function Usuarios() {
 
     const navigate = useNavigate();
     
-    const editarAluno = (usuario) => navigate('/cadaluno', { state: { aluno: usuario } });
+    const editarUsuario = (usuario) => {
+        console.log(usuario);
+        
+        navigate('/cadusuario', { state: { usuario: usuario } })
+    };
 
     const filteredUsuarios = useMemo(() => {
         return usuarios.filter((usuario) =>
@@ -72,7 +76,7 @@ function Usuarios() {
                                 <tbody>
                                     {filteredUsuarios.map((usuario) => {
                                         return (
-                                        <tr key={usuario.cod_aluno} onClick={() => navigate('/cadusuario', { state: { usuario: usuario } })}>
+                                        <tr key={usuario.cod_aluno}>
                                             <th scope="row" className="d-flex align-items-center">
                                                 <img
                                                     src={usuario.imagem_usuario ? `${usuario.imagem_usuario}` : 'https://placehold.co/150x150?text=img'}
@@ -93,7 +97,7 @@ function Usuarios() {
                                                     </button>
 
                                                     <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
-                                                        <a onClick={e => { e.stopPropagation(); editarAluno(usuario) }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
+                                                        <a onClick={e => { e.stopPropagation(); editarUsuario(usuario) }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
                                                             <i className="bi bi-pencil"></i>
                                                             <p className="mb-0">Editar</p>
                                                         </a>

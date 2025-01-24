@@ -106,7 +106,18 @@ function Aluno() {
                         </div>
 
                         <div className={`col-sm-8 ${window.innerWidth < 900 ? 'text-center' : ''} mt-4`}>
-                            <h3>{aluno?.nome_aluno}</h3>
+                            <div className='d-flex align-items-center'>
+                                <h3>{aluno?.nome_aluno}</h3>
+                                <label className={`ms-2 bg-opacity-50 px-2 rounded-3
+                                    ${aluno.status_aluno === 'A' ? 'bg-success' : ''}
+                                    ${aluno.status_aluno === 'B' ? 'bg-danger' : ''}
+                                    ${aluno.status_aluno === 'I' ? 'bg-warning' : ''}
+                                `}>
+                                    {aluno.status_aluno === 'A' ? 'Ativo' : ''}
+                                    {aluno.status_aluno === 'B' ? 'Bloqueado' : ''}
+                                    {aluno.status_aluno === 'I' ? 'Inativo' : ''}
+                                </label>
+                            </div>
                             <p>{calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
                             <p>Email: {aluno?.email_aluno}</p>
                             <button className='btn btn-warning me-2' onClick={() => navigate('/cadaluno', { state: { aluno } })}>
@@ -214,20 +225,16 @@ function CardTreino({ treino, aluno }) {
                 <h5 className="card-title">{treino.nome_treino}</h5>
                 <div className='row'>
                     <div className='col-md-3'>
-                        {/* <strong>Responsável:</strong> */}
-                        <label className="badge bg-dark">{treino.usuario?.nome_usuario}</label>
+                        <strong>Responsável:</strong> {treino.usuario?.nome_usuario}
                     </div>
                     <div className='col-md-3'>
-                        {/* <strong>Nível:</strong> */}
-                        <label className="badge bg-dark">{treino.nivel_treino}</label>
+                        <strong>Nível:</strong> {treino.nivel_treino}
                     </div>
                     <div className='col-md-3'>
-                        {/* <strong>Sexo:</strong> */}
-                        <label className="badge bg-dark">{getSexo(treino.sexo_treino)}</label>
+                        <strong>Sexo:</strong> {getSexo(treino.sexo_treino)}
                     </div>
                     <div className='col-md-3'>
-                        {/* <strong>Sexo:</strong> */}
-                        <label className="badge bg-dark">{treino?.sessoes?.length} {treino?.sessoes?.length > 1 ? 'Sessões' : 'Sessão'}</label>
+                        <strong>Sexo:</strong> {treino?.sessoes?.length} {treino?.sessoes?.length > 1 ? 'Sessões' : 'Sessão'}
                     </div>
                 </div>
             </div>
@@ -237,13 +244,14 @@ function CardTreino({ treino, aluno }) {
                     className="btn btn-primary d-flex align-items-center"
                     onClick={() => navigate('/cadtreino', { state: { treino } })}
                 >
-                    <i className="bi bi-pencil me-2"></i> Editar
+                    <i className="bi bi-pencil me-2"></i>Editar
                 </button>
                 <button
                     className="btn btn-warning d-flex align-items-center"
                     onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}
+                    disabled
                 >
-                    <i className="bi bi-printer me-2"></i> Ver treino
+                    <i className="bi bi-printer me-2"></i>Ver treino
                 </button>
             </div>
         </div>

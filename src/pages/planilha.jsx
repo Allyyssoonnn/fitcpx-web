@@ -45,7 +45,7 @@ function Planilha() {
             indexTreino: 0,
             openTab: false,
         }))
-
+        console.log(alunosFiltrado);
         for (const aluno of alunosFiltrado) {
             const treinos = await getTreinos({ cod_aluno: aluno.cod_aluno });
             aluno.treinos = treinos;

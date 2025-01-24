@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { setSessao } from "../api/treino";
+import { getExercicios, setSessao } from "../api/treino";
+import { stateUsuario } from "../states/states";
+import { useRecoilState } from "recoil";
+import { useQuery } from "react-query";
+import AutoComplete from "../components/autoComplete";
 
 function PlanilhaTreino() {
+    const [usuario] = useRecoilState(stateUsuario);
     const navigate = useNavigate();
 
     const [alunos, setAlunos] = useState([]);
     const [indexAluno, setIndexAluno] = useState(0);
-
     const [tema, setTema] = useState(localStorage.getItem('tema') ?? 'light');
+
+    const { data: exercicios, refetch } = useQuery({
+        queryKey: ['exercicios', usuario.cod_usuario],
+        queryFn: () => getExercicios(usuario.cod_usuario),
+        initialData: [],
+    });
 
     useEffect(() => {
         const alunosCache = JSON.parse(localStorage.getItem('planilhatreino'));
@@ -39,6 +49,22 @@ function PlanilhaTreino() {
         await setSessao(attAlunos[indexAluno].treinos[alunos[indexAluno].indexTreino].sessoes, null, null, null, []);
     }
 
+    function changeExercicio(exercicio, indexSessao, indexExc) {
+        const attAlunos = alunos.map((aluno, i) =>
+            indexAluno == i
+            ? { ...aluno, treinos: aluno.treinos.map((treino, idx) => idx == alunos[indexAluno].indexTreino ? {
+                ...treino,
+                sessoes: treino.sessoes.map((sessao, idxSessao) => indexSessao == idxSessao ? {
+                    ...sessao,
+                    exercicios: sessao.exercicios.map((exc, idxExc) => indexExc == idxExc ? { ...exc, ...exercicio } : exc)
+                } : sessao)
+            } : treino ) }
+            : aluno
+        )
+        setAlunos(attAlunos);
+        localStorage.setItem('planilhatreino', JSON.stringify(attAlunos));
+    }
+
     async function selectTreino(index) {
         setAlunos(prev => prev.map((_, i) => i == indexAluno ? { ..._, indexTreino: index } : _));
     }
@@ -66,29 +92,29 @@ function PlanilhaTreino() {
                 </div>
 
                 <div className="card-body">
+                    <div className="col-12 col-md-6 mb-3 d-flex flex-column border border-success p-3 rounded-3 w-100">
+                        <label>Alunos</label>
+                        <div className="btn-group" role="group">
+                            {alunos?.map((aluno, index) => (
+                                <>
+                                    <input type="radio" className="btn-check" name="btnradio" id={`btnradio-${index}`} checked={index == indexAluno} onClick={() => setIndexAluno(index)} />
+                                    <label className="btn btn-outline-success" htmlFor={`btnradio-${index}`}>{aluno.nome_aluno}</label>
+                                </>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="accordion">
                         <div className="accordion-item">
                             <h2 className="accordion-header">
                                 <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                    Alunos
+                                    Treinos
                                 </button>
                             </h2>
 
                             <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse">
                                 <div className="accordion-body row g-3">
                                     <div className="d-flex flex-column rounded-3 p-3 mb-3 border border-info">
-                                        <div className="col-12 col-md-6 mb-3 d-flex flex-column">
-                                            <label>Alunos</label>
-                                            <div className="btn-group" role="group">
-                                                {alunos?.map((aluno, index) => (
-                                                    <>
-                                                        <input type="radio" className="btn-check" name="btnradio" id={`btnradio-${index}`} checked={index == indexAluno} onClick={() => setIndexAluno(index)} />
-                                                        <label className="btn btn-outline-success" htmlFor={`btnradio-${index}`}>{aluno.nome_aluno}</label>
-                                                    </>
-                                                ))}
-                                            </div>
-                                        </div>
-
                                         <div className="col-12 col-md-6 d-flex flex-column">
                                             <label>Treinos</label>
                                             <div className="btn-group" role="group">
@@ -147,26 +173,59 @@ function PlanilhaTreino() {
                                             <thead>
                                                 <tr>
                                                     <th style={{ width: '65%' }}>Exercício</th>
-                                                    <th style={{ width: '10%' }}>Série</th>
-                                                    <th style={{ width: '10%' }}>Rep.</th>
-                                                    <th style={{ width: '15%' }}>Carga</th>
+                                                    <th style={{ width: '5%' }}>Série</th>
+                                                    <th style={{ width: '5%' }}>Rep.</th>
+                                                    <th style={{ width: '5%' }}>Carga</th>
+                                                    <th style={{ width: '20%' }}>Observação</th>
                                                 </tr>
                                             </thead>
 
                                             <tbody className="table-group-divider">
                                                 {sessao?.exercicios?.map((exc, indexExc) => (
-                                                    <tr key={indexExc}>
-                                                        <td>{exc.nome_exercicio}</td>
-                                                        <td>
-                                                            <Edit value={exc.serie_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'serie_sessao_exercicio')} />
-                                                        </td>
-                                                        <td>
-                                                            <Edit value={exc.repeticao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'repeticao_sessao_exercicio')} />
-                                                        </td>
-                                                        <td>
-                                                            <Edit value={exc.carga_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'carga_sessao_exercicio')} />
-                                                        </td>
-                                                    </tr>
+                                                    <>
+                                                        <tr key={indexExc}
+                                                            className={`${indexAluno % 2 ? 'border-success' : ' border-info'}`}
+                                                            style={exc.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
+                                                        >
+                                                            <td>
+                                                                <EditExercicio value={exc.nome_exercicio} onUpdate={(v, object) => { changeField(v, idx, indexExc, 'cod_exercicio'); changeExercicio(object, idx, indexExc) }} exercicios={exercicios} />
+                                                            </td>
+                                                            <td>
+                                                                <Edit value={exc.serie_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'serie_sessao_exercicio')} />
+                                                            </td>
+                                                            <td>
+                                                                <Edit value={exc.repeticao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'repeticao_sessao_exercicio')} />
+                                                            </td>
+                                                            <td>
+                                                                <Edit value={exc.carga_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'carga_sessao_exercicio')} />
+                                                            </td>
+                                                            <td>
+                                                                <Edit value={exc.observacao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'observacao_sessao_exercicio')} />
+                                                            </td>
+                                                        </tr>
+                                                        {exc.sets.map((set, indexSet) => (
+                                                            <tr key={indexSet}
+                                                                className={`${indexAluno % 2 ? 'border-success' : ' border-info'}`}
+                                                                style={exc.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
+                                                            >
+                                                                <td>
+                                                                    <EditExercicio value={set.nome_exercicio} onUpdate={(v, object) => { changeField(v, idx, indexExc, 'cod_exercicio'); changeExercicio(object, idx, indexExc) }} exercicios={exercicios} />
+                                                                </td>
+                                                                <td>
+                                                                    <Edit value={set.serie_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'serie_sessao_exercicio')} />
+                                                                </td>
+                                                                <td>
+                                                                    <Edit value={set.repeticao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'repeticao_sessao_exercicio')} />
+                                                                </td>
+                                                                <td>
+                                                                    <Edit value={set.carga_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'carga_sessao_exercicio')} />
+                                                                </td>
+                                                                <td>
+                                                                    <Edit value={set.observacao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'observacao_sessao_exercicio')} />
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </>
                                                 ))}
                                             </tbody>
                                         </table>
@@ -243,18 +302,55 @@ function Timer() {
 
             <div className="mt-3">
                 <button className="btn btn-primary me-2" onClick={() => setIsRunning(!isRunning)} disabled={time === 0}>
-                    {isRunning ? "Pause" : "Start"}
+                    {isRunning ? "Pausar" : "Iniciar"}
                 </button>
 
-                <button className="btn btn-danger" onClick={resetTimer}>Reset</button>
+                <button className="btn btn-danger" onClick={resetTimer}>Resetar</button>
             </div>
         </div>
+    );
+}
+
+function EditExercicio({ value, onUpdate, exercicios }) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+        setInputValue(value);
+    }, []);
+
+    const handleBlur = () => {
+        setIsEditing(false);
+    };
+
+    function onChange(value, object) {
+        onUpdate(value, object);
+        setIsEditing(false);
+    }
+
+    return isEditing ? (
+        <AutoComplete
+            onChange={onChange}
+            autoFocus={true}
+            onBlur={handleBlur}
+            sugestoes={exercicios}
+            chavePesquisa='nome_exercicio'
+            chave='cod_exercicio'
+        />
+    ) : (
+        <label className="w-100" onDoubleClick={() => setIsEditing(true)}>
+            {value}
+        </label>
     );
 }
 
 function Edit({ value, onUpdate }) {
     const [isEditing, setIsEditing] = useState(false);
     const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+        setInputValue(value);
+    }, []);
 
     const handleBlur = () => {
         setIsEditing(false);
@@ -277,10 +373,6 @@ function Edit({ value, onUpdate }) {
     ) : (
         <label className="w-100" onDoubleClick={() => setIsEditing(true)}>
             {value}
-            {/* <button className="btn btn-sm btn-outline-primary ms-2" onClick={() => setIsEditing(true)}>
-                <i className="bi bi-pencil me-2"></i>
-                Renomear
-            </button> */}
         </label>
     );
 }

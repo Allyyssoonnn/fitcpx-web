@@ -18,12 +18,15 @@ function CadTreino() {
     const [usuario] = useRecoilState(stateUsuario);
     const [sessoes, setSessoes] = useState([]);
     const [removidos, setRemovidos] = useState([]);
+    const [nome_aluno, setNome_aluno] = useState('');
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         const treinoRecebido = location.state?.treino;
         const alunoRecebido = location.state?.aluno;
         if (alunoRecebido) setValue('cod_aluno', alunoRecebido.cod_aluno);
+        if (alunoRecebido) setValue('nome_aluno', alunoRecebido.nome_aluno);
+        if (alunoRecebido) setNome_aluno(alunoRecebido.nome_aluno);
         if (treinoRecebido) {
             Object.keys(treinoRecebido).forEach((key) => {
                 setValue(key, treinoRecebido[key]);
@@ -66,6 +69,13 @@ function CadTreino() {
 
                 <div className="card-body">
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
+                    
+                    <div className={`row g-3 mb-3 ${nome_aluno ? '' : 'd-none'}`}>
+                        <div className="col-md-3">
+                            <label className="form-label fw-bold">Aluno</label>
+                            <input disabled {...register("nome_aluno")} className="form-control" />
+                        </div>
+                    </div>
 
                     <div className="row g-3">
                         <div className="col-md-3">
@@ -213,6 +223,7 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
                                             serie_sessao_exercicio: 3,
                                             repeticao_sessao_exercicio: getRepeticao(),
                                             intervalo_sessao_exercicio: 60,
+                                            carga_sessao_exercicio: 0,
                                         }
                                     ]
                                 }
@@ -234,6 +245,7 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
                         serie_sessao_exercicio:  3,
                         repeticao_sessao_exercicio: getRepeticao(),
                         intervalo_sessao_exercicio: 60,
+                        carga_sessao_exercicio: 0,
                     }] }
                     : item
             )
@@ -428,7 +440,7 @@ function ListaExercicios({ exercicios, indexSessao, updateSessao, setWaitExercic
                                     {...provided.draggableProps}
                                     // {...provided.dragHandleProps}
                                     className="d-flex flex-row align-items-center border-info border-bottom p-2 bg-light gap-2"
-                                    style={exercicio.sets?.length > 0 ? { borderLeft: '0.30rem solid #85D446', borderRight: '0.30rem solid #85D446' } : {}}
+                                    style={exercicio.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
                                 >
                                     <div
                                         {...provided.dragHandleProps}

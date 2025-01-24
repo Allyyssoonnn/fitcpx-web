@@ -86,7 +86,12 @@ function Alunos() {
                                                 <img
                                                     src={aluno.imagem_aluno ? `${aluno.imagem_aluno}` : 'https://placehold.co/150x150?text=img'}
                                                     alt="Foto do Aluno" 
-                                                    className="img-fluid rounded-circle me-3" 
+                                                    className={`
+                                                        img-fluid rounded-circle me-3 border border-3
+                                                        ${aluno.status_aluno === 'A' ? 'border-success' : ''}
+                                                        ${aluno.status_aluno === 'B' ? 'border-danger' : ''}
+                                                        ${aluno.status_aluno === 'I' ? 'border-warning' : ''}
+                                                    `} 
                                                     style={{ width: '50px', height: '50px' }}
                                                     loading="lazy"
                                                 />

@@ -14,7 +14,7 @@ function Exercicios() {
     const [exerciciosFiltrados, setExerciciosFiltrados] = useState([]);
 
     const { data: exercicios, refetch } = useQuery({
-        queryKey: ['alunos', usuario.cod_usuario],
+        queryKey: ['exercicios', usuario.cod_usuario],
         queryFn: () => getExercicios(usuario.cod_usuario, deleted),
         initialData: [],
     });
