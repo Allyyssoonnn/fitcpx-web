@@ -37,8 +37,10 @@ function Exercicios() {
     }
     
     const filteredExercicios = useMemo(() => {
-        return exerciciosFiltrados.filter((treino) =>
-            treino.nome_exercicio?.toLowerCase().includes(searchTerm.toLowerCase())
+        return exerciciosFiltrados.filter((exercicio) =>
+            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
+                exercicio.nome_exercicio?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)
+            )
         );
     }, [exerciciosFiltrados, searchTerm]);
         

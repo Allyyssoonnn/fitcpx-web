@@ -32,77 +32,85 @@ function Register() {
     }
 
     return (
-        <div className="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-            data-sidebar-position="fixed" data-header-position="fixed">
-        <div
-          className="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
-          <div className="d-flex align-items-center justify-content-center w-100">
-            <div className="row justify-content-center w-100">
-              <div className="col-md-8 col-lg-6 col-xxl-3">
-                <div className="card mb-0">
-                  <div className="card-body">
-                      <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
-                        {/* <img src="../assets/images/logos/logo-light.svg" alt="" /> */}
-                        {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>FitNGen</h1> */}
-                        <img src="../assets/images/logos/logo_horizontal.png" width='220' alt="" />
-                      </a>
-                    <p className="text-center">Renove seu profissionalismo</p>
-                    <form onSubmit={handleSubmit(registrar)}>
-                      <div className="mb-3">
-                        <label for="exampleInputtext1" className="form-label">Nome</label>
-                        <input { ...register('nome_usuario') } type="text" className="form-control" id="exampleInputtext1" aria-describedby="textHelp" />
-                      </div>
-                      <div className="mb-3">
-                        <label for="exampleInputEmail1" className="form-label">E-mail</label>
-                        <input { ...register('email_usuario') } type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-                      </div>
-                      <div className="mb-4">
-                        <label for="exampleInputPassword1" className="form-label">Senha</label>
-                        <input { ...register('senha_usuario') } type="password" className="form-control" id="exampleInputPassword1" />
-                      </div>
-                      <div className="mb-4">
-                        <label for="exampleInputPassword1" className="form-label">Confirmar senha</label>
-                        <input { ...register('senha_confirma') } type="password" className="form-control" id="exampleInputPassword1" />
-                      </div>
-                      <div className="mb-4 form-check">
-                        <input { ...register('acceptTerms') } type="checkbox" className="form-check-input" id="acceptTerms" />
-                        <label className="form-check-label" htmlFor="acceptTerms">
-                          Eu li e aceito os <button type="button" className="btn btn-link p-0" onClick={() => setIsModalOpen(true)}>termos e condições</button>.
-                        </label>
-                        {acceptTerms === false && (
-                          <p className="text-danger mt-2">Você deve aceitar os termos e condições.</p>
-                        )}
-                      </div>
-                      <button type='submit' className="btn btn-primary w-100 py-8 fs-4 mb-4">Registrar</button>
-                      <div className="d-flex align-items-center justify-content-center">
-                        <p className="fs-4 mb-0 fw-bold">Já tem uma conta?</p>
-                        <a className="text-primary fw-bold ms-2" href="/entrar">Entrar</a>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div className="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+            <div className="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+                <div className="d-flex align-items-center justify-content-center w-100">
+                    <div className="row justify-content-center w-100">
+                        <div className="col-md-8 col-lg-6 col-xxl-3">
+                            <div className="card mb-0">
+                                <div className="card-body">
+                                    <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
+                                        {/* <img src="../assets/images/logos/logo-light.svg" alt="" /> */}
+                                        {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>FitNGen</h1> */}
+                                        <img src="../assets/images/logos/logo_horizontal.png" width='220' alt="" />
+                                    </a>
+                                    
+                                    <p className="text-center">Renove seu profissionalismo</p>
 
-        <Modal
-          show={isModalOpen}
-          on={() => setIsModalOpen(false)}
-          contentLabel="Termos e Condições"
-          className="modal fade"
-          overlayClassName="modal-overlay"
-        >
-          <div className="card modal-dialog-scrollable modal-lg p-6">
-            <div className='card-header'>
-              <h2>Termos e Condições</h2>
+                                    <form onSubmit={handleSubmit(registrar)}>
+                                        <div className="mb-3">
+                                            <label htmlFor="exampleInputtext1" className="form-label">Nome</label>
+                                            <input { ...register('nome_usuario') } type="text" className="form-control" id="exampleInputtext1" aria-describedby="textHelp" />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="exampleInputEmail1" className="form-label">E-mail</label>
+                                            <input { ...register('email_usuario') } type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label htmlFor="exampleInputPassword1" className="form-label">Senha</label>
+                                            <input { ...register('senha_usuario') } type="password" className="form-control" id="exampleInputPassword1" />
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label htmlFor="exampleInputPassword1" className="form-label">Confirmar senha</label>
+                                            <input { ...register('senha_confirma') } type="password" className="form-control" id="exampleInputPassword1" />
+                                        </div>
+                                        
+                                        <div className="mb-4 form-check">
+                                            <input { ...register('acceptTerms') } type="checkbox" className="form-check-input" id="acceptTerms" />
+                                            <label className="form-check-label" htmlFor="acceptTerms">
+                                                Eu li e aceito os <button type="button" className="btn btn-link p-0" onClick={() => setIsModalOpen(true)}>termos e condições</button>.
+                                            </label>
+                                            {acceptTerms === false && (
+                                                <p className="text-danger mt-2">Você deve aceitar os termos e condições.</p>
+                                            )}
+                                        </div>
+
+                                        <button type='submit' className="btn btn-primary w-100 py-8 fs-4 mb-4">Registrar</button>
+                                        
+                                        <div className="d-flex align-items-center justify-content-center">
+                                            <p className="fs-4 mb-0 fw-bold">Já tem uma conta?</p>
+                                            <a className="text-primary fw-bold ms-2" href="/entrar">Entrar</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className='card-body' style={{ maxHeight: '400px', overflowY: 'auto', padding: '1rem', border: '1px solid #ddd' }}>
-              <p> {termos} </p>
-            </div>
-            <button onClick={() => setIsModalOpen(false)} className="btn btn-primary mt-3">Fechar</button>
-          </div>
-        </Modal>
+
+            <Modal
+                show={isModalOpen}
+                on={() => setIsModalOpen(false)}
+                contentLabel="Termos e Condições"
+                className="modal fade"
+                overlayClassName="modal-overlay"
+            >
+                <div className="card modal-dialog-scrollable modal-lg p-6">
+                    <div className='card-header'>
+                        <h2>Termos e Condições</h2>
+                    </div>
+
+                    <div className='card-body' style={{ maxHeight: '400px', overflowY: 'auto', padding: '1rem', border: '1px solid #ddd' }}>
+                        <p> {termos} </p>
+                    </div>
+
+                    <button onClick={() => setIsModalOpen(false)} className="btn btn-primary mt-3">Fechar</button>
+                </div>
+            </Modal>
       </div>
     );
 }

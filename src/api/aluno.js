@@ -21,6 +21,24 @@ export const setAluno = async (aluno) => {
     throw new Error("Erro ao carregar alunos");
 };
 
+export const deleteAluno = async (cod_aluno) => {
+    const resp = await post('/aluno/deleteAluno', { cod_aluno });
+    if (resp.status) return resp.sessao;
+    throw new Error("Erro ao carregar sessao");
+};
+
+export const recoveryAluno = async (cod_aluno) => {
+    const resp = await post('/aluno/recoveryAluno', { cod_aluno });
+    if (resp.status) return resp.sessao;
+    throw new Error("Erro ao carregar sessao");
+};
+
+export const getAvaliacoes = async (codEmpresa) => {
+    const resp = await post('/aluno/getAvaliacoes', { cod_empresa: codEmpresa });
+    if (resp.status) return resp.avaliacoes;
+    throw new Error("Erro ao carregar aluno");
+};
+
 export const getAvaliacao = async (codAluno) => {
     const resp = await post('/aluno/getAvaliacao', { cod_aluno: codAluno });
     if (resp.status) return resp.aluno;
@@ -31,6 +49,12 @@ export const setAvaliacao = async (avaliacao) => {
     const resp = await post('/aluno/setAvaliacao', { avaliacao });
     if (resp.status) return resp.avaliacao;
     throw new Error("Erro ao carregar alunos");
+};
+
+export const deleteAvaliacao = async (cod_avaliacao) => {
+    const resp = await post('/aluno/deleteAvaliacao', { cod_avaliacao });
+    if (resp.status) return resp;
+    throw new Error("Erro ao carregar sessao");
 };
 
 export const changeAlunoIMG = async (img, data) => {

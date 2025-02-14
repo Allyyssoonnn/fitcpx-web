@@ -1,5 +1,11 @@
 import { post, postImage } from "./api";
 
+export const recovery = async (email) => {
+    const resp = await post('/usuario/recovery', { email });
+    if (resp.status) return resp.usuario;
+    throw new Error("Erro ao carregar alunos");
+};
+
 export const getProtocolos = async (codUsuario) => {
     const resp = await post('/usuario/getProtocolos', { cod_usuario: codUsuario });
     if (resp.status) return resp.protocolos;
@@ -21,5 +27,11 @@ export const getUsuarios = async (cod_empresa, deleted) => {
 export const setUsuario = async (usuario) => {
     const resp = await post('/usuario/setUsuario', { usuario });
     if (resp.status) return resp.usuario;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const verifyEmail = async (codEmpresa) => {
+    const resp = await post('/usuario/verifyEmail', { cod_empresa: codEmpresa });
+    if (resp.status) return resp.email;
     throw new Error("Erro ao carregar alunos");
 };

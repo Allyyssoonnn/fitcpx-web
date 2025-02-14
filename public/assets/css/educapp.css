@@ -25,20 +25,6 @@ aside::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
-/* .btn {
-  background-color: #00a650;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.btn:hover {
-  background-color: #008f4c;
-} */
-
 .btn-hover:hover {
   background-color: #f0f0f0;
   color: #000;
@@ -46,3 +32,43 @@ aside::-webkit-scrollbar-thumb:hover {
   transform: scale(1.01);
   transition: all 0.3s ease;
 }
+
+.hover-effect {
+  -webkit-transition: all .35s ease-in-out;
+  -moz-transition: all .35s ease-in-out;
+  transition: all .35s ease-in-out;
+}
+
+.hover-effect:hover{
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+.hover-effect-success:hover{
+  color: #FFF;
+  --bs-bg-opacity:1;
+  background-color:rgba(var(--bs-success-rgb),var(--bs-bg-opacity))!important
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Resolve conflito da class collapse entre o Bootstrap e o Tailwindcss */
+.collapse {
+  visibility: visible !important;
+  display: none !important;
+}
+
+.collapse.in {
+  display: block !important;
+}
+
+.accordion-collapse.collapse {
+  visibility: visible !important;
+  display: none !important;
+}
+
+.accordion-collapse.collapse.show {
+  display: block !important;
+}
+/*  */

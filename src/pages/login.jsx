@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { parseCookies, setCookie } from "nookies";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from '../states/states';
+import { stateEmpresa, stateUsuario } from '../states/states';
 
 function Login() {
     const { handleSubmit, register } = useForm();
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
+    const [empresa, setEmpresa] = useRecoilState(stateEmpresa);
 
     useEffect(() => {
         const cookies = parseCookies(null);
@@ -25,11 +26,11 @@ function Login() {
     async function login(data) {
         const resp = await post('/usuario/login', data);
         if (resp.status) {
-            toast.success(`Bem vindo ${resp.nome_usuario}!`);
+            toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
             setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });
             setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
-            console.log(resp);
-            setusuario({ ...resp });
+            setusuario(resp.usuario);
+            setEmpresa(resp.empresa);
             navigate('/');
         } else {
             toast.error(resp?.msg);
@@ -70,7 +71,7 @@ function Login() {
                                                 </label>
                                             </div>
 
-                                            <a className="text-primary fw-bold" href="./index.html">Esqueceu a senha?</a>
+                                            <a className="text-primary fw-bold" href="/recuperar">Esqueceu a senha?</a>
                                         </div>
 
                                         <button type="submit" className="btn btn-primary w-100 py-8 fs-4 mb-4">Entrar</button>

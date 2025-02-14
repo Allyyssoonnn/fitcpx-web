@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { useNavigate } from "react-router-dom";
-import { getTreinos } from "../api/treino";
+import { deleteTreino, getTreinos, recoveryTreino } from "../api/treino";
 import { getSexo } from "../utils";
 
 function Treinos() {
@@ -11,10 +11,11 @@ function Treinos() {
     const [searchTerm, setSearchTerm] = useState("");
     const [deleted, setDeleted] = useState(false);
 
-    const { data: treinos } = useQuery({
+    const { data: treinos, refetch } = useQuery({
         queryKey: ['alunos', usuario.cod_empresa],
         queryFn: () => getTreinos({ cod_empresa: usuario.cod_empresa, deleted }),
         initialData: [],
+        enabled: !!usuario.cod_empresa,
     });
 
     const navigate = useNavigate();
@@ -23,10 +24,22 @@ function Treinos() {
 
     const filteredAlunos = useMemo(() => {
         return treinos.filter((treino) =>
-            treino.nome_treino?.toLowerCase().includes(searchTerm.toLowerCase())
+            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
+                treino.nome_treino?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)
+            )
         );
     }, [treinos, searchTerm]);
-        
+    
+    const delTreino = async (cod_treino) => {
+        await deleteTreino(cod_treino);
+        refetch();
+    }
+
+    const recoTreino = async (cod_treino) => {
+        await recoveryTreino(cod_treino);
+        refetch();
+    }
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -87,9 +100,13 @@ function Treinos() {
                                                             <i className="bi bi-pencil"></i>
                                                             <p className="mb-0">Editar</p>
                                                         </a>
-                                                        <a href="#" className="d-flex align-items-center gap-2 dropdown-item">
+                                                        <a onClick={e => { e.stopPropagation(); delTreino(treino.cod_treino); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${treino.deletedAt ? 'd-none' : ''}`}>
                                                             <i className="bi bi-trash"></i>
                                                             <p className="mb-0">Excluir</p>
+                                                        </a>
+                                                        <a onClick={e => { e.stopPropagation(); recoTreino(treino.cod_treino); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${treino.deletedAt ? '' : 'd-none'}`}>
+                                                            <i className="bi bi-trash"></i>
+                                                            <p className="mb-0">Reverter</p>
                                                         </a>
                                                     </div>
                                                 </div>

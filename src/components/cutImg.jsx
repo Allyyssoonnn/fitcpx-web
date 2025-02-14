@@ -41,7 +41,7 @@ function ImageCropModal({ show, image, onConfirm, onCancel, height, width }) {
                 const croppedImage = cropper.getCroppedCanvas({
                     // width: width || 150,
                     // height: height || 150,
-                }).toDataURL();
+                }).toDataURL('image/jpeg', 0.6);
                 await onConfirm(croppedImage); // Espera a ação de confirmação
             } finally {
                 setIsProcessing(false); // Reativa o botão em caso de erro ou sucesso

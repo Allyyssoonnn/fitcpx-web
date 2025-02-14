@@ -11,6 +11,12 @@ export const stateUsuario = atom({
     effects_UNSTABLE: [persistAtom]
 });
 
+export const stateEmpresa = atom({
+    key: 'stateEmpresa',
+    default: {},
+    effects_UNSTABLE: [persistAtom]
+});
+
 export const stateApp = atom({
     key: 'stateApp',
     default: {

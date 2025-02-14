@@ -27,7 +27,7 @@ function Sidebar() {
         <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between">
-                    <img src="../assets/images/logos/logo_horizontal.png" alt="" width='220' />
+                    <img src="../assets/images/logos/logo_horizontal.png" alt="" width='200' />
                     {/* <a href="/" className="text-nowrap logo-img d-flex">
                         <h3 style={{ borderLeft: '0.30rem solid #85D446' }}>FitComplex</h3>
                     </a>
@@ -62,7 +62,7 @@ function Sidebar() {
                                 <span className="hide-menu ps-1">Lista de alunos</span>
                             </a>
                         </li>
-
+                        
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/agenda')} aria-expanded="false">
                                 <i className="bi bi-calendar-check-fill fs-6 me-1"></i>
@@ -124,6 +124,20 @@ function Sidebar() {
                                         <span className="hide-menu ps-1">Lista de usuários</span>
                                     </a>
                                 </li>
+
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
+                                        <i className="bi bi-bar-chart fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Relatórios</span>
+                                    </a>
+                                </li>
+
+                                {/* <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
+                                        <i className="bi bi-cash fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Financeiro</span>
+                                    </a>
+                                </li> */}
                             </ul>
                         </li>
 
@@ -150,7 +164,7 @@ function Sidebar() {
                         <div className="d-flex p-2">
                             <div className="mt-2">
                                 <h4 className="mb-6 text-dark">Uso gratuito</h4>
-                                <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos</h6>
+                                <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6>
                                 <button onClick={() => navigate('/licenca')} className="btn btn-success fs-2 fw-semibold lh-sm">Contratar plano</button>
                             </div>
                             

@@ -199,6 +199,16 @@ function CadExercicio() {
                                     ))}
                                 </select>
                             </div>
+
+                            <div className="col-md-3">
+                                <label className="form-label fw-bold">Grupo 4</label>
+                                <select {...register('cod_grupo_exercicio_4')} className="form-control">
+                                    <option value=''>Selecione o grupo de exercício</option>
+                                    {grupos.map((gp, i) => (
+                                        <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,16 +224,6 @@ function CadExercicio() {
                         <div className="accordion-body row g-3">
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 1</label>
-                                <select {...register('cod_grupo_exercicio_4')} className="form-control">
-                                    <option value=''>Selecione o grupo de exercício</option>
-                                    {grupos.map((gp, i) => (
-                                        <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="col-md-3">
-                                <label className="form-label fw-bold">Grupo 2</label>
                                 <select {...register('cod_grupo_exercicio_5')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
@@ -233,7 +233,7 @@ function CadExercicio() {
                             </div>
 
                             <div className="col-md-3">
-                                <label className="form-label fw-bold">Grupo 3</label>
+                                <label className="form-label fw-bold">Grupo 2</label>
                                 <select {...register('cod_grupo_exercicio_6')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
@@ -243,8 +243,18 @@ function CadExercicio() {
                             </div>
 
                             <div className="col-md-3">
-                                <label className="form-label fw-bold">Grupo 4</label>
+                                <label className="form-label fw-bold">Grupo 3</label>
                                 <select {...register('cod_grupo_exercicio_7')} className="form-control">
+                                    <option value=''>Selecione o grupo de exercício</option>
+                                    {grupos.map((gp, i) => (
+                                        <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="col-md-3">
+                                <label className="form-label fw-bold">Grupo 4</label>
+                                <select {...register('cod_grupo_exercicio_8')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>

@@ -6,10 +6,10 @@ import { stateUsuario } from "../states/states";
 import EditableText from "../components/editableText";
 import { getExercicios, setSessao, setTreino } from "../api/treino";
 import { useQuery } from "react-query";
-import { Modal } from "react-bootstrap";
 import FiltroExercicio from "../components/filtroExercicio";
-import AutoComplete from "../components/autoComplete";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { arrayBorders } from "../utils";
+import { toast } from "react-toastify";
 
 function CadTreino() {
     const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors } } = useForm();
@@ -53,8 +53,11 @@ function CadTreino() {
     async function confirma(data) {
         const cod_usuario = usuario.cod_usuario;
         const respTreino = await setTreino({ ...data, cod_usuario, cod_empresa: usuario.cod_empresa });
-        if (respTreino.cod_treino) await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos);
-        navigate(-1);
+        if (respTreino.cod_treino)
+            if (respTreino.cod_treino) {
+            await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos);
+            navigate(-1);
+        } else toast.error('Erro ao salvar treino');
     }
 
     return (
@@ -173,7 +176,7 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
         const newKey = (sessoes.length + 1).toString();
         setSessoes([
             ...sessoes,
-            { key: newKey, nome_sessao: `Treino ${String.fromCharCode(65 + sessoes.length)}`, exercicios: [] },
+            { key: newKey, nome_sessao: `Treino ${String.fromCharCode(65 + sessoes.length)}`, exercicios: [], sequencia_sessao: sessoes.length +1 },
         ]);
     };
 
@@ -198,7 +201,7 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
 
     const filteredExercicios = useMemo(() => {
         return exerciciosFiltrados.filter((treino) =>
-            treino.nome_exercicio?.toLowerCase().includes(searchTerm.toLowerCase())
+            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word => treino.nome_exercicio?.toLowerCase().includes(word))
         );
     }, [exerciciosFiltrados, searchTerm]);
 
@@ -251,7 +254,27 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
             )
         );
     }
-       
+
+    const handleDragEnd = (result) => {
+        const { source, destination } = result;
+
+        // Se não houver destino válido, sai da função
+        if (!destination) return;
+
+        // Rearranjar a lista
+        const reorderedSessoes = Array.from(sessoes);
+        const [removed] = reorderedSessoes.splice(source.index, 1);
+        reorderedSessoes.splice(destination.index, 0, removed);
+
+        // Atualizar o campo `sequencia_sessao` de acordo com a nova ordem
+        const updatedSessoes = reorderedSessoes.map((item, index) => ({
+            ...item,
+            sequencia_sessao: index + 1,
+        }));
+
+        setSessoes(updatedSessoes);
+    };
+
     return (            
         <div className={`d-flex gap-2 ${window.screen.width > 1000 ? '' : 'flex-wrap'}`}>
             <div className={`card ${window.screen.width > 1000 ? 'w-40' : 'w-100'}`}>
@@ -298,53 +321,86 @@ function TabPrescricao({ sessoes, setSessoes, getRepeticao, setRemovidos }) {
                     Adicionar Sessão
                 </button>
 
-                <div className="card-body d-flex flex-column p-1" style={{ overflow: 'auto', height: '50vh', overflowX: 'hidden' }}>
-                    {sessoes.map((sessao, index) => (
-                        <div key={index} className="accordion rounded-1 mb-1" style={{ border: '0.15rem solid #85D446' }}>
-                            <div className="accordion-item">
-                                <h2 className="accordion-header">
-                                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#panelsStayOpen-collapse${index}`} aria-expanded="true" aria-controls={`panelsStayOpen-collapse${index}`}>
-                                        {sessao.nome_sessao}
-                                    </button>
-                                </h2>
-
-                                <div id={`panelsStayOpen-collapse${index}`} className="accordion-collapse collapse">
-                                    <div className="accordion-body row g-3">
-                                        <div className="d-flex align-items-center justify-content-between border-1 border-bottom border-dark">
-                                            <EditableText
-                                                key={sessao.key}
-                                                text={sessao.nome_sessao}
-                                                onUpdate={(newName) => updateNomeSessao(sessao.key, newName)}
-                                            />
-
-                                            <button className="btn btn-danger btn-sm"
-                                                onClick={(e) => { e.preventDefault(); removeSessao(index); }}
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="sessaoList">
+                        {(provided) => (
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className="card-body d-flex flex-column p-1"
+                                style={{ overflow: 'auto', height: '50vh', overflowX: 'hidden' }}
+                            >
+                                {sessoes.map((sessao, index) => (
+                                    <Draggable key={index} draggableId={String(index)} index={index}>
+                                        {(provided) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                // {...provided.dragHandleProps}
+                                                key={index}
+                                                className="accordion rounded-2 mb-1 border-2 border-success"
+                                                // style={{ border: '0.15rem solid #85D446' }}
                                             >
-                                                <i className="bi bi-trash me-2"></i>
-                                                Remover
-                                            </button>
-                                        </div>
+                                                <div className="accordion-item">
+                                                    <div className="accordion-header d-flex">
+                                                        <div
+                                                            {...provided.dragHandleProps}
+                                                            className="me-2 d-flex flex-column align-items-center ps-3"
+                                                            style={{ cursor: 'grab' }}
+                                                        >
+                                                            <i className="bi bi-arrow-bar-up"></i>
+                                                            <i className="bi bi-grip-horizontal"></i>
+                                                            <label className="fs-1">{sessao.sequencia_sessao}</label>
+                                                            <i className="bi bi-arrow-bar-down"></i>
+                                                        </div>
+                                                        
+                                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#panelsStayOpen-collapse${index}`} aria-expanded="true" aria-controls={`panelsStayOpen-collapse${index}`}>
+                                                            {sessao.nome_sessao}
+                                                        </button>
+                                                    </div>
 
-                                        <div className="d-flex flex-column">
-                                            <ListaExercicios
-                                                exercicios={sessao?.exercicios}
-                                                indexSessao={index}
-                                                updateSessao={updateSessao}
-                                                setWaitExercicio={setWaitExercicio}
-                                                waitExercicio={waitExercicio}
-                                            />
+                                                    <div id={`panelsStayOpen-collapse${index}`} className="accordion-collapse collapse">
+                                                        <div className="accordion-body row g-3">
+                                                            <div className="d-flex align-items-center justify-content-between border-bottom border-dark">
+                                                                <EditableText
+                                                                    key={sessao.key}
+                                                                    text={sessao.nome_sessao}
+                                                                    onUpdate={(newName) => updateNomeSessao(sessao.key, newName)}
+                                                                />
 
-                                            <button onClick={e => { e.preventDefault(); setWaitExercicio({ ...sessao, index }); }} className='btn btn-sm btn-outline-info rounded-3 mt-3 mb-3'>
-                                                <i className="bi bi-plus-circle me-2"></i>
-                                                Adicionar Exercício
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                                                <button className="btn btn-danger btn-sm"
+                                                                    onClick={(e) => { e.preventDefault(); removeSessao(index); }}
+                                                                >
+                                                                    <i className="bi bi-trash me-2"></i>
+                                                                    Remover
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="d-flex flex-column">
+                                                                <ListaExercicios
+                                                                    exercicios={sessao?.exercicios}
+                                                                    indexSessao={index}
+                                                                    updateSessao={updateSessao}
+                                                                    setWaitExercicio={setWaitExercicio}
+                                                                    waitExercicio={waitExercicio}
+                                                                />
+
+                                                                <button onClick={e => { e.preventDefault(); setWaitExercicio({ ...sessao, index }); }} className='btn btn-sm btn-outline-info rounded-3 mt-3 mb-3'>
+                                                                    <i className="bi bi-plus-circle me-2"></i>
+                                                                    Adicionar Exercício
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ))}
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </div>
         </div>
     )
@@ -439,8 +495,8 @@ function ListaExercicios({ exercicios, indexSessao, updateSessao, setWaitExercic
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     // {...provided.dragHandleProps}
-                                    className="d-flex flex-row align-items-center border-info border-bottom p-2 bg-light gap-2"
-                                    style={exercicio.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
+                                    className={`d-flex flex-row align-items-center border-bottom p-2 bg-light gap-2 ${exercicio.sets?.length > 0 ? 'border border-2' : ''} ${exercicio.sets?.length > 0 ? arrayBorders[index] : ''}`}
+                                    // style={exercicio.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
                                 >
                                     <div
                                         {...provided.dragHandleProps}

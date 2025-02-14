@@ -37,9 +37,12 @@ function Dobras({ metodoDobras, setMetodoDobras, getValues, ocultarCampos, tipoA
     );
 }
 
-const DobrasCampos = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras, tipoAvaliacao, ocultarCampos, getValues, watch }) => {    
-    const dobrasDisponiveis = ["triciptal", "peitoral", "subescapular", "axilar_media", "abdominal", "coxa", "supra_iliaca", "supra_espinhal", "biciptal", "panturrilha"];
+const DobrasCampos = ({ protocolo, register, setValue, startSpeechRecognition, metodoDobras, tipoAvaliacao, ocultarCampos, getValues, watch }) => {
+    const dobrasDisponiveis = ["subescapular", "triciptal", "biciptal", "peitoral", "axilar_media", "supra_iliaca", "supra_espinhal", "abdominal", "coxa", "panturrilha"];
     
+    //Evita uma renderização caso protocolo não esteja definido
+    if (!protocolosCampos[protocolo]) return <></>;
+
     const camposParaExibir = tipoAvaliacao === "complexo" 
     ? [...new Set([...protocolosCampos[protocolo], "triciptal", "coxa", "panturrilha"])]
     : protocolosCampos[protocolo] || [];
@@ -50,9 +53,6 @@ const DobrasCampos = ({ protocolo, register, setValue, startSpeechRecognition, m
     const filteredDobras = useMemo(() => {
         return dobrasDisponiveis.filter((campo) => !ocultarCampos || camposComAsterisco.has(campo));
     }, [dobrasDisponiveis, ocultarCampos, camposComAsterisco]);
-
-    //Evita uma renderização caso protocolo não esteja definido
-    if (!protocolo) return <></>;
 
     return (
         <>

@@ -1,16 +1,33 @@
 import { destroyCookie } from "nookies";
 import { useNavigate } from "react-router-dom";
-import { stateUsuario, useToggleSidebar } from "../states/states";
+import { stateEmpresa, stateUsuario, useToggleSidebar } from "../states/states";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { verifyEmail } from "../api/usuario";
 
 function Header() {
     const { toggleSidebar } = useToggleSidebar();
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
+    const [empresa] = useRecoilState(stateEmpresa);
 
     const [tema, setTema] = useState(localStorage.getItem('tema') ?? 'light');
+
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+    useEffect(() => {
+        const handleBeforeInstallPrompt = (event) => {
+            event.preventDefault();
+            setDeferredPrompt(event);
+        };
+
+        window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+        return () => {
+            window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+        };
+    }, []);
 
     function sair() {
         destroyCookie(null, 'user');
@@ -27,6 +44,11 @@ function Header() {
         document.documentElement.setAttribute("data-bs-theme", tema);
     }, []);
 
+    useEffect(() => {
+        const gridElement = document.getElementById('ag-grid-table');
+        if (gridElement) gridElement.className = tema === 'dark' ? 'ag-theme-alpine-dark' : 'ag-theme-alpine';
+    }, [tema]);
+
     function alteraTema() {
         const novoTema = tema === 'light' ? 'dark' : 'light';
         localStorage.setItem('tema', novoTema);
@@ -39,6 +61,24 @@ function Header() {
             <div>Admin</div>
         </Tooltip>
     );
+
+    function verificarEmail() {
+        verifyEmail(empresa.cod_empresa);
+    }
+
+    const handleInstallClick = () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === "accepted") {
+              console.log("Usuário aceitou instalar o PWA");
+            } else {
+              console.log("Usuário recusou instalar o PWA");
+            }
+            setDeferredPrompt(null);
+          });
+        }
+    };
 
     return (
         <header className="app-header">
@@ -58,11 +98,26 @@ function Header() {
                 </ul>
 
                 <div className="navbar-collapse justify-content-end px-0" id="navbarNav">
+                    {/* <ul className="navbar-nav flex-row ms-3">
+                        <li className={`${empresa.email_confirmado == 'S' ? 'd-none' : 'd-flex'} align-items-center gap-1 bg-warning-subtle rounded-3 p-2`}>
+                            <i className="bi bi-exclamation-triangle fs-6 px-2 rounded-5 text-black"></i>
+                            <h6 className="fs-3 mb-0">E-mail não verificado</h6>
+                            <button onClick={verificarEmail} className="btn btn-sm btn-success">Verificar</button>
+                        </li>
+                    </ul> */}
+
+                    <ul className="navbar-nav flex-row ms-3">
+                        <li>
+                            <i className="bi bi-donwload fs-6 px-2 rounded-5 text-black"></i>
+                            <button onClick={handleInstallClick} className="btn btn-success">Baixar app</button>
+                        </li>
+                    </ul>
+
                     <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                        <a href="#" onClick={() => navigate('/cadaluno')} className="btn btn-success me-2 d-none d-md-block">
+                        {/* <a href="#" onClick={() => navigate('/cadaluno')} className="btn btn-success me-2 d-none d-md-block">
                             <span className="d-none d-md-block"><i className="bi bi-plus-circle me-2"></i>Novo aluno</span>
                             <span className="d-block d-md-none"><i className="bi bi-plus-circle me-2"></i>Aluno</span>
-                        </a>
+                        </a> */}
 
                         <button onClick={alteraTema} className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex me-2">
                             {/* <iconify-icon icon="solar:moon-bold-duotone" className="moon fs-6 d-flex"></iconify-icon> */}
@@ -76,7 +131,7 @@ function Header() {
                             className="btn btn-success"><span className="d-none d-md-block">Financeiro</span> <span className="d-block d-md-none">Fin.</span></a> */}
 
                         <li className="nav-item dropdown me-2">
-                            <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a className="d-flex align-items-center nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img
                                     src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                     alt=""

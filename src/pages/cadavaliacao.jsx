@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import Dobras from "./cadAvaliacao/dobras";
 import Perimetros from "./cadAvaliacao/perimetros";
 import Diametros from "./cadAvaliacao/diametros";
+import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
 
 function CadAvaliacao() {
     const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors } } = useForm();
@@ -134,7 +135,9 @@ function CadAvaliacao() {
         Object.entries(capturedImages).forEach(([key, imageData]) => {
             if (!imageData.includes('amazonaws.com')) {
                 const imageBlob = dataURLToBlob(imageData);
-                formData.append('image', imageBlob, `${imageDescriptions[key]}_${key}.jpg`);
+                // const imageBlob = imageData;
+                const fileSizeMB = (imageBlob.size / (1024 * 1024)).toFixed(2);
+                formData.append('image', imageBlob, `[${imageDescriptions[key]}]_${key}(${fileSizeMB}).jpg`);
             }
         });
 
@@ -366,22 +369,6 @@ function CadAvaliacao() {
                                 className="form-control"
                             />
                         </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Metabolismo basal</label>
-                            <input {...register("metabolismo_basal", { required: "A altura é obrigatória" })}
-                                type="number"
-                                step="0.01"
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Gordura viceral</label>
-                            <input {...register("gordura_viceral", { required: "A altura é obrigatória" })}
-                                type="number"
-                                step="0.01"
-                                className="form-control"
-                            />
-                        </div>
                     </div>
                     <div className="row g-3 m-1">
                         <div className="form-check">
@@ -441,6 +428,15 @@ function CadAvaliacao() {
 
                         <Tab eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
                             <Diametros
+                                ocultarCampos={ocultarCampos}
+                                register={register}
+                                startSpeechRecognition={startSpeechRecognition}
+                                tipoAvaliacao={tipoAvaliacao}
+                            />
+                        </Tab>
+
+                        <Tab eventKey="bioimpedancia" title={<><i className="bi bi-activity me-2"></i>Bioimpedância</>}>
+                            <Bioimpedancia
                                 ocultarCampos={ocultarCampos}
                                 register={register}
                                 startSpeechRecognition={startSpeechRecognition}

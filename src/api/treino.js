@@ -12,6 +12,18 @@ export const setTreino = async (treino) => {
     throw new Error("Erro ao carregar treinos");
 };
 
+export const deleteTreino = async (cod_treino) => {
+    const resp = await post('/treino/deleteTreino', { cod_treino });
+    if (resp.status) return resp.sessao;
+    throw new Error("Erro ao carregar sessao");
+};
+
+export const recoveryTreino = async (cod_treino) => {
+    const resp = await post('/treino/recoveryTreino', { cod_treino });
+    if (resp.status) return resp.sessao;
+    throw new Error("Erro ao carregar sessao");
+};
+
 export const getGrupoExercicios = async (codEmpresa, deleted) => {
     const resp = await post('/treino/getGrupoExercicios', { cod_empresa: codEmpresa, deleted });
     if (resp.status) return resp.grupos;
@@ -69,18 +81,6 @@ export const recoveryExercicio = async (cod_exercicio) => {
 export const setSessao = async (sessoes, cod_treino, cod_usuario, cod_empresa, removidos) => {
     const resp = await post('/treino/setSessoes', { sessoes, cod_treino, cod_usuario, cod_empresa, removidos });
     if (resp.status) return resp.sessoes;
-    throw new Error("Erro ao carregar sessao");
-};
-
-export const deleteTreino = async (cod_treino) => {
-    const resp = await post('/treino/deleteTreino', { cod_treino });
-    if (resp.status) return resp.sessao;
-    throw new Error("Erro ao carregar sessao");
-};
-
-export const recoveryTreino = async (cod_treino) => {
-    const resp = await post('/treino/recoveryTreino', { cod_treino });
-    if (resp.status) return resp.sessao;
     throw new Error("Erro ao carregar sessao");
 };
 

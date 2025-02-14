@@ -1,3 +1,31 @@
+export const formatarData = (data) => {
+    if (!data) return '';
+  
+    let date;
+  
+    if (typeof data === 'string') {
+        // Caso seja uma string no formato YYYY-MM-DD
+        const [year, month, day] = data.split('-');
+        date = new Date(year, month - 1, day);
+    } else if (data instanceof Date) {
+        // Caso já seja um objeto Date
+        date = data;
+    } else if (typeof data === 'number') {
+        // Caso seja um timestamp
+        date = new Date(data);
+    } else {
+        return '';
+    }
+  
+    return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
+};
+  
+export const arrayBorders = ['border-success', 'border-info', 'border-danger', 'border-primary', 'border-secondary'];
+
 export const protocolosCampos = {
     1: [],
     2: ["subescapular", "triciptal", "peitoral", "axilar_media", "supra_iliaca", "coxa", "supra_iliaca", "abdominal", "coxa"],
@@ -111,6 +139,8 @@ export function getIMC(avaliacao) {
 }
 
 export function verificaCamposProtocolo(avaliacao, cod_protocolo) {
+    if (!protocolosCampos[cod_protocolo]) return;
+    
     var result = true;
     const campos = protocolosCampos[cod_protocolo];
     for (const campo of campos) {
@@ -149,7 +179,239 @@ export function verificaCamposProtocolo(avaliacao, cod_protocolo) {
 
 
 
-// =========================================================================
+// ========================================================================= METAS ABAIXO
+
+export function getPesoIMCMeta(aluno, avaliacao, meta, imcPersonalizado) {
+    const imc = meta !== 'Personalizado' ? getReferenciaIMCMetas(aluno, avaliacao, meta) : imcPersonalizado;
+    const alturaCM = avaliacao.altura * 100;
+    return (imc * ((alturaCM * alturaCM) / 10000)).toFixed(1);
+}
+
+export function getReferenciaIMCMetas(aluno, avaliacao, meta) {
+    const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
+    var result;
+    if (idade < 60) {
+        if (meta == 'Saúde -1') result = 19.5;
+        if (meta == 'Saúde 0') result = 21.65;
+        if (meta == 'Saúde +1') result = 21.85;
+        if (meta == 'Magro') result = 21.65;
+        if (meta == 'Atlético') result = 23.85;
+        if (meta == 'Musculoso') result = 25.75;
+    } else {
+        if (meta == 'Saúde -1') result = 22.7;
+        if (meta == 'Saúde 0') result = 24.25;
+        if (meta == 'Saúde +1') result = 26.05;
+        if (meta == 'Magro') result = 24.25;
+        if (meta == 'Atlético') result = 26.05;
+        if (meta == 'Musculoso') result = 27.8;
+    }
+    return result;
+}
+
+export function getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraPersonalizado) {
+    if (meta === 'Personalizado') return gorduraPersonalizado;
+    const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
+    var result;
+    if (aluno.sexo_aluno == 'M') {
+        if (idade >= 18 && idade <= 25) {
+            if (meta == 'Saúde -1') result = 9;
+            if (meta == 'Saúde 0') result = 12.5;
+            if (meta == 'Saúde +1') result = 15;
+            if (meta == 'Magro') result = 5;
+            if (meta == 'Atlético') result = 9;
+            if (meta == 'Musculoso') result = 12.5;
+        } else if (idade >= 26 && idade <= 35) {
+            if (meta == 'Saúde -1') result = 13.5;
+            if (meta == 'Saúde 0') result = 17;
+            if (meta == 'Saúde +1') result = 19;
+            if (meta == 'Magro') result = 9.5;
+            if (meta == 'Atlético') result = 13.5;
+            if (meta == 'Musculoso') result = 17;
+        } else if (idade >= 36 && idade <= 45) {
+            if (meta == 'Saúde -1') result = 17;
+            if (meta == 'Saúde 0') result = 20;
+            if (meta == 'Saúde +1') result = 22;
+            if (meta == 'Magro') result = 12;
+            if (meta == 'Atlético') result = 17;
+            if (meta == 'Musculoso') result = 20;
+        } else if (idade >= 46 && idade <= 55) {
+            if (meta == 'Saúde -1') result = 19;
+            if (meta == 'Saúde 0') result = 22;
+            if (meta == 'Saúde +1') result = 24.5;
+            if (meta == 'Magro') result = 14;
+            if (meta == 'Atlético') result = 19;
+            if (meta == 'Musculoso') result = 22;
+        } else if (idade >= 56) {
+            if (meta == 'Saúde -1') result = 20.5;
+            if (meta == 'Saúde 0') result = 22.5;
+            if (meta == 'Saúde +1') result = 24.5;
+            if (meta == 'Magro') result = 15.5;
+            if (meta == 'Atlético') result = 20.5;
+            if (meta == 'Musculoso') result = 22.5
+        }
+    } else {
+        if (idade >= 18 && idade <= 25) {
+            if (meta == 'Saúde -1') result = 18;
+            if (meta == 'Saúde 0') result = 21;
+            if (meta == 'Saúde +1') result = 24;
+            if (meta == 'Magro') result = 14.5;
+            if (meta == 'Atlético') result = 18;
+            if (meta == 'Musculoso') result = 21;
+        } else if (idade >= 26 && idade <= 35) {
+            if (meta == 'Saúde -1') result = 19;
+            if (meta == 'Saúde 0') result = 22;
+            if (meta == 'Saúde +1') result = 24.5;
+            if (meta == 'Magro') result = 15;
+            if (meta == 'Atlético') result = 19;
+            if (meta == 'Musculoso') result = 22;
+        } else if (idade >= 36 && idade <= 45) {
+            if (meta == 'Saúde -1') result = 21.5;
+            if (meta == 'Saúde 0') result = 25;
+            if (meta == 'Saúde +1') result = 28;
+            if (meta == 'Magro') result = 17.5;
+            if (meta == 'Atlético') result = 21.5;
+            if (meta == 'Musculoso') result = 25;
+        } else if (idade >= 46 && idade <= 55) {
+            if (meta == 'Saúde -1') result = 24;
+            if (meta == 'Saúde 0') result = 27;
+            if (meta == 'Saúde +1') result = 30;
+            if (meta == 'Magro') result = 19;
+            if (meta == 'Atlético') result = 24;
+            if (meta == 'Musculoso') result = 27;
+        } else if (idade >= 56) {
+            if (meta == 'Saúde -1') result = 25;
+            if (meta == 'Saúde 0') result = 28;
+            if (meta == 'Saúde +1') result = 31;
+            if (meta == 'Magro') result = 20;
+            if (meta == 'Atlético') result = 25;
+            if (meta == 'Musculoso') result = 28;
+        }
+    }
+    return result;
+}
+
+
+export function getReferenciaKGGordura(aluno, avaliacao, meta, gorduraPersonalizado) {
+    const gordura = meta !== 'Personalizado' ? getReferenciaPorcentagemGordura(aluno, avaliacao, meta) : gorduraPersonalizado;
+    return ((avaliacao.peso * gordura) / 100).toFixed(1);
+}
+
+export function getReferenciaIMC(aluno, avaliacao) {
+    const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
+    const imc = getIMC(avaliacao);
+    var result;
+    if (idade < 60) {
+        //Adulto
+        if (imc >= 40) {
+            result = 'Obeso 7';
+        } else if (imc >= 35) {
+            result = 'Obeso 6';
+        } else if (imc >= 30) {
+            result = 'Obeso 5';
+        } else if (imc >= 28.3) {
+            result = 'Sobrepeso 4';
+        } else if (imc >= 26.6) {
+            result = 'Sobrepeso 3';
+        } else if (imc >= 25) {
+            result = 'Sobrepeso 2';
+        } else if (imc >= 22.8) {
+            result = 'Normal 1';
+        } else if (imc >= 20.6) {
+            result = 'Normal 0';
+        } else if (imc >= 18.5) {
+            result = 'Normal -1';
+        } else if (imc >= 17) {
+            result = 'Baixo peso -2';
+        } else if (imc >= 16) {
+            result = 'Baixo peso -3';
+        } else if (imc >= 7) {
+            result = 'Baixo peso -4';
+        }
+    } else {
+        //Idoso
+        if (imc >= 30.1) {
+            result = 'Sobrepeso 4';
+        } else if (imc >= 28.6) {
+            result = 'Sobrepeso 3';
+        } else if (imc >= 27.1) {
+            result = 'Sobrepeso 2';
+        } else if (imc >= 25.1) {
+            result = 'Normal 1';
+        } else if (imc >= 23.5) {
+            result = 'Normal 0';
+        } else if (imc >= 22) {
+            result = 'Normal -1';
+        } else if (imc >= 20) {
+            result = 'Baixo peso -2';
+        } else if (imc >= 18.1) {
+            result = 'Baixo peso -3';
+        } else if (imc >= 7) {
+            result = 'Baixo peso -4';
+        }
+    }
+    return result;
+};
+
+export function calculaKGMCMMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
+    const peso = getPesoIMCMeta(aluno, avaliacao, meta, imc);
+    const gordura = getReferenciaKGGordura(aluno, avaliacao, meta, gorduraPersonalizado);
+    return (peso - gordura).toFixed(1);
+}
+
+export function calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc) {
+    const peso = getPesoIMCMeta(aluno, avaliacao, meta, imc);
+    const mcm = calculaKGMCM(aluno, avaliacao);
+    return ((mcm / peso) * 100).toFixed(1);
+}
+
+export function calculaKGMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
+    if (!avaliacao) return;
+    const mcm = calculaKGMCMMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc);
+    const osseo = calculaPorcentagemOsseo(avaliacao);
+    const residual = calculaPorcentagemResidual(aluno, avaliacao);
+    return (mcm - (
+        (avaliacao.peso * (osseo / 100)) +
+        (avaliacao.peso * (residual / 100))
+    )).toFixed(1);
+}
+
+export function calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
+    const kgMusculo = calculaKGMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc);
+    return (((kgMusculo / avaliacao.peso) * 1000) / 10).toFixed(1);
+}
+
+export function calculaKGOsseoMeta(aluno, avaliacao, meta, imc) {
+    const osseo = calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc);
+    const pesoMeta = getPesoIMCMeta(aluno, avaliacao, meta, imc);
+    return ((osseo * pesoMeta) / 100).toFixed(1);
+}
+
+export function calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc) {
+    const osseo = calculaPorcentagemOsseo(avaliacao);
+    const pesoMeta = getPesoIMCMeta(aluno, avaliacao, meta, imc);
+    return ((osseo * avaliacao.peso) / pesoMeta).toFixed(1);
+}
+
+export function calculaKGResidualMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
+    const residual = calculaPorcentagemResidual(aluno, avaliacao, meta, gorduraPersonalizado, imc);
+    const pesoMeta = getPesoIMCMeta(aluno, avaliacao, meta, imc);
+
+    return ((residual * pesoMeta) / 100).toFixed(1);
+}
+
+export function calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
+    const gorduraMeta = getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraPersonalizado, imc);
+    const musculoMeta = calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc);
+    const osseoMeta = calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc);
+
+    return (Number(gorduraMeta) + Number(musculoMeta) + Number(osseoMeta)).toFixed(1);
+}
+
+// =========================================================== METAS ACIMA
+
+export function getBasal(aluno, avaliacao) {
+    return (370 + (21.6 * calculaKGMassaMagra(aluno, avaliacao))).toFixed(2);
+}
 
 export function getAreaMagraGorda(avaliacao) {
     if (!avaliacao) return;
@@ -242,7 +504,6 @@ export function calculaKGMusculo(aluno, avaliacao) {
 
 export function calculaPorcentagemMusculo(aluno, avaliacao) {
     const kgMusculo = calculaKGMusculo(aluno, avaliacao);
-    // return Math.ceil((kgMusculo / avaliacao.peso) * 1000) / 10;
     return (((kgMusculo / avaliacao.peso) * 1000) / 10).toFixed(1);
 }
 

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMusculo, calculaKGOsseo, calculaKGResidual, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMusculo, calculaPorcentagemOsseo, calculaPorcentagemResidual, getAreaMagraGorda, getIMC, verificaCamposProtocolo } from "../utils";
+import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMCMMeta, calculaKGMusculo, calculaKGMusculoMeta, calculaKGOsseo, calculaKGOsseoMeta, calculaKGResidual, calculaKGResidualMeta, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMCMMeta, calculaPorcentagemMusculo, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseo, calculaPorcentagemOsseoMeta, calculaPorcentagemResidual, calculaPorcentagemResidualMeta, formatarData, getAreaMagraGorda, getBasal, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura, verificaCamposProtocolo } from "../utils";
 import { useQuery } from "react-query";
 import { getProtocolos } from "../api/usuario";
 import { useRecoilState } from "recoil";
@@ -138,16 +138,18 @@ function Avaliacao() {
                             </div>
 
                             {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
-                            <p><strong>Data da Avaliação:</strong> {avaliacao.data_avaliacao}</p>
+                            <p><strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}</p>
                             <p><strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}</p>
                             <p><strong>Peso:</strong> {avaliacao.peso} kg</p>
                             <p><strong>Altura:</strong> {avaliacao.altura} cm</p>
                             <p><strong>Sexo:</strong> {aluno.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
                             <p><strong>Total dobras:</strong> {getTotalDobras()} cm</p>
+                            <p><strong>Metabolismo basal:</strong> {getBasal(aluno, avaliacao)}</p>
                             <p><strong>IMC:</strong> {getIMC(avaliacao)}</p>
-                            <p className={`${avaliacao.cod_protocolo === 2 || avaliacao.cod_protocolo === 4 ? '' : 'd-none'}`}>
+                            <p><strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}</p>
+                            {/* <p className={`${avaliacao.cod_protocolo === 2 || avaliacao.cod_protocolo === 4 ? '' : 'd-none'}`}>
                                 <strong>Densidade corporal:</strong> {calculaDensidade(aluno, avaliacao)}
-                            </p>
+                            </p> */}
                         </div>
                     </div>
 
@@ -161,6 +163,7 @@ function Avaliacao() {
                         </div>
                     </div>
 
+                    <Metas aluno={aluno} avaliacao={avaliacao} />
                     <AreaMagraGorda avaliacao={avaliacao} />
                     <Perimetro avaliacao={avaliacao} />
                     <Dobras avaliacao={avaliacao} />
@@ -170,6 +173,132 @@ function Avaliacao() {
             </div>
         </div>
     );
+}
+
+function Metas({ aluno, avaliacao, avaliacoes }) {
+    const [meta, setMeta] = useState('Magro');
+    const [gordura, setGordura] = useState(5);
+    const [imc, setImc] = useState(10);
+
+    return (
+        <div className="card">
+            <div className="card-header">
+                <h4>Metas</h4>
+            </div>
+
+            <div className="card-body">
+                <div className="col-md-3">
+                    <label className="form-label">Meta</label>
+                    <select className="form-control" value={meta} onChange={e => setMeta(e.target.value)}>
+                        <option value='Saúde -1'>Saúde -1</option>
+                        <option value='Saúde 0'>Saúde 0</option>
+                        <option value='Saúde +1'>Saúde +1</option>
+                        <option value='Magro'>Magro</option>
+                        <option value='Atlético'>Atlético</option>
+                        <option value='Musculoso'>Musculoso</option>
+                        <option value='Personalizado'>Personalizado</option>
+                    </select>
+                </div>
+                <div className="row g-3">
+                    <div className="col-md-4 table-responsive">
+                        <table id="basic-datatables" className={`table table-sm table-striped table-hover ${meta === 'Personalizado' ? 'd-none' : ''}`}>
+                            <thead>
+                                <tr>
+                                    <th>Medidas básicas</th>
+                                    <th>Atual</th>
+                                    <th>Meta</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <th>IMC</th>
+                                    <th>{getIMC(avaliacao)}</th>
+                                    <th>{getReferenciaIMCMetas(aluno, avaliacao, meta)}</th>
+                                </tr>
+                                <tr>
+                                    <th>Peso</th>
+                                    <th>{avaliacao.peso}</th>
+                                    <th>{getPesoIMCMeta(aluno, avaliacao, meta)}</th>
+                                    <th className="text-muted">-{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta)).toFixed(1)}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div className={`${meta === 'Personalizado' ? '' : 'd-none'} mt-3`}>
+                            <div>
+                                <label className="form-label">% Gordura</label>
+                                <input className="form-control" value={gordura} onChange={e => setGordura(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="form-label">IMC</label>
+                                <input className="form-control" value={imc} onChange={e => setImc(e.target.value)} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-md-7 table-responsive">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Composição - Metas</th>
+                                    <th>Atual</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Meta</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <th>Gordura</th>
+                                    <th>{calculaKGGordura(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemGordura(aluno, avaliacao)} %</th>
+                                    <th><i className="bi bi-arrow-right text-success"></i></th>
+                                    <th>{getReferenciaKGGordura(aluno, avaliacao, meta, gordura)} KG</th>
+                                    <th>{getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gordura)} %</th>
+                                    <th className="text-muted">{(getReferenciaKGGordura(aluno, avaliacao, meta, gordura) - calculaKGGordura(aluno, avaliacao)).toFixed(1)}</th>
+                                </tr>
+                                <tr>
+                                    <th>Musc.</th>
+                                    <th>{calculaKGMusculo(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemMusculo(aluno, avaliacao)} %</th>
+                                    <th><i className="bi bi-arrow-right text-success"></i></th>
+                                    <th>{calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
+                                    <th>{calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
+                                    <th className="text-muted">{(calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) - calculaKGMusculo(aluno, avaliacao)).toFixed(1)}</th>
+                                </tr>
+                                <tr>
+                                    <th>Osséa</th>
+                                    <th>{calculaKGOsseo(avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemOsseo(avaliacao)} %</th>
+                                    <th><i className="bi bi-arrow-right text-success"></i></th>
+                                    <th>{calculaKGOsseoMeta(aluno, avaliacao, meta, imc)} KG</th>
+                                    <th>{calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc)} %</th>
+                                </tr>
+                                <tr>
+                                    <th>Resi.</th>
+                                    <th>{calculaKGResidual(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemResidual(aluno, avaliacao)} %</th>
+                                    <th><i className="bi bi-arrow-right text-success"></i></th>
+                                    <th>{calculaKGResidualMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
+                                    <th>{calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
+                                </tr>
+                                <tr>
+                                    <th>MCM</th>
+                                    <th>{calculaKGMCM(aluno, avaliacao)} KG</th>
+                                    <th>{calculaPorcentagemMCM(aluno, avaliacao)} %</th>
+                                    <th><i className="bi bi-arrow-right text-success"></i></th>
+                                    <th>{calculaKGMCMMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
+                                    <th>{calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc)} %</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function Imagens({ avaliacao }) {
@@ -379,7 +508,7 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
 
 function SimetriaMembro({ avaliacao }) {
     const getDifferenceClass = (diff) => {
-        return diff > 1 ? 'bg-danger text-white' : '';
+        return diff !== 0 ? 'text-danger' : 'text-dark';
     };
 
     const data = [
@@ -470,35 +599,35 @@ function SimetriaMembro({ avaliacao }) {
                     <tbody>
                         <tr>
                             <th>Braço</th>
-                            <th>{avaliacao.braco_relaxado_direito || '-'}</th>
+                            <td>{avaliacao.braco_relaxado_direito || '-'}</td>
                             <th
                                 className={getDifferenceClass(avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito)}
-                            >{(avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito).toFixed(2) || '-'}</th>
-                            <th>{avaliacao.braco_relaxado_esquerdo || '-'}</th>
+                            >{(Math.abs(avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito)).toFixed(2) || '-'}</th>
+                            <td>{avaliacao.braco_relaxado_esquerdo || '-'}</td>
                         </tr>
                         <tr>
                             <th>Braço contraido</th>
-                            <th>{avaliacao.braco_contraido_direito || '-'}</th>
+                            <td>{avaliacao.braco_contraido_direito || '-'}</td>
                             <th
                                 className={getDifferenceClass(avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo)}
-                            >{(avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo).toFixed(2) || '-'}</th>
-                            <th>{avaliacao.braco_contraido_esquerdo || '-'}</th>
+                            >{(Math.abs(avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo)).toFixed(2) || '-'}</th>
+                            <td>{avaliacao.braco_contraido_esquerdo || '-'}</td>
                         </tr>
                         <tr>
                             <th>Antebraço</th>
-                            <th>{avaliacao.antebraco_direito || '-'}</th>
+                            <td>{avaliacao.antebraco_direito || '-'}</td>
                             <th
                                 className={getDifferenceClass(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo)}
-                            >{(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo).toFixed(2) || '-'}</th>
-                            <th>{avaliacao.antebraco_esquerdo || '-'}</th>
+                            >{(Math.abs(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo)).toFixed(2) || '-'}</th>
+                            <td>{avaliacao.antebraco_esquerdo || '-'}</td>
                         </tr>
                         <tr>
                             <th>Coxa</th>
-                            <th>{avaliacao.coxa_direita || '-'}</th>
+                            <td>{avaliacao.coxa_direita || '-'}</td>
                             <th
                                 className={getDifferenceClass(avaliacao.coxa_direita - avaliacao.coxa_esquerda)}
-                            >{(avaliacao.coxa_direita - avaliacao.coxa_esquerda).toFixed(2) || '-'}</th>
-                            <th>{avaliacao.coxa_esquerda || '-'}</th>
+                            >{(Math.abs(avaliacao.coxa_direita - avaliacao.coxa_esquerda)).toFixed(2) || '-'}</th>
+                            <td>{avaliacao.coxa_esquerda || '-'}</td>
                         </tr>
                     </tbody>
                 </table>

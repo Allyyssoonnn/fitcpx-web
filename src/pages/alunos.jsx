@@ -1,4 +1,4 @@
-import { getAlunos } from "../api/aluno";
+import { deleteAluno, getAlunos, recoveryAluno } from "../api/aluno";
 import { useNavigate } from "react-router-dom";
 import { calcularIdade } from "../utils";
 import { useQuery } from "react-query";
@@ -29,10 +29,22 @@ function Alunos() {
 
     const filteredAlunos = useMemo(() => {
         return alunos.filter((aluno) =>
-            aluno.nome_aluno?.toLowerCase().includes(searchTerm.toLowerCase()) && aluno.status_aluno === statusFilter
-        );
+            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
+                aluno.nome_aluno?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)) &&
+            aluno.status_aluno === statusFilter
+        )
     }, [alunos, searchTerm, statusFilter]);
-        
+
+    const delAlun = async (cod_aluno) => {
+        await deleteAluno(cod_aluno);
+        refetch();
+    }
+
+    const recoveryAlun = async (cod_aluno) => {
+        await recoveryAluno(cod_aluno);
+        refetch();
+    }
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -40,9 +52,12 @@ function Alunos() {
                     <div className="card">
                         <div className="card-header">
                             <div className="d-flex justify-content-between align-items-center">
-                                <h4 className="card-title d-none d-md-block">Lista de alunos</h4>
+                                <div>
+                                    <h4 className="card-title d-none d-md-block">Lista de alunos</h4>
+                                    <label>{filteredAlunos?.length} Alunos</label>
+                                </div>
 
-                                <div className="col-md-3 col-12">
+                                <div className="col-md-3 col-8">
                                     <input
                                         type="text"
                                         className="form-control"
@@ -70,7 +85,10 @@ function Alunos() {
                                     </div>
                                 </div>
 
-                                <label>{filteredAlunos?.length} Alunos</label>
+                                <button className="btn btn-success" onClick={() => navigate('/cadaluno')}>
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Novo aluno
+                                </button>
                             </div>
                         </div>
 
@@ -110,6 +128,14 @@ function Alunos() {
                                                         <a onClick={e => { e.stopPropagation(); editarAluno(aluno) }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
                                                             <i className="bi bi-pencil"></i>
                                                             <p className="mb-0">Editar</p>
+                                                        </a>
+                                                        <a onClick={e => { e.stopPropagation(); delAlun(aluno.cod_aluno); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${aluno.deletedAt ? 'd-none' : ''}`}>
+                                                            <i className="bi bi-trash"></i>
+                                                            <p className="mb-0">Excluir</p>
+                                                        </a>
+                                                        <a onClick={e => { e.stopPropagation(); recoveryAlun(aluno.cod_aluno); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${aluno.deletedAt ? '' : 'd-none'}`}>
+                                                            <i className="bi bi-trash"></i>
+                                                            <p className="mb-0">Reverter</p>
                                                         </a>
                                                     </div>
                                                 </div>

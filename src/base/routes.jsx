@@ -18,6 +18,7 @@ import CadSessao from "../pages/cadSessao";
 import Planilha from "../pages/planilha";
 import Usuarios from "../pages/usuarios";
 import CadUsuario from "../pages/cadusuario";
+import Relatorios from "../pages/relatorios";
 
 const routes = [
     //Base
@@ -48,6 +49,7 @@ const routes = [
     { path: '/minhaconta', name: 'Alunos', element: MinhaConta },
     { path: '/agenda', name: 'Agenda', element: Agenda },
     { path: '/planilha', name: 'Licença', element: Planilha },
+    { path: '/relatorios', name: 'Licença', element: Relatorios },
 ]
   
 export default routes;  

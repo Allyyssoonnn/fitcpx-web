@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Tabs, Tab } from 'react-bootstrap';
-import { calcularIdade, dataURLToBlob, getSexo } from "../utils";
+import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
 import { useQuery } from "react-query";
-import { changeAlunoIMG, getAluno } from '../api/aluno';
-import { getTreinos } from '../api/treino';
+import { changeAlunoIMG, deleteAvaliacao, getAluno } from '../api/aluno';
+import { deleteTreino, getTreinos, setTreino } from '../api/treino';
 import ImageCropModal from '../components/cutImg';
+import PopConfirm from '../components/popConfirm';
+import { useRecoilState } from 'recoil';
+import { stateUsuario } from '../states/states';
 
 function Aluno() {
     const location = useLocation();
@@ -15,16 +18,15 @@ function Aluno() {
     const [showModal, setShowModal] = useState(false);
     const [image, setImage] = useState(null);
     const [cropper, setCropper] = useState(null);
-    // const [treinos] = useState([
-    //     { nome_treino: '3x Musc.', nivel_treino: 'Avançado', sexo_treino: 'Masculino', nome_usuario: 'Alyson' },
-    // ]);
+    const [modalAddTreino, setModalAddTreino] = useState(false);
 
     const { data: aluno, isLoading } = useQuery({
         queryKey: ['aluno'],
         queryFn: () => getAluno(cod_aluno),
+        enabled: !!cod_aluno
     });
 
-    const { data: treinos } = useQuery({
+    const { data: treinos, refetch } = useQuery({
         queryKey: ['treinos'],
         queryFn: () => getTreinos({ cod_aluno }),
         initialData: []
@@ -125,10 +127,10 @@ function Aluno() {
                                 Editar
                             </button>
 
-                            <button className='btn btn-success me-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
+                            {/* <button className='btn btn-success me-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
                                 <i className="bi bi-plus-circle me-2"></i>
                                 Nova Avaliação
-                            </button>
+                            </button> */}
                         </div>
                     </div>
 
@@ -150,7 +152,7 @@ function Aluno() {
                                 <div className="p-3 bg-light rounded">
                                     <h5>Detalhes Pessoais</h5>
                                     <p><strong>Telefone:</strong> {aluno?.telefone_aluno}</p>
-                                    <p><strong>Data de Nascimento:</strong> {aluno?.data_nascimento_aluno}</p>
+                                    <p><strong>Data de Nascimento:</strong> {formatarData(aluno?.data_nascimento_aluno)}</p>
                                     <p><strong>Sexo:</strong> {aluno?.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
                                 </div>
 
@@ -186,8 +188,9 @@ function Aluno() {
                                     Adicionar Avaliação
                                 </button>
 
-                                {aluno?.avaliacao?.map((avaliacao, index) => (
-                                    <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} />
+                                {aluno?.avaliacao?.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
+                                .map((avaliacao, index) => (
+                                    <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} refetch={refetch} />
                                 ))}
                             </div>
                         </Tab>
@@ -197,17 +200,30 @@ function Aluno() {
                                 <span className="d-none d-md-block"><i className="bi bi-card-checklist me-2"></i>Treinos</span>
                                 <span className="d-block d-md-none"><i className="bi bi-card-checklist me-2"></i>Treinos</span>
                             </>
-                        } >
+                        }>
                             <div className='text-center'>
-                                <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadtreino', { state: { aluno } })}>
+                                <AddTreino show={modalAddTreino} close={() => setModalAddTreino(false)} aluno={aluno} />
+                                <button className='btn btn-success w-100 rounded-2' onClick={() => setModalAddTreino(true)}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Treino
                                 </button>
 
                                 {treinos?.map((treino, index) => (
-                                    <CardTreino key={index} treino={treino} aluno={aluno} />
+                                    <CardTreino key={index} treino={treino} aluno={aluno} refetch={refetch} />
                                 ))}
                             </div>
+                        </Tab>
+
+                        <Tab eventKey="cardapio" title={
+                            <>
+                                <span className="d-none d-md-block"><i className="bi bi-book me-2"></i>Cardápio</span>
+                                <span className="d-block d-md-none"><i className="bi bi-book me-2"></i>Cardápio</span>
+                            </>
+                        }>
+                            <button className='btn btn-success w-100 rounded-2' onClick={() => setModalAddTreino(true)}>
+                                <i className="bi bi-plus-circle me-2"></i>
+                                Adicionar Cardápio
+                            </button>
                         </Tab>
                     </Tabs>
                 </div>
@@ -216,13 +232,103 @@ function Aluno() {
     );
 }
 
-function CardTreino({ treino, aluno }) {
+function AddTreino({ show, close, aluno }) {
+    const [usuario] = useRecoilState(stateUsuario); 
     const navigate = useNavigate();
+
+    const [importando, setImportando] = useState(false);
+    const [reajuste, setReajuste] = useState(false);
+
+    const { data: treinos, refetch } = useQuery({
+        queryKey: ['alunos', usuario.cod_empresa],
+        queryFn: () => getTreinos({ cod_empresa: usuario.cod_empresa }),
+        initialData: [],
+    });
+
+    const tooltip = (
+        <Tooltip id="tooltip">
+            <div>
+                <strong>Novo:</strong> Crie um treino personalizado do zero.
+            </div>
+            <p></p>
+            <div>
+                <strong>Importar:</strong> Escolha um treino de base do sistema.
+            </div>
+            <p></p>
+            <div>
+                <strong>Reajuste:</strong> Utilize o último treino ativo para ajustes.
+            </div>
+        </Tooltip>
+    );
+
+    return (
+        <Modal show={show} className="modal-fade">
+            <div className="modal-dialog-scrollable modal-lg">
+                <div className='modal-content'>
+                    <div className='modal-header d-flex flex-row justify-content-between align-items-start'>
+                        <div>
+                            <h4>Adicionar treino</h4>
+                            <h6>{aluno.nome_aluno}</h6>
+                        </div>
+
+                        <OverlayTrigger placement="bottom" overlay={tooltip}>
+                            <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: 'pointer' }}></i>
+                        </OverlayTrigger>
+                    </div>
+
+                    <div className="d-flex flex-row justify-content-around p-3">
+                        <button className='btn btn-outline-success rounded-1 w-30' onClick={() => navigate('/cadtreino', { state: { aluno } })}>
+                            Novo treino
+                            <br></br>
+                            <i className="bi bi-file-earmark-plus"></i>
+                        </button>
+
+                        <button className='btn btn-outline-info rounded-1 w-30' onClick={() => setImportando(true)}>
+                            Importar base
+                            <br></br>
+                            <i className="bi bi-upload"></i>
+                        </button>
+
+                        <button className='btn btn-outline-info rounded-1 w-30' onClick={() => setReajuste(true)}>
+                            Reajuste
+                            <br></br>
+                            <i className="bi bi-gear"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div className='modal-footer'>
+                    <button className='btn btn-danger' onClick={close}>
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </Modal>
+    )
+}
+
+function CardTreino({ treino, aluno, refetch }) {
+    const navigate = useNavigate();
+
+    async function changeStatusTreino() {
+        await setTreino({ ...treino, status_treino: treino.status_treino == 'A' ? 'I' : 'A' });
+        refetch();
+    }
+
+    async function clickDelete() {
+        await deleteTreino(treino.cod_treino);
+        refetch();
+    }
     
     return (
         <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>
             <div style={{ borderTop: '0.30rem solid #85D446' }} className='card-body rounded-3'>
+                <div style={{ position: 'absolute' }}>
+                    <PopConfirm confirm={clickDelete} />
+                </div>
+
                 <h5 className="card-title">{treino.nome_treino}</h5>
+
                 <div className='row'>
                     <div className='col-md-3'>
                         <strong>Responsável:</strong> {treino.usuario?.nome_usuario}
@@ -234,7 +340,7 @@ function CardTreino({ treino, aluno }) {
                         <strong>Sexo:</strong> {getSexo(treino.sexo_treino)}
                     </div>
                     <div className='col-md-3'>
-                        <strong>Sexo:</strong> {treino?.sessoes?.length} {treino?.sessoes?.length > 1 ? 'Sessões' : 'Sessão'}
+                        <strong></strong> {treino?.sessoes?.length} {treino?.sessoes?.length > 1 ? 'Sessões' : 'Sessão'}
                     </div>
                 </div>
             </div>
@@ -246,28 +352,34 @@ function CardTreino({ treino, aluno }) {
                 >
                     <i className="bi bi-pencil me-2"></i>Editar
                 </button>
-                <button
-                    className="btn btn-warning d-flex align-items-center"
-                    onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}
-                    disabled
-                >
-                    <i className="bi bi-printer me-2"></i>Ver treino
+
+                <button className="btn btn-info d-flex align-items-center" onClick={changeStatusTreino}>
+                    <i className="bi bi-ban me-2"></i>{treino.status_treino == 'A' ? 'Desativar' : 'Ativar'}
                 </button>
             </div>
         </div>
     )
 }
 
-function CardAvaliacao({ avaliacao, aluno }) {
+function CardAvaliacao({ avaliacao, aluno, refetch }) {
     const navigate = useNavigate();
+
+    async function clickDelete() {
+        await deleteAvaliacao(avaliacao.cod_avaliacao);
+        refetch();
+    }
 
     return (
         <div className="card shadow-sm rounded-3 border-0 bg-white mt-4">
             <div style={{ borderTop: '0.30rem solid #85D446' }} className="card-body rounded-3">
+                <div style={{ position: 'absolute' }}>
+                    <PopConfirm confirm={clickDelete} />
+                </div>
+
                 <h5 className="card-title">Avaliação Física</h5>
                 <div className="row">
                     <div className="col-md-4">
-                        <strong>Data:</strong> {avaliacao.data_avaliacao}
+                        <strong>Data:</strong> {formatarData(avaliacao.data_avaliacao)}
                     </div>
                     <div className="col-md-4">
                         <strong>Altura:</strong> {avaliacao.altura} m

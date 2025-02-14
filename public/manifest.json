@@ -1,0 +1,21 @@
+{
+    "name": "Fit Complex",
+    "short_name": "FitCpx",
+    "description": "Fit Complex App",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#6200ea",
+    "icons": [
+      {
+        "src": "/assets/images/logos/log_icone.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/assets/images/logos/log_icone.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+}  

@@ -51,6 +51,7 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
 
             for (let i = 0; i < event.dataTransfer.files.length; i++) {
                 const file = event.dataTransfer.files[i];
+                                
                 if (file && file.type.startsWith("image/")) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -63,14 +64,23 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
                         img.onload = () => {
                             const height = img.height;
                             const width = img.height / 2;
-                            //Cortar imagem
+
+                            // Criar o canvas com as novas dimensões
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
                             canvas.width = width;
                             canvas.height = height;
-                            ctx.drawImage(img, 0, 0);
-                            croppedImage = canvas.toDataURL('image/jpeg');
-                            
+
+                            // Calcular a posição de corte para centralizar
+                            const sx = (img.width - width) / 2; // Início do corte na horizontal (centro)
+                            const sy = 0; // Mantém o topo da imagem
+
+                            // Desenhar a imagem cortada no canvas
+                            ctx.drawImage(img, sx, sy, width, height, 0, 0, width, height);
+
+                            // Gerar a imagem final
+                            croppedImage = canvas.toDataURL('image/jpeg', 0.8);
+
                             setEditImages((prevImages) => ({
                                 ...prevImages,
                                 [optionFill[i]]: imageData,
@@ -78,6 +88,10 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
                             setCapturedImages((prevImages) => ({
                                 ...prevImages,
                                 [optionFill[i]]: croppedImage,
+                            }));
+                            setImageDescriptions((prevDescriptions) => ({
+                                ...prevDescriptions,
+                                [optionFill[i]]: file.name.split('.')[0],
                             }));
                         }
                     };
@@ -97,6 +111,10 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
                 setCurrentOption(option);
                 setImageToCrop(imageData);
                 setShowCropModal(true);
+                setImageDescriptions((prevDescriptions) => ({
+                    ...prevDescriptions,
+                    [option]: file.name.split('.')[0],
+                }));
             };
             reader.readAsDataURL(file);
         } else {

@@ -33,8 +33,10 @@ function GrupoExercicios() {
     }
 
     const filteredGrupos = useMemo(() => {
-        return grupos.filter((treino) =>
-            treino.nome_grupo_exercicio?.toLowerCase().includes(searchTerm.toLowerCase())
+        return grupos.filter((grupoExercicio) =>
+            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
+                grupoExercicio.nome_grupo_exercicio?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)
+            )
         );
     }, [grupos, searchTerm]);
         

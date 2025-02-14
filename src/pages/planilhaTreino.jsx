@@ -5,6 +5,7 @@ import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import AutoComplete from "../components/autoComplete";
+import { arrayBorders } from "../utils";
 
 function PlanilhaTreino() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -184,7 +185,7 @@ function PlanilhaTreino() {
                                                 {sessao?.exercicios?.map((exc, indexExc) => (
                                                     <>
                                                         <tr key={indexExc}
-                                                            className={`${indexAluno % 2 ? 'border-success' : ' border-info'}`}
+                                                            className={`${exc.sets?.length > 0 ? arrayBorders[indexExc] : ''}`}
                                                             style={exc.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
                                                         >
                                                             <td>
@@ -205,7 +206,7 @@ function PlanilhaTreino() {
                                                         </tr>
                                                         {exc.sets.map((set, indexSet) => (
                                                             <tr key={indexSet}
-                                                                className={`${indexAluno % 2 ? 'border-success' : ' border-info'}`}
+                                                                className={`${exc.sets?.length > 0 ? arrayBorders[indexExc] : ''}`}
                                                                 style={exc.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
                                                             >
                                                                 <td>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMusculo, calculaKGOsseo, calculaKGResidual, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMusculo, calculaPorcentagemOsseo, calculaPorcentagemResidual, calcularIdade, getAreaMagraGorda, getIMC, verificaCamposProtocolo } from "../utils";
+import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMCMMeta, calculaKGMusculo, calculaKGMusculoMeta, calculaKGOsseo, calculaKGOsseoMeta, calculaKGResidual, calculaKGResidualMeta, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMCMMeta, calculaPorcentagemMusculo, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseo, calculaPorcentagemOsseoMeta, calculaPorcentagemResidual, calculaPorcentagemResidualMeta, calcularIdade, formatarData, getAreaMagraGorda, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura, verificaCamposProtocolo } from "../utils";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { ResponsiveBar } from "@nivo/bar";
@@ -12,43 +12,37 @@ function CompareAvaliacao() {
     const [usuario] = useRecoilState(stateUsuario);
 
     const [avaliacao, setAvaliacao] = useState({});
-    const [avaliacao1, setAvaliacao1] = useState({});
-    const [avaliacao2, setAvaliacao2] = useState({});
-    const [avaliacao3, setAvaliacao3] = useState({});
-    const [avaliacoes, setAvaliacoes] = useState([]);
+    const [avaliacoesComparacao, setAvaliacoesComparacao] = useState([{}]);
     const [aluno, setAluno] = useState({});
+    const [avaliacoes, setAvaliacoes] = useState([]);
 
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
-        avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate('/alunos');
-        avaliacaoRecebida ? setAvaliacao2(avaliacaoRecebida) : navigate('/alunos');
-        avaliacaoRecebida ? setAvaliacao3(avaliacaoRecebida) : navigate('/alunos');
-        
+        avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) :  navigate('/alunos');
         alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
+        
         if (alunoRecebido.avaliacao) {
+            const indexAv = alunoRecebido.avaliacao.findIndex((av) => av == avaliacaoRecebida);
+            //Seta avaliação selecionada para a terceira
+            // setAvaliacoesComparacao([{}, {}, { ...avaliacaoRecebida, index: indexAv }]);
+            setAvaliacoesComparacao([{ ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }]);
             //Seta a lista de todas avaliações
             setAvaliacoes(alunoRecebido.avaliacao);
             //Seta a primeira avaliação
-            setAvaliacao1(alunoRecebido.avaliacao[alunoRecebido.avaliacao.length - 1]);
+            // setAvaliacao1(alunoRecebido.avaliacao[alunoRecebido.avaliacao.length - 1]);
             //Seta a penultima avaliação
-            let indexAtual = alunoRecebido.avaliacao.findIndex((v) => v === avaliacaoRecebida);
-            setAvaliacao3(alunoRecebido.avaliacao[indexAtual + 1]);
+            // let indexAtual = alunoRecebido.avaliacao.findIndex((v) => v === avaliacaoRecebida);
+            // setAvaliacao3(alunoRecebido.avaliacao[indexAtual + 1]);
         }
     }, []);
 
-    function selecionaAvaliacao(index, numero) {
-        if (numero === 1) setAvaliacao1({ ...avaliacoes[index], index });
-        if (numero === 2) setAvaliacao2({ ...avaliacoes[index], index });
-        if (numero === 3) setAvaliacao3({ ...avaliacoes[index], index });
+    function selecionaAvaliacao(indexAv, indexComparacao) {
+        console.log(indexAv, indexComparacao);
+        setAvaliacoesComparacao(prev => prev.map((av, i) => i == indexComparacao ? avaliacoes[indexAv] : av));
     }
 
-    if (!avaliacao || !aluno) {
-        return <div>Carregando...</div>;
-    }
-
-    console.log(avaliacao1, avaliacao2, avaliacao3);
-    
+    if (!aluno) return <div>Carregando...</div>;
 
     return (
         <div className="container-fluid">
@@ -66,34 +60,18 @@ function CompareAvaliacao() {
                 </div>
 
                 <div className="card-body">
-                    <div className="row g-3 mb-5 justify-content-center">
-                        <div className="col-md-3">
-                            <label className="form-label">Avaliação 1</label>
-                            <select value={avaliacao1?.index} onChange={e => selecionaAvaliacao(e.target.value, 1)} className="form-control">
-                                <option value="">Selecione uma avaliação</option>
-                                {avaliacoes.map((av, index) => (
-                                    <option key={index} value={index}>{av.data_avaliacao}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Avaliação 2</label>
-                            <select value={avaliacao2?.index} onChange={e => selecionaAvaliacao(e.target.value, 2)} className="form-control">
-                                <option value="">Selecione uma avaliação</option>
-                                {avaliacoes.map((av, index) => (
-                                    <option key={index} value={index}>{av.data_avaliacao}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Avaliação 3</label>
-                            <select value={avaliacao3?.index} onChange={e => selecionaAvaliacao(e.target.value, 3)} className="form-control">
-                                <option value="">Selecione uma avaliação</option>
-                                {avaliacoes.map((av, index) => (
-                                    <option key={index} value={index}>{av.data_avaliacao}</option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="row g-3 mb-5 justify-content-center align-items-center">
+                        {avaliacoesComparacao.map((avComp, i) => (
+                            <div className="col-md-3" key={i}>
+                                <label className="form-label">Avaliação {i + 1}</label>
+                                <select className="form-control" value={avComp?.index} onChange={e => selecionaAvaliacao(e.target.value, i)}>
+                                    <option value={null}>Selecione uma avaliação</option>
+                                    {avaliacoes.map((av, index) => (
+                                        <option key={index} value={index}>{formatarData(av.data_avaliacao)}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        ))}
                     </div>
 
                     <h4 className="mb-4 text-center">Comparação de Avaliações</h4>
@@ -112,105 +90,7 @@ function CompareAvaliacao() {
                         <div className="card-body">
                             {/* Gráfico de Barras Comparativo */}
                             <div style={{ height: 400 }} className="mb-4">
-                                <ResponsiveLine
-                                    data={[
-                                        {
-                                            id: 'Gordura',
-                                            data: avaliacoes.map((av, index) => ({
-                                                x: `${av.data_avaliacao}`,
-                                                y: calculaKGGordura(aluno, av),
-                                            })),
-                                        },
-                                        {
-                                            id: 'Massa Magra',
-                                            data: avaliacoes.map((av, index) => ({
-                                                x: `${av.data_avaliacao}`,
-                                                y: calculaKGMassaMagra(aluno, av),
-                                            })),
-                                        },
-                                        {
-                                            id: 'Músculo',
-                                            data: avaliacoes.map((av, index) => ({
-                                                x: `${av.data_avaliacao}`,
-                                                y: calculaKGMusculo(aluno, av),
-                                            })),
-                                        },
-                                        {
-                                            id: 'Osséo',
-                                            data: avaliacoes.map((av, index) => ({
-                                                x: `${av.data_avaliacao}`,
-                                                y: calculaKGOsseo(av),
-                                            })),
-                                        },
-                                        {
-                                            id: 'Residual',
-                                            data: avaliacoes.map((av, index) => ({
-                                                x: `${av.data_avaliacao}`,
-                                                y: calculaKGResidual(aluno, av),
-                                            })),
-                                        },
-                                    ]}
-                                    margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-                                    xScale={{ type: 'point' }}
-                                    yScale={{
-                                        type: 'linear',
-                                        min: 'auto',
-                                        max: 'auto',
-                                        stacked: false,
-                                        reverse: false,
-                                    }}
-                                    axisTop={null}
-                                    axisRight={null}
-                                    axisBottom={{
-                                        orient: 'bottom',
-                                        tickSize: 5,
-                                        tickPadding: 5,
-                                        tickRotation: 0,
-                                        legend: 'Avaliações',
-                                        legendOffset: 36,
-                                        legendPosition: 'middle',
-                                    }}
-                                    axisLeft={{
-                                        orient: 'left',
-                                        tickSize: 5,
-                                        tickPadding: 5,
-                                        tickRotation: 0,
-                                        legend: 'KG',
-                                        legendOffset: -40,
-                                        legendPosition: 'middle',
-                                    }}
-                                    colors={{ scheme: 'nivo' }}
-                                    pointSize={10}
-                                    pointColor={{ theme: 'background' }}
-                                    pointBorderWidth={2}
-                                    pointBorderColor={{ from: 'serieColor' }}
-                                    pointLabelYOffset={-12}
-                                    useMesh={true}
-                                    legends={[
-                                        {
-                                            anchor: 'bottom-right',
-                                            direction: 'column',
-                                            justify: false,
-                                            translateX: 120,
-                                            translateY: 0,
-                                            itemsSpacing: 2,
-                                            itemWidth: 100,
-                                            itemHeight: 20,
-                                            itemDirection: 'left-to-right',
-                                            itemOpacity: 0.85,
-                                            symbolSize: 20,
-                                            symbolShape: 'circle',
-                                            effects: [
-                                                {
-                                                    on: 'hover',
-                                                    style: {
-                                                        itemOpacity: 1,
-                                                    },
-                                                },
-                                            ],
-                                        },
-                                    ]}
-                                />
+                                <Grafico aluno={aluno} avaliacoes={avaliacoes} />
                             </div>
 
                             {/* Tabela Comparativa */}
@@ -227,7 +107,7 @@ function CompareAvaliacao() {
                                     <tbody>
                                         {avaliacoes.map((av, index) => (
                                             <tr key={index}>
-                                                <td>{av.data_avaliacao}</td>
+                                                <td>{formatarData(av.data_avaliacao)}</td>
                                                 <td>{calculaKGGordura(aluno, av)}</td>
                                                 <td>{calculaKGMassaMagra(aluno, av)}</td>
                                                 <td>{calculaKGMusculo(aluno, av)}</td>
@@ -238,12 +118,12 @@ function CompareAvaliacao() {
                             </div>
                         </div>
                     </div>
-
-                    <AreaMagraGorda avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
-                    <SimetriaMembro avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
-                    <Dobras avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
-                    <Diametro avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
-                    <Imagens avaliacao={avaliacao} avaliacoes={[avaliacao1, avaliacao2, avaliacao3]} />
+                    
+                    <AreaMagraGorda avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
+                    <SimetriaMembro avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
+                    <Dobras avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
+                    <Diametro avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
+                    <Imagens avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
                 </div>
             </div>
         </div>
@@ -365,17 +245,46 @@ function Imagens({ avaliacao, avaliacoes }) {
 }
 
 function AreaMagraGorda({ avaliacao, avaliacoes }) {
-    // const [resultados, setResultados] = useState({ braco: [], coxa: [], panturrilha: [] });
-    const [resultados, setResultados] = useState([]);
+    const [resultados, setResultados] = useState({ braco: [], coxa: [], panturrilha: [] });
 
     useEffect(() => {
-        var temp = [];
-        for (const av of avaliacoes) {
-            const resp = getAreaMagraGorda(av);
-            temp.push(temp[av?.cod_avaliacao] = resp);
+        const arrayResultados = [];
+
+        //Cria um array com os resultados de todas avaliações
+        {avaliacoes.map((av) => arrayResultados.push(getAreaMagraGorda(av)))}
+
+        // Criar estrutura com arrays vazios para cada segmento
+        const groupedResults = {
+            braco: [],
+            coxa: [],
+            panturrilha: []
+        };
+        
+        // Iterar sobre os índices dos objetos dentro de cada avaliação
+        for (let i = 0; i < 6; i++) { // Sempre há 6 itens em cada segmento
+            ["braco", "coxa", "panturrilha"].forEach(segmento => {
+
+                // Criar um novo objeto mantendo nome, campo e prefix, mas com array de valores
+                groupedResults[segmento].push({
+                    nome: arrayResultados[2]?.[segmento][i].nome || "",
+                    campo: arrayResultados[2]?.[segmento][i].campo || "",
+                    prefix: arrayResultados[2]?.[segmento][i].prefix || "",
+
+                    // Valores
+                    valor1: arrayResultados[0]?.[segmento]?.[i]?.valor || 0,
+                    valor2: arrayResultados[1]?.[segmento]?.[i]?.valor || 0,
+                    valor3: arrayResultados[2]?.[segmento]?.[i]?.valor || 0,
+
+                    // Códigos das avaliações
+                    cod_avaliacao1: avaliacoes[0]?.cod_avaliacao || 0,
+                    cod_avaliacao2: avaliacoes[1]?.cod_avaliacao || 0,
+                    cod_avaliacao3: avaliacoes[2]?.cod_avaliacao || 0,
+                });
+            });
         }
-        setResultados(temp);
-    }, [avaliacao]);
+
+        setResultados(groupedResults);
+    }, [avaliacoes]);
 
     return (
         <div className="card">
@@ -383,87 +292,76 @@ function AreaMagraGorda({ avaliacao, avaliacoes }) {
                 <h4>Área Magra/Gorda</h4>
             </div>
 
-            <div className="card-body row justify-content-around">
-                <div className="col-md-4 table-responsive">
+            <div className="card-body">
+                <row className="row g-3 justify-content-around">
                     <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Avaliação 1</th>
-                                <th>Avaliação 2</th>
-                                <th>Avaliação 3</th>
-                            </tr>
-                        </thead>
-
                         <tbody>
-                            {avaliacoes.map((av, index) => (
-                                <tr key={index}>
-                                    {/* <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th> */}
-                                </tr>
-                            ))}
-                            {/* {resultados[av.cod_avaliacao]?.braco?.map((campo, id) => (
+                            <tr>
+                                <th></th>
+                                <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                <th></th>
+                                <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                <th></th>
+                                <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                            </tr>
+                            <tr>
+                                <h6>Braço</h6>
+                            </tr>
+                            {resultados?.braco?.map((campo, id) => {
+                                // if (!campo.cod_avaliacao1) return <tr key={id}><th>Selecione a avaliação 1</th></tr>
+
+                                return (
+                                    <tr key={id}>
+                                        <th>{campo.nome}</th>
+                                        {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
+                                        <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {(campo.valor2 - campo.valor1).toFixed(2)}
+                                        </th>
+                                        {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
+                                        <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {(campo.valor3 - campo.valor2).toFixed(2)}
+                                        </th>
+                                        <td>{campo.valor3} {campo.prefix}</td>
+                                    </tr>
+                                )
+                            })}
+                            <tr>
+                                <h6>Coxa</h6>
+                            </tr>
+                            {resultados?.coxa?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th>
+                                    {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
+                                    <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                        {(campo.valor2 - campo.valor1).toFixed(2)}
+                                    </th>
+                                    {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
+                                    <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                        {(campo.valor3 - campo.valor2).toFixed(2)}
+                                    </th>
+                                    <td>{campo.valor3} {campo.prefix}</td>
                                 </tr>
                             ))}
-                            {resultados[av.cod_avaliacao]?.coxa?.map((campo, id) => (
+                            <tr>
+                                <h6>Panturrilha</h6>
+                            </tr>
+                            {resultados?.panturrilha?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th>
+                                    {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
+                                    <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                        {(campo.valor2 - campo.valor1).toFixed(2)}
+                                    </th>
+                                    {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
+                                    <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                        {(campo.valor3 - campo.valor2).toFixed(2)}
+                                    </th>
+                                    <td>{campo.valor3} {campo.prefix}</td>
                                 </tr>
                             ))}
-                            {resultados[av.cod_avaliacao]?.panturrilha?.map((campo, id) => (
-                                <tr key={id}>
-                                    <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th>
-                                </tr>
-                            ))} */}
                         </tbody>
                     </table>
-                </div>
-                {/* {avaliacoes.map((av, index) => {
-                    if (!av?.cod_avaliacao) return (
-                        <div key={index} className="col-md-4">
-                            <h4>Selecione avaliação {index + 1}</h4>
-                        </div>
-                    )
-                    return (
-                        <div key={index} className="col-md-4 table-responsive">
-                            <h4>Avaliação {index + 1}</h4>
-                            <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Avaliação 1</th>
-                                        <th>Avaliação 2</th>
-                                        <th>Avaliação 3</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {resultados[av.cod_avaliacao]?.braco?.map((campo, id) => (
-                                        <tr key={id}>
-                                            <th>{campo.nome}</th>
-                                            <th>{campo.valor} {campo.prefix}</th>
-                                        </tr>
-                                    ))}
-                                    {resultados[av.cod_avaliacao]?.coxa?.map((campo, id) => (
-                                        <tr key={id}>
-                                            <th>{campo.nome}</th>
-                                            <th>{campo.valor} {campo.prefix}</th>
-                                        </tr>
-                                    ))}
-                                    {resultados[av.cod_avaliacao]?.panturrilha?.map((campo, id) => (
-                                        <tr key={id}>
-                                            <th>{campo.nome}</th>
-                                            <th>{campo.valor} {campo.prefix}</th>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )
-                })} */}
+                </row>
             </div>
         </div>
     )
@@ -474,146 +372,70 @@ function SimetriaMembro({ avaliacao, avaliacoes }) {
         return diff > 1 ? 'bg-danger text-white' : '';
     };
 
-    const data = [
-        {
-            membro: 'Braço',
-            direito: avaliacao.braco_relaxado_direito,
-            esquerdo: avaliacao.braco_relaxado_esquerdo,
-        },
-        {
-            membro: 'Braço cont.',
-            direito: avaliacao.braco_contraido_direito,
-            esquerdo: avaliacao.braco_contraido_esquerdo,
-        },
-        {
-            membro: 'Antebraço',
-            direito: avaliacao.antebraco_direito,
-            esquerdo: avaliacao.antebraco_esquerdo,
-        },
-        {
-            membro: 'Coxa',
-            direito: avaliacao.coxa_direita,
-            esquerdo: avaliacao.coxa_esquerda,
-        },
-    ]
-
     return (
         <div className="card table-responsive">
             <div className="card-header">
                 <h4>Simetria dos membros (cm)</h4>
             </div>
-
             <div className="card-body">
-                <div className="row justify-content-around">
-                    {avaliacoes.map((av, index) => {
-                        if (!av?.cod_avaliacao) return (
-                            <div key={index} className="col-md-4">
-                                <h4>Selecione avaliação {index + 1}</h4>
-                            </div>
-                        )
-                        return (
-                            <div key={index} className="col-md-4">
-                                <h4>Avaliação {index + 1}</h4>
-                                <div style={{ height: '400px' }}>
-                                    <ResponsiveBar
-                                        data={data}
-                                        axisBottom={null}
-                                        keys={[
-                                            'direito',
-                                            'esquerdo',
-                                        ]}
-                                        indexBy="membro"
-                                        margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-                                        padding={0.5}
-                                        groupMode="grouped"
-                                        layout="horizontal"
-                                        valueScale={{ type: 'linear' }}
-                                        indexScale={{ type: 'band', round: true }}
-                                        borderColor={{ from: 'color', modifiers: [[ 'darker', 1.6 ]] }}
-                                        labelTextColor={{ from: 'color', modifiers: [[ 'darker', 1.6 ]] }}
-                                        legends={[
-                                            {
-                                                dataFrom: 'keys',
-                                                anchor: 'bottom-right',
-                                                direction: 'column',
-                                                justify: false,
-                                                translateX: 120,
-                                                translateY: 0,
-                                                itemsSpacing: 2,
-                                                itemWidth: 100,
-                                                itemHeight: 20,
-                                                itemDirection: 'left-to-right',
-                                                itemOpacity: 0.85,
-                                                symbolSize: 20,
-                                                effects: [
-                                                    {
-                                                        on: 'hover',
-                                                        style: {
-                                                            itemOpacity: 1
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        ]}
-                                        role="application"
-                                    />
-                                </div>
-
-                                <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Membro</th>
-                                            <th>Direito</th>
-                                            <th>Diferença</th>
-                                            <th>Esquerdo</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <tr>
-                                            <th>Braço</th>
-                                            <th>{av.braco_relaxado_direito || '-'}</th>
-                                            <th
-                                                className={getDifferenceClass(av.braco_relaxado_esquerdo - av.braco_relaxado_direito)}
-                                            >{(av.braco_relaxado_esquerdo - av.braco_relaxado_direito).toFixed(2) || '-'}</th>
-                                            <th>{av.braco_relaxado_esquerdo || '-'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Braço contraido</th>
-                                            <th>{av.braco_contraido_direito || '-'}</th>
-                                            <th
-                                                className={getDifferenceClass(av.braco_contraido_direito - av.braco_contraido_esquerdo)}
-                                            >{(av.braco_contraido_direito - av.braco_contraido_esquerdo).toFixed(2) || '-'}</th>
-                                            <th>{av.braco_contraido_esquerdo || '-'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Antebraço</th>
-                                            <th>{av.antebraco_direito || '-'}</th>
-                                            <th
-                                                className={getDifferenceClass(av.antebraco_direito - av.antebraco_esquerdo)}
-                                            >{(av.antebraco_direito - av.antebraco_esquerdo).toFixed(2) || '-'}</th>
-                                            <th>{av.antebraco_esquerdo || '-'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Coxa</th>
-                                            <th>{av.coxa_direita || '-'}</th>
-                                            <th
-                                                className={getDifferenceClass(av.coxa_direita - av.coxa_esquerda)}
-                                            >{(av.coxa_direita - av.coxa_esquerda).toFixed(2) || '-'}</th>
-                                            <th>{av.coxa_esquerda || '-'}</th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        )
-                    })}
-                </div>
+                <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Membro</th>
+                            <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                            <th></th>
+                            <th></th>
+                            <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                            <th></th>
+                            <th></th>
+                            <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            {avaliacoes.map((_, index) => (
+                                <>
+                                    <th key={`dir-${index}`}>Direito</th>
+                                    <th key={`dif-${index}`}>Diferença</th>
+                                    <th key={`esq-${index}`}>Esquerdo</th>
+                                </>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {['Braço', 'Braço contraído', 'Antebraço', 'Coxa'].map((membro, idx) => {
+                            const keys = [
+                                ['braco_relaxado_direito', 'braco_relaxado_esquerdo'],
+                                ['braco_contraido_direito', 'braco_contraido_esquerdo'],
+                                ['antebraco_direito', 'antebraco_esquerdo'],
+                                ['coxa_direita', 'coxa_esquerda']
+                            ];
+                            return (
+                                <tr key={idx}>
+                                    <th>{membro}</th>
+                                    {avaliacoes.map((av, index) => {
+                                        const direito = av?.[keys[idx][0]] || '-';
+                                        const esquerdo = av?.[keys[idx][1]] || '-';
+                                        const diferenca = (direito && esquerdo && !isNaN(direito - esquerdo)) ? (direito - esquerdo).toFixed(2) : '-';
+                                        return (
+                                            <>
+                                                <td key={`dir-${index}`}>{direito}</td>
+                                                <td key={`dif-${index}`} className={`${diferenca > 0 ? 'text-success' : 'text-danger'}`}>{diferenca}</td>
+                                                <td key={`esq-${index}`}>{esquerdo}</td>
+                                            </>
+                                        );
+                                    })}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
             </div>
         </div>
     )
 }
 
 function Dobras({ avaliacao, avaliacoes }) {
+
     return (
         <div className="card no-print">
             <div className="card-header">
@@ -622,72 +444,53 @@ function Dobras({ avaliacao, avaliacoes }) {
             
             <div className="card-body">
                 <row className="row g-3 justify-content-around">
-                    {avaliacoes.map((av, index) => {
-                        if (!av?.cod_avaliacao) return (
-                            <div key={index} className="col-md-4">
-                                <h4>Selecione avaliação {index + 1}</h4>
-                            </div>
-                        )
-                        return (
-                            <div key={index} className="col-md-3">
-                                <h4>Avaliação {index + 1}</h4>
-                                <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                                    {/* <thead>
-                                        <tr>
-                                            <th>Dobra</th>
-                                        </tr>
-                                    </thead> */}
+                    <div className="table-responsive">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Parâmetro</th>
+                                    <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                    <th></th>
+                                    <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                    <th></th>
+                                    <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { label: 'Peitoral', key: 'peitoral' },
+                                    { label: 'Bíceps', key: 'biciptal' },
+                                    { label: 'Tríceps', key: 'triciptal' },
+                                    { label: 'Subescapular', key: 'subescapular' },
+                                    { label: 'Axilar Média', key: 'axilar_media' },
+                                    { label: 'Abdominal', key: 'abdominal' },
+                                    { label: 'Coxa', key: 'coxa' },
+                                    { label: 'Supra Ilíaca', key: 'supra_iliaca' },
+                                    { label: 'Supra Espinhal', key: 'supra_espinhal' },
+                                    { label: 'Panturrilha', key: 'panturrilha' }
+                                ].map(({ label, key }) => {
+                                    const val1 = avaliacoes[0]?.[key] || 0;
+                                    const val2 = avaliacoes[1]?.[key] || 0;
+                                    const val3 = avaliacoes[2]?.[key] || 0;
 
-                                    <tbody>
-                                        <tr>
-                                            <th><strong>Peitoral:</strong></th>
-                                            <th>{av.peitoral || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Bíceps:</strong></th>
-                                            <th>{av.biciptal || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Tríceps:</strong></th>
-                                            <th>{av.triciptal || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Subescapular:</strong></th>
-                                            <th>{av.subescapular || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Axilar Média:</strong></th>
-                                            <th>{av.axilar_media || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Abdominal:</strong></th>
-                                            <th>{av.abdominal || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Coxa:</strong></th>
-                                            <th>{av.coxa || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Supra Ilíaca:</strong></th>
-                                            <th>{av.supra_iliaca || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Supra Espinhal:</strong></th>
-                                            <th>{av.supra_espinhal || 'Não informado'}</th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong>Panturrilha:</strong></th>
-                                            <th>{av.panturrilha || 'Não informado'}</th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        )
-                    })}
-
-                    {/* <div className="mt-3 col-md-3">
-                        <img className="img-fluid" src="/assets/images/app/dobras.png" />
-                    </div> */}
+                                    return (
+                                    <tr key={key}>
+                                        <td><strong>{label}</strong></td>
+                                        <td>{val1 || 'Não informado'}</td>
+                                        <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {val2 ? (val2 - val1).toFixed(2) : '-'}
+                                        </th>
+                                        <td>{val2 || 'Não informado'}</td>
+                                        <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {val3 ? (val3 - val2).toFixed(2) : '-'}
+                                        </th>
+                                        <td>{val3 || 'Não informado'}</td>
+                                    </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </row>
             </div>
         </div>
@@ -703,43 +506,153 @@ function Diametro({ avaliacao, avaliacoes }) {
 
             <div className="card-body">
                 <div className="row">
-                    {avaliacoes.map((av, index) => {
-                        if (!av?.cod_avaliacao) return (
-                            <div key={index} className="col-md-4">
-                                <h4>Selecione avaliação {index + 1}</h4>
-                            </div>
-                        )
-                        return (
-                        <div key={index} className="col-md-3">
-                            <h4>Avaliação {index + 1}</h4>
-                            <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                                {/* <thead>
-                                    <tr>
-                                        <th>Diamêtro</th>
-                                    </tr>
-                                </thead> */}
+                    <div className="table-responsive">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Parâmetro</th>
+                                    <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                    <th></th>
+                                    <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                    <th></th>
+                                    <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { label: 'Biestilóide punho', key: 'biestiloide_punho' },
+                                    { label: 'Biepicôndilo Umeral', key: 'biepicondilo_umeral' },
+                                    { label: 'Biepicôndilo femoral', key: 'biepicondilo_femoral' },
+                                ].map(({ label, key }) => {
+                                    const val1 = avaliacoes[0]?.[key] || 0;
+                                    const val2 = avaliacoes[1]?.[key] || 0;
+                                    const val3 = avaliacoes[2]?.[key] || 0;
 
-                                <tbody>
-                                    <tr>
-                                        <th><strong>Biestilóide punho:</strong></th>
-                                        <th>{av.biestiloide_punho || '-'}</th>
+                                    return (
+                                    <tr key={key}>
+                                        <td><strong>{label}</strong></td>
+                                        <td>{val1 || 'Não informado'}</td>
+                                        <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {val2 ? (val2 - val1).toFixed(2) : '-'}
+                                        </th>
+                                        <td>{val2 || 'Não informado'}</td>
+                                        <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {val3 ? (val3 - val2).toFixed(2) : '-'}
+                                        </th>
+                                        <td>{val3 || 'Não informado'}</td>
                                     </tr>
-                                    <tr>
-                                        <th><strong>Biepicôndilo Umeral:</strong></th>
-                                        <th>{av.biestiloide_punho || '-'}</th>
-                                    </tr>
-                                    <tr>
-                                        <th><strong>Biepicôndilo femoral:</strong></th>
-                                        <th>{av.biepicondilo_femoral || '-'}</th>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        )
-                    })}
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+    )
+}
+
+function Grafico({ aluno, avaliacoes }) {
+    return (
+        <ResponsiveLine
+            data={[
+                {
+                    id: 'Gordura',
+                    data: avaliacoes.map((av, index) => ({
+                        x: `${formatarData(av.data_avaliacao)}`,
+                        y: calculaKGGordura(aluno, av),
+                    })),
+                },
+                {
+                    id: 'Massa Magra',
+                    data: avaliacoes.map((av, index) => ({
+                        x: `${formatarData(av.data_avaliacao)}`,
+                        y: calculaKGMassaMagra(aluno, av),
+                    })),
+                },
+                {
+                    id: 'Músculo',
+                    data: avaliacoes.map((av, index) => ({
+                        x: `${formatarData(av.data_avaliacao)}`,
+                        y: calculaKGMusculo(aluno, av),
+                    })),
+                },
+                {
+                    id: 'Osséo',
+                    data: avaliacoes.map((av, index) => ({
+                        x: `${formatarData(av.data_avaliacao)}`,
+                        y: calculaKGOsseo(av),
+                    })),
+                },
+                {
+                    id: 'Residual',
+                    data: avaliacoes.map((av, index) => ({
+                        x: `${formatarData(av.data_avaliacao)}`,
+                        y: calculaKGResidual(aluno, av),
+                    })),
+                },
+            ]}
+            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+            xScale={{ type: 'point' }}
+            yScale={{
+                type: 'linear',
+                min: 'auto',
+                max: 'auto',
+                stacked: false,
+                reverse: false,
+            }}
+            axisTop={null}
+            axisRight={null}
+            axisBottom={{
+                orient: 'bottom',
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: 'Avaliações',
+                legendOffset: 36,
+                legendPosition: 'middle',
+            }}
+            axisLeft={{
+                orient: 'left',
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: 'KG',
+                legendOffset: -40,
+                legendPosition: 'middle',
+            }}
+            colors={{ scheme: 'nivo' }}
+            pointSize={10}
+            pointColor={{ theme: 'background' }}
+            pointBorderWidth={2}
+            pointBorderColor={{ from: 'serieColor' }}
+            pointLabelYOffset={-12}
+            useMesh={true}
+            legends={[
+                {
+                    anchor: 'bottom-right',
+                    direction: 'column',
+                    justify: false,
+                    translateX: 120,
+                    translateY: 0,
+                    itemsSpacing: 2,
+                    itemWidth: 100,
+                    itemHeight: 20,
+                    itemDirection: 'left-to-right',
+                    itemOpacity: 0.85,
+                    symbolSize: 20,
+                    symbolShape: 'circle',
+                    effects: [
+                        {
+                            on: 'hover',
+                            style: {
+                                itemOpacity: 1,
+                            },
+                        },
+                    ],
+                },
+            ]}
+        />        
     )
 }
 
