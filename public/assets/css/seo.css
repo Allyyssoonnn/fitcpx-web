@@ -23395,12 +23395,14 @@ html[data-boxed-layout=boxed] .container-fluid,html[data-boxed-layout=boxed] .co
         position:fixed;
         left:-270px;
         height:100%;
-        /* top:70px; */
+        /* 18/02/2025 - top: 0 - Alyson */
+        top:0;
         background-color:var(--bs-body-bg)
     }
     .show-sidebar .left-sidebar{
         left:0;
-        /* top:70px; */
+        /* 18/02/2025 - top: 0 - Alyson */
+        top:0;
         border-radius:0;
         height:100%
     }

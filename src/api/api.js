@@ -2,7 +2,7 @@ import axios from "axios";
 import { parseCookies, setCookie } from 'nookies';
 const PRODUCAO = false;
 
-const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
+const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://172.20.10.5:8070';
 
 const api = axios.create({
     baseURL: baseURL,
@@ -16,7 +16,7 @@ api.interceptors.response.use((response) => response, async (error) => {
         originalRequest._retry = true;
 
         try {
-            const refreshResponse = await axios.post(baseURL + '/usuario/refreshToken', {
+            const refreshResponse = await axios.post(baseURL + `/${import.meta.env.VITE_BUILD_TYPE}/refreshToken`, {
                 refreshToken: cookies.refreshToken,
             });
             

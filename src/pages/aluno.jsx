@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
 import { useQuery } from "react-query";
-import { changeAlunoIMG, deleteAvaliacao, getAluno } from '../api/aluno';
+import { changeAlunoIMG, deleteAvaliacao, getAluno, getAvaliacao, getAvaliacoes } from '../api/aluno';
 import { deleteTreino, getTreinos, setTreino } from '../api/treino';
+import { deleteCardapio, getCardapios, setCardapio } from '../api/cardapio';
 import ImageCropModal from '../components/cutImg';
 import PopConfirm from '../components/popConfirm';
 import { useRecoilState } from 'recoil';
@@ -29,6 +30,19 @@ function Aluno() {
     const { data: treinos, refetch } = useQuery({
         queryKey: ['treinos'],
         queryFn: () => getTreinos({ cod_aluno }),
+        initialData: []
+    });
+
+    const { data: avaliacoes, refetchAvalicao } = useQuery({
+        queryKey: ['avaliacoes'],
+        queryFn: () => getAvaliacoes(null, cod_aluno),
+        initialData: [],
+        enabled: !!cod_aluno
+    });
+
+    const { data: cardapios, refetch: refetchCardapio } = useQuery({
+        queryKey: ['cardapios'],
+        queryFn: () => getCardapios({ cod_aluno }),
         initialData: []
     });
 
@@ -84,7 +98,7 @@ function Aluno() {
 
             <div className='card'>
                 <div className='card-header'>
-                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3">
+                    <button onClick={() => navigate('/alunos')} className="btn btn-danger mb-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
                     </button>
@@ -188,7 +202,7 @@ function Aluno() {
                                     Adicionar Avaliação
                                 </button>
 
-                                {aluno?.avaliacao?.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
+                                {avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
                                 .map((avaliacao, index) => (
                                     <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} refetch={refetch} />
                                 ))}
@@ -220,10 +234,16 @@ function Aluno() {
                                 <span className="d-block d-md-none"><i className="bi bi-book me-2"></i>Cardápio</span>
                             </>
                         }>
-                            <button className='btn btn-success w-100 rounded-2' onClick={() => setModalAddTreino(true)}>
-                                <i className="bi bi-plus-circle me-2"></i>
-                                Adicionar Cardápio
-                            </button>
+                            <div className='text-center'>
+                                <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadcardapio', { state: { aluno } })}>
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Adicionar Cardápio
+                                </button>
+
+                                {cardapios?.map((cardapio, index) => (
+                                    <CardCardapio key={index} cardapio={cardapio} aluno={aluno} refetch={refetch} />
+                                ))}
+                            </div>
                         </Tab>
                     </Tabs>
                 </div>
@@ -304,6 +324,60 @@ function AddTreino({ show, close, aluno }) {
                 </div>
             </div>
         </Modal>
+    )
+}
+
+function CardCardapio({ cardapio, aluno, refetch }) {
+    const navigate = useNavigate();
+
+    async function changeStatusTreino() {
+        await setCardapio({ ...cardapio, status_cardapio: cardapio.status_cardapio == 'A' ? 'I' : 'A' });
+        refetch();
+    }
+
+    async function clickDelete() {
+        await deleteCardapio(cardapio.cod_cardapio);
+        refetch();
+    }
+    
+    return (
+        <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>
+            <div style={{ borderTop: '0.30rem solid #85D446' }} className='card-body rounded-3'>
+                <div style={{ position: 'absolute' }}>
+                    <PopConfirm confirm={clickDelete} />
+                </div>
+
+                <h5 className="card-title">{cardapio.nome_cardapio}</h5>
+
+                <div className='row'>
+                    <div className='col-md-3'>
+                        <strong>Responsável:</strong> {cardapio.usuario?.nome_usuario}
+                    </div>
+                    {/* <div className='col-md-3'>
+                        <strong>Nível:</strong> {cardapio.nivel_treino}
+                    </div> */}
+                    {/* <div className='col-md-3'>
+                        <strong>Sexo:</strong> {getSexo(cardapio.sexo_treino)}
+                    </div> */}
+                    <div className='col-md-3'>
+                        <strong></strong> {cardapio?.refeicoes?.length} {cardapio?.refeicoes?.length > 1 ? 'Refeições' : 'Refeição'}
+                    </div>
+                </div>
+            </div>
+
+            <div className='card-footer bg-light d-flex justify-content-around py-3'>
+                <button
+                    className="btn btn-primary d-flex align-items-center"
+                    onClick={() => navigate('/cadcardapio', { state: { cardapio, aluno } })}
+                >
+                    <i className="bi bi-pencil me-2"></i>Editar
+                </button>
+
+                <button className="btn btn-info d-flex align-items-center" onClick={changeStatusTreino}>
+                    <i className="bi bi-ban me-2"></i>{cardapio.status_treino == 'A' ? 'Desativar' : 'Ativar'}
+                </button>
+            </div>
+        </div>
     )
 }
 

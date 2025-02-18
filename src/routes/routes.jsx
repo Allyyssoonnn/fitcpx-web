@@ -19,6 +19,13 @@ import Planilha from "../pages/planilha";
 import Usuarios from "../pages/usuarios";
 import CadUsuario from "../pages/cadusuario";
 import Relatorios from "../pages/relatorios";
+import Cardapios from "../pages/cardapios";
+import CadCardapio from "../pages/cadCardapio";
+import Alimentos from "../pages/alimentos";
+import GrupoAlimentos from "../pages/grupoAlimentos";
+import CadGrupoAlimento from "../pages/cadGrupoAlimento";
+import CadAlimento from "../pages/cadAlimento";
+import Avaliacoes from "../pages/avaliacoes";
 
 const routes = [
     //Base
@@ -32,6 +39,10 @@ const routes = [
     { path: '/grupoexercicios', name: 'Licença', element: GrupoExercicios },
     { path: '/treinos', name: 'Licença', element: Treinos },
     { path: '/licenca', name: 'Licença', element: Licenca },
+    { path: '/cardapios', name: 'Licença', element: Cardapios },
+    { path: '/alimentos', name: 'Licença', element: Alimentos },
+    { path: '/grupoalimentos', name: 'Licença', element: GrupoAlimentos },
+    { path: '/avaliacoes', name: 'Licença', element: Avaliacoes },
     
     //Cadastros
     { path: '/cadgrupoexercicio', name: 'Licença', element: CadGrupoExercicio },
@@ -41,6 +52,9 @@ const routes = [
     { path: '/cadusuario', name: 'Alunos', element: CadUsuario },
     { path: '/cadavaliacao', name: 'Alunos', element: CadAvaliacao },
     { path: '/cadtreino', name: 'Alunos', element: CadTreino },
+    { path: '/cadcardapio', name: 'Alunos', element: CadCardapio },
+    { path: '/cadgrupoalimento', name: 'Alunos', element: CadGrupoAlimento },
+    { path: '/cadalimento', name: 'Alunos', element: CadAlimento },
 
     //Informações
     { path: '/aluno', name: 'Aluno', element: Aluno },

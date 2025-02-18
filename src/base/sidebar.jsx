@@ -10,6 +10,7 @@ function Sidebar() {
 
     const [dropTreino, setDropTreino] = useState(false);
     const [dropAdmin, setDropAdmin] = useState(false);
+    const [dropCardapio, setdropCardapio] = useState(false);
 
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
@@ -20,6 +21,7 @@ function Sidebar() {
         toggleSidebar();
         setDropTreino(false);
         setDropAdmin(false);
+        setdropCardapio(false);
         navigate(route);
     }
 
@@ -75,6 +77,41 @@ function Sidebar() {
                                 <i className="bi bi-journal-bookmark-fill fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">Planilha de treino</span>
                             </a>
+                        </li>
+
+                        <li className="sidebar-item">
+                            <a href="#" className="sidebar-link p-3" onClick={() => go('/avaliacoes')} aria-expanded="false">
+                                <i className="bi bi-activity fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">Avaliações</span>
+                            </a>
+                        </li>
+
+                        <li className="sidebar-item">
+                            <a className={`sidebar-link p-3 has-arrow ${dropCardapio ? 'active' : ''}`} href="#" onClick={() => setdropCardapio(!dropCardapio)}>
+                                <i className="bi bi-book fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">Cardápio</span>
+                            </a>
+
+                            <ul className={`collapse first-level ${dropCardapio ? 'in' : ''}`}>
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/grupoalimentos')} aria-expanded="false">
+                                        <i className="bi bi-collection fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Grupo alimentos</span>
+                                    </a>
+                                </li>
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/alimentos')} aria-expanded="false">
+                                        <i className="bi bi-collection fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Alimentos</span>
+                                    </a>
+                                </li>
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/cardapios')} aria-expanded="false">
+                                        <i className="bi bi-book fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Cardápios</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
                         <li className="sidebar-item">

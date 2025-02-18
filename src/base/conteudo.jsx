@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import routes from './routes';
+import routes from '../routes/routes';
 import { Navigate, Route, Routes } from "react-router-dom";
 
 function Conteudo() {

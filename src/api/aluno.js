@@ -33,8 +33,8 @@ export const recoveryAluno = async (cod_aluno) => {
     throw new Error("Erro ao carregar sessao");
 };
 
-export const getAvaliacoes = async (codEmpresa) => {
-    const resp = await post('/aluno/getAvaliacoes', { cod_empresa: codEmpresa });
+export const getAvaliacoes = async (codEmpresa, cod_aluno) => {
+    const resp = await post('/aluno/getAvaliacoes', { cod_empresa: codEmpresa, cod_aluno });
     if (resp.status) return resp.avaliacoes;
     throw new Error("Erro ao carregar aluno");
 };

@@ -154,6 +154,10 @@ function Header() {
                                         <i className="bi bi-unlock fs-6"></i>
                                         <p className="mb-0 fs-3">Licença</p>
                                     </a>
+                                    <a href="https://fitcpx.com" className="d-flex align-items-center gap-2 dropdown-item">
+                                        <i className="bi bi-house fs-6"></i>
+                                        <p className="mb-0 fs-3">Acessar site</p>
+                                    </a>
                                     {/* <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
                                     <i className="ti ti-list-check fs-6"></i>
                                     <p className="mb-0 fs-3">My Task</p>

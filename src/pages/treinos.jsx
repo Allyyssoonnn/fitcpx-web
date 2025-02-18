@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
@@ -17,6 +17,10 @@ function Treinos() {
         initialData: [],
         enabled: !!usuario.cod_empresa,
     });
+
+    useEffect(() => {
+        refetch();
+    }, [deleted]);
 
     const navigate = useNavigate();
     

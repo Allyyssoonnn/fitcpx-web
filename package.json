@@ -8,7 +8,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:usuario": "cross-env VITE_BUILD_TYPE=usuario vite build",
+    "build:aluno": "cross-env VITE_BUILD_TYPE=aluno vite build",
+    "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite",
+    "dev:aluno": "cross-env VITE_BUILD_TYPE=aluno vite"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",
@@ -47,6 +51,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "cross-env": "^7.0.3",
     "eslint": "^9.13.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",

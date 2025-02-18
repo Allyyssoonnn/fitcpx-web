@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, unstable_usePrompt } from "react-router-dom";
 import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
@@ -15,10 +15,11 @@ import Dobras from "./cadAvaliacao/dobras";
 import Perimetros from "./cadAvaliacao/perimetros";
 import Diametros from "./cadAvaliacao/diametros";
 import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
+import { useNavigationBlocker } from "../components/useNavigationBlocker";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors } } = useForm();
-    const navigate = useNavigate();
+    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors, isDirty } } = useForm();
+    const navigate = useNavigationBlocker(isDirty);
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
 
@@ -46,7 +47,7 @@ function CadAvaliacao() {
     const [protocolo, setProtocolo] = useState("");
     const [ocultarCampos, setOcultarCampos] = useState(false);
     const [restaurouCache, setRestaurouCache] = useState(false);
-    
+
     //Trata configurações inicias como o carregamento da avaliação caso for uma edição
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
@@ -124,6 +125,7 @@ function CadAvaliacao() {
 
         const av = await setAvaliacao(data);
         enviaImagens(av.cod_avaliacao);
+        reset();
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
@@ -255,7 +257,7 @@ function CadAvaliacao() {
         <div className="container-fluid">
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
-                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
+                    <button onClick={() => navigate('/aluno')} className="btn btn-danger mb-3 me-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
                     </button>

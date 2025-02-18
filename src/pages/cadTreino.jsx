@@ -10,10 +10,11 @@ import FiltroExercicio from "../components/filtroExercicio";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { arrayBorders } from "../utils";
 import { toast } from "react-toastify";
+import { useNavigationBlocker } from "../components/useNavigationBlocker";
 
 function CadTreino() {
-    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors } } = useForm();
-    const navigate = useNavigate();
+    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { isDirty } } = useForm();
+    const navigate = useNavigationBlocker(isDirty);
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
     const [sessoes, setSessoes] = useState([]);
@@ -56,7 +57,8 @@ function CadTreino() {
         if (respTreino.cod_treino)
             if (respTreino.cod_treino) {
             await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos);
-            navigate(-1);
+            reset();
+            navigate('/aluno');
         } else toast.error('Erro ao salvar treino');
     }
 
@@ -64,7 +66,7 @@ function CadTreino() {
         <form onSubmit={handleSubmit(confirma)} className="container-fluid">
             <div className="card">
                 <div className="card-header">
-                    <button onClick={e => { e.preventDefault(); navigate(-1); }} className="btn btn-danger mb-3 me-3">
+                    <button onClick={e => { e.preventDefault(); navigate('/aluno'); }} className="btn btn-danger mb-3 me-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
                     </button>

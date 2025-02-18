@@ -100,8 +100,8 @@ function Avaliacao() {
                     </div>
                 </div>
 
-                <div className="card-body" id="printable-area">
-                    <div className="card row mb-4">
+                <div className="card-body px-0 px-sm-4" id="printable-area">
+                    <div className="card">
                         <div className="card-header">
                             <h5>Resultado da Avaliação</h5>
                         </div>

@@ -4,13 +4,16 @@ import Layout from './base/layout';
 import Login from './pages/login';
 import Register from './pages/register';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import PlanilhaTreino from './pages/planilhaTreino';
-import LoginAluno from './appAluno/loginApp';
 import Recovery from './pages/recovery';
 
-import 'react-toastify/dist/ReactToastify.css';
+import LayoutAluno from './app-aluno/base/layout';
+import LoginAluno from './app-aluno/pages/loginAluno';
 
 function App() {
+    const buildType = import.meta.env.VITE_BUILD_TYPE;
+
     return (
         <BrowserRouter>
             <Suspense
@@ -21,16 +24,20 @@ function App() {
                 }
             >
                 <ToastContainer theme="colored" />
-                <Routes>
-                    <Route name='Inicio' path='*' element={<Layout />} />
-                    <Route path='/entrar' element={<Login />} />
-                    <Route path='/registrar' element={<Register />} />
-                    <Route path='/recuperar' element={<Recovery />} />
-                    <Route path='/planilhatreino' element={<PlanilhaTreino />} />
-                    
-                    {/* APP ALUNO */}
-                    <Route path='/app/login' element={<LoginAluno />} />
-                </Routes>
+                    {buildType === "aluno" ? (
+                        <Routes>
+                            <Route name='Inicio' path='*' element={<LayoutAluno />} />
+                            <Route path='/entrar' element={<LoginAluno />} />
+                        </Routes>
+                    ) : (
+                        <Routes>
+                            <Route name='Inicio' path='*' element={<Layout />} />
+                            <Route path='/entrar' element={<Login />} />
+                            <Route path='/registrar' element={<Register />} />
+                            <Route path='/recuperar' element={<Recovery />} />
+                            <Route path='/planilhatreino' element={<PlanilhaTreino />} />
+                        </Routes>
+                    )}
             </Suspense>
         </BrowserRouter>
     )

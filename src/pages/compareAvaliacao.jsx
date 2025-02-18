@@ -5,6 +5,8 @@ import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsiveLine } from "@nivo/line";
+import { getAvaliacoes } from "../api/aluno";
+import { useQuery } from "react-query";
 
 function CompareAvaliacao() {
     const navigate = useNavigate();
@@ -14,31 +16,26 @@ function CompareAvaliacao() {
     const [avaliacao, setAvaliacao] = useState({});
     const [avaliacoesComparacao, setAvaliacoesComparacao] = useState([{}]);
     const [aluno, setAluno] = useState({});
-    const [avaliacoes, setAvaliacoes] = useState([]);
+
+    const { data: avaliacoes, refetch } = useQuery({
+        queryKey: ['avaliacoes', aluno.cod_aluno],
+        queryFn: () => getAvaliacoes(null, aluno.cod_aluno),
+        initialData: [],
+        enabled: !!aluno.cod_aluno,
+    });
 
     useEffect(() => {
+        if (!avaliacoes) return;
         const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
         avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) :  navigate('/alunos');
         alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
-        
-        if (alunoRecebido.avaliacao) {
-            const indexAv = alunoRecebido.avaliacao.findIndex((av) => av == avaliacaoRecebida);
-            //Seta avaliação selecionada para a terceira
-            // setAvaliacoesComparacao([{}, {}, { ...avaliacaoRecebida, index: indexAv }]);
-            setAvaliacoesComparacao([{ ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }]);
-            //Seta a lista de todas avaliações
-            setAvaliacoes(alunoRecebido.avaliacao);
-            //Seta a primeira avaliação
-            // setAvaliacao1(alunoRecebido.avaliacao[alunoRecebido.avaliacao.length - 1]);
-            //Seta a penultima avaliação
-            // let indexAtual = alunoRecebido.avaliacao.findIndex((v) => v === avaliacaoRecebida);
-            // setAvaliacao3(alunoRecebido.avaliacao[indexAtual + 1]);
-        }
-    }, []);
+
+        const indexAv = avaliacoes.findIndex((av) => av == avaliacaoRecebida);
+        setAvaliacoesComparacao([{ ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }]);
+    }, [avaliacoes]);
 
     function selecionaAvaliacao(indexAv, indexComparacao) {
-        console.log(indexAv, indexComparacao);
         setAvaliacoesComparacao(prev => prev.map((av, i) => i == indexComparacao ? avaliacoes[indexAv] : av));
     }
 
@@ -59,7 +56,7 @@ function CompareAvaliacao() {
                     </div>
                 </div>
 
-                <div className="card-body">
+                <div className="card-body px-0 px-sm-4">
                     <div className="row g-3 mb-5 justify-content-center align-items-center">
                         {avaliacoesComparacao.map((avComp, i) => (
                             <div className="col-md-3" key={i}>
@@ -89,7 +86,7 @@ function CompareAvaliacao() {
 
                         <div className="card-body">
                             {/* Gráfico de Barras Comparativo */}
-                            <div style={{ height: 400 }} className="mb-4">
+                            <div className="mb-4">
                                 <Grafico aluno={aluno} avaliacoes={avaliacoes} />
                             </div>
 
@@ -287,7 +284,7 @@ function AreaMagraGorda({ avaliacao, avaliacoes }) {
     }, [avaliacoes]);
 
     return (
-        <div className="card">
+        <div className="card table-responsive">
             <div className="card-header">
                 <h4>Área Magra/Gorda</h4>
             </div>
@@ -552,108 +549,104 @@ function Diametro({ avaliacao, avaliacoes }) {
     )
 }
 
+
+
 function Grafico({ aluno, avaliacoes }) {
+    const isMobile = window.innerWidth < 500;
+    const ordenacaoData = [...avaliacoes].reverse();
+
     return (
-        <ResponsiveLine
-            data={[
-                {
-                    id: 'Gordura',
-                    data: avaliacoes.map((av, index) => ({
-                        x: `${formatarData(av.data_avaliacao)}`,
-                        y: calculaKGGordura(aluno, av),
-                    })),
-                },
-                {
-                    id: 'Massa Magra',
-                    data: avaliacoes.map((av, index) => ({
-                        x: `${formatarData(av.data_avaliacao)}`,
-                        y: calculaKGMassaMagra(aluno, av),
-                    })),
-                },
-                {
-                    id: 'Músculo',
-                    data: avaliacoes.map((av, index) => ({
-                        x: `${formatarData(av.data_avaliacao)}`,
-                        y: calculaKGMusculo(aluno, av),
-                    })),
-                },
-                {
-                    id: 'Osséo',
-                    data: avaliacoes.map((av, index) => ({
-                        x: `${formatarData(av.data_avaliacao)}`,
-                        y: calculaKGOsseo(av),
-                    })),
-                },
-                {
-                    id: 'Residual',
-                    data: avaliacoes.map((av, index) => ({
-                        x: `${formatarData(av.data_avaliacao)}`,
-                        y: calculaKGResidual(aluno, av),
-                    })),
-                },
-            ]}
-            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
-            yScale={{
-                type: 'linear',
-                min: 'auto',
-                max: 'auto',
-                stacked: false,
-                reverse: false,
-            }}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-                orient: 'bottom',
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'Avaliações',
-                legendOffset: 36,
-                legendPosition: 'middle',
-            }}
-            axisLeft={{
-                orient: 'left',
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
-                legend: 'KG',
-                legendOffset: -40,
-                legendPosition: 'middle',
-            }}
-            colors={{ scheme: 'nivo' }}
-            pointSize={10}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            pointLabelYOffset={-12}
-            useMesh={true}
-            legends={[
-                {
-                    anchor: 'bottom-right',
-                    direction: 'column',
-                    justify: false,
-                    translateX: 120,
-                    translateY: 0,
-                    itemsSpacing: 2,
-                    itemWidth: 100,
-                    itemHeight: 20,
-                    itemDirection: 'left-to-right',
-                    itemOpacity: 0.85,
-                    symbolSize: 20,
-                    symbolShape: 'circle',
-                    effects: [
+        <div className="flex flex-col items-center">
+            {/* Container do gráfico */}
+            <div style={{ height: isMobile ? 320 : 400, width: '100%' }}>
+                <ResponsiveLine
+                    data={[
                         {
-                            on: 'hover',
-                            style: {
-                                itemOpacity: 1,
-                            },
+                            id: 'Gordura',
+                            data: ordenacaoData.map((av) => ({
+                                x: formatarData(av.data_avaliacao),
+                                y: calculaKGGordura(aluno, av),
+                            })),
                         },
-                    ],
-                },
-            ]}
-        />        
-    )
+                        {
+                            id: 'Massa Magra',
+                            data: ordenacaoData.map((av) => ({
+                                x: formatarData(av.data_avaliacao),
+                                y: calculaKGMassaMagra(aluno, av),
+                            })),
+                        },
+                        {
+                            id: 'Músculo',
+                            data: ordenacaoData.map((av) => ({
+                                x: formatarData(av.data_avaliacao),
+                                y: calculaKGMusculo(aluno, av),
+                            })),
+                        },
+                        {
+                            id: 'Osséo',
+                            data: ordenacaoData.map((av) => ({
+                                x: formatarData(av.data_avaliacao),
+                                y: calculaKGOsseo(av),
+                            })),
+                        },
+                        {
+                            id: 'Residual',
+                            data: ordenacaoData.map((av) => ({
+                                x: formatarData(av.data_avaliacao),
+                                y: calculaKGResidual(aluno, av),
+                            })),
+                        },
+                    ]}
+                    margin={{ top: 50, right: 30, bottom: isMobile ? 50 : 50, left: 50 }}
+                    xScale={{ type: 'point' }}
+                    yScale={{
+                        type: 'linear',
+                        min: 'auto',
+                        max: 'auto',
+                        stacked: false,
+                        reverse: false,
+                    }}
+                    axisBottom={{
+                        orient: 'bottom',
+                        tickSize: 5,
+                        tickPadding: 5,
+                        tickRotation: isMobile ? -20 : 0,
+                        legend: 'Avaliações',
+                        legendOffset: 36,
+                        legendPosition: 'middle',
+                    }}
+                    axisLeft={{
+                        orient: 'left',
+                        tickSize: 5,
+                        tickPadding: 5,
+                        tickRotation: 0,
+                        legend: 'KG',
+                        legendOffset: -40,
+                        legendPosition: 'middle',
+                    }}
+                    colors={{ scheme: 'nivo' }}
+                    pointSize={isMobile ? 6 : 10}
+                    pointBorderWidth={2}
+                    pointBorderColor={{ from: 'serieColor' }}
+                    pointLabelYOffset={-12}
+                    useMesh={true}
+                />
+            </div>
+
+            {/* Legenda separada */}
+            <div className={`flex flex-wrap mt-3`}>
+                {['Gordura', 'Massa Magra', 'Músculo', 'Osséo', 'Residual'].map((item, index) => (
+                    <div key={index} className="flex items-center m-1">
+                        <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: ['#E63946', '#457B9D', '#2A9D8F', '#F4A261', '#E9C46A'][index] }}
+                        />
+                        <span className="ml-2 text-sm">{item}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 }
 
 export default CompareAvaliacao;

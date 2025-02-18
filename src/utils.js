@@ -1,3 +1,33 @@
+export function getAvaliacaoNutricional(aluno, avaliacao, objetivo, nivel_atividade) {
+    const massamagra = calculaKGMassaMagra(aluno, avaliacao);
+
+    const fatoresGastoCalorico = { "Sedentário": 1.2, "Levemente ativo": 1.375, "Moderadamente ativo": 1.55, "Muito ativo": 1.725, "Extremamente ativo": 1.9 };
+    const fatoresProteina = { "Emagrecimento": 0.35, "Hipertrofia": 0.3, "Manutenção": 0.25, "Performance": 0.2, "Definição Muscular": 0.35 };
+    const fatoresGarboidrato = { "Emagrecimento": 0.35, "Hipertrofia": 0.55, "Manutenção": 0.5, "Performance": 0.6, "Definição Muscular": 0.45 };
+    const fatoresGordura = { "Emagrecimento": 0.3, "Hipertrofia": 0.2, "Manutenção": 0.25, "Performance": 0.2, "Definição Muscular": 0.25 };
+    const ajustesConsumoDiario = { "Emagrecimento": -500, "Hipertrofia": 500, "Manutenção": 0, "Performance": 300, "Definição Muscular": -200 };
+    const ajustesAgua = { "Moderadamente ativo": 0.5, "Muito ativo": 1, "Extremamente ativo": 1.5 };
+
+    const tmb = (370 + (21,6 * massamagra)).toFixed(1);
+    const gasto_calorico = Number((tmb * (fatoresGastoCalorico[nivel_atividade] || 0)).toFixed(2));
+    const consumo_diario = (gasto_calorico + (ajustesConsumoDiario[objetivo] ?? 0)).toFixed(2);
+
+    return {
+        tmb: tmb,
+        gasto_calorico: gasto_calorico,
+        consumo_diario: consumo_diario,
+        proteina: fatoresProteina[objetivo] !== undefined ? ((gasto_calorico * fatoresProteina[objetivo]) / 4).toFixed(2) : "",
+        carboidrato: fatoresGarboidrato[objetivo] !== undefined ? ((consumo_diario * fatoresGarboidrato[objetivo]) / 4).toFixed(2) : "",
+        gordura: fatoresGordura[objetivo] !== undefined ? ((consumo_diario * fatoresGordura[objetivo]) / 9).toFixed(2) : "",
+        agua: avaliacao.peso * 0.033 + (ajustesAgua[nivel_atividade] || 0),
+    }
+}
+
+export function capitalizeFirstLetter(str) {
+    if (!str) return ''; // Retorna string vazia se a entrada for vazia
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 export const formatarData = (data) => {
     if (!data) return '';
   
@@ -190,20 +220,38 @@ export function getPesoIMCMeta(aluno, avaliacao, meta, imcPersonalizado) {
 export function getReferenciaIMCMetas(aluno, avaliacao, meta) {
     const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
     var result;
-    if (idade < 60) {
-        if (meta == 'Saúde -1') result = 19.5;
-        if (meta == 'Saúde 0') result = 21.65;
-        if (meta == 'Saúde +1') result = 21.85;
-        if (meta == 'Magro') result = 21.65;
-        if (meta == 'Atlético') result = 23.85;
-        if (meta == 'Musculoso') result = 25.75;
+    if (aluno.sexo_aluno == 'M') {
+        if (idade < 60) {
+            if (meta == 'Saúde -1') result = 19.5;
+            if (meta == 'Saúde 0') result = 21.65;
+            if (meta == 'Saúde +1') result = 23.85;
+            if (meta == 'Magro') result = 22.7;
+            if (meta == 'Atlético') result = 24.9;
+            if (meta == 'Musculoso') result = 26.5;
+        } else {
+            if (meta == 'Saúde -1') result = 22.7;
+            if (meta == 'Saúde 0') result = 24.25;
+            if (meta == 'Saúde +1') result = 26.05;
+            if (meta == 'Magro') result = 22.7;
+            if (meta == 'Atlético') result = 24.9;
+            if (meta == 'Musculoso') result = 26.5;
+        }
     } else {
-        if (meta == 'Saúde -1') result = 22.7;
-        if (meta == 'Saúde 0') result = 24.25;
-        if (meta == 'Saúde +1') result = 26.05;
-        if (meta == 'Magro') result = 24.25;
-        if (meta == 'Atlético') result = 26.05;
-        if (meta == 'Musculoso') result = 27.8;
+        if (idade < 60) {
+            if (meta == 'Saúde -1') result = 18.5;
+            if (meta == 'Saúde 0') result = 20.6;
+            if (meta == 'Saúde +1') result = 22.8;
+            if (meta == 'Magro') result = 21.65;
+            if (meta == 'Atlético') result = 23.85;
+            if (meta == 'Musculoso') result = 25.75;
+        } else {
+            if (meta == 'Saúde -1') result = 24.25;
+            if (meta == 'Saúde 0') result = 26.05;
+            if (meta == 'Saúde +1') result = 27.8;
+            if (meta == 'Magro') result = 21.65;
+            if (meta == 'Atlético') result = 23.85;
+            if (meta == 'Musculoso') result = 25.75;
+        }
     }
     return result;
 }
@@ -224,30 +272,30 @@ export function getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraP
             if (meta == 'Saúde -1') result = 13.5;
             if (meta == 'Saúde 0') result = 17;
             if (meta == 'Saúde +1') result = 19;
-            if (meta == 'Magro') result = 9.5;
-            if (meta == 'Atlético') result = 13.5;
-            if (meta == 'Musculoso') result = 17;
+            if (meta == 'Magro') result = 5;
+            if (meta == 'Atlético') result = 9;
+            if (meta == 'Musculoso') result = 12.5;
         } else if (idade >= 36 && idade <= 45) {
             if (meta == 'Saúde -1') result = 17;
             if (meta == 'Saúde 0') result = 20;
             if (meta == 'Saúde +1') result = 22;
-            if (meta == 'Magro') result = 12;
-            if (meta == 'Atlético') result = 17;
-            if (meta == 'Musculoso') result = 20;
+            if (meta == 'Magro') result = 9.5;
+            if (meta == 'Atlético') result = 13.5;
+            if (meta == 'Musculoso') result = 17;
         } else if (idade >= 46 && idade <= 55) {
             if (meta == 'Saúde -1') result = 19;
             if (meta == 'Saúde 0') result = 22;
             if (meta == 'Saúde +1') result = 24.5;
-            if (meta == 'Magro') result = 14;
-            if (meta == 'Atlético') result = 19;
-            if (meta == 'Musculoso') result = 22;
+            if (meta == 'Magro') result = 9.5;
+            if (meta == 'Atlético') result = 13.5;
+            if (meta == 'Musculoso') result = 17;
         } else if (idade >= 56) {
             if (meta == 'Saúde -1') result = 20.5;
             if (meta == 'Saúde 0') result = 22.5;
             if (meta == 'Saúde +1') result = 24.5;
-            if (meta == 'Magro') result = 15.5;
-            if (meta == 'Atlético') result = 20.5;
-            if (meta == 'Musculoso') result = 22.5
+            if (meta == 'Magro') result = 12;
+            if (meta == 'Atlético') result = 17;
+            if (meta == 'Musculoso') result = 20;
         }
     } else {
         if (idade >= 18 && idade <= 25) {
@@ -261,30 +309,30 @@ export function getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraP
             if (meta == 'Saúde -1') result = 19;
             if (meta == 'Saúde 0') result = 22;
             if (meta == 'Saúde +1') result = 24.5;
-            if (meta == 'Magro') result = 15;
-            if (meta == 'Atlético') result = 19;
-            if (meta == 'Musculoso') result = 22;
+            if (meta == 'Magro') result = 14.5;
+            if (meta == 'Atlético') result = 18;
+            if (meta == 'Musculoso') result = 21;
         } else if (idade >= 36 && idade <= 45) {
             if (meta == 'Saúde -1') result = 21.5;
             if (meta == 'Saúde 0') result = 25;
             if (meta == 'Saúde +1') result = 28;
-            if (meta == 'Magro') result = 17.5;
-            if (meta == 'Atlético') result = 21.5;
-            if (meta == 'Musculoso') result = 25;
+            if (meta == 'Magro') result = 15;
+            if (meta == 'Atlético') result = 19;
+            if (meta == 'Musculoso') result = 22;
         } else if (idade >= 46 && idade <= 55) {
             if (meta == 'Saúde -1') result = 24;
             if (meta == 'Saúde 0') result = 27;
             if (meta == 'Saúde +1') result = 30;
-            if (meta == 'Magro') result = 19;
-            if (meta == 'Atlético') result = 24;
-            if (meta == 'Musculoso') result = 27;
+            if (meta == 'Magro') result = 15;
+            if (meta == 'Atlético') result = 19;
+            if (meta == 'Musculoso') result = 22;
         } else if (idade >= 56) {
             if (meta == 'Saúde -1') result = 25;
             if (meta == 'Saúde 0') result = 28;
             if (meta == 'Saúde +1') result = 31;
-            if (meta == 'Magro') result = 20;
-            if (meta == 'Atlético') result = 25;
-            if (meta == 'Musculoso') result = 28;
+            if (meta == 'Magro') result = 17.5;
+            if (meta == 'Atlético') result = 21.5;
+            if (meta == 'Musculoso') result = 25;
         }
     }
     return result;
@@ -608,7 +656,7 @@ export function calculaPorcentagemGordura(aluno, avaliacao) {
 }
 
 export function calculaDensidade(aluno, avaliacao) {    
-    const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
+    const idade = calcularIdadeDtAvaliacao(aluno?.data_nascimento_aluno, avaliacao.data_avaliacao);
 
     var densidade = 0;
 

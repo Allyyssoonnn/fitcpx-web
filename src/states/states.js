@@ -30,3 +30,14 @@ export const useToggleSidebar = () => {
     const toggleSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: !prevState.openedSidebar }));
     return { toggleSidebar, openedSidebar: appState.openedSidebar };
 }
+
+// ============== App-aluno
+
+export const stateAluno = atom({
+    key: 'stateUsuario',
+    default: {
+        nome_aluno: '',
+        email_aluno: ''
+    },
+    effects_UNSTABLE: [persistAtom]
+});

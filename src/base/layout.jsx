@@ -11,6 +11,7 @@ function Layout() {
             <Sidebar />
 
             {openedSidebar && (
+                //Clicar fora da sidebar fecha ela
                 <div
                     onClick={toggleSidebar}
                     className='d-xl-none d-block'

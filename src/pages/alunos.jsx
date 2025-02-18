@@ -30,7 +30,7 @@ function Alunos() {
     const filteredAlunos = useMemo(() => {
         return alunos.filter((aluno) =>
             searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
-                aluno.nome_aluno?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)) &&
+            aluno.nome_aluno?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)) &&
             aluno.status_aluno === statusFilter
         )
     }, [alunos, searchTerm, statusFilter]);
