@@ -1,6 +1,6 @@
 import axios from "axios";
 import { parseCookies, setCookie } from 'nookies';
-const PRODUCAO = false;
+const PRODUCAO = true;
 
 const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://172.20.10.5:8070';
 
