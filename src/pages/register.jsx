@@ -5,11 +5,14 @@ import { toast } from 'react-toastify';
 import { post } from "../api/api";
 import { Modal } from 'react-bootstrap';
 import { useState } from 'react';
+import { stateUsuario } from '../states/states';
+import { useRecoilState } from 'recoil';
 
 function Register() {
     const navigate = useNavigate();
     const { handleSubmit, register, setError, clearErrors, watch } = useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [usuario, setusuario] = useRecoilState(stateUsuario);
     const acceptTerms = watch("acceptTerms");
 
     async function registrar(data) {
@@ -23,6 +26,7 @@ function Register() {
 
         if (resp.status) {
             toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
+            setusuario(resp?.usuario);
             setCookie(null, 'token', resp.token, { maxAge: 30000 });
             setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
             navigate('/');

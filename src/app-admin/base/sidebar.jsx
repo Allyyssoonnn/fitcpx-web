@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { stateApp, useToggleSidebar } from "../../states/states";
+import { stateAluno, stateApp, useToggleSidebar } from "../../states/states";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import navigation from './_nav';
 
 function Sidebar() {
     const navigate = useNavigate();
+    const [aluno] = useRecoilState(stateAluno);
     const { toggleSidebar } = useToggleSidebar();
     const [{ openedSidebar }] = useRecoilState(stateApp);
     const [menus, setMenus] = useState({});
@@ -13,7 +14,11 @@ function Sidebar() {
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
         if (window.screen.width > 1600 && !openedSidebar) toggleSidebar();
-    }, []);
+
+        if (!aluno?.cod_aluno) {
+            // navigate('/entrar');
+        }
+    }, [aluno]);
 
     function go(route) {
         toggleSidebar();

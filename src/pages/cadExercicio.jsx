@@ -67,7 +67,7 @@ function CadExercicio() {
     }, [location, setValue, usuario]);
 
     async function confirma(data) {
-        await setExercicio({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+        await setExercicio({ ...data, cod_usuario: usuario?.cod_usuario, cod_empresa: usuario?.cod_empresa });
         navigate('/exercicios');
     }
 

@@ -1,8 +1,8 @@
 import axios from "axios";
-import { parseCookies, setCookie } from 'nookies';
-const PRODUCAO = true;
+import { destroyCookie, parseCookies, setCookie } from 'nookies';
+const PRODUCAO = false;
 
-const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://172.20.10.5:8070';
+const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://192.168.1.2:8070';
 
 const api = axios.create({
     baseURL: baseURL,
@@ -16,7 +16,11 @@ api.interceptors.response.use((response) => response, async (error) => {
         originalRequest._retry = true;
 
         try {
-            const refreshResponse = await axios.post(baseURL + `/${import.meta.env.VITE_BUILD_TYPE}/refreshToken`, {
+            var user;
+            if (import.meta.env.VITE_BUILD_TYPE == 'aluno') user = 'appaluno';
+            if (import.meta.env.VITE_BUILD_TYPE == 'admin') user = 'appadmin';
+            if (import.meta.env.VITE_BUILD_TYPE == 'usuario') user = 'usuario';
+            const refreshResponse = await axios.post(baseURL + `/${user}/refreshToken`, {
                 refreshToken: cookies.refreshToken,
             });
             
@@ -26,6 +30,7 @@ api.interceptors.response.use((response) => response, async (error) => {
                 return api(originalRequest);
             }
         } catch (e) {
+            destroyCookie(null, 'token');
             window.location.replace('/entrar');
         }
     }

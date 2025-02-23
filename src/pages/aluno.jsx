@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
@@ -45,6 +45,10 @@ function Aluno() {
         queryFn: () => getCardapios({ cod_aluno }),
         initialData: []
     });
+
+    useEffect(() => {
+        if (!cod_aluno) navigate('/alunos');
+    }, []);
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
@@ -125,13 +129,13 @@ function Aluno() {
                             <div className='d-flex align-items-center'>
                                 <h3>{aluno?.nome_aluno}</h3>
                                 <label className={`ms-2 bg-opacity-50 px-2 rounded-3
-                                    ${aluno.status_aluno === 'A' ? 'bg-success' : ''}
-                                    ${aluno.status_aluno === 'B' ? 'bg-danger' : ''}
-                                    ${aluno.status_aluno === 'I' ? 'bg-warning' : ''}
+                                    ${aluno?.status_aluno === 'A' ? 'bg-success' : ''}
+                                    ${aluno?.status_aluno === 'B' ? 'bg-danger' : ''}
+                                    ${aluno?.status_aluno === 'I' ? 'bg-warning' : ''}
                                 `}>
-                                    {aluno.status_aluno === 'A' ? 'Ativo' : ''}
-                                    {aluno.status_aluno === 'B' ? 'Bloqueado' : ''}
-                                    {aluno.status_aluno === 'I' ? 'Inativo' : ''}
+                                    {aluno?.status_aluno === 'A' ? 'Ativo' : ''}
+                                    {aluno?.status_aluno === 'B' ? 'Bloqueado' : ''}
+                                    {aluno?.status_aluno === 'I' ? 'Inativo' : ''}
                                 </label>
                             </div>
                             <p>{calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
@@ -288,7 +292,7 @@ function AddTreino({ show, close, aluno }) {
                     <div className='modal-header d-flex flex-row justify-content-between align-items-start'>
                         <div>
                             <h4>Adicionar treino</h4>
-                            <h6>{aluno.nome_aluno}</h6>
+                            <h6>{aluno?.nome_aluno}</h6>
                         </div>
 
                         <OverlayTrigger placement="bottom" overlay={tooltip}>

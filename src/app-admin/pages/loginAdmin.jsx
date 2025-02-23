@@ -1,25 +1,24 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../api/appaluno";
+import { login } from "../../api/appadmin";
 import { toast } from "react-toastify";
-import { stateAluno } from "../../states/states";
-import { useRecoilState } from "recoil";
 import { setCookie } from "nookies";
+import { useRecoilState } from "recoil";
+import { stateAdmin } from "../../states/states";
 
-function LoginAluno() {
+function LoginAdmin() {
     const navigate = useNavigate();
+    const [admin, setadmin] = useRecoilState(stateAdmin);
     const { handleSubmit, register } = useForm();
-    const [aluno, setaluno] = useRecoilState(stateAluno);
 
     async function loginApp(data) {
         const resp = await login(data.email, data.senha);
-        console.log(resp);
         
-        if (resp) {
-            toast.success(`Bem vindo ${resp.aluno.nome_aluno}!`);
+        if (resp.admin) {
+            toast.success(`Bem vindo ${resp.admin.nome_admin}!`);
             setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });
             setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
-            setaluno(resp.aluno);
+            setadmin(resp.admin);
             navigate('/');
         } else {
             toast.error(resp?.msg);
@@ -39,7 +38,7 @@ function LoginAluno() {
                                         {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>S-FitApp</h1> */}
                                     </a>
                                     
-                                    <p className="text-center">Acesso do aluno</p>
+                                    <p className="text-center">Administrador</p>
 
                                     <form onSubmit={handleSubmit(loginApp)}>
                                         <div className="mb-3">
@@ -80,4 +79,4 @@ function LoginAluno() {
     );
 }
 
-export default LoginAluno;
+export default LoginAdmin;

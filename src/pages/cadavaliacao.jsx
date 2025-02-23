@@ -8,7 +8,7 @@ import { useRecoilState } from "recoil";
 import { sendAvaliacaoIMG, setAvaliacao } from "../api/aluno";
 import { useQuery } from "react-query";
 import { getProtocolos } from '../api/usuario';
-import { calcularIdade, dataURLToBlob, getSexo } from "../utils";
+import { calcularIdade, dataURLToBlob, getSexo, preventForm } from "../utils";
 import Imagens from "./cadAvaliacao/imagens";
 import { toast } from "react-toastify";
 import Dobras from "./cadAvaliacao/dobras";
@@ -313,7 +313,7 @@ function CadAvaliacao() {
                     </div>
                 </div>
 
-                <form className="card-body" onSubmit={handleSubmit(confirma)}>
+                <form onKeyDown={preventForm} className="card-body" onSubmit={handleSubmit(confirma)}>
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
                     
                     <div className="row g-3">

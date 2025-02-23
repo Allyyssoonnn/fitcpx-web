@@ -89,30 +89,50 @@ function CompareAvaliacao() {
                             <div className="mb-4">
                                 <Grafico aluno={aluno} avaliacoes={avaliacoes} />
                             </div>
-
-                            {/* Tabela Comparativa */}
-                            <div className="table-responsive">
-                                <table className="table table-striped">
+                            <row className="row g-3 justify-content-around">
+                                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Avaliação</th>
-                                            <th>Gordura (kg)</th>
-                                            <th>Massa Magra (kg)</th>
-                                            <th>Músculo (kg)</th>
+                                            <th>Parâmetro</th>
+                                            <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                            <th></th>
+                                            <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                            <th></th>
+                                            <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {avaliacoes.map((av, index) => (
-                                            <tr key={index}>
-                                                <td>{formatarData(av.data_avaliacao)}</td>
-                                                <td>{calculaKGGordura(aluno, av)}</td>
-                                                <td>{calculaKGMassaMagra(aluno, av)}</td>
-                                                <td>{calculaKGMusculo(aluno, av)}</td>
+                                        {[
+                                            { label: 'Peso (kg)', key: 'peso' },
+                                            { label: 'Músculo (%)', key: 'peso', func: calculaPorcentagemMusculo },
+                                            { label: 'Músculo (kg)', key: 'peso', func: calculaKGMusculo },
+                                            { label: 'Gordura (%)', key: 'peso', func: calculaPorcentagemGordura },
+                                            { label: 'Gordura (kg)', key: 'peso', func: calculaKGGordura },
+                                            { label: 'Massa Magra (%)', key: 'peso', func: calculaPorcentagemMassaMagra },
+                                            { label: 'Massa Magra (kg)', key: 'peso', func: calculaKGMassaMagra },
+                                        ].map(({ label, key, func }) => {
+                                            const val1 = func && avaliacoes[0]?.cod_protocolo > 0 ? func(aluno, avaliacoes[0]) : (avaliacoes[0]?.[key] || 0);
+                                            const val2 = func && avaliacoes[1]?.cod_protocolo > 0 ? func(aluno, avaliacoes[1]) : (avaliacoes[1]?.[key] || 0);
+                                            const val3 = func && avaliacoes[2]?.cod_protocolo > 0 ? func(aluno, avaliacoes[2]) : (avaliacoes[2]?.[key] || 0);
+
+                                            return (
+                                            <tr key={key}>
+                                                <td><strong>{label}</strong></td>
+                                                <td>{val1 || 'Não informado'}</td>
+                                                <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                    {val2 ? (val2 - val1).toFixed(2) : '-'}
+                                                </th>
+                                                <td>{val2 || 'Não informado'}</td>
+                                                <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                    {val3 ? (val3 - val2).toFixed(2) : '-'}
+                                                </th>
+                                                <td>{val3 || 'Não informado'}</td>
                                             </tr>
-                                        ))}
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
-                            </div>
+                            </row>
                         </div>
                     </div>
                     

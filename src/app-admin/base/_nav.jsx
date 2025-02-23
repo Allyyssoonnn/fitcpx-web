@@ -10,24 +10,14 @@ const _nav = [
         divider: true
     },
     {
-        name: 'Avaliações',
-        to: '/avaliacoes',
+        name: 'Exercicios',
+        to: '/ajusteexercicios',
         icon: <i className="bi bi-activity fs-6 me-1"></i>,
     },
     {
-        name: 'Treinos',
-        to: '/treinos',
-        icon: <i className="bi bi-clipboard-check fs-6 me-1"></i>,
-    },
-    {
-        name: 'Cardápios',
-        to: '/cardapios',
-        icon: <i className="bi bi-book fs-6 me-1"></i>,
-    },
-    {
-        name: 'Pagamentos',
-        to: '/pagamentos',
-        icon: <i className="bi bi-bank fs-6 me-1"></i>,
+        name: 'Cad. Exercício',
+        to: '/cadexercicio',
+        icon: <i className="bi bi-activity fs-6 me-1"></i>,
     },
     // {
     //     menu: true,

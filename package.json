@@ -11,8 +11,10 @@
     "preview": "vite preview",
     "build:usuario": "cross-env VITE_BUILD_TYPE=usuario vite build",
     "build:aluno": "cross-env VITE_BUILD_TYPE=aluno vite build",
+    "build:admin": "cross-env VITE_BUILD_TYPE=admin vite build",
     "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite",
-    "dev:aluno": "cross-env VITE_BUILD_TYPE=aluno vite"
+    "dev:aluno": "cross-env VITE_BUILD_TYPE=aluno vite",
+    "dev:admin": "cross-env VITE_BUILD_TYPE=admin vite"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",
@@ -30,6 +32,7 @@
     "bootstrap-icons": "^1.11.3",
     "cropperjs": "^1.6.2",
     "file-saver": "^2.0.5",
+    "framer-motion": "^12.4.7",
     "nookies": "^2.5.2",
     "npm": "^10.9.0",
     "react": "^18.3.1",

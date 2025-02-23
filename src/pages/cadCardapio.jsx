@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import { formatarData, getAvaliacaoNutricional } from "../utils";
+import { formatarData, getAvaliacaoNutricional, preventForm } from "../utils";
 import { useEffect, useMemo, useState } from "react";
 import { getAlimentos, setCardapio, setRefeicao } from "../api/cardapio";
 import { stateUsuario } from "../states/states";
@@ -55,7 +55,7 @@ function CadCardapio() {
     }
 
     return (
-        <form onSubmit={handleSubmit(confirma)} className="container-fluid">
+        <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid">
             <div className="row g-3 gap-3">
                 <div className="card col-md-5">
                     <div className="card-header">

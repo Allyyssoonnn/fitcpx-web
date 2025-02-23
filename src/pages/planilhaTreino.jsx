@@ -33,14 +33,20 @@ function PlanilhaTreino() {
         document.documentElement.setAttribute("data-bs-theme", novoTema);
     }
 
-    async function changeField(value, indexSessao, indexExc, field) {
+    async function changeField(value, indexSessao, indexExc, field, indexSet = null) {        
         const attAlunos = alunos.map((aluno, i) =>
             indexAluno == i
-            ? { ...aluno, treinos: aluno.treinos.map((treino, idx) => idx == alunos[indexAluno].indexTreino ? {
+            ? { ...aluno,
+                treinos: aluno.treinos.map((treino, idx) => idx == alunos[indexAluno].indexTreino ? {
                 ...treino,
                 sessoes: treino.sessoes.map((sessao, idxSessao) => indexSessao == idxSessao ? {
-                    ...sessao,
-                    exercicios: sessao.exercicios.map((exc, idxExc) => indexExc == idxExc ? { ...exc, [field]: value } : exc)
+                ...sessao,
+                exercicios: sessao.exercicios.map((exc, idxExc) => {
+                    if (indexExc == idxExc && indexSet !== null) return { ...exc, sets: exc.sets.map((set, i) => indexSet == i ? { ...set, [field]: value } : set) }
+                    if (indexExc == idxExc && indexSet == null) return { ...exc, [field]: value }
+                    return exc;
+                }
+                )
                 } : sessao)
             } : treino ) }
             : aluno
@@ -210,19 +216,19 @@ function PlanilhaTreino() {
                                                                 style={exc.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
                                                             >
                                                                 <td>
-                                                                    <EditExercicio value={set.nome_exercicio} onUpdate={(v, object) => { changeField(v, idx, indexExc, 'cod_exercicio'); changeExercicio(object, idx, indexExc) }} exercicios={exercicios} />
+                                                                    <EditExercicio value={set.nome_exercicio} onUpdate={(v, object) => { changeField(v, idx, indexExc, 'cod_exercicio', indexSet); changeExercicio(object, idx, indexExc) }} exercicios={exercicios} />
                                                                 </td>
                                                                 <td>
-                                                                    <Edit value={set.serie_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'serie_sessao_exercicio')} />
+                                                                    <Edit value={set.serie_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'serie_sessao_exercicio', indexSet)} />
                                                                 </td>
                                                                 <td>
-                                                                    <Edit value={set.repeticao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'repeticao_sessao_exercicio')} />
+                                                                    <Edit value={set.repeticao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'repeticao_sessao_exercicio', indexSet)} />
                                                                 </td>
                                                                 <td>
-                                                                    <Edit value={set.carga_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'carga_sessao_exercicio')} />
+                                                                    <Edit value={set.carga_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'carga_sessao_exercicio', indexSet)} />
                                                                 </td>
                                                                 <td>
-                                                                    <Edit value={set.observacao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'observacao_sessao_exercicio')} />
+                                                                    <Edit value={set.observacao_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'observacao_sessao_exercicio', indexSet)} />
                                                                 </td>
                                                             </tr>
                                                         ))}

@@ -9,7 +9,9 @@ import PlanilhaTreino from './pages/planilhaTreino';
 import Recovery from './pages/recovery';
 
 import LayoutAluno from './app-aluno/base/layout';
+import LayoutAdmin from './app-admin/base/layout';
 import LoginAluno from './app-aluno/pages/loginAluno';
+import LoginAdmin from './app-admin/pages/loginAdmin';
 
 function App() {
     const buildType = import.meta.env.VITE_BUILD_TYPE;
@@ -24,19 +26,30 @@ function App() {
                 }
             >
                 <ToastContainer theme="colored" />
-                    {buildType === "aluno" ? (
+                    {buildType === "aluno" && (
                         <Routes>
                             <Route name='Inicio' path='*' element={<LayoutAluno />} />
                             <Route path='/entrar' element={<LoginAluno />} />
                         </Routes>
-                    ) : (
-                        <Routes>
-                            <Route name='Inicio' path='*' element={<Layout />} />
-                            <Route path='/entrar' element={<Login />} />
-                            <Route path='/registrar' element={<Register />} />
-                            <Route path='/recuperar' element={<Recovery />} />
-                            <Route path='/planilhatreino' element={<PlanilhaTreino />} />
-                        </Routes>
+                    )}
+                    {buildType === 'usuario' && (
+                        (
+                            <Routes>
+                                <Route name='Inicio' path='*' element={<Layout />} />
+                                <Route path='/entrar' element={<Login />} />
+                                <Route path='/registrar' element={<Register />} />
+                                <Route path='/recuperar' element={<Recovery />} />
+                                <Route path='/planilhatreino' element={<PlanilhaTreino />} />
+                            </Routes>
+                        )
+                    )}
+                    {buildType === 'admin' && (
+                        (
+                            <Routes>
+                                <Route name='Inicio' path='*' element={<LayoutAdmin />} />
+                                <Route path='/entrar' element={<LoginAdmin />} />
+                            </Routes>
+                        )
                     )}
             </Suspense>
         </BrowserRouter>

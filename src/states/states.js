@@ -41,3 +41,14 @@ export const stateAluno = atom({
     },
     effects_UNSTABLE: [persistAtom]
 });
+
+// ============== App-admin
+
+export const stateAdmin = atom({
+    key: 'stateAdmin',
+    default: {
+        nome_admin: '',
+        email_admin: ''
+    },
+    effects_UNSTABLE: [persistAtom]
+});

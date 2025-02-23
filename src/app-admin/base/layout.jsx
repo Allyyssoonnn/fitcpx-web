@@ -5,7 +5,7 @@ import Sidebar from './sidebar';
 
 function Layout() {
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
-
+        
     return (
         <div className={`p-0 ${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper" data-layout="vertical" data-sidebartype="full">
             <Sidebar />

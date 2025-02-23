@@ -1,6 +1,8 @@
+export function preventForm(e) { if (e?.key == 'Enter') e.preventDefault() };
+
 export function getAvaliacaoNutricional(aluno, avaliacao, objetivo, nivel_atividade) {
     const massamagra = calculaKGMassaMagra(aluno, avaliacao);
-
+    
     const fatoresGastoCalorico = { "Sedentário": 1.2, "Levemente ativo": 1.375, "Moderadamente ativo": 1.55, "Muito ativo": 1.725, "Extremamente ativo": 1.9 };
     const fatoresProteina = { "Emagrecimento": 0.35, "Hipertrofia": 0.3, "Manutenção": 0.25, "Performance": 0.2, "Definição Muscular": 0.35 };
     const fatoresGarboidrato = { "Emagrecimento": 0.35, "Hipertrofia": 0.55, "Manutenção": 0.5, "Performance": 0.6, "Definição Muscular": 0.45 };
@@ -8,7 +10,7 @@ export function getAvaliacaoNutricional(aluno, avaliacao, objetivo, nivel_ativid
     const ajustesConsumoDiario = { "Emagrecimento": -500, "Hipertrofia": 500, "Manutenção": 0, "Performance": 300, "Definição Muscular": -200 };
     const ajustesAgua = { "Moderadamente ativo": 0.5, "Muito ativo": 1, "Extremamente ativo": 1.5 };
 
-    const tmb = (370 + (21,6 * massamagra)).toFixed(1);
+    const tmb = (370 + (21.6 * massamagra)).toFixed(1);
     const gasto_calorico = Number((tmb * (fatoresGastoCalorico[nivel_atividade] || 0)).toFixed(2));
     const consumo_diario = (gasto_calorico + (ajustesConsumoDiario[objetivo] ?? 0)).toFixed(2);
 
@@ -26,6 +28,20 @@ export function getAvaliacaoNutricional(aluno, avaliacao, objetivo, nivel_ativid
 export function capitalizeFirstLetter(str) {
     if (!str) return ''; // Retorna string vazia se a entrada for vazia
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+export const segundosParaTempo = (tempo) => {
+    if (typeof tempo !== 'number' || tempo < 0) {
+        return "00:00:00";
+    }
+    
+    const horas = Math.floor(tempo / 3600);
+    const minutos = Math.floor((tempo % 3600) / 60);
+    const segundos = tempo % 60;
+    
+    const formatar = (num) => String(num).padStart(2, '0');
+    
+    return `${formatar(horas)}:${formatar(minutos)}:${formatar(segundos)}`;
 }
 
 export const formatarData = (data) => {

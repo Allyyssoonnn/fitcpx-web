@@ -8,7 +8,7 @@ import { getExercicios, setSessao, setTreino } from "../api/treino";
 import { useQuery } from "react-query";
 import FiltroExercicio from "../components/filtroExercicio";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { arrayBorders } from "../utils";
+import { arrayBorders, preventForm } from "../utils";
 import { toast } from "react-toastify";
 import { useNavigationBlocker } from "../components/useNavigationBlocker";
 
@@ -63,7 +63,7 @@ function CadTreino() {
     }
 
     return (
-        <form onSubmit={handleSubmit(confirma)} className="container-fluid">
+        <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid">
             <div className="card">
                 <div className="card-header">
                     <button onClick={e => { e.preventDefault(); navigate('/aluno'); }} className="btn btn-danger mb-3 me-3">

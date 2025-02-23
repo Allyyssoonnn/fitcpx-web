@@ -73,11 +73,11 @@ function Header() {
         <header className="app-header bg-success rounded-bottom-3 shadow-md mb-3 mb-sm-0">
             <nav className="navbar navbar-expand-lg navbar-light">
                 <ul className="navbar-nav">
-                    {/* <li className="nav-item d-block d-xl-none">
+                    <li className="nav-item d-none d-xl-block" onClick={toggleSidebar}>
                         <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown" aria-expanded="false">
                             <i className="bi bi-list fs-6 m-3"></i>
                         </a>
-                    </li> */}
+                    </li>
 
                     <li className="nav-item dropdown me-2 nav-item d-block d-xl-none">
                         <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop3" data-bs-toggle="dropdown" aria-expanded="false">
