@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMCMMeta, calculaKGMusculo, calculaKGMusculoMeta, calculaKGOsseo, calculaKGOsseoMeta, calculaKGResidual, calculaKGResidualMeta, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMCMMeta, calculaPorcentagemMusculo, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseo, calculaPorcentagemOsseoMeta, calculaPorcentagemResidual, calculaPorcentagemResidualMeta, calcularIdade, formatarData, getAreaMagraGorda, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura, verificaCamposProtocolo } from "../utils";
+import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMCMMeta, calculaKGMusculo, calculaKGMusculoMeta, calculaKGOsseo, calculaKGOsseoMeta, calculaKGResidual, calculaKGResidualMeta, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMCMMeta, calculaPorcentagemMusculo, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseo, calculaPorcentagemOsseoMeta, calculaPorcentagemResidual, calculaPorcentagemResidualMeta, calcularIdade, formatarData, getAreaMagraGorda, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura, ordenaAvalicaoData, verificaCamposProtocolo } from "../utils";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
-import { ResponsiveBar } from "@nivo/bar";
-import { ResponsiveLine } from "@nivo/line";
 import { getAvaliacoes } from "../api/aluno";
 import { useQuery } from "react-query";
+import ReactApexChart from "react-apexcharts";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+
 
 function CompareAvaliacao() {
     const navigate = useNavigate();
@@ -87,10 +88,11 @@ function CompareAvaliacao() {
                         <div className="card-body">
                             {/* Gráfico de Barras Comparativo */}
                             <div className="mb-4">
-                                <Grafico aluno={aluno} avaliacoes={avaliacoes} />
+                                <GraficoNovoNPM aluno={aluno} avaliacoes={avaliacoes} />
                             </div>
-                            <row className="row g-3 justify-content-around">
-                                <table id="basic-datatables" className="table table-sm table-striped table-hover">
+
+                            <row className="row g-3 justify-content-around table-responsive">
+                                <table id="basic-datatables" className="table table-sm table-striped table-hover table-responsive">
                                     <thead>
                                         <tr>
                                             <th>Parâmetro</th>
@@ -218,7 +220,7 @@ function Imagens({ avaliacao, avaliacoes }) {
 
     return (
         <div className="card">
-            <div className="card-header d-flex gap-3">
+            <div className="card-header d-flex gap-3 row g-3">
                 <h4>Comparação visual</h4>
 
                 <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
@@ -385,14 +387,19 @@ function AreaMagraGorda({ avaliacao, avaliacoes }) {
 }
 
 function SimetriaMembro({ avaliacao, avaliacoes }) {
-    const getDifferenceClass = (diff) => {
-        return diff > 1 ? 'bg-danger text-white' : '';
-    };
+    const tooltipAssimetria = (
+        <Tooltip id="tooltip">
+            <div>O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.</div>
+        </Tooltip>
+    );
 
     return (
         <div className="card table-responsive">
-            <div className="card-header">
+            <div className="card-header d-flex justify-between">
                 <h4>Simetria dos membros (cm)</h4>
+                <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
+                    <i className='bi bi-question-circle text-danger ms-2'></i>
+                </OverlayTrigger>
             </div>
             <div className="card-body">
                 <table id="basic-datatables" className="table table-sm table-striped table-hover">
@@ -436,7 +443,7 @@ function SimetriaMembro({ avaliacao, avaliacoes }) {
                                         return (
                                             <>
                                                 <td key={`dir-${index}`}>{direito}</td>
-                                                <td key={`dif-${index}`} className={`${diferenca > 0 ? 'text-success' : 'text-danger'}`}>{diferenca}</td>
+                                                <td key={`dif-${index}`} className={`${diferenca >= 1 || diferenca <= -1 ? 'text-danger' : 'text-success'}`}>{diferenca}</td>
                                                 <td key={`esq-${index}`}>{esquerdo}</td>
                                             </>
                                         );
@@ -569,101 +576,90 @@ function Diametro({ avaliacao, avaliacoes }) {
     )
 }
 
+function GraficoNovoNPM({ aluno, avaliacoes }) {
+    const [data, setData] = useState([]);
+    const [seriesVisible, setSeriesVisible] = useState([]);
 
+    useEffect(() => {
+        var temp = [
+            { name: "Massa Muscular", data: [], color: "var(--bs-success)" },
+            { name: "Massa magra", data: [], color: "var(--bs-primary)" },
+            { name: "Gordura", data: [], color: "var(--bs-danger)" },
+            { name: "Osséo", data: [], color: "var(--bs-secondary)" },
+            { name: "Residual", data: [], color: "var(--bs-warning)" },
+        ];
+        for (const av of ordenaAvalicaoData(avaliacoes)) {
+            temp[0].data.push(Number(calculaKGMusculo(aluno, av)));
+            temp[1].data.push(Number(calculaKGMassaMagra(aluno, av)));
+            temp[2].data.push(Number(calculaKGGordura(aluno, av)));
+            temp[3].data.push(Number(calculaKGOsseo(av)));
+            temp[4].data.push(Number(calculaKGResidual(aluno, av)));
+        }
+        setData(temp);
+        setSeriesVisible(temp.reduce((acc, serie) => ({ ...acc, [serie.name]: true }), {}));
+    }, [avaliacoes]);
 
-function Grafico({ aluno, avaliacoes }) {
-    const isMobile = window.innerWidth < 500;
-    const ordenacaoData = [...avaliacoes].reverse();
+    // Opções do gráfico
+    const options = {
+        chart: { fontFamily: "inherit", type: "line", height: 300, toolbar: { show: false }, offsetX: -15 },
+        legend: { show: false },
+        dataLabels: { enabled: false },
+        stroke: { curve: "smooth", width: 2 },
+        grid: { borderColor: "var(--bs-border-color)", strokeDashArray: 4, yaxis: { lines: { show: true } } },
+        markers: { size: 4 },
+        xaxis: { categories: ordenaAvalicaoData(avaliacoes).reduce((arr, av, i) => [...arr, av.data_avaliacao], []), labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
+        yaxis: { max: 60, min: 0, tickAmount: 4, labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
+        tooltip: { theme: "dark", shared: true, intersect: false },
+        colors: data.map((serie) => serie.color), // Cores fixas
+    };
+  
+    // Dados do gráfico filtrados pelas séries visíveis
+    const series = data.filter((serie) => seriesVisible[serie.name]);
 
+    // Alterna a visibilidade das séries ao marcar/desmarcar os checkboxes
+    const toggleSeries = (event) => {
+        const { value, checked } = event.target;
+        setSeriesVisible((prev) => ({ ...prev, [value]: checked }));
+    };
+  
     return (
-        <div className="flex flex-col items-center">
-            {/* Container do gráfico */}
-            <div style={{ height: isMobile ? 320 : 400, width: '100%' }}>
-                <ResponsiveLine
-                    data={[
-                        {
-                            id: 'Gordura',
-                            data: ordenacaoData.map((av) => ({
-                                x: formatarData(av.data_avaliacao),
-                                y: calculaKGGordura(aluno, av),
-                            })),
-                        },
-                        {
-                            id: 'Massa Magra',
-                            data: ordenacaoData.map((av) => ({
-                                x: formatarData(av.data_avaliacao),
-                                y: calculaKGMassaMagra(aluno, av),
-                            })),
-                        },
-                        {
-                            id: 'Músculo',
-                            data: ordenacaoData.map((av) => ({
-                                x: formatarData(av.data_avaliacao),
-                                y: calculaKGMusculo(aluno, av),
-                            })),
-                        },
-                        {
-                            id: 'Osséo',
-                            data: ordenacaoData.map((av) => ({
-                                x: formatarData(av.data_avaliacao),
-                                y: calculaKGOsseo(av),
-                            })),
-                        },
-                        {
-                            id: 'Residual',
-                            data: ordenacaoData.map((av) => ({
-                                x: formatarData(av.data_avaliacao),
-                                y: calculaKGResidual(aluno, av),
-                            })),
-                        },
-                    ]}
-                    margin={{ top: 50, right: 30, bottom: isMobile ? 50 : 50, left: 50 }}
-                    xScale={{ type: 'point' }}
-                    yScale={{
-                        type: 'linear',
-                        min: 'auto',
-                        max: 'auto',
-                        stacked: false,
-                        reverse: false,
-                    }}
-                    axisBottom={{
-                        orient: 'bottom',
-                        tickSize: 5,
-                        tickPadding: 5,
-                        tickRotation: isMobile ? -20 : 0,
-                        legend: 'Avaliações',
-                        legendOffset: 36,
-                        legendPosition: 'middle',
-                    }}
-                    axisLeft={{
-                        orient: 'left',
-                        tickSize: 5,
-                        tickPadding: 5,
-                        tickRotation: 0,
-                        legend: 'KG',
-                        legendOffset: -40,
-                        legendPosition: 'middle',
-                    }}
-                    colors={{ scheme: 'nivo' }}
-                    pointSize={isMobile ? 6 : 10}
-                    pointBorderWidth={2}
-                    pointBorderColor={{ from: 'serieColor' }}
-                    pointLabelYOffset={-12}
-                    useMesh={true}
-                />
-            </div>
-
-            {/* Legenda separada */}
-            <div className={`flex flex-wrap mt-3`}>
-                {['Gordura', 'Massa Magra', 'Músculo', 'Osséo', 'Residual'].map((item, index) => (
-                    <div key={index} className="flex items-center m-1">
-                        <div
-                            className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: ['#E63946', '#457B9D', '#2A9D8F', '#F4A261', '#E9C46A'][index] }}
-                        />
-                        <span className="ml-2 text-sm">{item}</span>
+        <div className="col-lg-12">
+            <div className="card">
+                <div className="card-body">
+                    <div className="d-md-flex align-items-center justify-content-between mb-4">
+                        <h5 className="card-title mb-0">Evolução</h5>
+                        {/* <select className="form-select w-auto fw-semibold bg-light border-0 rounded-pill mt-2 mt-md-0">
+                            <option value="1">Last 7 days</option>
+                            <option value="2">Last 3 days</option>
+                            <option value="3">Last 1 day</option>
+                        </select> */}
                     </div>
-                ))}
+        
+                    {/* Checkboxes em uma única linha */}
+                    <div className="legend mb-3 d-flex flex-wrap gap-3">
+                    {data.map((serie) => (
+                        <div key={serie.name} className="form-check form-check-inline">
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={serie.name}
+                            value={serie.name}
+                            checked={seriesVisible[serie.name]}
+                            onChange={toggleSeries}
+                            style={{ backgroundColor: serie.color, borderColor: serie.color }} // Cor fixa do checkbox
+                        />
+                        <label className="form-check-label" htmlFor={serie.name}>
+                            {serie.name}
+                        </label>
+                        </div>
+                    ))}
+                    </div>
+        
+                    {/* Gráfico */}
+                    <div style={{ height: "300px" }}>
+                        <ReactApexChart options={options} series={series} type="line" height={300} />
+                    </div>
+                </div>
             </div>
         </div>
     );

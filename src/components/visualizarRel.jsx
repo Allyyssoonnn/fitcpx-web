@@ -1,7 +1,10 @@
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { useStateApp } from "../states/states";
 
 function VisualizarRel({ data = [], setData }) {
+    const { theme } = useStateApp();
     const [searchTerm, setSearchTerm] = useState("");
     const [gridApi, setGridApi] = useState();
     
@@ -55,7 +58,7 @@ function VisualizarRel({ data = [], setData }) {
                                         .toUpperCase(), // Converte o cabeçalho final para maiúsculas
                                 }))}
                                 domLayout="autoHeight"
-                                className="ag-theme-quartz"
+                                className={`${theme == 'light' ? 'ag-theme-quartz' : 'ag-theme-quartz-dark'}`}
                                 quickFilterText={searchTerm}
                                 onGridReady={params => setGridApi(params.api)}
                                 headerHeight={30}

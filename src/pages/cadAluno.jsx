@@ -7,7 +7,7 @@ import { useRecoilState } from 'recoil';
 import { limpaForm } from '../utils';
 
 function CadAluno() {
-    const { handleSubmit, register, setValue, watch } = useForm();
+    const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
     const location = useLocation();
     const navigate = useNavigate();
     const [usuario] = useRecoilState(stateUsuario);
@@ -155,7 +155,7 @@ function CadAluno() {
                     </div>
                 </div>
 
-                <button type="submit" className="btn btn-success mt-3">
+                <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                     <i className="bi bi-check me-2"></i>
                     Confirmar
                 </button>

@@ -138,6 +138,7 @@ function Avaliacao() {
                             </div>
 
                             {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
+                            <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
                             <p><strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}</p>
                             <p><strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}</p>
                             <p><strong>Peso:</strong> {avaliacao.peso} kg</p>
@@ -508,7 +509,7 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
 
 function SimetriaMembro({ avaliacao }) {
     const getDifferenceClass = (diff) => {
-        return diff !== 0 ? 'text-danger' : 'text-dark';
+        return diff >= 1 || diff <= -1 ? 'text-danger' : 'text-success';
     };
 
     const data = [
@@ -534,10 +535,19 @@ function SimetriaMembro({ avaliacao }) {
         },
     ]
 
+    const tooltipAssimetria = (
+        <Tooltip id="tooltip">
+            <div>O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.</div>
+        </Tooltip>
+    );
+
     return (
         <div className="card table-responsive">
-            <div className="card-header">
+            <div className="card-header d-flex justify-between">
                 <h4>Simetria dos membros (cm)</h4>
+                <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
+                    <i className='bi bi-question-circle text-danger ms-2'></i>
+                </OverlayTrigger>
             </div>
 
             <div className="card-body">

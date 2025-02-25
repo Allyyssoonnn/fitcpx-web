@@ -10,7 +10,7 @@ import { useQuery } from "react-query";
 
 function CadAlimento() {
     const [usuario] = useRecoilState(stateUsuario);
-    const { handleSubmit, register, setValue, watch } = useForm();
+    const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
     const navigate = useNavigate();
 
     const [image, setImage] = useState(null);
@@ -183,7 +183,7 @@ function CadAlimento() {
                 </div>
 
                 <div className="card-footer">
-                    <button type="submit" className="btn btn-success mt-3">
+                    <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                         <i className="bi bi-check me-2"></i>
                         Confirmar
                     </button>

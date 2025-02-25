@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { stateApp, useToggleSidebar } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 
 function Sidebar() {
     const navigate = useNavigate();
@@ -14,11 +15,11 @@ function Sidebar() {
 
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
-        if (window.screen.width > 1600 && !openedSidebar) toggleSidebar();
+        // if (window.screen.width > 1600 && !openedSidebar) toggleSidebar();
     }, []);
 
     function go(route) {
-        toggleSidebar();
+        // toggleSidebar();
         setDropTreino(false);
         setDropAdmin(false);
         setdropCardapio(false);
@@ -26,14 +27,15 @@ function Sidebar() {
     }
 
     return (
-        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999' }}>
+        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px'}}>
             <div>
-                <div className="brand-logo d-flex align-items-center justify-content-between">
-                    <img src="../assets/images/logos/logo_horizontal.png" alt="" width='200' />
-                    {/* <a href="/" className="text-nowrap logo-img d-flex">
-                        <h3 style={{ borderLeft: '0.30rem solid #85D446' }}>FitComplex</h3>
-                    </a>
-                    <img src="../assets/images/app/logo2.png" alt="" width='60' style={{ padding: '10px' }} /> */}
+                <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm">
+
+                    <div className="d-flex align-items-center">
+                        <img src="../assets/images/logos/logo.png" alt="" width='45' />
+                        <Typewriter texts={['Bem-vindo', 'Fit Complex']} />
+                    </div>
+
                     <a onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                         <i className="bi bi-x fs-8"></i>
                     </a>
@@ -193,20 +195,19 @@ function Sidebar() {
                                 <span className="hide-menu">Avaliações física</span>
                             </a>
                         </li> */}
-
                     </ul>
 
                     {/* bg-light-subtle */}
                     <div className="hide-menu bg-light position-relative mt-7 rounded-3">
-                        <div className="d-flex p-2">
+                        <div className="d-flex p-2 justify-content-between">
                             <div className="mt-2">
-                                <h4 className="mb-6 text-dark">Uso gratuito</h4>
-                                <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6>
+                                <h4 className="mb-6">Uso gratuito</h4>
+                                {/* <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6> */}
                                 <button onClick={() => navigate('/licenca')} className="btn btn-success fs-2 fw-semibold lh-sm">Contratar plano</button>
                             </div>
                             
                             <div>
-                                <img height={100} width={100} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
+                                <img height={50} width={50} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
                             </div>
                         </div>
                     </div>
@@ -216,5 +217,61 @@ function Sidebar() {
         </aside>
     );
 }
+
+
+const Typewriter = ({ texts, speed = 100, delay = 2000, maxCycles = 2 }) => {
+    const [displayText, setDisplayText] = useState("");
+    const [textIndex, setTextIndex] = useState(0);
+    const [charIndex, setCharIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [cycleCount, setCycleCount] = useState(0);
+    const [isFinished, setIsFinished] = useState(false);
+  
+    useEffect(() => {
+        if (isFinished) {
+            setDisplayText(texts[texts.length - 1]);
+            return;
+        }
+
+        const currentText = texts[textIndex];
+
+        if (!isDeleting) {
+            if (charIndex < currentText.length) {
+                setTimeout(() => {
+                setDisplayText(currentText.slice(0, charIndex + 1));
+                setCharIndex((prev) => prev + 1);
+                }, speed);
+            } else {
+                setTimeout(() => setIsDeleting(true), delay);
+            }
+        } else {
+            if (charIndex > 0) {
+                setTimeout(() => {
+                setDisplayText(currentText.slice(0, charIndex - 1));
+                setCharIndex((prev) => prev - 1);
+                }, speed / 2);
+            } else {
+                if (cycleCount + 1 >= maxCycles) {
+                    setIsFinished(true);
+                } else {
+                    setIsDeleting(false);
+                    setTextIndex((prev) => (prev + 1) % texts.length);
+                    setCycleCount((prev) => prev + 1);
+                }
+            }
+        }
+    }, [charIndex, isDeleting, textIndex, texts, speed, delay, cycleCount, maxCycles, isFinished]);
+  
+    return (
+        <motion.h3
+            className="ms-3 mb-0 fs-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
+            {displayText}
+        </motion.h3>
+    );
+};
 
 export default Sidebar;

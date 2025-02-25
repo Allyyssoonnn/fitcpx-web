@@ -5,6 +5,7 @@
 .left-sidebar {
   /* box-shadow: 4px 0 8px rgba(0, 0, 0, 0.05); */
   box-shadow: 4px 0 8px rgba(133, 212, 70, 0.05);
+  overflow-x: hidden;
 }
 
 .navbar-expand-lg {

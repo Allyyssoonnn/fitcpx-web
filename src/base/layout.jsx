@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useToggleSidebar } from '../states/states';
 import Conteudo from './conteudo';
 import Header from './header';
@@ -6,8 +7,14 @@ import Sidebar from './sidebar';
 function Layout() {
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
 
+    useEffect(() => {
+        const wrapper = document.getElementById("main-wrapper");
+        if (wrapper) openedSidebar ? wrapper.classList.add("show-sidebar") : wrapper.classList.remove("show-sidebar");
+        document.body.setAttribute("data-sidebartype", openedSidebar ? 'full' : 'mini-sidebar');
+    }, [openedSidebar]);
+
     return (
-        <div className={`${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper" data-layout="vertical" data-sidebartype="full">
+        <div className={`${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper">
             <Sidebar />
 
             {openedSidebar && (

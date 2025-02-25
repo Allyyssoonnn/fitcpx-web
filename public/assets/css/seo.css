@@ -23242,6 +23242,7 @@ html[data-boxed-layout=boxed] .container-fluid,html[data-boxed-layout=boxed] .co
     transition:.2s ease-in;
     height:100%;
     z-index:13;
+    /* Removido porque header não sobrepoe a sidebar */
     /* top:70px */
 }
 .left-sidebar .scroll-sidebar{

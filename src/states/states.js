@@ -21,6 +21,7 @@ export const stateApp = atom({
     key: 'stateApp',
     default: {
         openedSidebar: false,
+        theme: 'light',
     },
     effects_UNSTABLE: [persistAtom]
 });
@@ -29,6 +30,12 @@ export const useToggleSidebar = () => {
     const [appState, setAppState] = useRecoilState(stateApp);
     const toggleSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: !prevState.openedSidebar }));
     return { toggleSidebar, openedSidebar: appState.openedSidebar };
+}
+
+export const useStateApp = () => {
+    const [appState, setAppState] = useRecoilState(stateApp);
+    const toggleTheme = () => setAppState(prevState => ({ ...prevState, theme: prevState.theme == 'light' ? 'dark' : 'light' }));
+    return { ...appState, toggleTheme };
 }
 
 // ============== App-aluno

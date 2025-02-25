@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
+import { calculaKGGordura, calculaKGMCM, calculaKGMusculo, calculaPorcentagemGordura, calculaPorcentagemMCM, calculaPorcentagemMusculo, calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
 import { useQuery } from "react-query";
 import { changeAlunoIMG, deleteAvaliacao, getAluno, getAvaliacao, getAvaliacoes } from '../api/aluno';
 import { deleteTreino, getTreinos, setTreino } from '../api/treino';
@@ -464,6 +464,15 @@ function CardAvaliacao({ avaliacao, aluno, refetch }) {
                     </div>
                     <div className="col-md-4">
                         <strong>Peso:</strong> {avaliacao.peso} kg
+                    </div>
+                    <div className="col-md-4">
+                        <strong>Gord.:</strong> {calculaKGGordura(aluno, avaliacao)} KG / {calculaPorcentagemGordura(aluno, avaliacao)} %
+                    </div>
+                    <div className="col-md-4">
+                        <strong>Musc.:</strong> {calculaKGMusculo(aluno, avaliacao)} KG / {calculaPorcentagemMusculo(aluno, avaliacao)} %
+                    </div>
+                    <div className="col-md-4">
+                        <strong>MCM:</strong> {calculaKGMCM(aluno, avaliacao)} KG / {calculaPorcentagemMCM(aluno, avaliacao)} %
                     </div>
                 </div>
             </div>

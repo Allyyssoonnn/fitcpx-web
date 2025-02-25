@@ -63,7 +63,6 @@ function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoP
                                         if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
                                         return (<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
                                             <div className="d-flex align-items-center mb-2">
-                                                <i className={`${field.icon} me-2`}></i>
                                                 <label className={`form-label ${perimetrosRequired.includes(field.name) && tipoAvaliacao === 'complexo' ? 'fw-bold' : ''}`}>
                                                     {field.label}{perimetrosRequired.includes(field.name) && tipoAvaliacao === 'complexo' ? '*' : ''}
                                                 </label>
@@ -102,7 +101,6 @@ function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoP
                                         if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
                                         return (<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
                                             <div className="d-flex align-items-center mb-2">
-                                                <i className={`${field.icon} me-2`}></i>
                                                 <label className={`form-label ${perimetrosRequired.includes(field.name) && tipoAvaliacao === 'complexo' ? 'fw-bold' : ''}`}>
                                                     {field.label}{perimetrosRequired.includes(field.name) && tipoAvaliacao === 'complexo' ? '*' : ''}
                                                 </label>
@@ -141,7 +139,6 @@ function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoP
                                         if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
                                         return (<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="col-md-4" >
                                             <div className="d-flex align-items-center mb-2">
-                                                <i className={`${field.icon} me-2`}></i>
                                                 <label className={`form-label ${perimetrosRequired.includes(field.name) && tipoAvaliacao === 'complexo' ? 'fw-bold' : ''}`}>
                                                     {field.label}{perimetrosRequired.includes(field.name) && tipoAvaliacao === 'complexo' ? '*' : ''}
                                                 </label>

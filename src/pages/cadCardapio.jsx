@@ -13,7 +13,7 @@ import { useNavigationBlocker } from "../components/useNavigationBlocker";
 
 function CadCardapio() {
     const [usuario] = useRecoilState(stateUsuario);
-    const { handleSubmit, register, setValue, watch, reset, formState: { isDirty } } = useForm();
+    const { handleSubmit, register, setValue, watch, reset, formState: { isDirty, isSubmitting } } = useForm();
     const navigate = useNavigationBlocker(isDirty);
     const location = useLocation();
 
@@ -148,7 +148,7 @@ function CadCardapio() {
                     </div>
 
                     <div className="card-footer">
-                        <button type="submit" className="btn btn-success mt-3">
+                        <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                             <i className="bi bi-check me-2"></i>
                             Confirmar
                         </button>

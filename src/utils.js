@@ -1,3 +1,7 @@
+export function ordenaAvalicaoData(avaliacoes) {
+    return avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
+}
+
 export function preventForm(e) { if (e?.key == 'Enter') e.preventDefault() };
 
 export function getAvaliacaoNutricional(aluno, avaliacao, objetivo, nivel_atividade) {

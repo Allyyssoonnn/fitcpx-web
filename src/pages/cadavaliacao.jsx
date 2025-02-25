@@ -18,7 +18,7 @@ import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
 import { useNavigationBlocker } from "../components/useNavigationBlocker";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors, isDirty } } = useForm();
+    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors, isDirty, isSubmitting } } = useForm();
     const navigate = useNavigationBlocker(isDirty);
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
@@ -392,6 +392,24 @@ function CadAvaliacao() {
                         onSelect={(tab) => setActiveTab(tab)}
                         className="mb-3"
                     >
+                        <Tab eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
+                            <Diametros
+                                ocultarCampos={ocultarCampos}
+                                register={register}
+                                startSpeechRecognition={startSpeechRecognition}
+                                tipoAvaliacao={tipoAvaliacao}
+                            />
+                        </Tab>
+
+                        <Tab eventKey="bioimpedancia" title={<><i className="bi bi-activity me-2"></i>Bioimpedância</>}>
+                            <Bioimpedancia
+                                ocultarCampos={ocultarCampos}
+                                register={register}
+                                startSpeechRecognition={startSpeechRecognition}
+                                tipoAvaliacao={tipoAvaliacao}
+                            />
+                        </Tab>
+
                         <Tab eventKey="dobras" title={<><i className="bi bi-arrows-collapse me-2"></i>Dobras cutâneas</>}>
                             <Dobras
                                 getValues={getValues}
@@ -427,25 +445,7 @@ function CadAvaliacao() {
                                 watch={watch}
                             />
                         </Tab>
-
-                        <Tab eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
-                            <Diametros
-                                ocultarCampos={ocultarCampos}
-                                register={register}
-                                startSpeechRecognition={startSpeechRecognition}
-                                tipoAvaliacao={tipoAvaliacao}
-                            />
-                        </Tab>
-
-                        <Tab eventKey="bioimpedancia" title={<><i className="bi bi-activity me-2"></i>Bioimpedância</>}>
-                            <Bioimpedancia
-                                ocultarCampos={ocultarCampos}
-                                register={register}
-                                startSpeechRecognition={startSpeechRecognition}
-                                tipoAvaliacao={tipoAvaliacao}
-                            />
-                        </Tab>
-
+                        
                         <Tab eventKey='imagens' title={<><i className="bi bi-camera me-2"></i>Imagens</>}>
                             <Imagens
                                 capturedImages={capturedImages}
@@ -463,7 +463,7 @@ function CadAvaliacao() {
                             <i className={`bi bi-exclamation-octagon ms-2 text-danger ${Object.keys(errors).length > 0 ? '' : 'd-none'}`} style={{ cursor: 'pointer' }}></i>
                         </OverlayTrigger>
                         
-                        <button type="submit" className="btn btn-success">
+                        <button disabled={isSubmitting} type="submit" className="btn btn-success">
                             <i className="bi bi-check me-2"></i>
                             Confirmar
                         </button>
@@ -477,8 +477,8 @@ function CadAvaliacao() {
 const perimetroFields = [
     { name: 'pescoco', label: 'Pescoço (cm)', icon: 'bi bi-body' },
     { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
-    { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
     { name: 'torax_expirado', label: 'Tórax expirado (cm)', icon: 'bi bi-body' },
+    { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
     // { name: 'punho', label: 'Punho (cm)', icon: 'bi bi-shoe-prints' },
     { name: 'cintura', label: 'Cintura (cm)', icon: 'bi bi-body' },
     { name: 'abdomen', label: 'Abdômen (cm)', icon: 'bi bi-body' },

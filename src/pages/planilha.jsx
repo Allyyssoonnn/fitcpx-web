@@ -32,8 +32,10 @@ function Planilha() {
 
     const filteredAlunos = useMemo(() => {
         return alunos.filter((aluno) =>
-            aluno.nome_aluno?.toLowerCase().includes(searchTerm.toLowerCase()) && aluno.status_aluno === "A"
-        );
+            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
+            aluno.nome_aluno?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)) &&
+            aluno.status_aluno === "A"
+        )
     }, [alunos, searchTerm]);
 
     const abrirPlanilha = async () => {

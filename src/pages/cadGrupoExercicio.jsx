@@ -6,7 +6,7 @@ import { stateUsuario } from "../states/states";
 import { setGrupoExercicio } from "../api/treino";
 
 function CadGrupoExercicio() {
-    const { handleSubmit, register, setValue } = useForm();
+    const { handleSubmit, register, setValue, formState: { isSubmitting } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
@@ -49,7 +49,7 @@ function CadGrupoExercicio() {
                 </div>
 
                 <div className="card-footer">
-                    <button type="submit" className="btn btn-success mt-3">
+                    <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                         <i className="bi bi-check me-2"></i>
                         Confirmar
                     </button>
