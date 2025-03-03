@@ -6,6 +6,7 @@ import { parseCookies, setCookie } from "nookies";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario } from '../states/states';
+import { loggedGoogle, loginGoogle, getGoogleConnect } from "../api/usuario";
 
 function Login() {
     const { handleSubmit, register } = useForm();
@@ -15,13 +16,41 @@ function Login() {
 
     useEffect(() => {
         const cookies = parseCookies(null);
-        if (cookies.token) {
+        if (cookies.token || cookies.refreshToken) {
             toast.success('Bem vindo de volta!');
             navigate('/');
-        } else {
-            setusuario({});
-        }
+        } else setusuario({});
+
+        (async function conect() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get("code");
+            const scope = params.get("scope");
+        
+            if (code) {
+                const resp = await loggedGoogle(code, scope, usuario?.cod_empresa);
+
+                if (resp.status) {
+                    toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
+                    setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });
+                    setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+                    setusuario(resp.usuario);
+                    setEmpresa(resp.empresa);
+                    navigate('/');
+                } else {
+                    toast.error(resp?.msg);
+                }
+                // const resp2 = await getGoogleConnect(usuario?.cod_empresa);
+                // setusuario(prev => ({ ...prev, google: resp2 }));
+            }
+        })();
     }, []);
+
+    async function conect(e) {
+        e.preventDefault();
+        const url = await loginGoogle();
+        console.log(url);        
+        if (url) window.location.href = url;
+    }
 
     async function login(data) {
         const resp = await post('/usuario/login', data);
@@ -38,19 +67,19 @@ function Login() {
     }
 
     return (
-        <div className="page-wrapper" id="main-wrapper">
+        <div className="page-wrapper p-0" id="main-wrapper" style={{ marginLeft: '0' }}>
             <div className="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
                 <div className="d-flex align-items-center justify-content-center w-100">
                     <div className="row justify-content-center w-100">
                         <div className="col-md-8 col-lg-6 col-xxl-3">
                             <div className="card mb-0">
                                 <div className="card-body">
-                                    <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
-                                        <img src="../assets/images/logos/logo_horizontal.png" width='220' alt="" />
-                                        {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>S-FitApp</h1> */}
-                                    </a>
+                                    <div className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center align-items-center">
+                                        <img src="../assets/images/logos/logo.png" width='60' alt="" />
+                                        <h1 className="mb-0 ms-3">Fit Complex</h1>
+                                    </div>
                                     
-                                    <p className="text-center">Renove seu profissionalismo</p>
+                                    <p className="text-center">Seja Bem-vindo</p>
 
                                     <form onSubmit={handleSubmit(login)}>
                                         <div className="mb-3">
@@ -75,6 +104,11 @@ function Login() {
                                         </div>
 
                                         <button type="submit" className="btn btn-primary w-100 py-8 fs-4 mb-4">Entrar</button>
+
+                                        <button onClick={conect} className="btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8 mb-3 w-100" role="button">
+                                            <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
+                                            <span className="flex-shrink-0">Conectar conta Google</span>
+                                        </button>
 
                                         <div className="d-flex align-items-center justify-content-center">
                                             <p className="fs-4 mb-0 fw-bold">Não tem conta?</p>

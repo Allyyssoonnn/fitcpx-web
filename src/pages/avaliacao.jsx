@@ -9,6 +9,7 @@ import { stateUsuario } from "../states/states";
 import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveBar } from "@nivo/bar";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { getAluno } from "../api/aluno";
 
 function Avaliacao() {
     const navigate = useNavigate();
@@ -25,10 +26,13 @@ function Avaliacao() {
     const [aluno, setAluno] = useState({});    
 
     useEffect(() => {
-        const avaliacaoRecebida = location.state?.avaliacao;
-        const alunoRecebido = location.state?.aluno;
-        avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate('/alunos');        
-        alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
+        (async function load() {
+            const avaliacaoRecebida = location.state?.avaliacao;
+            var alunoRecebido = location.state?.aluno;
+            if (!alunoRecebido?.cod_aluno && avaliacaoRecebida?.cod_aluno) alunoRecebido = await getAluno(avaliacaoRecebida?.cod_aluno);
+            avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate('/alunos');        
+            alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
+        })();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 

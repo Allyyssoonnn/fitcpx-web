@@ -1,114 +1,87 @@
 import { useEffect, useState } from "react";
+import { donePagamento, getPagamento } from "../api/pagamento";
 
-function MercadoPago() {
+import { initMercadoPago, Payment } from '@mercadopago/sdk-react'
+import { useRecoilState } from "recoil";
+import { stateEmpresa, stateUsuario } from "../states/states";
+initMercadoPago('TEST-0c760096-60b1-44cc-ae5a-317a87771c24');
+
+function MercadoPago({ show, recorrente, close }) {
+    const [empresa] = useRecoilState(stateEmpresa);
+    const [usuario] = useRecoilState(stateUsuario);
     const [paymentResult, setPaymentResult] = useState(null);
+    const [pagamento, setPagamento] = useState();
 
     useEffect(() => {
-        const mp = new window.MercadoPago('TEST-eedab180-b6a0-40bc-8722-9018f3a31a65', { locale: 'pt-br' });
-        const bricksBuilder = mp.bricks();
-
-        const renderPaymentBrick = async () => {
-            // Remove o Brick existente, se houver
-            const existingBrick = document.getElementById('paymentBrick_container');
-            console.log(existingBrick);
-            
-            if (existingBrick) {
-                // existingBrick.remove();
+        if (!show) return;
+        (async function load() {
+            if (!pagamento) {
+                const respId = await getPagamento(usuario.cod_usuario, usuario.cod_empresa, recorrente);
+                setPagamento(respId);
             }
+        })();
+        
+        return () => window?.paymentBrickController?.unmount();
+    }, [pagamento, show]);
 
-            // Verifica se o Brick já foi criado
-            if (window.paymentBrickController) {
-                console.log('Payment Brick já foi criado.');
-                return;
-            }
+    if (!show) return;
 
-            const settings = {
-                initialization: {
-                    amount: 10000,
-                    preferenceId: "<PREFERENCE_ID>",
-                    payer: {
-                        firstName: "",
-                        lastName: "",
-                        email: "",
-                    },
-                },
-                customization: {
-                    visual: {
-                        style: {
-                        theme: "bootstrap",
-                        },
-                    },
-                    paymentMethods: {
-                        creditCard: "all",
-                        debitCard: "all",
-                        atm: "all",
-                        onboarding_credits: "all",
-                        wallet_purchase: "all",
-                        // ticket: "all",
-                        bankTransfer: "all",
-                        maxInstallments: 1,
-                    },
-                },
-                callbacks: {
-                    onReady: () => {
-                        // Callback chamado quando o Brick está pronto
-                    },
-                    onSubmit: ({ selectedPaymentMethod, formData }) => {
-                        console.log(selectedPaymentMethod, formData);
-                        
-                        try {
-                            // const response = await fetch("/process_payment", {
-                            //     method: "POST",
-                            //     headers: {
-                            //         "Content-Type": "application/json",
-                            //     },
-                            //     body: JSON.stringify(formData),
-                            // });
-                            // const result = await response.json();
-                            // if (result.preferenceId) {
-                            //     await handleGetPaymentResult(result.preferenceId);
-                            // } else {
-                            //     throw new Error("Pagamento não processado corretamente.");
-                            // }
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    },
-                    onError: (error) => {
-                        console.error(error);
-                    },
-                },
-            };
-      
-            await mp.bricks().create(
-                "payment",
-                'paymentBrick_container',
-                settings
-            );
-        };
-        renderPaymentBrick(bricksBuilder);
-    }, []);
-
-    const handleGetPaymentResult = async (paymentId) => {
-        try {
-            const response = await fetch("/payment_result", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ paymentId }),
-            });
-
-            const result = await response.json();
-            setPaymentResult(result);
-        } catch (error) {
-            console.error("Erro ao obter resultado do pagamento:", error);
-        }
+    const onSubmit = async (formData) => {
+        console.log("Pagamento iniciado:", formData);
+        const resp = await donePagamento(formData, usuario.cod_usuario, usuario.cod_empresa, recorrente);
+        if (resp) close();
+        // Aqui você pode enviar os dados para o backend para processar o pagamento
+        // setPaymentResult(formData);
     };
+      
+    const onError = async (error) => {
+        console.error("Erro no Payment Brick:", error);
+    };
+      
+    const onReady = async () => {
+        console.log("Payment Brick pronto");
+    };
+
+    const paymentMethods = recorrente ? {
+        excludedPaymentMethods: [
+            { id: "bank_transfer" },
+            { id: "debit_card" },
+            { id: "ticket" },
+            { id: "mercado_pago" },
+        ],
+        creditCard: "all",
+        maxInstallments: 1,
+    } : {
+        bankTransfer: "all",
+        creditCard: "all",
+        debitCard: "all",
+        mercadoPago: "all",
+        maxInstallments: 1,
+    }
 
     return (
         <div className="container-fluid">
-            <div id="paymentBrick_container"></div>
+            {pagamento?.preferenceId && (
+                <Payment
+                    initialization={{
+                        amount: pagamento.amount,
+                        preferenceId: pagamento.preferenceId,
+                        payer: {
+                            name: empresa.nome_empresa,
+                            email: empresa.email_empresa,
+                            identification: empresa.doc_empresa,
+                        },
+                    }}
+                    onSubmit={onSubmit}
+                    customization={{
+                        paymentMethods: paymentMethods,
+                        visual: {
+                            style: "bootstrap",
+                        },
+                    }}
+                    locale='pt-BR'
+                />
+            )}
             {paymentResult ? (
                 <div>
                     <h3>Resultado do pagamento:</h3>

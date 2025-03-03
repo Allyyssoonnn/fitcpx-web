@@ -6,6 +6,12 @@ export const getTreinos = async (params) => {
     throw new Error("Erro ao carregar treinos");
 };
 
+export const getTreino = async (cod_treino) => {
+    const resp = await post('/treino/getTreino', { cod_treino });
+    if (resp.status) return resp.treino;
+    throw new Error("Erro ao carregar treinos");
+};
+
 export const setTreino = async (treino) => {
     const resp = await post('/treino/setTreino', { treino });
     if (resp.status) return resp.treino;

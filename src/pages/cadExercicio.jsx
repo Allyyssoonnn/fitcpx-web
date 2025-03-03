@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from "../states/states";
+import { stateAdmin, stateUsuario } from "../states/states";
 import { getArticulacoes, getEquipamentos, getExerciciosResistencias, getGrupoExercicios, getIndicacoes, getPadraoesMovimentos, getTipoExercicios, setExercicio, setGrupoExercicio } from "../api/treino";
 import { useQuery } from "react-query";
 import { getYouTubeEmbedUrl } from "../utils";
@@ -12,6 +12,7 @@ function CadExercicio() {
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
+    const [admin] = useRecoilState(stateAdmin);
 
     const urlValue = watch("url_exercicio");
 
@@ -67,7 +68,10 @@ function CadExercicio() {
     }, [location, setValue, usuario]);
 
     async function confirma(data) {
-        await setExercicio({ ...data, cod_usuario: usuario?.cod_usuario, cod_empresa: usuario?.cod_empresa });
+        const cleanedData = Object.fromEntries(
+            Object.entries(data).map(([key, value]) => [key, value === "" ? null : value])
+        );
+        await setExercicio({ ...cleanedData, cod_usuario: usuario?.cod_usuario, cod_empresa: usuario?.cod_empresa, base_exercicio: admin?.cod_admin ? 'S' : 'N' });
         navigate('/exercicios');
     }
 

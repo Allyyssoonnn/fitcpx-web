@@ -46,12 +46,6 @@ function Header() {
         document.documentElement.setAttribute("data-bs-theme", novoTema);
     }
 
-    const tooltip = (
-        <Tooltip id="tooltip">
-            <div>Admin</div>
-        </Tooltip>
-    );
-
     function verificarEmail() {
         verifyEmail(empresa.cod_empresa);
     }
@@ -80,7 +74,7 @@ function Header() {
                         </a>
                     </li>
 
-                    <li className="nav-item nav-icon-hover-bg rounded-circle">
+                    <li className="nav-item nav-icon-hover-bg rounded-circle d-none d-md-flex">
                         <button className="nav-link" onClick={toggleSidebar}>
                             {/* <iconify-icon icon="solar:list-bold-duotone" className="fs-6"></iconify-icon> */}
                             <i className={`bi bi-fullscreen${openedSidebar ? '' : '-exit'} fs-4`} />
@@ -111,7 +105,7 @@ function Header() {
                         </a> */}
 
                         <button onClick={alteraTema} className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex me-2">
-                            {theme === 'light'
+                            {theme == 'light'
                                 ? <i className="bi bi-moon-fill"></i>
                                 : <i className="bi bi-sun-fill"></i>
                             }                            
@@ -126,9 +120,6 @@ function Header() {
                                     className={`rounded-circle ${usuario.admin_usuario == 'S' ? 'border border-danger' : ''}`}
                                     loading="lazy"
                                 />
-                                <OverlayTrigger placement="bottom" overlay={tooltip}>
-                                    <i className={`bi bi-unlock-fill text-danger ms-2 ${usuario.admin_usuario == 'S' ? '' : 'd-none'}`}></i>
-                                </OverlayTrigger>
                             </a>
 
                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
@@ -143,7 +134,7 @@ function Header() {
                                         />
                                         <div className="ms-4">
                                             <h4 className="mb-0 fs-5">{usuario?.nome_usuario}</h4>
-                                            {usuario.admin_usuario == 'S' && <span>Admin</span>}
+                                            {usuario.admin_usuario == 'S' && <span className="badge bg-danger fs-1">Admin</span>}
                                             <p className="mb-0 mt-1 d-flex align-items-center gap-1">
                                                 <i className="bi bi-envelope" />
                                                 {usuario?.email_usuario}

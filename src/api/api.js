@@ -2,7 +2,7 @@ import axios from "axios";
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
 const PRODUCAO = true;
 
-const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
+export const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
 
 const api = axios.create({
     baseURL: baseURL,

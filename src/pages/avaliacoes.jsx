@@ -55,10 +55,10 @@ function Avaliacoes() {
 
                     <div className="d-flex align-items-center justify-content-between mt-3">
                         <div className="col-md-3 col-6">
-                            <div>
+                            {/* <div>
                                 <input checked={deleted} onClick={() => setDeleted(!deleted)} className="form-checkbox-control" type="checkbox" id="deleted" />
                                 <label className="form-label ms-1" htmlFor="deleted">Registros deletados</label>
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* <button className="btn btn-success" onClick={() => navigate('/cadalimento')}>
@@ -78,6 +78,7 @@ function Avaliacoes() {
                                         <div className="col-md-6 d-flex flex-column">
                                             <label>{avaliacao.nome_aluno}</label>
                                             <div className="d-flex gap-2 mt-2">
+                                                <button onClick={() => navigate('/avaliacao', { state: { avaliacao } })} className="btn btn-sm btn-outline-success">Ver resultado</button>
                                                 <label className="badge bg-info">{formatarData(avaliacao?.data_avaliacao)}</label>
                                                 {/* <label className="badge bg-dark">Carbo: {avaliacao?.carboidrato == '0,0' ? '-' : avaliacao?.carboidrato}</label> */}
                                                 {/* <label className="badge bg-success">Proteína: {avaliacao?.proteina == '0,0' ? '-' : avaliacao?.proteina}</label> */}

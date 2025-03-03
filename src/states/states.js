@@ -20,7 +20,7 @@ export const stateEmpresa = atom({
 export const stateApp = atom({
     key: 'stateApp',
     default: {
-        openedSidebar: false,
+        openedSidebar: true,
         theme: 'light',
     },
     effects_UNSTABLE: [persistAtom]

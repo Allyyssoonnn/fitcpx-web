@@ -1,11 +1,45 @@
 import { useEffect } from 'react';
-import { useToggleSidebar } from '../states/states';
+import { stateEmpresa, stateUsuario, useToggleSidebar } from '../states/states';
 import Conteudo from './conteudo';
 import Header from './header';
 import Sidebar from './sidebar';
+import { useRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
+import { parseCookies, setCookie } from 'nookies';
+import axios from 'axios';
+import { baseURL } from '../api/api';
 
 function Layout() {
+    const navigate = useNavigate();
+    const [usuario, setusuario] = useRecoilState(stateUsuario);
+    const [empresa, setempresa] = useRecoilState(stateEmpresa);
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
+
+    useEffect(() => {
+        (async function load() {
+            if (!usuario?.cod_usuario || !empresa?.cod_empresa) {
+                const cookies = parseCookies();
+                var user;
+                if (import.meta.env.VITE_BUILD_TYPE == 'aluno') user = 'appaluno';
+                if (import.meta.env.VITE_BUILD_TYPE == 'admin') user = 'appadmin';
+                if (import.meta.env.VITE_BUILD_TYPE == 'usuario') user = 'usuario';
+    
+                const refreshResponse = await axios.post(baseURL + `/${user}/refreshToken`, {
+                    refreshToken: cookies.refreshToken,
+                });
+                console.log(refreshResponse);
+                
+                
+                if (refreshResponse.data.status) {
+                    setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
+                    setusuario(refreshResponse.data.usuario);
+                    setempresa(refreshResponse.data.empresa);
+                } else {
+                    navigate('/entrar');
+                }
+            }
+        })();
+    }, []);
 
     useEffect(() => {
         const wrapper = document.getElementById("main-wrapper");
@@ -42,7 +76,7 @@ function Layout() {
                     <Conteudo/>
 
                     <div className="py-6 px-6 text-center">
-                        <p className="mb-0 fs-4">Desenvolvido por Ape Sys LTDA</p>
+                        <p className="mb-0 fs-4">Desenvolvido por Ape Sys LTDA - 46.852.606.0001-56</p>
                     {/* <p class="mb-0 fs-4">Desenvolvido por <a href="https://adminmart.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Alyson H.</a>Distribuido por <a href="https://themewagon.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Milton G.</a></p> */}

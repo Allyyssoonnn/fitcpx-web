@@ -4,19 +4,79 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
-import { Modal } from "react-bootstrap";
+import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
-import { getAgenda, setAgenda } from "../api/agenda";
+import { conectedGoogle, conectGoogle, getAgenda, setAgenda, syncGoogleEvents } from "../api/agenda";
 import { useQuery } from "react-query";
 import { getAlunos } from "../api/aluno";
+import { getGoogleConnect } from "../api/usuario";
 
 
 function Agenda() {
+    const [usuario, setusuario] = useRecoilState(stateUsuario);
+
+    useEffect(() => {
+        (async function conect() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get("code");
+            const scope = params.get("scope");
+        
+            if (code) {
+                const resp = await conectedGoogle(code, scope, usuario?.cod_empresa);
+                
+                // Remove code e scope da URL
+                params.delete("code");
+                params.delete("scope");
+                
+                // Atualiza a URL sem os parâmetros
+                window.history.replaceState({}, document.title, window.location.pathname + '?' + params.toString());
+
+                const resp2 = await getGoogleConnect(usuario?.cod_empresa);
+                setusuario(prev => ({ ...prev, google: resp2 }));
+            }
+        })();
+        (async function getConnected() {
+            // if (usuario?.google?.email_google) return;
+            const resp = await getGoogleConnect(usuario?.cod_empresa);
+            setusuario(prev => ({ ...prev, google: resp }));
+        })();
+    }, []);
+
+    async function conect() {
+        window.location.href = await conectGoogle();
+    }
+
+    async function syncEvents() {
+        await syncGoogleEvents(usuario?.cod_empresa);
+    }
+    
     return (
         <div className="container-fluid">
             <div className="card">
+                <div className="card-header d-flex justify-between">
+                    <div className="col-3 mb-2 mb-sm-0">
+                        <button disabled={usuario?.google?.email_google} onClick={conect}
+                            className={`${usuario?.google?.email_google && 'd-none'} btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`} role="button"
+                        >
+                            <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
+                            <span className="flex-shrink-0">Conectar Google agenda</span>
+                        </button>
+
+                        <button className={`${!usuario?.google?.email_google && 'd-none'} btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`}>
+                            <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
+                            <span className="flex-shrink-0">{usuario?.google?.email_google}</span>
+                        </button>
+                    </div>
+
+                    <div className="col-3 mb-2 mb-sm-0">
+                        <button onClick={syncEvents} className={`${!usuario?.google?.email_google && 'd-none'} btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`}>
+                            <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
+                            <span className="flex-shrink-0">Sincronizar eventos</span>
+                        </button>
+                    </div>
+                </div>
                 <div className="card-body calender-sidebar app-calendar">
                     <Calendario />
                 </div>
@@ -37,9 +97,9 @@ function Calendario() {
     const { data: agenda } = useQuery({
         queryKey: ['agenda', usuario.cod_usuario],
         queryFn: async () => {
-            const resp = await getAgenda(usuario.cod_usuario)
+            const resp = await getAgenda(usuario.cod_empresa)
             const data = resp.map(e => ({
-                id: e.cod_evento,
+                id: e.cod_agenda,
                 cod_aluno: e.cod_aluno,
                 title: e.nome_evento,
                 start: e.data_inicio,
@@ -51,6 +111,7 @@ function Calendario() {
         initialData: [],
     });
     const calendarRef = useRef(null);
+    console.log(agenda);    
 
     // Estado para controlar o modal
     const [showModal, setShowModal] = useState(false);
@@ -95,7 +156,7 @@ function Calendario() {
 
     // Função para mostrar o modal e preencher a data de início
     const handleAddEvent = async (data) => {
-        await setAgenda({ ...data, cod_usuario: usuario.cod_usuario });
+        await setAgenda({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
         setShowModal(false);
     };
 
@@ -116,6 +177,18 @@ function Calendario() {
         setValue('fim', end);
         setShowModal(true);
     };
+
+    const tooltip = (
+        <Tooltip id="tooltip">
+            <div>
+                <strong>Evento:</strong> Crie e gerencie eventos para notificações e controle interno.
+            </div>
+            <p></p>
+            <div>
+                <strong>Disponibilidade:</strong> Defina horários disponíveis para que seus alunos possam agendar diretamente pelo app.
+            </div>
+        </Tooltip>
+    );
 
     return (
         <div style={{ height: "900px" }}>
@@ -159,18 +232,36 @@ function Calendario() {
 
                         <div className="modal-body">
                             <div className="row">
-                                <div className="col-md-12">
+                                <div className="col-md-12 mt-6">
+                                    <label className="form-label">Tipo de Cadastro</label>
+                                    <OverlayTrigger placement="bottom" overlay={tooltip}>
+                                        <i className='bi bi-question-circle text-danger ms-2'></i>
+                                    </OverlayTrigger>
+                                    <select {...register('tipo_cadastro', { value: 'E' })} className="form-control">
+                                        <option value='E'>Evento</option>
+                                        <option value='D'>Disponibilidade</option>
+                                    </select>
+                                </div>
+                                
+                                <div className="col-md-12 mt-6">
                                     <label className="form-label">Nome do evento</label>
                                     <input { ...register('nome_evento', { required: 'O nome do evento é obrigatório' }) } id="event-title" type="text" className="form-control" />
                                 </div>
 
                                 <div className="col-md-12 mt-6">
+                                    <label className="form-label">Descrição do evento</label>
+                                    <input { ...register('descricao_evento', { required: 'O nome do evento é obrigatório' }) } id="event-title" type="text" className="form-control" />
+                                </div>
+
+                                <div className="col-md-12 mt-6">
                                     <label className="form-label">Tipo do evento</label>
-                                    <select {...register('tipo_evento')} className="form-control">
-                                        <option value="danger">Treino</option>
-                                        <option value="success">Avaliação</option>
-                                        <option value="primary">Reunião</option>
-                                        <option value="warning">Visita</option>
+                                    <input { ...register('tipo_evento') } id="event-title" type="text" className="form-control" />
+                                </div>
+
+                                <div className="col-md-12 mt-6">
+                                    <label className="form-label">Cor</label>
+                                    <select {...register('cor_evento')} className="form-control">
+                                        <option value=''>Selecione a cor</option>
                                     </select>
                                 </div>
 
@@ -178,9 +269,8 @@ function Calendario() {
                                     <label className="form-label">Aluno (opcional)</label>
                                     <select {...register('cod_aluno')} className="form-control">
                                         <option value=''>Selecione o aluno</option>
-                                        {alunos.map((aluno) => (
-                                            // eslint-disable-next-line react/jsx-key
-                                            <option value={aluno.cod_aluno}>{aluno.nome_aluno}</option>
+                                        {alunos.map((aluno, index) => (
+                                            <option key={index} value={aluno.cod_aluno}>{aluno.nome_aluno}</option>
                                         ))}
                                     </select>
                                 </div>

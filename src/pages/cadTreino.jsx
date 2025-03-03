@@ -534,22 +534,26 @@ function ListaExercicios({ exercicios, indexSessao, updateSessao, setWaitExercic
                                                 </div>
                                             </div>
 
-                                            <div className="d-flex gap-1">
-                                                <div className="form-floating">
+                                            <div className="d-flex row g-3">
+                                                <div className="form-floating col-md-3">
                                                     <input id="seriesInput" value={exercicio.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Séries"/>
                                                     <label htmlFor="seriesInput">Séries</label>
                                                 </div>
-                                                <div className="form-floating">
+                                                <div className="form-floating col-md-3">
                                                     <input id="repInput" value={exercicio.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Repetições"/>
                                                     <label htmlFor="repInput">Repetições</label>
                                                 </div>
-                                                <div className="form-floating">
+                                                <div className="form-floating col-md-3">
                                                     <input id="cargaInput" value={exercicio.carga_sessao_exercicio} onChange={e => updateField(index, 'carga_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Carga (kg)"/>
                                                     <label htmlFor="cargaInput">Carga (kg)</label>
                                                 </div>
-                                                <div className="form-floating">
+                                                <div className="form-floating col-md-3">
                                                     <input id="interInput" value={exercicio.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Intervalo"/>
                                                     <label htmlFor="interInput">Intervalo</label>
+                                                </div>
+                                                <div className="form-floating col-md-12">
+                                                    <input id="interInput" value={exercicio.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Observação"/>
+                                                    <label htmlFor="interInput">Observação</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -568,22 +572,26 @@ function ListaExercicios({ exercicios, indexSessao, updateSessao, setWaitExercic
                                                     </div>
                                                 </div>
 
-                                                <div className="d-flex gap-1">
-                                                    <div className="form-floating">
+                                                <div className="d-flex row g-3">
+                                                    <div className="form-floating col-md-3">
                                                         <input id="seriesInput" value={set.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Séries"/>
                                                         <label htmlFor="seriesInput">Séries</label>
                                                     </div>
-                                                    <div className="form-floating">
+                                                    <div className="form-floating col-md-3">
                                                         <input id="repInput" value={set.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Repetições"/>
                                                         <label htmlFor="repInput">Repetições</label>
                                                     </div>
-                                                    <div className="form-floating">
+                                                    <div className="form-floating col-md-3">
                                                         <input id="cargaInput" value={set.carga_sessao_exercicio} onChange={e => updateField(index, 'carga_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Carga (kg)"/>
                                                         <label htmlFor="cargaInput">Carga (kg)</label>
                                                     </div>
-                                                    <div className="form-floating">
+                                                    <div className="form-floating col-md-3">
                                                         <input id="interInput" value={set.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Intervalo"/>
                                                         <label htmlFor="interInput">Intervalo</label>
+                                                    </div>
+                                                    <div className="form-floating col-md-12">
+                                                        <input id="interInput" value={set.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Observação"/>
+                                                        <label htmlFor="interInput">Observação</label>
                                                     </div>
                                                 </div>
                                             </div>

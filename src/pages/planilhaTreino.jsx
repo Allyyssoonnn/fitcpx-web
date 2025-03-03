@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getExercicios, setSessao } from "../api/treino";
+import { getExercicios, getTreinos, setSessao } from "../api/treino";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
@@ -80,6 +80,15 @@ function PlanilhaTreino() {
         setAlunos(prev => prev.map((_, i) => i == indexAluno ? { ..._, indexSessao: index } : _));
     }
 
+    async function reloadTreinos() {
+        const tempAlunos = [...alunos];
+        for (const aluno of tempAlunos) {
+            const treinosUpdated = await getTreinos({ cod_aluno: aluno.cod_aluno });
+            aluno.treinos = treinosUpdated;
+        }
+        setAlunos(tempAlunos);
+    }
+
     return (
         <div>
             <div className="card">
@@ -87,6 +96,10 @@ function PlanilhaTreino() {
                     <button className="btn btn-info me-3" onClick={() => navigate('/planilha')}>
                         <i className="bi bi-backspace me-2"></i>
                         Voltar ao sistema
+                    </button>
+
+                    <button className="btn btn-warning" onClick={reloadTreinos}>
+                        <i className="bi bi-arrow-clockwise" />
                     </button>
 
                     <button onClick={alteraTema} className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex me-2">
@@ -357,7 +370,7 @@ function Edit({ value, onUpdate }) {
 
     useEffect(() => {
         setInputValue(value);
-    }, []);
+    }, [value]);
 
     const handleBlur = () => {
         setIsEditing(false);
@@ -379,7 +392,7 @@ function Edit({ value, onUpdate }) {
         />
     ) : (
         <label className="w-100" onDoubleClick={() => setIsEditing(true)}>
-            {value}
+            {value || '-'}
         </label>
     );
 }

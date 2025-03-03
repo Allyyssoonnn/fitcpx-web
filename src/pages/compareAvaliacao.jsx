@@ -599,6 +599,13 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
         setSeriesVisible(temp.reduce((acc, serie) => ({ ...acc, [serie.name]: true }), {}));
     }, [avaliacoes]);
 
+    // Função para calcular o valor máximo dentro dos dados das séries visíveis
+    const getMaxValue = () => {
+        const visibleData = data.filter((serie) => seriesVisible[serie.name]);  // Filtra as séries visíveis
+        const allData = visibleData.flatMap((serie) => serie.data);  // Extrai todos os dados das séries visíveis
+        return Math.max(...allData);  // Retorna o maior valor
+    };
+
     // Opções do gráfico
     const options = {
         chart: { fontFamily: "inherit", type: "line", height: 300, toolbar: { show: false }, offsetX: -15 },
@@ -608,7 +615,7 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
         grid: { borderColor: "var(--bs-border-color)", strokeDashArray: 4, yaxis: { lines: { show: true } } },
         markers: { size: 4 },
         xaxis: { categories: ordenaAvalicaoData(avaliacoes).reduce((arr, av, i) => [...arr, av.data_avaliacao], []), labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
-        yaxis: { max: 60, min: 0, tickAmount: 4, labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
+        yaxis: { max: getMaxValue() + 10, min: 0, tickAmount: 4, labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
         tooltip: { theme: "dark", shared: true, intersect: false },
         colors: data.map((serie) => serie.color), // Cores fixas
     };

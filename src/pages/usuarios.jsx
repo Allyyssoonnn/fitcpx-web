@@ -85,7 +85,9 @@ function Usuarios() {
                                                 />
                                                 <div className="col-md-10 d-flex flex-column">
                                                     <label>{usuario.nome_usuario}</label>
-                                                    <label className="text-muted">ADMIN</label>
+                                                    <div className="d-flex gap-2 mt-2">
+                                                        <label className="badge bg-danger text-white">{usuario?.admin_usuario == 'S' && 'ADMIN'}</label>
+                                                    </div>
                                                 </div>
                                             </th>
                                             <td>

@@ -26,7 +26,7 @@ function Sidebar() {
     }
 
     return (
-        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999' }}>
+        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between">
                     <img src="/assets/images/logos/logo_horizontal.png" alt="" width='200' />

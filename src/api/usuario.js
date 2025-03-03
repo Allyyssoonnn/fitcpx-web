@@ -1,4 +1,22 @@
-import { post, postImage } from "./api";
+import { get, post, postImage } from "./api";
+
+export const loginGoogle = async () => {
+    const resp = await get('/usuario/loginGoogle');
+    if (resp.status) return resp.url;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const loggedGoogle = async (code, scope, cod_empresa) => {
+    const resp = await post('/usuario/loggedGoogle', { code, scope, cod_empresa });
+    if (resp.status) return resp;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const getGoogleConnect = async (cod_empresa) => {
+    const resp = await post('/agenda/getGoogleConnect', { cod_empresa });
+    if (resp.status) return resp.google;
+    throw new Error("Erro ao carregar agendas");
+};
 
 export const recovery = async (email) => {
     const resp = await post('/usuario/recovery', { email });

@@ -11,6 +11,7 @@ function Sidebar() {
 
     const [dropTreino, setDropTreino] = useState(false);
     const [dropAdmin, setDropAdmin] = useState(false);
+    const [dropFinanceiro, setdropFinanceiro] = useState(false);
     const [dropCardapio, setdropCardapio] = useState(false);
 
     useEffect(() => {
@@ -27,7 +28,7 @@ function Sidebar() {
     }
 
     return (
-        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px'}}>
+        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm">
 
@@ -168,6 +169,20 @@ function Sidebar() {
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
                                         <i className="bi bi-bar-chart fs-6 me-1"></i>
                                         <span className="hide-menu ps-1">Relatórios</span>
+                                    </a>
+                                </li>
+
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/modalidades')} aria-expanded="false">
+                                        <i className="bi bi-easel fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Modalidades</span>
+                                    </a>
+                                </li>
+
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/planos')} aria-expanded="false">
+                                        <i className="bi bi-basket fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Planos</span>
                                     </a>
                                 </li>
 

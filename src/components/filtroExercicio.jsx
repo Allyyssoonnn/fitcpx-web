@@ -174,7 +174,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Grupo principal</label>
                             <select className="form-control" value={grupoPrincipal} onChange={e => setGrupoPrincipal(e.target.value)}>
-                                <option value={0}>Selecione o grupo de exercício</option>
+                                <option value={0}>Selecione</option>
                                 {grupos.map((gp, i) => (
                                     <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
                                 ))}
@@ -184,7 +184,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Grupo secundário</label>
                             <select className="form-control" value={grupoSecundario} onChange={e => setGrupoSecundario(e.target.value)}>
-                                <option value={0}>Selecione o grupo de exercício</option>
+                                <option value={0}>Selecione</option>
                                 {grupos.map((gp, i) => (
                                     <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
                                 ))}
@@ -194,7 +194,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Tipo exercício</label>
                             <select className="form-control" value={tipoExercicio} onChange={e => setTipoExercicio(e.target.value)}>
-                                <option value={0}>Selecione o tipo de exercício</option>
+                                <option value={0}>Selecione</option>
                                 {tipo_exercicios.map((te, i) => (
                                     <option value={te.cod_tipo_exercicio} key={i}>{te.nome_tipo_exercicio}</option>
                                 ))}
@@ -204,7 +204,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Resistência</label>
                             <select className="form-control" value={exercicioResistencia} onChange={e => setExercicioResistencia(e.target.value)}>
-                                <option value={0}>Selecione a resistência do exercício</option>
+                                <option value={0}>Selecione</option>
                                 {exercicios_resistencias.map((er, i) => (
                                     <option value={er.cod_exercicio_resistencia} key={i}>{er.nome_exercicio_resistencia}</option>
                                 ))}
@@ -214,7 +214,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Indicação</label>
                             <select className="form-control" value={indicacao} onChange={e => setIndicacao(e.target.value)}>
-                                <option value={0}>Selecione a indicação do exercício</option>
+                                <option value={0}>Selecione</option>
                                 {indicacoes.map((id, i) => (
                                     <option value={id.cod_indicacao} key={i}>{id.nome_indicacao}</option>
                                 ))}
@@ -224,7 +224,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Padrão movimento</label>
                             <select className="form-control" value={padraoMovimento} onChange={e => setPadraoMovimento(e.target.value)}>
-                                <option value={0}>Selecione o padrão de movimento</option>
+                                <option value={0}>Selecione</option>
                                 {padraoes_movimentos.map((pm, i) => (
                                     <option value={pm.cod_padrao_movimento} key={i}>{pm.nome_padrao_movimento}</option>
                                 ))}
@@ -234,7 +234,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Equipamento</label>
                             <select className="form-control" value={equipamento} onChange={e => setEquipamento(e.target.value)}>
-                                <option value={0}>Selecione o equipamento</option>
+                                <option value={0}>Selecione</option>
                                 {equipamentos.map((eq, i) => (
                                     <option value={eq.cod_equipamento} key={i}>{eq.nome_equipamento}</option>
                                 ))}
@@ -244,7 +244,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Articulação</label>
                             <select className="form-control" value={articulacao} onChange={e => setArticulacao(e.target.value)}>
-                                <option value={0}>Selecione a articulação</option>
+                                <option value={0}>Selecione</option>
                                 {articulacoes.map((at, i) => (
                                     <option value={at.cod_articulacao} key={i}>{at.nome_articulacao}</option>
                                 ))}

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { calculaKGGordura, calculaKGMCM, calculaKGMusculo, calculaPorcentagemGordura, calculaPorcentagemMCM, calculaPorcentagemMusculo, calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
 import { useQuery } from "react-query";
-import { changeAlunoIMG, deleteAvaliacao, getAluno, getAvaliacao, getAvaliacoes } from '../api/aluno';
+import { changeAlunoIMG, deleteAvaliacao, getAluno, getAvaliacao, getAvaliacoes, setAluno } from '../api/aluno';
 import { deleteTreino, getTreinos, setTreino } from '../api/treino';
 import { deleteCardapio, getCardapios, setCardapio } from '../api/cardapio';
 import ImageCropModal from '../components/cutImg';
@@ -21,7 +21,7 @@ function Aluno() {
     const [cropper, setCropper] = useState(null);
     const [modalAddTreino, setModalAddTreino] = useState(false);
 
-    const { data: aluno, isLoading } = useQuery({
+    const { data: aluno, isLoading, refetch: refetchAluno } = useQuery({
         queryKey: ['aluno'],
         queryFn: () => getAluno(cod_aluno),
         enabled: !!cod_aluno
@@ -89,6 +89,11 @@ function Aluno() {
         }
     };
 
+    async function changeStatusAluno() {
+        await setAluno({ ...aluno, status_aluno: aluno.status_aluno == 'I' ? 'A' : 'I' });
+        refetchAluno();
+    }
+
     if (isLoading) return <></>;
 
     return (
@@ -143,6 +148,11 @@ function Aluno() {
                             <button className='btn btn-warning me-2' onClick={() => navigate('/cadaluno', { state: { aluno } })}>
                                 <i className="bi bi-pencil me-2"></i>
                                 Editar
+                            </button>
+
+                            <button className={`btn btn-${aluno.status_aluno == 'A' ? 'danger' : 'success'} me-2`} onClick={changeStatusAluno}>
+                                <i className="bi bi-x-circle me-2"></i>
+                                {aluno.status_aluno == 'A' ? 'Desativar' : 'Ativar'} aluno
                             </button>
 
                             {/* <button className='btn btn-success me-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
