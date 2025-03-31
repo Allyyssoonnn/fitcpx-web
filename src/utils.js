@@ -1,5 +1,5 @@
 export function ordenaAvalicaoData(avaliacoes) {
-    return avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
+    return avaliacoes.sort((a, b) => new Date(a.data_avaliacao) - new Date(b.data_avaliacao))
 }
 
 export function preventForm(e) { if (e?.key == 'Enter') e.preventDefault() };
@@ -73,7 +73,40 @@ export const formatarData = (data) => {
         year: 'numeric',
     });
 };
-  
+
+export const camposFiltrosExercicios = {
+    grupoPrincipal: ['cod_grupo_exercicio_1', 'cod_grupo_exercicio_2', 'cod_grupo_exercicio_3'],
+    grupoSecundario: ['cod_grupo_exercicio_4', 'cod_grupo_exercicio_5', 'cod_grupo_exercicio_6', 'cod_grupo_exercicio_7'],
+    equipamento: ['cod_equipamento_1', 'cod_equipamento_2', 'cod_equipamento_3'],
+    articulacao: ['cod_articulacao_1', 'cod_articulacao_2', 'cod_articulacao_3', 'cod_articulacao_4'],
+    tipoExercicio: ['cod_tipo_exercicio'],
+    exercicioResistencia: ['cod_exercicio_resistencia'],
+    indicacao: ['cod_indicacao'],
+    padraoMovimento: ['cod_padrao_movimento'],
+}
+
+export function filtrarExerciciosFunc(exerciciosFiltrados, filtrosAtuais) {
+    //filtrosAtuais precisa bater com camposFiltrosExercicios
+
+    Object.keys(camposFiltrosExercicios).forEach((filtroKey) => {
+        const filtro = camposFiltrosExercicios[filtroKey];
+                        
+        exerciciosFiltrados = exerciciosFiltrados?.filter((exercicio) => {
+            var valido = false;
+
+            if (!filtrosAtuais[filtroKey] || filtrosAtuais[filtroKey] == 0) return true;
+
+            for (const campo of filtro) {
+                if (exercicio[campo] == filtrosAtuais[filtroKey]) valido = true;
+            }
+
+            return valido;
+        }, []);
+    });
+
+    return exerciciosFiltrados;
+}
+
 export const arrayBorders = ['border-success', 'border-info', 'border-danger', 'border-primary', 'border-secondary'];
 
 export const protocolosCampos = {

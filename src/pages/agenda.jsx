@@ -111,7 +111,6 @@ function Calendario() {
         initialData: [],
     });
     const calendarRef = useRef(null);
-    console.log(agenda);    
 
     // Estado para controlar o modal
     const [showModal, setShowModal] = useState(false);

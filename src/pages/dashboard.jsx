@@ -57,7 +57,7 @@ function InfoTotais({ alunos, avaliacoes }) {
             <div className="card">
                 <div className="card-body">
                     <div className="d-flex flex-column">
-                        <h6>Resumo da empresa</h6>
+                        <h6 className="card-title">Resumo da empresa</h6>
 
                         <div className="d-flex border-bottom py-3">
                             <span className="rounded-circle round-48 mb-4 bg-success-subtle text-success d-flex align-items-center justify-content-center">

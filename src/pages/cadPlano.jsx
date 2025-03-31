@@ -3,11 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CurrencyInput from "../components/currencyInput";
 import { getModalidades, setPlano } from "../api/plano";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 
 function CadPlano() {
+    const { nSuccess } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
     const { register, handleSubmit, control, setValue } = useForm();
     const navigate = useNavigate();
@@ -30,6 +31,7 @@ function CadPlano() {
 
     async function confirma(data) {
         await setPlano({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+        nSuccess();
         navigate('/planos');
     }
 

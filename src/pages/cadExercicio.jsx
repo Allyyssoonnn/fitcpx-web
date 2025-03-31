@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { stateAdmin, stateUsuario } from "../states/states";
+import { stateAdmin, stateUsuario, useNotificacao } from "../states/states";
 import { getArticulacoes, getEquipamentos, getExerciciosResistencias, getGrupoExercicios, getIndicacoes, getPadraoesMovimentos, getTipoExercicios, setExercicio, setGrupoExercicio } from "../api/treino";
 import { useQuery } from "react-query";
 import { getYouTubeEmbedUrl } from "../utils";
 
 function CadExercicio() {
+    const { nSuccess } = useNotificacao();
     const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
@@ -72,6 +73,7 @@ function CadExercicio() {
             Object.entries(data).map(([key, value]) => [key, value === "" ? null : value])
         );
         await setExercicio({ ...cleanedData, cod_usuario: usuario?.cod_usuario, cod_empresa: usuario?.cod_empresa, base_exercicio: admin?.cod_admin ? 'S' : 'N' });
+        nSuccess();
         navigate('/exercicios');
     }
 

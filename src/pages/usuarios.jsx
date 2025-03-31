@@ -23,7 +23,7 @@ function Usuarios() {
 
     const navigate = useNavigate();
     
-    const editarUsuario = (usuario) => {
+    const editarUsuario = (usuario) => {    
         navigate('/cadusuario', { state: { usuario: usuario } })
     };
 

@@ -1,19 +1,19 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import { useRecoilState } from "recoil";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { setUsuario } from "../api/usuario";
 
 function CadUsuario() {
+    const { nSuccess } = useNotificacao();
     const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
     const [usuario] = useRecoilState(stateUsuario);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const usuarioRecebido = location.state?.usuario;
-        console.log(location.state);
-        
         if (usuarioRecebido) {
             Object.keys(usuarioRecebido).forEach((key) => {
                 setValue(key, usuarioRecebido[key]);
@@ -55,6 +55,7 @@ function CadUsuario() {
 
     async function confirma(data) {
         await setUsuario({ ...data, cod_empresa: usuario.cod_empresa });
+        nSuccess();
         navigate('/usuarios');
     }
 

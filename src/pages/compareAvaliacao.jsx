@@ -644,22 +644,22 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
         
                     {/* Checkboxes em uma única linha */}
                     <div className="legend mb-3 d-flex flex-wrap gap-3">
-                    {data.map((serie) => (
-                        <div key={serie.name} className="form-check form-check-inline">
-                        <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={serie.name}
-                            value={serie.name}
-                            checked={seriesVisible[serie.name]}
-                            onChange={toggleSeries}
-                            style={{ backgroundColor: serie.color, borderColor: serie.color }} // Cor fixa do checkbox
-                        />
-                        <label className="form-check-label" htmlFor={serie.name}>
-                            {serie.name}
-                        </label>
-                        </div>
-                    ))}
+                        {data.map((serie) => (
+                            <div key={serie.name} className="form-check form-check-inline">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id={serie.name}
+                                    value={serie.name}
+                                    checked={seriesVisible[serie.name]}
+                                    onChange={toggleSeries}
+                                    style={{ backgroundColor: serie.color, borderColor: serie.color }} // Cor fixa do checkbox
+                                />
+                                <label className="form-check-label" htmlFor={serie.name}>
+                                    {serie.name}
+                                </label>
+                            </div>
+                        ))}
                     </div>
         
                     {/* Gráfico */}

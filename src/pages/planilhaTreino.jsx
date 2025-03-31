@@ -90,7 +90,7 @@ function PlanilhaTreino() {
     }
 
     return (
-        <div>
+        <div className="container-fluid page-wrapper" id="main-wrapper">
             <div className="card">
                 <div className="card-header d-flex align-items-center">
                     <button className="btn btn-info me-3" onClick={() => navigate('/planilha')}>

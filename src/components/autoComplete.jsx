@@ -1,9 +1,17 @@
 import React, { useMemo, useState } from 'react';
+import { useEffect } from 'react';
 
-const AutoComplete = ({ sugestoes, chave, chavePesquisa, onBlur, onKeyDown, style, autoFocus, onChange }) => {
+const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = () => {}, onKeyDown, style, autoFocus, onChange, className = '' }) => {
     const [inputValue, setInputValue] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isClickingSuggestion, setIsClickingSuggestion] = useState(false);
+
+    useEffect(() => {        
+        if (valueChave && sugestoes.length) {
+            const objectAtual = sugestoes.find((v) => v[chave] == valueChave);
+            if (objectAtual && objectAtual[chavePesquisa]) setInputValue(objectAtual[chavePesquisa]);
+        }
+    }, [valueChave, sugestoes]);
 
     const handleInputChange = (e) => {
         const value = e.target.value;
@@ -27,6 +35,11 @@ const AutoComplete = ({ sugestoes, chave, chavePesquisa, onBlur, onKeyDown, styl
             return;
         }
 
+        if (valueChave && sugestoes.length) {
+            const objectAtual = sugestoes.find((v) => v[chave] == valueChave);
+            if (objectAtual && objectAtual[chavePesquisa]) setInputValue(objectAtual[chavePesquisa]);
+        }
+
         onBlur(); // Dispara o onBlur passado pelo componente pai
         setShowSuggestions(false); // Fecha as sugestões
     };
@@ -45,13 +58,12 @@ const AutoComplete = ({ sugestoes, chave, chavePesquisa, onBlur, onKeyDown, styl
         }
         return [];
     }, [inputValue, sugestoes]);
-    
 
     return (
-        <div className="position-relative">
+        (<div className={`position-relative ${className}`}>
             <input
                 type="text"
-                className="form-control d-inline-block"
+                className='form-control d-inline-block'
                 value={inputValue}
                 onChange={handleInputChange}
                 placeholder="Digite para pesquisar"
@@ -59,8 +71,8 @@ const AutoComplete = ({ sugestoes, chave, chavePesquisa, onBlur, onKeyDown, styl
                 onKeyDown={onKeyDown}
                 style={style}
                 autoFocus={autoFocus}
+                onFocus={() => setShowSuggestions(true)}
             />
-
             {showSuggestions && (
                 <ul className="list-group position-absolute w-100" style={{ zIndex: 1000 }}>
                     {filteredSuggestions.length > 0 ? (
@@ -81,7 +93,7 @@ const AutoComplete = ({ sugestoes, chave, chavePesquisa, onBlur, onKeyDown, styl
                     )}
                 </ul>
             )}
-        </div>
+        </div>)
     );
 };
 

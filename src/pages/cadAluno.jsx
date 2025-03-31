@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { setAluno } from '../api/aluno';
-import { stateUsuario } from '../states/states';
+import { stateUsuario, useNotificacao } from '../states/states';
 import { useRecoilState } from 'recoil';
 import { limpaForm } from '../utils';
 
 function CadAluno() {
+    const { nSuccess } = useNotificacao();
     const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
     const location = useLocation();
     const navigate = useNavigate();
@@ -56,7 +57,8 @@ function CadAluno() {
 
     async function confirma(data) {
         await setAluno(limpaForm(data));
-        navigate('/alunos');
+        nSuccess();
+        navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }
 
     return (

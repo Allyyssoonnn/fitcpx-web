@@ -5,6 +5,7 @@ import { stateUsuario } from "../states/states";
 import { useNavigate } from "react-router-dom";
 import { getExercicios, deleteExercicio, recoveryExercicio } from '../api/treino';
 import FiltroExercicio from "../components/filtroExercicio";
+import BackToTop from "../components/backToTop";
 
 function Exercicios() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -85,14 +86,29 @@ function Exercicios() {
                             <table id="basic-datatables" className="display table table-striped table-hover">
                                 <tbody>
                                     {filteredExercicios.map((exercicio) => {
+                                        const grupo_exercicio_1 = exercicio?.grupo_exercicio_1?.nome_grupo_exercicio;
+                                        const grupo_exercicio_2 = exercicio?.grupo_exercicio_2?.nome_grupo_exercicio;
+                                        const grupo_exercicio_3 = exercicio?.grupo_exercicio_3?.nome_grupo_exercicio;
+                                        const grupo_exercicio_4 = exercicio?.grupo_exercicio_4?.nome_grupo_exercicio;
+                                        const grupo_exercicio_5 = exercicio?.grupo_exercicio_5?.nome_grupo_exercicio;
+                                        const grupo_exercicio_6 = exercicio?.grupo_exercicio_6?.nome_grupo_exercicio;
+                                        const grupo_exercicio_7 = exercicio?.grupo_exercicio_7?.nome_grupo_exercicio;
+                                        const grupo_exercicio_8 = exercicio?.grupo_exercicio_8?.nome_grupo_exercicio;
                                         return (
                                         <tr key={exercicio.cod_treino} style={{ borderLeft: exercicio.base_exercicio === 'S' ? '0.30rem solid rgb(212, 212, 70)' : '' }}>
                                             <th scope="row" className="d-flex align-items-center">
                                                 <div className="col-md-6 d-flex flex-column">
                                                     <label>{exercicio.nome_exercicio}</label>
                                                     <div className="d-flex gap-2 mt-2">
-                                                        <label className="badge bg-dark">{exercicio?.grupo_exercicio?.nome_grupo_exercicio}</label>
-                                                        <label className="badge bg-dark">{exercicio?.usuario?.nome_usuario}</label>
+                                                        <label className="badge bg-success text-black">{exercicio?.usuario?.nome_usuario}</label>
+                                                        <label className="badge bg-info">{grupo_exercicio_1}</label>
+                                                        <label className="badge bg-info">{grupo_exercicio_2}</label>
+                                                        <label className="badge bg-info">{grupo_exercicio_3}</label>
+                                                        <label className="badge bg-info">{grupo_exercicio_4}</label>
+                                                        <label className="badge bg-primary">{grupo_exercicio_5}</label>
+                                                        <label className="badge bg-primary">{grupo_exercicio_6}</label>
+                                                        <label className="badge bg-primary">{grupo_exercicio_7}</label>
+                                                        <label className="badge bg-primary">{grupo_exercicio_8}</label>
                                                         {/* <label className="badge bg-dark">{treino.nome_exercicio}</label> */}
                                                         {/* <label className="badge bg-dark">{treino.nivel_treino}</label> */}
                                                         {/* <label className="text-muted">{treino.nome_usuario}</label> */}

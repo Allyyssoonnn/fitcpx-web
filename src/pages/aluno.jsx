@@ -10,6 +10,7 @@ import ImageCropModal from '../components/cutImg';
 import PopConfirm from '../components/popConfirm';
 import { useRecoilState } from 'recoil';
 import { stateUsuario } from '../states/states';
+import Swal from 'sweetalert2';
 
 function Aluno() {
     const location = useLocation();
@@ -20,17 +21,18 @@ function Aluno() {
     const [image, setImage] = useState(null);
     const [cropper, setCropper] = useState(null);
     const [modalAddTreino, setModalAddTreino] = useState(false);
-
+    
     const { data: aluno, isLoading, refetch: refetchAluno } = useQuery({
         queryKey: ['aluno'],
         queryFn: () => getAluno(cod_aluno),
         enabled: !!cod_aluno
     });
 
-    const { data: treinos, refetch } = useQuery({
+    const { data: treinos, refetch: refetchTreino } = useQuery({
         queryKey: ['treinos'],
         queryFn: () => getTreinos({ cod_aluno }),
-        initialData: []
+        initialData: [],
+        enabled: !!cod_aluno
     });
 
     const { data: avaliacoes, refetchAvalicao } = useQuery({
@@ -90,21 +92,29 @@ function Aluno() {
     };
 
     async function changeStatusAluno() {
+        Swal.fire({
+            title: "Carregando...",
+            text: "Aguarde",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
         await setAluno({ ...aluno, status_aluno: aluno.status_aluno == 'I' ? 'A' : 'I' });
         refetchAluno();
+        Swal.close();
     }
 
     if (isLoading) return <></>;
 
     return (
-        <div className="container-fluid">
+        (<div className="container-fluid">
             <ImageCropModal
                 show={showModal}
                 image={image}
                 onConfirm={handleModalConfirm}
                 onCancel={handleModalClose}
             />
-
             <div className='card'>
                 <div className='card-header'>
                     <button onClick={() => navigate('/alunos')} className="btn btn-danger mb-3">
@@ -120,7 +130,7 @@ function Aluno() {
                                 src={aluno?.imagem_aluno ? `${aluno?.imagem_aluno}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                 alt="Foto do Aluno" 
                                 className="img-fluid rounded-circle shadow-md" 
-                                style={{ width: '150px', height: '150px' }}
+                                style={{ width: '150px' }}
                             />
                             <label className='btn btn-sm btn-info mt-2' htmlFor='img_aluno'>
                                 <i className="bi bi-camera me-2"></i>
@@ -150,9 +160,10 @@ function Aluno() {
                                 Editar
                             </button>
 
-                            <button className={`btn btn-${aluno.status_aluno == 'A' ? 'danger' : 'success'} me-2`} onClick={changeStatusAluno}>
-                                <i className="bi bi-x-circle me-2"></i>
-                                {aluno.status_aluno == 'A' ? 'Desativar' : 'Ativar'} aluno
+                            <button className={`btn btn-${aluno?.status_aluno == 'A' ? 'danger' : 'success'} me-2`} onClick={changeStatusAluno}>
+                                <i className={`bi bi-${aluno?.status_aluno == 'A' ? 'x' : 'check'}-circle me-2`}></i>
+                                {aluno?.status_aluno == 'A' ? 'Desativar ' : 'Ativar '}
+                                <span className='d-none d-md-inline-block'>aluno</span>
                             </button>
 
                             {/* <button className='btn btn-success me-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
@@ -177,29 +188,31 @@ function Aluno() {
                             </>
                         }>
                             <div>
-                                <div className="p-3 bg-light rounded">
-                                    <h5>Detalhes Pessoais</h5>
-                                    <p><strong>Telefone:</strong> {aluno?.telefone_aluno}</p>
-                                    <p><strong>Data de Nascimento:</strong> {formatarData(aluno?.data_nascimento_aluno)}</p>
-                                    <p><strong>Sexo:</strong> {aluno?.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
+                                <div className="card shadow-sm mb-3 bg-light">
+                                    <div className="card-body">
+                                        <h5 className="card-title text-primary"><i className="bi bi-person-lines-fill me-2"></i>Detalhes Pessoais</h5>
+                                        <p className="mb-1"><strong>Telefone:</strong> {aluno?.telefone_aluno || "Não informado"}</p>
+                                        <p className="mb-1"><strong>Data de Nascimento:</strong> {formatarData(aluno?.data_nascimento_aluno) || "Não informado"}</p>
+                                        <p className="mb-0"><strong>Sexo:</strong> {aluno?.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
+                                    </div>
                                 </div>
-
-                                <div className="p-3 bg-light rounded mt-3">
-                                    <h5>Endereço</h5>
-                                    <p>
-                                        <strong>Endereço: </strong>
-                                        {!aluno?.endereco_aluno && !aluno?.numero_aluno
-                                            ? (`Não informado`)
-                                            : (`${aluno?.endereco_aluno}, ${aluno?.numero_aluno}, ${aluno?.bairro_aluno}`)
-                                        }
-                                    </p>
-                                    <p>
-                                        <strong>Cidade: </strong>
-                                        {!aluno?.cidade_aluno && !aluno?.estado_aluno
-                                            ? (`Não informado`)
-                                            : (`${aluno?.cidade_aluno} - ${aluno?.estado_aluno}`)
-                                        }
-                                    </p>
+                                
+                                <div className="card shadow-sm bg-light">
+                                    <div className="card-body">
+                                        <h5 className="card-title text-secondary"><i className="bi bi-geo-alt-fill me-2"></i>Endereço</h5>
+                                        <p className="mb-1">
+                                            <strong>Endereço: </strong> 
+                                            {!aluno?.endereco_aluno && !aluno?.numero_aluno
+                                                ? "Não informado"
+                                                : `${aluno?.endereco_aluno}, ${aluno?.numero_aluno}, ${aluno?.bairro_aluno}`}
+                                        </p>
+                                        <p className="mb-0">
+                                            <strong>Cidade: </strong> 
+                                            {!aluno?.cidade_aluno && !aluno?.estado_aluno
+                                                ? "Não informado"
+                                                : `${aluno?.cidade_aluno} - ${aluno?.estado_aluno}`}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </Tab>
@@ -218,7 +231,7 @@ function Aluno() {
 
                                 {avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
                                 .map((avaliacao, index) => (
-                                    <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} refetch={refetch} />
+                                    <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} refetch={refetchAvalicao} />
                                 ))}
                             </div>
                         </Tab>
@@ -236,8 +249,9 @@ function Aluno() {
                                     Adicionar Treino
                                 </button>
 
-                                {treinos?.map((treino, index) => (
-                                    <CardTreino key={index} treino={treino} aluno={aluno} refetch={refetch} />
+                                {treinos.sort((a, b) => b.cod_treino - a.cod_treino)
+                                .map((treino, index) => (
+                                    <CardTreino key={index} treino={treino} aluno={aluno} refetch={refetchTreino} />
                                 ))}
                             </div>
                         </Tab>
@@ -255,14 +269,14 @@ function Aluno() {
                                 </button>
 
                                 {cardapios?.map((cardapio, index) => (
-                                    <CardCardapio key={index} cardapio={cardapio} aluno={aluno} refetch={refetch} />
+                                    <CardCardapio key={index} cardapio={cardapio} aluno={aluno} refetch={refetchCardapio} />
                                 ))}
                             </div>
                         </Tab>
                     </Tabs>
                 </div>
             </div>
-        </div>
+        </div>)
     );
 }
 
@@ -284,6 +298,7 @@ function AddTreino({ show, close, aluno }) {
             <div>
                 <strong>Novo:</strong> Crie um treino personalizado do zero.
             </div>
+            <p></p>
             <p></p>
             <div>
                 <strong>Importar:</strong> Escolha um treino de base do sistema.
@@ -317,13 +332,13 @@ function AddTreino({ show, close, aluno }) {
                             <i className="bi bi-file-earmark-plus"></i>
                         </button>
 
-                        <button className='btn btn-outline-info rounded-1 w-30' onClick={() => setImportando(true)}>
+                        <button disabled className='btn btn-outline-info rounded-1 w-30' onClick={() => setImportando(true)}>
                             Importar base
                             <br></br>
                             <i className="bi bi-upload"></i>
                         </button>
 
-                        <button className='btn btn-outline-info rounded-1 w-30' onClick={() => setReajuste(true)}>
+                        <button disabled className='btn btn-outline-info rounded-1 w-30' onClick={() => setReajuste(true)}>
                             Reajuste
                             <br></br>
                             <i className="bi bi-gear"></i>
@@ -404,15 +419,29 @@ function CardTreino({ treino, aluno, refetch }) {
     }
 
     async function clickDelete() {
-        await deleteTreino(treino.cod_treino);
-        refetch();
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: `Tem certeza que deseja remover o treino?`,
+            icon: "warning",
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: "Confirmar",
+            reverseButtons: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await deleteTreino(treino.cod_treino);
+                refetch();
+            }
+        })
     }
-    
+
     return (
         <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>
             <div style={{ borderTop: '0.30rem solid #85D446' }} className='card-body rounded-3'>
                 <div style={{ position: 'absolute' }}>
-                    <PopConfirm confirm={clickDelete} />
+                    <a href="#" className="text-danger" onClick={clickDelete}>
+                        <i className="bi bi-trash me-2"></i>
+                    </a>
                 </div>
 
                 <h5 className="card-title">{treino.nome_treino}</h5>
@@ -436,7 +465,7 @@ function CardTreino({ treino, aluno, refetch }) {
             <div className='card-footer bg-light d-flex justify-content-around py-3'>
                 <button
                     className="btn btn-primary d-flex align-items-center"
-                    onClick={() => navigate('/cadtreino', { state: { treino } })}
+                    onClick={() => navigate('/cadtreino', { state: { treino, aluno } })}
                 >
                     <i className="bi bi-pencil me-2"></i>Editar
                 </button>
@@ -453,7 +482,20 @@ function CardAvaliacao({ avaliacao, aluno, refetch }) {
     const navigate = useNavigate();
 
     async function clickDelete() {
-        await deleteAvaliacao(avaliacao.cod_avaliacao);
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: `Tem certeza que deseja remover a avaliação?`,
+            icon: "warning",
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: "Confirmar",
+            reverseButtons: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await deleteAvaliacao(avaliacao.cod_avaliacao);
+                refetch();
+            }
+        })
         refetch();
     }
 

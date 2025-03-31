@@ -257,7 +257,7 @@ function CadAvaliacao() {
         <div className="container-fluid">
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
-                    <button onClick={() => navigate('/aluno')} className="btn btn-danger mb-3 me-3">
+                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
                     </button>

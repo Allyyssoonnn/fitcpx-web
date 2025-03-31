@@ -1,18 +1,51 @@
 import { useEffect, useState } from "react";
-import MercadoPago from "../components/mercadopago";
+import Assas from "../components/assas";
 import { stateEmpresa, stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import { motion } from 'framer-motion';
+import { setEmpresa } from '../api/usuario';
+import axios from "axios";
+import ReactInputMask from "react-input-mask";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
+import { getPagamentos } from "../api/pagamento";
 
 function Licenca() {
+    const [usuario] = useRecoilState(stateUsuario);
+    const navigate = useNavigate();
     const { handleSubmit, register, setValue, watch } = useForm();
-    const [empresa, setempresa] = useRecoilState(stateEmpresa);
+    const [empresa, setStateEmpresa] = useRecoilState(stateEmpresa);
     const [editing, setEditing] = useState(false);
     const [renovando, setRenovando] = useState(false);
     const [selectingRec, setselectingRec] = useState(false);
     const [recorrente, setRecorrente] = useState(null);
-    
+    const [podeComprar, setpodeComprar] = useState(false);
+
+    const [pagamentoPendente, setpagamentoPendente] = useState(false);
+
+    const { data: pagamentos, refetch } = useQuery({
+        queryKey: ['pagamentos', usuario.cod_usuario],
+        queryFn: () => getPagamentos(usuario.cod_empresa),
+        initialData: [],
+        enabled: !!usuario.cod_empresa,
+    });
+
+    useEffect(() => {
+        const pendente = pagamentos.filter((pg) => pg.status_pagamento_usuario === 'PENDING');
+        if (pendente.length) setpagamentoPendente(true);
+    }, [pagamentos]);
+
+    useEffect(() => {
+        if (!empresa.email_empresa
+            || !empresa.doc_empresa
+            || !empresa.cep_empresa
+            || !empresa.endereco_empresa
+            || !empresa.numero_empresa
+        ) {
+            setpodeComprar(false);
+        } else setpodeComprar(true);
+    }, []);
 
     useEffect(() => {
         Object.keys(empresa).forEach((key) => {
@@ -23,6 +56,7 @@ function Licenca() {
     function close() {
         setRenovando(false);
         setRecorrente(null);
+        refetch();
     }
 
     function selectRecorrente(valor) {
@@ -30,8 +64,40 @@ function Licenca() {
         setselectingRec(false);
     }
 
+    async function confirmaEmpresa(data) {
+        const resp = await setEmpresa(data);
+        if (resp) setStateEmpresa(resp);
+        setEditing(false);
+    }
+
+    async function consultapj(e) {
+        const pj = e.target.value.replace(/[^0-9]/g,'');
+        if (pj.length === 14) {
+            const resp = await axios.get(`https://api.cnpja.com/office/${pj}`, { headers: { Authorization: '0a291fc8-0eb4-44ca-bf77-b8e13541d30b-3f91cd23-8530-48b9-91e8-eba0a51d098d' } });
+
+            if (resp.status === 200) {
+                const empresa = resp.data;
+                // setValue('razao_social', empresa?.company?.name);
+                setValue('nome_empresa', empresa?.alias);
+                setValue('email_empresa', empresa?.emails[0]?.address);
+                setValue('endereco_empresa', empresa?.address?.street);
+                setValue('numero_empresa', empresa?.address?.number);
+                setValue('cep_empresa', empresa?.address?.zip);
+                setValue('cidade_empresa', empresa?.address?.city);
+                setValue('estado_empresa', empresa?.address?.state);
+                // setValue('doc_filial', pj);
+            }
+        } else {
+            setValue('nome_empresa', null);
+            setValue('email_empresa', null);
+            setValue('endereco_empresa', null);
+            setValue('numero_empresa', null);
+            setValue('cep_empresa', null);
+        }
+    }
+    
     return (
-        <div className="container-fluid">
+        <form className="container-fluid" onSubmit={handleSubmit(confirmaEmpresa)}>
             <div className="card">
                 <div className='card-body p-3' >
                     <h5 className="card-title fw-semibold mb-4">Licença de uso</h5>
@@ -41,70 +107,124 @@ function Licenca() {
                             animate={{ opacity: !renovando && !selectingRec ? 1 : 0 }}
                             className={`col-md-7 bg-light rounded py-3 ${!renovando && !selectingRec ? 'd-inline-block' : 'd-none'}`}
                         >
-                            <div className="p-3 bg-success-subtle rounded-1 d-flex align-items-center">
-                                <img height={30} width={30} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
-                                <div className="d-flex flex-column ms-3">
-                                    <h4 className="ms-2">Licença gratuita</h4>
-                                    <p>A licença gratuita permite até 3 alunos e 1 único usuário.</p>
-                                </div>
-                            </div>
+                            <CardInfo pagamentoPendente={pagamentoPendente} />
 
-                            <Planos comprar={() => { setRenovando(true); setselectingRec(true) }} />
+                            <Planos podeComprar={podeComprar && !pagamentoPendente} comprar={() => { setRenovando(true); setselectingRec(true) }} />
                         </motion.div>
 
                         <motion.div
                             animate={{ opacity: renovando && selectingRec ? 1 : 0 }}
-                            className={`col-md-7 p-3 ${renovando && selectingRec ? 'd-inline-block' : 'd-none'}`}
+                            className={`col-md12 p-3 ${renovando && selectingRec ? 'd-inline-block' : 'd-none'}`}
                         >
                             <Recorrencia setRenovando={setRenovando} setRecorrente={selectRecorrente} />
                         </motion.div>
 
                         <motion.div
                             animate={{ opacity: renovando && !selectingRec ? 1 : 0 }}
-                            className={`col-md-7 p-3 ${renovando && !selectingRec ? 'd-inline-block' : 'd-none'}`}
+                            className={`col-md-12 p-3 ${renovando && !selectingRec ? 'd-inline-block' : 'd-none'}`}
                         >
                             <button className="btn btn-danger" onClick={close}>
                                 <i className="bi bi-x-circle me-2"></i>
                                 Cancelar compra
                             </button>
 
-                            <MercadoPago
+                            <Assas
                                 show={renovando}
                                 recorrente={recorrente}
                                 close={close}
                             />
                         </motion.div>
 
-                        <div className='col-md-4 p-3'>
+                        <motion.div
+                            animate={{ opacity: !renovando && !selectingRec ? 1 : 0 }}
+                            className={`col-md-5 p-3 ${!renovando && !selectingRec ? 'd-inline-block' : 'd-none'}`}
+                        >
+                            <div className={`card bg-warning-subtle ${podeComprar ? 'd-none' : ''}`}>
+                                <div className="card-body p-3">
+                                    <h5 className="card-title text-danger mb-0 text-center">
+                                        <i className="bi bi-exclamation-triangle me-2"></i>
+                                        Falta informações para comprar licença
+                                    </h5>
+                                </div>
+                            </div>
+
                             <h4>Dados da empresa</h4>
 
-                            <div>
-                                <label className="form-label">Nome</label>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.nome_empresa}</p>
-                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('nome_empresa')} />
+                            <div className={`${!editing ? 'd-none' : ''}`}>
+                                <div>
+                                    <label className="form-label">Nome</label>
+                                    <input className="form-control" {...register('nome_empresa')} />
+                                </div>
+                                <div>
+                                    <label className="form-label">CNPJ</label>
+                                    {/* <input className="form-control" {...register('doc_empresa', { onChange: consultapj })} /> */}
+                                    <ReactInputMask className="form-control" mask='99.999.999/9999-99' {...register('doc_empresa', { onChange: consultapj })} />
+                                </div>
+                                <div>
+                                    <label className="form-label">E-mail</label>
+                                    <input className="form-control" {...register('email_empresa')} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Telefone</label>
+                                    {/* <input className="form-control" {...register('telefone_empresa')} /> */}
+                                    <ReactInputMask className="form-control" mask='(99) 9 9999-9999' {...register('telefone_empresa')} />
+                                </div>
+                                <div>
+                                    <label className="form-label">CEP</label>
+                                    <input placeholder="CEP" className="form-control" {...register('cep_empresa')} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Endereço</label>
+                                    <input placeholder="Endereço" className="form-control" {...register('endereco_empresa')} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Número</label>
+                                    <input placeholder="Nº" className="form-control" {...register('numero_empresa')} />
+                                </div>
                             </div>
-                            <div>
-                                <label className="form-label">CNPJ</label>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.doc_empresa || 'Não informado'}</p>
-                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('doc_empresa')} />
+
+                            <div className={`${editing ? 'd-none' : ''}`}>
+                                <div>
+                                    <label className="form-label">
+                                        <i className={`bi bi-exclamation-triangle text-danger me-2 ${empresa.nome_empresa ? 'd-none' : ''}`}></i>
+                                        Nome
+                                    </label>
+                                    <p className={`${editing ? 'd-none' : ''}`}>{empresa.nome_empresa}</p>
+                                </div>
+                                <div>
+                                    <label className="form-label">
+                                        <i className={`bi bi-exclamation-triangle text-danger me-2 ${empresa.doc_empresa ? 'd-none' : ''}`}></i>
+                                        CNPJ
+                                    </label>
+                                    <p className={`${editing ? 'd-none' : ''}`}>
+                                        {empresa.doc_empresa || 'Não informado'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className="form-label">
+                                        <i className={`bi bi-exclamation-triangle text-danger me-2 ${empresa.email_empresa ? 'd-none' : ''}`}></i>
+                                        E-mail
+                                    </label>
+                                    <p className={`${editing ? 'd-none' : ''}`}>{empresa.email_empresa || 'Não informado'}</p>
+                                </div>
+                                <div>
+                                    <label className="form-label">
+                                        <i className={`bi bi-exclamation-triangle text-danger me-2 ${empresa.telefone_empresa ? 'd-none' : ''}`}></i>
+                                        Telefone
+                                    </label>
+                                    <p className={`${editing ? 'd-none' : ''}`}>{empresa.telefone_empresa || 'Não informado'}</p>
+                                </div>
+                                <div>
+                                    <label className="form-label">
+                                        <i className={`bi bi-exclamation-triangle text-danger me-2 ${empresa.cep_empresa && empresa.numero_empresa ? 'd-none' : ''}`}></i>
+                                        Endereço
+                                    </label>
+                                    <p className={`${editing ? 'd-none' : ''}`}>{empresa.cep_empresa}</p>
+                                    <p className={`${editing ? 'd-none' : ''}`}>{empresa.endereco_empresa || 'Não informado'} {empresa.numero_empresa} {empresa.complemento_usuario}</p>
+                                    <p className={`${editing ? 'd-none' : ''}`}>{empresa.cidade_empresa} {empresa.estado_empresa}</p>
+                                </div>
                             </div>
-                            <div>
-                                <label className="form-label">E-mail</label>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.email_empresa || 'Não informado'}</p>
-                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('email_empresa')} />
-                            </div>
-                            <div>
-                                <label className="form-label">Telefone</label>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.telefone_empresa || 'Não informado'}</p>
-                                <input className={`${!editing ? 'd-none' : ''} form-control`} {...register('telefone_empresa')} />
-                            </div>
-                            <div>
-                                <label className="form-label">Endereço</label>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.cep_usuario}</p>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.endereco_usuario || 'Não informado'} {empresa.numero_usuario} {empresa.complemento_usuario}</p>
-                                <p className={`${editing ? 'd-none' : ''}`}>{empresa.cidade_usuario} {empresa.estado_usuario}</p>
-                            </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
 
@@ -122,6 +242,32 @@ function Licenca() {
                     </div>
                 </div>
             </div>
+        </form>
+    )
+}
+
+function CardInfo({ pagamentoPendente }) {
+    const navigate = useNavigate();
+
+    if (pagamentoPendente) {
+        return (
+            <div className="card">
+                <div className="card-body bg-danger-subtle rounded text-center p-3">
+                    <h5 className="card-title text-danger mb-0">Pagamento pendente</h5>
+                    <p className="text-dark">Finalize ou cancele o pagamento pendente para realizar a compra</p>
+                    <button className="btn btn-warning" onClick={() => navigate('/licencapagamentos')}>Verificar pagamento</button>
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="p-3 bg-success-subtle rounded-1 d-flex align-items-center">
+            <img height={30} width={30} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
+            <div className="d-flex flex-column ms-3">
+                <h4 className="ms-2">Licença gratuita</h4>
+                <p>A licença gratuita permite até 3 alunos e 1 único usuário.</p>
+            </div>
         </div>
     )
 }
@@ -133,8 +279,8 @@ function Recorrencia({ setRenovando, setRecorrente }) {
                 <i className="bi bi-x-circle me-2"></i> Cancelar compra
             </button>
 
-            <div className="row g-3 flex-column">
-                <div className="card border-success col-md-12 shadow-xl hover:scale-105 duration-300">
+            <div className="row g-3 flex-row">
+                <div className="card border-success col-md-6 shadow-xl hover:scale-105 duration-300">
                     <div className="card-body">
                         <h5 className="card-title text-success">Pagamento Recorrente</h5>
                         <p className="card-text">
@@ -147,7 +293,7 @@ function Recorrencia({ setRenovando, setRecorrente }) {
                     </div>
                 </div>
 
-                <div className="card border-info col-md-12 shadow-xl hover:scale-105 duration-300">
+                <div className="card border-info col-md-6 shadow-xl hover:scale-105 duration-300">
                     <div className="card-body">
                         <h5 className="card-title text-info">Pagamento Único</h5>
                         <p className="card-text">
@@ -164,7 +310,7 @@ function Recorrencia({ setRenovando, setRecorrente }) {
     )
 }
 
-function Planos({ comprar }) {
+function Planos({ comprar, podeComprar }) {
     const precos = [
         // { mes: 1, preco: 150 },
         { mes: 3, preco: 410, unitario: 60 },
@@ -204,7 +350,7 @@ function Planos({ comprar }) {
                         {/* <p className={`py-2 border-b mx-8 ${index === 0 ? "mt-8" : ""}`}>3 Usuários</p> */}
                     </div>
 
-                    <button onClick={comprar} className='btn btn-success rounded-2 duration-150 px-3 mt-6 mx-auto py-2'>
+                    <button disabled={!podeComprar} onClick={comprar} className='btn btn-success rounded-2 duration-150 px-3 mt-6 mx-auto py-2'>
                         Comprar
                     </button>
                 </div>

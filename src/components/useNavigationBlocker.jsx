@@ -32,9 +32,9 @@ export function useNavigationBlocker(isDirty) {
         return () => window.removeEventListener("popstate", handlePopState);
     }, [isDirty, location]);
 
-    return (path) => {
+    return (path, options = {}) => {
         if (!isDirty || window.confirm("Tem certeza que deseja sair sem salvar?")) {
-        navigate(path);
+            navigate(path, options);
         }
     };
 }

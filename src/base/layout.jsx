@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { parseCookies, setCookie } from 'nookies';
 import axios from 'axios';
 import { baseURL } from '../api/api';
+import BackToTop from '../components/backToTop';
 
 function Layout() {
     const navigate = useNavigate();
@@ -50,6 +51,7 @@ function Layout() {
     return (
         <div className={`${openedSidebar ? 'show-sidebar' : ''}`} id="main-wrapper">
             <Sidebar />
+            <BackToTop />
 
             {openedSidebar && (
                 //Clicar fora da sidebar fecha ela
@@ -76,7 +78,7 @@ function Layout() {
                     <Conteudo/>
 
                     <div className="py-6 px-6 text-center">
-                        <p className="mb-0 fs-4">Desenvolvido por Ape Sys LTDA - 46.852.606.0001-56</p>
+                        <p className="mb-0 fs-4">Desenvolvido por Lab Complex Dev LTDA - 59.820.051/0001-02</p>
                     {/* <p class="mb-0 fs-4">Desenvolvido por <a href="https://adminmart.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Alyson H.</a>Distribuido por <a href="https://themewagon.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Milton G.</a></p> */}

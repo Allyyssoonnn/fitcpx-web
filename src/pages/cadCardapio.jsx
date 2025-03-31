@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { formatarData, getAvaliacaoNutricional, preventForm } from "../utils";
 import { useEffect, useMemo, useState } from "react";
 import { getAlimentos, setCardapio, setRefeicao } from "../api/cardapio";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { useNavigationBlocker } from "../components/useNavigationBlocker";
 
 function CadCardapio() {
+    const { nSuccess } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
     const { handleSubmit, register, setValue, watch, reset, formState: { isDirty, isSubmitting } } = useForm();
     const navigate = useNavigationBlocker(isDirty);
@@ -50,6 +51,7 @@ function CadCardapio() {
         if (cardapio) {
             await setRefeicao(refeicoes, cardapio.cod_cardapio, usuario.cod_usuario, usuario.cod_empresa, removidos);
             reset();
+            nSuccess();
             navigate('/cardapios');
         } else toast.error('Erro ao salvar treino');
     }

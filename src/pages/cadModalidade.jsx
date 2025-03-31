@@ -2,10 +2,11 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getModalidades, setModalidade, setPlano } from "../api/plano";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import { useEffect } from "react";
 
 function CadModalidade() {
+    const { nSuccess } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
     const { register, handleSubmit, control, setValue } = useForm();
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ function CadModalidade() {
 
     async function confirma(data) {
         await setModalidade({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+        nSuccess();
         navigate('/modalidades');
     }
 

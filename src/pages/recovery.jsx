@@ -19,7 +19,7 @@ function Recovery() {
     }
 
     return (
-        <div className="page-wrapper" id="main-wrapper">
+        <div className="page-wrapper p-0" id="main-wrapper" style={{ marginLeft: '0' }}>
             <div className="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
                 <div className="d-flex align-items-center justify-content-center w-100">
                     <div className="row justify-content-center w-100">
@@ -31,7 +31,7 @@ function Recovery() {
                                         {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>S-FitApp</h1> */}
                                     </a>
                                     
-                                    <p className="text-center">Renove seu profissionalismo</p>
+                                    <p className="text-center">Recuperação de senha</p>
 
                                     <form onSubmit={handleSubmit(recoveryPassword)}>
                                         <div className="mb-3">

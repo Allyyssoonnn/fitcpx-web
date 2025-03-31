@@ -30,6 +30,9 @@ import CadPlano from "../pages/cadPlano";
 import Planos from "../pages/planos";
 import Modalidades from "../pages/modalidades";
 import CadModalidade from "../pages/cadModalidade";
+import LicencaPagamentos from "../pages/licencaPagamentos";
+import MinhaEmpresa from "../pages/minhaempresa";
+import ResumoFinanceiro from "../pages/resumoFinanceiro";
 
 const routes = [
     //Base
@@ -69,9 +72,12 @@ const routes = [
     { path: '/avaliacao', name: 'Avaliação', element: Avaliacao },
     { path: '/compareavaliacao', name: 'Avaliação', element: CompareAvaliacao },
     { path: '/minhaconta', name: 'Alunos', element: MinhaConta },
+    { path: '/minhaempresa', name: 'Alunos', element: MinhaEmpresa },
     { path: '/agenda', name: 'Agenda', element: Agenda },
     { path: '/planilha', name: 'Licença', element: Planilha },
     { path: '/relatorios', name: 'Licença', element: Relatorios },
+    { path: '/licencapagamentos', name: 'Licença', element: LicencaPagamentos },
+    { path: '/resumofinanceiro', name: 'Licença', element: ResumoFinanceiro },
 ]
   
 export default routes;  

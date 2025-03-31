@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const EditableText = ({ text, onUpdate }) => {
+const EditableText = ({ text, onUpdate, title }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [inputValue, setInputValue] = useState(text);
 
@@ -11,7 +11,7 @@ const EditableText = ({ text, onUpdate }) => {
         }
     };
 
-    return isEditing ? (
+    if (isEditing) return (
         <input
             type="text"
             className="form-control d-inline-block"
@@ -22,14 +22,26 @@ const EditableText = ({ text, onUpdate }) => {
             onKeyDown={e => e.key === 'Enter' ? handleBlur() : null}
             autoFocus
         />
-    ) : (
-        <h5>
-            {text}
-            <button className="btn btn-sm btn-outline-primary ms-2" onClick={() => setIsEditing(true)}>
-                <i className="bi bi-pencil me-2"></i>
-                Renomear
+    )
+
+    if (title) return (
+        <h5 className="card-title">
+            <button className="btn btn-sm btn-outline-primary me-2" onClick={e => { e.preventDefault(); setIsEditing(true) }}>
+                <i className="bi bi-pencil"></i>
+                {/* Renomear */}
             </button>
+            {text}
         </h5>
+    );
+
+    if (!title) return (
+        <a>
+            <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setIsEditing(true)}>
+                <i className="bi bi-pencil"></i>
+                {/* Renomear */}
+            </button>
+            {text}
+        </a>
     );
 };
 

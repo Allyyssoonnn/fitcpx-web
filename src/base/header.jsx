@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { verifyEmail } from "../api/usuario";
+import Notificacoes from "../components/notificacoes";
 
 function Header() {
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
@@ -14,18 +15,29 @@ function Header() {
     const { toggleTheme, theme } = useStateApp();
 
     const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [isInstalled, setIsInstalled] = useState(false);
+    const [isIos, setIsIos] = useState(false);
 
     useEffect(() => {
-        const handleBeforeInstallPrompt = (event) => {
+        const handler = (event) => {
             event.preventDefault();
             setDeferredPrompt(event);
         };
-
-        window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
+        window.addEventListener("beforeinstallprompt", handler);
         return () => {
-            window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+            window.removeEventListener("beforeinstallprompt", handler);
         };
+    }, []);
+
+    useEffect(() => {
+        if (window.matchMedia("(display-mode: standalone)").matches) {
+            setIsInstalled(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        const isIosDevice = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+        setIsIos(isIosDevice);
     }, []);
 
     function sair() {
@@ -50,22 +62,25 @@ function Header() {
         verifyEmail(empresa.cod_empresa);
     }
 
-    const handleInstallClick = () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === "accepted") {
-              console.log("Usuário aceitou instalar o PWA");
-            } else {
-              console.log("Usuário recusou instalar o PWA");
-            }
-            setDeferredPrompt(null);
-          });
+    const handleInstallClick = async () => {
+        if (isIos) {
+            alert("Para instalar este app, abra o menu de compartilhamento e selecione 'Adicionar à Tela de Início'.");
+            return;
         }
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+            console.log("Usuário aceitou a instalação do PWA");
+            setIsInstalled(true);
+        } else {
+            console.log("Usuário recusou a instalação do PWA");
+        }
+        setDeferredPrompt(null);
     };
 
     return (
-        <header className="app-header">
+        (<header className="app-header">
             <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100">
                 <ul className="navbar-nav d-flex flex-row flex-grow-1 w-50 ms-md-3">
                     <li onClick={toggleSidebar} className="nav-item d-block d-xl-none">
@@ -81,7 +96,7 @@ function Header() {
                         </button>
                     </li>
                     
-                    <li className="d-md-none">
+                    <li className={`d-md-none ${isInstalled || isIos ? 'd-none' : ''}`}>
                         <button onClick={handleInstallClick} className="btn btn-success">
                             <i className="bi bi-download me-2"></i>
                             Baixar app
@@ -110,6 +125,8 @@ function Header() {
                                 : <i className="bi bi-sun-fill"></i>
                             }                            
                         </button>
+                        
+                        <Notificacoes />
 
                         <li className="nav-item dropdown me-2">
                             <a className="d-flex align-items-center nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
@@ -141,6 +158,10 @@ function Header() {
                                             </p>
                                         </div>
                                     </div>
+                                    <a href="#" onClick={() => navigate('/minhaempresa')} className="d-flex align-items-center gap-2 dropdown-item">
+                                        <i className="bi bi-building fs-6"></i>
+                                        <p className="mb-0 fs-3">Minha empresa</p>
+                                    </a>
                                     <a href="#" onClick={() => navigate('/minhaconta')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-person-fill fs-6"></i>
                                         <p className="mb-0 fs-3">Minha conta</p>
@@ -162,7 +183,7 @@ function Header() {
                     </ul>
                 </div>
             </nav>
-        </header>
+        </header>)
     );
 }
 

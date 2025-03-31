@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import { setGrupoAlimento } from "../api/cardapio";
 
 function CadGrupoAlimento() {
+    const { nSuccess } = useNotificacao();
     const { handleSubmit, register, setValue, formState: { isSubmitting } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
@@ -22,6 +23,7 @@ function CadGrupoAlimento() {
 
     async function confirma(data) {
         await setGrupoAlimento({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+        nSuccess();
         navigate('/grupoalimentos');
     }
 

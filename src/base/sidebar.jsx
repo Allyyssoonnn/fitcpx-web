@@ -44,17 +44,10 @@ function Sidebar() {
 
                 <nav className="sidebar-nav scroll-sidebar" data-simplebar="">
                     <ul id="sidebarnav">
-                        <li className="nav-small-cap">
+                        {/* <li className="nav-small-cap">
                             <i className="ti ti-dots nav-small-cap-icon fs-6"></i>
                             <span className="hide-menu">Acesso rápido</span>
-                        </li>
-
-                        <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/')} aria-expanded="false">
-                                <i className="bi bi-house-fill fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Dashboard</span>
-                            </a>
-                        </li>
+                        </li> */}
 
                         <li className="nav-small-cap">
                             <i className="ti ti-dots nav-small-cap-icon fs-6"></i>
@@ -62,15 +55,22 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
+                            <a href="#" className="sidebar-link p-3" onClick={() => go('/')} aria-expanded="false">
+                                <i className="bi bi-house fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/alunos')} aria-expanded="false">
-                                <i className="bi bi-person-lines-fill fs-6 me-1"></i>
+                                <i className="bi bi-person-rolodex fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">Lista de alunos</span>
                             </a>
                         </li>
                         
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/agenda')} aria-expanded="false">
-                                <i className="bi bi-calendar-check-fill fs-6 me-1"></i>
+                                <i className="bi bi-calendar-check fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">Agenda</span>
                             </a>
                         </li>
@@ -152,23 +152,16 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a className={`sidebar-link p-3 has-arrow ${dropAdmin ? 'active' : ''}`} href="#" onClick={() => setDropAdmin(!dropAdmin)}>
-                                <i className="bi bi-person-vcard fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">ADMIN</span>
+                            <a className={`sidebar-link p-3 has-arrow ${dropFinanceiro ? 'active' : ''}`} href="#" onClick={() => setdropFinanceiro(!dropFinanceiro)}>
+                                <i className="bi bi-bank fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">Financeiro</span>
                             </a>
 
-                            <ul className={`collapse first-level ${dropAdmin ? 'in' : ''}`}>
+                            <ul className={`collapse first-level ${dropFinanceiro ? 'in' : ''}`}>
                                 <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
-                                        <i className="bi bi-person-lines-fill fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Lista de usuários</span>
-                                    </a>
-                                </li>
-
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
-                                        <i className="bi bi-bar-chart fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Relatórios</span>
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/resumofinanceiro')} aria-expanded="false">
+                                        <i className="bi bi-cash-coin fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Resumo</span>
                                     </a>
                                 </li>
 
@@ -185,31 +178,38 @@ function Sidebar() {
                                         <span className="hide-menu ps-1">Planos</span>
                                     </a>
                                 </li>
-
-                                {/* <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
-                                        <i className="bi bi-cash fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Financeiro</span>
-                                    </a>
-                                </li> */}
                             </ul>
                         </li>
 
-                        {/* <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/agenda')} aria-expanded="false">
-                                <i className="bi bi-cash-stack fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Financeiro</span>
+                        <li className="sidebar-item">
+                            <a className={`sidebar-link p-3 has-arrow ${dropAdmin ? 'active' : ''}`} href="#" onClick={() => setDropAdmin(!dropAdmin)}>
+                                <i className="bi bi-person-vcard fs-6 me-1"></i>
+                                <span className="hide-menu ps-1">ADMIN</span>
                             </a>
-                        </li> */}
 
-                        {/* <li className="sidebar-item">
-                            <a className="sidebar-link" href="/avaliacoes" aria-expanded="false">
-                                <span>
-                                <iconify-icon icon="solar:layers-minimalistic-bold-duotone" className="fs-6"></iconify-icon>
-                                </span>
-                                <span className="hide-menu">Avaliações física</span>
-                            </a>
-                        </li> */}
+                            <ul className={`collapse first-level ${dropAdmin ? 'in' : ''}`}>
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/licencapagamentos')} aria-expanded="false">
+                                        <i className="bi bi-cash fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Licença pagamentos</span>
+                                    </a>
+                                </li>
+
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
+                                        <i className="bi bi-person-lines-fill fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Lista de usuários</span>
+                                    </a>
+                                </li>
+
+                                <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
+                                        <i className="bi bi-bar-chart fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Relatórios</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
 
                     {/* bg-light-subtle */}

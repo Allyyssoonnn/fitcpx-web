@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import ImageCropModal from "../components/cutImg";
 import { capitalizeFirstLetter, dataURLToBlob } from "../utils";
 import { changeAlimentoIMG, getGrupoAlimentos, setAlimento } from "../api/cardapio";
 import { useQuery } from "react-query";
 
 function CadAlimento() {
+    const { nSuccess } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
     const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
     const navigate = useNavigate();
@@ -78,6 +79,7 @@ function CadAlimento() {
                 console.error('Erro ao salvar imagem recortada:', error);
             });
         }
+        nSuccess();
         navigate('/cardapios');
     }
 

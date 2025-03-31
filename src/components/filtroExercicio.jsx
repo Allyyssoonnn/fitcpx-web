@@ -3,8 +3,9 @@ import { getArticulacoes, getEquipamentos, getExerciciosResistencias, getGrupoEx
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { useEffect, useState } from "react";
+import { camposFiltrosExercicios, filtrarExerciciosFunc } from "../utils";
 
-function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
+function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false }) {
     const [usuario] = useRecoilState(stateUsuario);
 
     const [grupoPrincipal, setGrupoPrincipal] = useState(() => Number(sessionStorage.getItem("grupoPrincipal")) || 0);
@@ -17,17 +18,6 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
     const [padraoMovimento, setPadraoMovimento] = useState(() => Number(sessionStorage.getItem("padraoMovimento")) || 0);
 
     const [limparFiltro, setlimparFiltro] = useState();
-
-    const filtros = {
-        grupoPrincipal: ['cod_grupo_exercicio_1', 'cod_grupo_exercicio_2', 'cod_grupo_exercicio_3'],
-        grupoSecundario: ['cod_grupo_exercicio_4', 'cod_grupo_exercicio_5', 'cod_grupo_exercicio_6', 'cod_grupo_exercicio_7'],
-        equipamento: ['cod_equipamento_1', 'cod_equipamento_2', 'cod_equipamento_3'],
-        articulacao: ['cod_articulacao_1', 'cod_articulacao_2', 'cod_articulacao_3', 'cod_articulacao_4'],
-        tipoExercicio: ['cod_tipo_exercicio'],
-        exercicioResistencia: ['cod_exercicio_resistencia'],
-        indicacao: ['cod_indicacao'],
-        padraoMovimento: ['cod_padrao_movimento'],
-    }
 
     useEffect(() => {
         sessionStorage.setItem("grupoPrincipal", grupoPrincipal);
@@ -71,21 +61,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
 
             var exerciciosFiltrados = [...exercicios];
 
-            Object.keys(filtros).forEach((filtroKey) => {
-                const filtro = filtros[filtroKey];
-                                
-                exerciciosFiltrados = exerciciosFiltrados?.filter((exercicio) => {
-                    var valido = false;
-
-                    if (!filtrosAtuais[filtroKey] || filtrosAtuais[filtroKey] == 0) return true;
-
-                    for (const campo of filtro) {
-                        if (exercicio[campo] == filtrosAtuais[filtroKey]) valido = true;
-                    }
-
-                    return valido;
-                }, []);
-            });
+            exerciciosFiltrados = filtrarExerciciosFunc(exerciciosFiltrados, filtrosAtuais);
 
             setExerciciosFiltrados(exerciciosFiltrados);
         };
@@ -157,11 +133,11 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
     }
 
     return (
-        <div className="accordion">
+        (<div className={`${painel ? '' : 'accordion'}`}>
             <div className="accordion-item">
                 <h2 className="accordion-header">
-                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                        Filtros
+                    <button className="accordion-button" type="button" data-bs-toggle={`${painel ? '' : 'collapse'}`} data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        <span className={`${painel ? 'd-none' : ''}`}>Filtros</span>
                         <button onClick={limpar} className={`${!limparFiltro ? 'd-none' : ''} btn btn-outline-primary btn-sm ms-2`}>
                             <i className="bi bi-x-circle me-2"></i>
                             Limpar
@@ -169,7 +145,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                     </button>
                 </h2>
 
-                <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse">
+                <div id="panelsStayOpen-collapseOne" className={`accordion-collapse ${painel ? '' : 'collapse'}`}>
                     <div className="accordion-body row g-3">
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Grupo principal</label>
@@ -253,8 +229,8 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados }) {
                     </div>
                 </div>
             </div>
-        </div>
-    )
+        </div>)
+    );
 }
 
 export default FiltroExercicio;
