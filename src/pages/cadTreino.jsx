@@ -68,6 +68,18 @@ function CadTreino() {
     }
 
     async function confirma(data) {
+        var podeConfirmar = true;
+        for (const sessao of sessoes) {
+            for (const exercicio of sessao.exercicios) {
+                if (!exercicio?.cod_exercicio) {
+                    podeConfirmar = false;
+                    toast.error(`Exercicicío vazio na sessão ${sessao.nome_sessao}`);
+                }
+            }
+        }
+        if (!podeConfirmar) return;
+
+
         const cod_usuario = usuario.cod_usuario;
         const respTreino = await setTreino({ ...data, sexo_treino: sexo_aluno ?? data?.sexo_treino, cod_usuario, cod_empresa: usuario.cod_empresa });
         if (respTreino.cod_treino)
@@ -155,26 +167,24 @@ function CadTreino() {
             </div>
 
             <div className="card">
-                <div className="card-body d-flex justify-content-end">
-                    <div className="col-md-3">
+                <div className="card-header d-flex justify-content-between flex-wrap">
+                    <h5 className="card-title fw-semibold m-3">Prescrição</h5>
+
+                    <div className="col-md-3 col-12">
                         <label className="form-label">Visualização</label>
                         <div className="form-control rounded btn-group" role="group">
                             <input checked={viewTreino == 'painel'} onClick={() => setViewTreino('painel')} type="radio" className="btn-check" name="btnradio" id="btncheck1" />
-                            <label className="btn btn-outline-primary" htmlFor="btncheck1">
+                            <label className="btn btn-sm btn-outline-primary" htmlFor="btncheck1">
                                 <i className="bi bi-copy" />
                             </label>
                             
                             <input checked={viewTreino == 'bloco'} onClick={() => setViewTreino('bloco')} type="radio" className="btn-check" name="btnradio" id="btncheck3" />
-                            <label className="btn btn-outline-primary" htmlFor="btncheck3">
+                            <label className="btn btn-sm btn-outline-primary" htmlFor="btncheck3">
                                 <i className="bi bi-view-stacked" />
                             </label>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div className="card">
-                <h5 className="card-title fw-semibold m-3">Prescrição</h5>
 
                 <div className="card-body p-1">
                     {(!viewTreino || viewTreino == 'bloco') && (

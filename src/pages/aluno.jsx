@@ -141,30 +141,42 @@ function Aluno() {
                         </div>
 
                         <div className={`col-sm-8 ${window.innerWidth < 900 ? 'text-center' : ''} mt-4`}>
-                            <div className='d-flex align-items-center'>
-                                <h3>{aluno?.nome_aluno}</h3>
+                            <h3>{aluno?.nome_aluno}</h3>
+                            
+                            <div className='d-flex align-items-center mb-2'>
+                                <label>{calcularIdade(aluno?.data_nascimento_aluno)} Anos</label>
+
                                 <label className={`ms-2 bg-opacity-50 px-2 rounded-3
                                     ${aluno?.status_aluno === 'A' ? 'bg-success' : ''}
                                     ${aluno?.status_aluno === 'B' ? 'bg-danger' : ''}
                                     ${aluno?.status_aluno === 'I' ? 'bg-warning' : ''}
-                                `}>
+                                    `}>
                                     {aluno?.status_aluno === 'A' ? 'Ativo' : ''}
                                     {aluno?.status_aluno === 'B' ? 'Bloqueado' : ''}
                                     {aluno?.status_aluno === 'I' ? 'Inativo' : ''}
                                 </label>
                             </div>
-                            <p>{calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
-                            <p>Email: {aluno?.email_aluno}</p>
-                            <button className='btn btn-warning me-2' onClick={() => navigate('/cadaluno', { state: { aluno } })}>
-                                <i className="bi bi-pencil me-2"></i>
-                                Editar
-                            </button>
 
-                            <button className={`btn btn-${aluno?.status_aluno == 'A' ? 'danger' : 'success'} me-2`} onClick={changeStatusAluno}>
-                                <i className={`bi bi-${aluno?.status_aluno == 'A' ? 'x' : 'check'}-circle me-2`}></i>
-                                {aluno?.status_aluno == 'A' ? 'Desativar ' : 'Ativar '}
-                                <span className='d-none d-md-inline-block'>aluno</span>
-                            </button>
+                            <p>Email: {aluno?.email_aluno}</p>
+
+                            <div className='row'>
+                                <button className='btn btn-outline-info me-2 col-md-3 mt-2' onClick={() => navigate('/contratacaoplano', { state: { aluno } })}>
+                                    <i className="bi bi-card-text me-2"></i>
+                                    <span className='d-iline-block d-md-none'>Contratar</span>
+                                    <span className='d-none d-md-inline-block'>Contratar plano</span>
+                                </button>
+
+                                <button className='btn btn-warning me-2 col-md-3 mt-2' onClick={() => navigate('/cadaluno', { state: { aluno } })}>
+                                    <i className="bi bi-pencil me-2"></i>
+                                    Editar
+                                </button>
+
+                                <button className={`btn btn-${aluno?.status_aluno == 'A' ? 'danger' : 'success'} me-2 col-md-3 mt-2`} onClick={changeStatusAluno}>
+                                    <i className={`bi bi-${aluno?.status_aluno == 'A' ? 'x' : 'check'}-circle me-2`}></i>
+                                    {aluno?.status_aluno == 'A' ? 'Desativar ' : 'Ativar '}
+                                    <span className='d-none d-md-inline-block'>aluno</span>
+                                </button>
+                            </div>
 
                             {/* <button className='btn btn-success me-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
                                 <i className="bi bi-plus-circle me-2"></i>
@@ -480,7 +492,7 @@ function CardTreino({ treino, aluno, refetch }) {
 
 function CardAvaliacao({ avaliacao, aluno, refetch }) {
     const navigate = useNavigate();
-
+    
     async function clickDelete() {
         Swal.fire({
             title: 'Tem certeza?',

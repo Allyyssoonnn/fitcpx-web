@@ -32,7 +32,23 @@ export const stateApp = atom({
 export const useNotificacao = () => {
     const nSuccess = (title, message) => Swal.fire(title || "Sucesso!", message || "", "success");
     const nError = (title, message) => Swal.fire(title || "Erro!", message || "", "error");
-    return { nSuccess, nError };
+
+    const nConfirm = (title, message, func) => {
+        Swal.fire({
+            title: title ?? 'Tem certeza?',
+            text: message ?? '',
+            icon: "warning",
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: "Confirmar",
+            reverseButtons: true,
+        }).then(async (result) => {
+            if (result.isConfirmed && func) {
+                ;func();
+            }
+        })
+    }
+    return { nSuccess, nError, nConfirm };
 }
 
 export const useToggleSidebar = () => {

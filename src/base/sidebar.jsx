@@ -173,6 +173,13 @@ function Sidebar() {
                                 </li>
 
                                 <li className="sidebar-item ms-5">
+                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/contratos')} aria-expanded="false">
+                                        <i className="bi bi-paperclip fs-6 me-1"></i>
+                                        <span className="hide-menu ps-1">Contratos</span>
+                                    </a>
+                                </li>
+
+                                <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/planos')} aria-expanded="false">
                                         <i className="bi bi-basket fs-6 me-1"></i>
                                         <span className="hide-menu ps-1">Planos</span>

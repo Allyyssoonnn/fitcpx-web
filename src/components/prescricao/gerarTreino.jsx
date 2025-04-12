@@ -315,7 +315,7 @@ function Presets({ show, gruposSelecionados, indicacoesSelecionados, equipamento
                             key={index}
                             text={preset.nome_preset}
                             onUpdate={(newName) => atualizaNomePreset(index, newName)}
-                            />
+                        />
 
                         <div className="d-flex gap-2">
                             <button className="btn btn-sm btn-outline-success" onClick={() => carregarPreset(index)}>Carregar</button>

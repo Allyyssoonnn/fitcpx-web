@@ -1,7 +1,7 @@
 import { post } from "./api";
 
-export const setPlano = async (plano) => {
-    const resp = await post('/plano/setPlano', { plano });
+export const setPlano = async (plano, modalidades) => {
+    const resp = await post('/plano/setPlano', { plano, modalidades });
     if (resp.status) return resp;
     throw new Error("Erro ao carregar grupo");
 };

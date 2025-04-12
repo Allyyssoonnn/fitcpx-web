@@ -36,7 +36,7 @@ export default function MultiSelect({ name, options, chavePesquisa, valueChave, 
                     onChange={handleSelectChange}
                     value=""
                 >
-                    <option value="" disabled hidden>Clique para selecionar</option>
+                    <option value="" hidden>Clique para selecionar</option>
                     {options.filter(option => !selectedItems.find(selected => selected[valueChave] == option[valueChave]))
                     .map((option, index) => (
                         <option key={index} value={index}>{option[chavePesquisa]}</option>

@@ -147,7 +147,7 @@ function PlanilhaTreino() {
                                             </div>
                                         </div>
 
-                                        <div className="col-12 col-md-6 d-flex flex-column">
+                                        <div className="col-12 col-md-6 d-flex flex-column overflow-auto">
                                             <label>Sessões</label>
                                             <div className="btn-group" role="group">
                                                 {alunos[indexAluno]?.treinos[alunos[indexAluno].indexTreino]?.sessoes?.map((sessao, index) => (

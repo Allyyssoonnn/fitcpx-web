@@ -38,7 +38,7 @@ function Planos() {
             )
         );
     }, [planos, searchTerm]);
-    console.log(planos);
+    
     return (
         <div className="container-fluid">
             <div className="card">

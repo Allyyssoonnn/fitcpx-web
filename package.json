@@ -33,6 +33,8 @@
     "cropperjs": "^1.6.2",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.4.7",
+    "jodit-react": "^5.2.19",
+    "jspdf": "^3.0.1",
     "nookies": "^2.5.2",
     "npm": "^10.9.0",
     "react": "^18.3.1",

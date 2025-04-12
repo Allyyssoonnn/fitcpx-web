@@ -20,8 +20,8 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
         if (iniciouTela) return;
         if (options.length < Object.keys(capturedImages).length) {
             setOptions(Array.from({ length: Object.keys(capturedImages).length }, (_, i) => i + 1));
+            setIniciouTela(true);
         }
-        setIniciouTela(true);
     }, []);
 
     const handleEdit = (event, option) => {

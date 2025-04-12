@@ -35,6 +35,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos }) {
         setSessoes(prevsessoes => prevsessoes.map((sessao, index) => index == indexSessao ? {
             ...sessao,
             exercicios: [ ...sessao.exercicios, {
+                cod_exercicio: null,
                 sequencia_sessao_exercicio: sessoes[indexSessao]?.exercicios?.length + 1,
                 sets: [],
                 serie_sessao_exercicio:  3,
@@ -102,7 +103,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos }) {
 
         setSessoes(updatedSessoes);
     };
-        
+    
     return (
         (<div className="container-fluid">
             <DragDropContext onDragEnd={handleDragEnd}>

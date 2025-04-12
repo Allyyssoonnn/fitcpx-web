@@ -85,7 +85,7 @@ function Assas({ show, recorrente, close }) {
     }
 
     return (
-        (<div className="container-fluid d-flex flex-row gap-3">
+        <div className="container-fluid d-flex flex-row gap-3">
             <div className="col-md-5 p-3">
                 <div className="card">
                     <div className={`card-body bg-${recorrente ? 'success' : 'info'}-subtle rounded text-center p-3`}>
@@ -154,7 +154,7 @@ function Assas({ show, recorrente, close }) {
                     </div>
                 )}
             </div>
-        </div>)
+        </div>
     );
 }
 

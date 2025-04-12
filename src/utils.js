@@ -35,7 +35,7 @@ export function capitalizeFirstLetter(str) {
 }
 
 export const segundosParaTempo = (tempo) => {
-    if (typeof tempo !== 'number' || tempo < 0) {
+    if (typeof tempo !== 'number' || tempo < 0 || !tempo) {
         return "00:00:00";
     }
     
@@ -73,6 +73,17 @@ export const formatarData = (data) => {
         year: 'numeric',
     });
 };
+
+export const formatarMoeda = (valor) => {
+    return (typeof valor == 'number') ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor) : '-';
+}
+
+export const formatarCPF = (cpf) => {
+    if (!cpf) return '-';
+    cpf = cpf.replace(/\D/g, ''); // Remove tudo que não for dígito
+    if (cpf.length !== 11) return cpf; // Se não tiver 11 dígitos, retorna como está
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
 
 export const camposFiltrosExercicios = {
     grupoPrincipal: ['cod_grupo_exercicio_1', 'cod_grupo_exercicio_2', 'cod_grupo_exercicio_3'],

@@ -84,8 +84,8 @@ function Modalidades() {
                                             <div className="col-md-3 d-flex flex-column">
                                                 <label>{modalidade.nome_modalidade}</label>
                                                 <div className="d-flex gap-2 mt-2">
-                                                    {/* <label className="badge bg-info">{modalidade?.duracao_plano} {modalidade?.tipo_duracao_plano}</label>
-                                                    <label className="badge bg-success">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(modalidade?.valor_plano)}</label> */}
+                                                    <label className="badge bg-info">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(modalidade?.valor_modalidade)}</label>
+                                                    {/* <label className="badge bg-info">{modalidade?.duracao_plano} {modalidade?.tipo_duracao_plano}</label> */}
                                                     {/* <label className="badge bg-dark">Carbo: {alimento?.carboidrato == '0,0' ? '-' : alimento?.carboidrato}</label> */}
                                                     {/* <label className="badge bg-dark">{treino.nome_exercicio}</label> */}
                                                     {/* <label className="badge bg-dark">{treino.nivel_treino}</label> */}

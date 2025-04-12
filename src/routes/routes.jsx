@@ -33,6 +33,7 @@ import CadModalidade from "../pages/cadModalidade";
 import LicencaPagamentos from "../pages/licencaPagamentos";
 import MinhaEmpresa from "../pages/minhaempresa";
 import ResumoFinanceiro from "../pages/resumoFinanceiro";
+import ContratacaoPlano from "../pages/contratacaoPlano";
 
 const routes = [
     //Base
@@ -66,6 +67,7 @@ const routes = [
     { path: '/cadalimento', name: 'Alunos', element: CadAlimento },
     { path: '/cadplano', name: 'Alunos', element: CadPlano },
     { path: '/cadmodalidade', name: 'Alunos', element: CadModalidade },
+    { path: '/contratacaoplano', name: 'Alunos', element: ContratacaoPlano },
 
     //Informações
     { path: '/aluno', name: 'Aluno', element: Aluno },
