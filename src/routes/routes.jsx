@@ -1,6 +1,5 @@
 import Alunos from "../pages/alunos";
 import CadAluno from "../pages/cadAluno";
-import MinhaConta from "../pages/minhaconta";
 import Dashboard from "../pages/dashboard";
 import Aluno from "../pages/aluno";
 import CadAvaliacao from "../pages/cadavaliacao";
@@ -31,9 +30,12 @@ import Planos from "../pages/planos";
 import Modalidades from "../pages/modalidades";
 import CadModalidade from "../pages/cadModalidade";
 import LicencaPagamentos from "../pages/licencaPagamentos";
-import MinhaEmpresa from "../pages/minhaempresa";
 import ResumoFinanceiro from "../pages/resumoFinanceiro";
 import ContratacaoPlano from "../pages/contratacaoPlano";
+import ModContratos from "../pages/modContratos";
+import CadContrato from "../pages/cadContrato";
+import Configuracao from "../pages/configuracao";
+import Contrato from "../pages/contrato";
 
 const routes = [
     //Base
@@ -53,6 +55,7 @@ const routes = [
     { path: '/avaliacoes', name: 'Licença', element: Avaliacoes },
     { path: '/planos', name: 'Licença', element: Planos },
     { path: '/modalidades', name: 'Licença', element: Modalidades },
+    { path: '/modcontratos', name: 'Licença', element: ModContratos },
 
     //Cadastros
     { path: '/cadgrupoexercicio', name: 'Licença', element: CadGrupoExercicio },
@@ -68,18 +71,19 @@ const routes = [
     { path: '/cadplano', name: 'Alunos', element: CadPlano },
     { path: '/cadmodalidade', name: 'Alunos', element: CadModalidade },
     { path: '/contratacaoplano', name: 'Alunos', element: ContratacaoPlano },
+    { path: '/cadcontrato', name: 'Alunos', element: CadContrato },
 
     //Informações
     { path: '/aluno', name: 'Aluno', element: Aluno },
     { path: '/avaliacao', name: 'Avaliação', element: Avaliacao },
     { path: '/compareavaliacao', name: 'Avaliação', element: CompareAvaliacao },
-    { path: '/minhaconta', name: 'Alunos', element: MinhaConta },
-    { path: '/minhaempresa', name: 'Alunos', element: MinhaEmpresa },
     { path: '/agenda', name: 'Agenda', element: Agenda },
     { path: '/planilha', name: 'Licença', element: Planilha },
     { path: '/relatorios', name: 'Licença', element: Relatorios },
     { path: '/licencapagamentos', name: 'Licença', element: LicencaPagamentos },
     { path: '/resumofinanceiro', name: 'Licença', element: ResumoFinanceiro },
+    { path: '/configuracao', name: 'Licença', element: Configuracao },
+    { path: '/contrato', name: 'Licença', element: Contrato },
 ]
   
 export default routes;  

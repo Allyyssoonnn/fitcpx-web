@@ -18,6 +18,7 @@ function CadAluno() {
 
     useEffect(() => {
         setValue('cod_usuario', usuario?.cod_usuario);
+        setValue('cod_empresa', usuario?.cod_empresa);
         watch((value) => {
             const { cep_aluno } = value;
 

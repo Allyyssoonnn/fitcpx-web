@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import MultiSelect from "../components/multipleSelect";
 import JoditEditor from "jodit-react";
-import { jsPDF } from "jspdf";
 import contratoPresencial from '../utils/contratoPresencial.html?raw';
 import contratoConsultoria from '../utils/contratoConsultoria.html?raw';
 import Select from "../components/baseComponents/select";
@@ -28,13 +27,6 @@ function CadPlano() {
         queryFn: () => getModalidades(usuario.cod_empresa),
         initialData: [],
     });
-
-    const { data: planos, refetchPlanos } = useQuery({
-        queryKey: ['planos', usuario.cod_empresa],
-        queryFn: () => getPlanos(usuario.cod_empresa),
-        initialData: [],
-    });
-    
 
     useEffect(() => {
         const planoRecebido = location.state?.plano;
@@ -56,13 +48,6 @@ function CadPlano() {
         }, selectModalidades);
         nSuccess();
         navigate('/planos');
-    }
-
-    function setModeloContrato(e, modelo) {
-        e.preventDefault();
-        if (contrato) {
-            nConfirm('', 'As alterações no editor de contrato serão perdidas!', () => setContrato(modelo));
-        } else setContrato(modelo);
     }
 
     return (
@@ -90,9 +75,7 @@ function CadPlano() {
                     <div className="row g-3 mt-3">
                         <div className="col-md-2">
                             <label className="form-label fw-bold">Duração plano</label>
-                            <input {...register("duracao_plano")}
-                                className="form-control"
-                            />
+                            <input {...register("duracao_plano")} className="form-control" />
                         </div>
 
                         <div className="col-md-3">
@@ -137,35 +120,9 @@ function CadPlano() {
                         setState={setSelectModalidades}
                     />
                 </div>
-            </div>
-
-            <div className="card">
-                <div className="card-body">
-                    <div className="card-header d-flex justify-content-between">
-                        <h5 className="card-title fw-semibold mb-4">Contrato</h5>
-                        <div className="d-flex gap-2">
-                            <button className="btn btn-sm btn-info rounded" onClick={(e) => setModeloContrato(e, contratoPresencial)}>Modelo presencial</button>
-                            <button className="btn btn-sm btn-info rounded" onClick={(e) => setModeloContrato(e, contratoConsultoria)}>Modelo consultoria</button>
-                            <button className="btn btn-sm btn-info rounded" disabled>Modelo plano anterior</button>
-                            <Select options={planos} fieldName='nome_plano' />
-                        </div>
-                    </div>
-
-                    <JoditEditor
-                        ref={editor}
-                        value={contrato}
-                        onBlur={(newContent) => setContrato(newContent)} // Atualiza quando perde o foco
-                        config={{
-                            readonly: false,
-                            // height: 900,
-                            // buttons: "bold,italic,underline,|,ul,ol,|,font,fontsize,brush,|,link,align,undo,redo",
-                            buttons: "source,|,bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,image,video,table,link,|,hr,undo,redo,copyformat,selectall,cut,copy,paste,|,print,fullsize",
-                        }}
-                    />
-                </div>
 
                 <div className="card-footer">
-                    <button type='submit' className="btn btn-success">Confirmar</button>
+                    <button type="submit" className="btn btn-success">Confirmar</button>
                 </div>
             </div>
         </form>

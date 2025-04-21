@@ -3,11 +3,25 @@ import { useState } from "react";
 export default function MultiSelect({ name, options, chavePesquisa, valueChave, state: selectedItems, setState: setSelectedItems, className }) {
     // const [selectedItems, setSelectedItems] = useState([]);
 
+    function getFilter() {
+        return options.filter(option => !selectedItems.find(selected => {
+            if (valueChave) {
+                return (selected[valueChave] == option[valueChave]);
+            } else {
+                return (selected == option);
+            }
+        }));
+    }
+
     const handleSelectChange = (event) => {
         const value = event.target.value;     
-        const arrayFiltered = options.filter(option => !selectedItems.find(selected => selected[valueChave] == option[valueChave]));
+        const arrayFiltered = getFilter();
         if (value >= 0 && !selectedItems.includes(arrayFiltered[value])) {
-            setSelectedItems([...selectedItems, { ...arrayFiltered[value] }]);
+            if (typeof arrayFiltered[value] == 'string') {
+                setSelectedItems([...selectedItems, arrayFiltered[value]]);
+            } else {
+                setSelectedItems([...selectedItems, { ...arrayFiltered[value] }]);
+            }
         }
     };
 
@@ -17,11 +31,10 @@ export default function MultiSelect({ name, options, chavePesquisa, valueChave, 
 
     return (
         (<div className={className}>
-            <label htmlFor={`multiSelect-${name}`} className="form-label">{name ?? 'Selecione os itens'}</label>
             <div className="form-control d-flex flex-wrap gap-1 align-items-center" onClick={() => document.getElementById("multiSelect").focus()}>
                 {selectedItems.map((item, index) => (
                     <span key={index} className="badge bg-primary d-flex align-items-center me-1">
-                        {item[chavePesquisa]}
+                        {chavePesquisa ? item[chavePesquisa] : item}
                         <button 
                             type="button" 
                             className="btn-close btn-close-white ms-2" 
@@ -37,9 +50,8 @@ export default function MultiSelect({ name, options, chavePesquisa, valueChave, 
                     value=""
                 >
                     <option value="" hidden>Clique para selecionar</option>
-                    {options.filter(option => !selectedItems.find(selected => selected[valueChave] == option[valueChave]))
-                    .map((option, index) => (
-                        <option key={index} value={index}>{option[chavePesquisa]}</option>
+                    {getFilter().map((option, index) => (
+                        <option key={index} value={index}>{chavePesquisa ? option[chavePesquisa] : option}</option>
                     ))}
                 </select>
             </div>

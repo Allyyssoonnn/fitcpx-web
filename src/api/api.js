@@ -1,6 +1,6 @@
 import axios from "axios";
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
-const PRODUCAO = false;
+const PRODUCAO = true;
 
 export const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
 
@@ -37,6 +37,33 @@ api.interceptors.response.use((response) => response, async (error) => {
 
     return Promise.reject(error);
 });
+
+async function postFile(url, data, fileBlob, fileName = 'arquivo.pdf') {
+    const cookies = parseCookies(null);
+    const formData = new FormData();
+
+    for (const key in data) {
+        formData.append(key, data[key]);
+    }
+
+    formData.append('contratoPDF', fileBlob, fileName);
+    
+    try {
+        const resp = await api({
+            headers: {
+                Authorization: cookies.token,
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'multipart/form-data', // Importante para enviar arquivos
+            },
+            method: 'POST',
+            url,
+            data: formData,
+        });
+        return resp.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 async function post(url, data) {
     const cookies = parseCookies(null);
@@ -76,6 +103,7 @@ async function postImage(url, img, data) {
 export {
     api,
     post,
+    postFile,
     get,
     postImage,
 };

@@ -2,15 +2,11 @@ import { useEffect, useState } from "react";
 import EditableText from "../editableText";
 import Swal from "sweetalert2";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { getExercicios } from "../../api/treino";
-import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
-import { stateUsuario } from "../../states/states";
 import ListaExercicios from "./listaExercicios";
 import { arrayBorders } from "../../utils";
 import GerarTreino from "./gerarTreino";
 
-function TreinoInteligente({ sessoes, setSessoes, setRemovidos }) {
+function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovidos }) {
     const [wait, setWait] = useState();
 
     const updateNomeSessao = (index, newName) => {
@@ -105,7 +101,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos }) {
     };
     
     return (
-        (<div className="container-fluid">
+        <div className="container-fluid">
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId='SessoesList'>
                     {(provided) => (
@@ -185,6 +181,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos }) {
                                                             waitExercicio={wait}
                                                             setWaitExercicio={setWait}
                                                             adicionarSet={adicionarSet}
+                                                            setItensRemovidos={setItensRemovidos}
                                                         />
 
                                                         <button className="btn btn-outline-success rounded w-100 mt-3" onClick={e => adicionarExercicio(e, index)}>
@@ -202,11 +199,12 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos }) {
                     )}
                 </Droppable>
             </DragDropContext>
+
             <button className="btn btn-outline-primary w-100" onClick={adicionarSessao}>
                 <i className="bi bi-plus me-2" />
                 Adicionar sessão
             </button>
-        </div>)
+        </div>
     );
 }
 

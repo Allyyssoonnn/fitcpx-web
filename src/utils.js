@@ -74,6 +74,37 @@ export const formatarData = (data) => {
     });
 };
 
+export const adicionarMesData = (data, mesesAdicionais = 0) => {
+    if (!data) return '';
+
+    let date;
+
+    if (typeof data === 'string') {
+        // Caso seja uma string no formato YYYY-MM-DD
+        const [year, month, day] = data.split('-');
+        date = new Date(year, month - 1, day);
+    } else if (data instanceof Date) {
+        // Caso já seja um objeto Date
+        date = new Date(data);
+    } else if (typeof data === 'number') {
+        // Caso seja um timestamp
+        date = new Date(data);
+    } else {
+        return '';
+    }
+
+    // Adiciona os meses, se houver
+    if (mesesAdicionais !== 0) {
+        date.setMonth(date.getMonth() + mesesAdicionais);
+    }
+
+    return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
+};
+
 export const formatarMoeda = (valor) => {
     return (typeof valor == 'number') ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor) : '-';
 }
@@ -170,6 +201,22 @@ export function limpaForm(formData) {
         }
     }
     return transformedData;
+}
+
+export function dividirParcelas(qtdParcelas, valorTotal) {
+    const totalCentavos = Math.round(valorTotal * 100);
+    const valorBase = Math.floor(totalCentavos / qtdParcelas); // valor mínimo por parcela em centavos
+    const resto = totalCentavos % qtdParcelas; // quanto sobra pra distribuir
+  
+    const parcelas = [];
+  
+    for (let i = 0; i < qtdParcelas; i++) {
+      // As primeiras "resto" parcelas recebem 1 centavo a mais
+      const valorParcela = i < resto ? valorBase + 1 : valorBase;
+      parcelas.push(valorParcela / 100); // volta pra reais
+    }
+  
+    return parcelas;
 }
 
 // export const dataURLToBlob = (dataURL) => {

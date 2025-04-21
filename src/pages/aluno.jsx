@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { calculaKGGordura, calculaKGMCM, calculaKGMusculo, calculaPorcentagemGordura, calculaPorcentagemMCM, calculaPorcentagemMusculo, calcularIdade, dataURLToBlob, formatarData, getSexo } from "../utils";
+import { calculaKGGordura, calculaKGMCM, calculaKGMusculo, calculaPorcentagemGordura, calculaPorcentagemMCM, calculaPorcentagemMusculo, calcularIdade, dataURLToBlob, formatarData, formatarMoeda, getSexo } from "../utils";
 import { useQuery } from "react-query";
-import { changeAlunoIMG, deleteAvaliacao, getAluno, getAvaliacao, getAvaliacoes, setAluno } from '../api/aluno';
+import { changeAlunoIMG, deleteAvaliacao, getAluno, getAlunoContratos, getAvaliacao, getAvaliacoes, setAluno } from '../api/aluno';
 import { deleteTreino, getTreinos, setTreino } from '../api/treino';
 import { deleteCardapio, getCardapios, setCardapio } from '../api/cardapio';
 import ImageCropModal from '../components/cutImg';
@@ -38,6 +38,13 @@ function Aluno() {
     const { data: avaliacoes, refetchAvalicao } = useQuery({
         queryKey: ['avaliacoes'],
         queryFn: () => getAvaliacoes(null, cod_aluno),
+        initialData: [],
+        enabled: !!cod_aluno
+    });
+
+    const { data: alunoContratos, refetch: refetchContrato } = useQuery({
+        queryKey: ['alunoContratos'],
+        queryFn: () => getAlunoContratos(cod_aluno),
         initialData: [],
         enabled: !!cod_aluno
     });
@@ -282,6 +289,24 @@ function Aluno() {
 
                                 {cardapios?.map((cardapio, index) => (
                                     <CardCardapio key={index} cardapio={cardapio} aluno={aluno} refetch={refetchCardapio} />
+                                ))}
+                            </div>
+                        </Tab>
+
+                        <Tab eventKey="contratos" title={
+                            <>
+                                <span className="d-none d-md-block"><i className="bi bi-paperclip me-2"></i>Contratos</span>
+                                <span className="d-block d-md-none"><i className="bi bi-paperclip me-2"></i>Contratos</span>
+                            </>
+                        }>
+                            <div className='text-center'>
+                                {/* <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadcardapio', { state: { aluno } })}>
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Adicionar Cardápio
+                                </button> */}
+
+                                {alunoContratos?.map((alunoContrato, index) => (
+                                    <CardContrato key={index} alunoContrato={alunoContrato} aluno={aluno} refetch={refetchContrato} />
                                 ))}
                             </div>
                         </Tab>
@@ -553,6 +578,59 @@ function CardAvaliacao({ avaliacao, aluno, refetch }) {
                     onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}
                 >
                     <i className="bi bi-printer me-2"></i> Ver resultado
+                </button>
+            </div>
+        </div>
+    )
+}
+
+function CardContrato({ alunoContrato, aluno, refetch }) {
+    const navigate = useNavigate();
+
+    async function verContrato() {
+        navigate('/contrato', { state: { cod_aluno_contrato: alunoContrato.cod_aluno_contrato, cod_aluno: aluno.cod_aluno } });
+    }
+    
+    return (
+        <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>
+            <div style={{ borderTop: '0.30rem solid #85D446' }} className='card-body rounded-3'>
+                <h5 className="card-title">{alunoContrato.nome_aluno_contrato}</h5>
+
+                <div className='row'>
+                    <div className='col-md-3'>
+                        <strong>Valor contrato:</strong> {formatarMoeda(alunoContrato.total_aluno_contrato)}
+                    </div>
+                    <div className='col-md-3'>
+                        <strong>Período:</strong> {JSON.parse(alunoContrato.parcela_aluno_contrato).length} Meses
+                    </div>
+                    <div className='col-md-3'>
+                        <strong>Expiração:</strong> {formatarData(alunoContrato.expiracao_aluno_contrato)}
+                    </div>
+                    <div className='col-md-3'>
+                        {alunoContrato.status_aluno_contrato == 'P' && <label className="badge bg-warning">Pendente</label>}
+                        {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-danger">Bloqueado</label>}
+                        {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-danger">Cancelado</label>}
+                        {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-success">Ativo</label>}
+                    </div>
+                    {/* <div className='col-md-3'>
+                        <strong>Sexo:</strong> {getSexo(cardapio.sexo_treino)}
+                    </div> */}
+                    {/* <div className='col-md-3'>
+                        <strong></strong> {alunoContrato?.refeicoes?.length} {caralunoContratodapio?.refeicoes?.length > 1 ? 'Refeições' : 'Refeição'}
+                    </div> */}
+                </div>
+            </div>
+
+            <div className='card-footer bg-light d-flex justify-content-around py-3'>
+                {/* <button
+                    className="btn btn-primary d-flex align-items-center"
+                    onClick={() => navigate('/cadcardapio', { state: { cardapio, aluno } })}
+                >
+                    <i className="bi bi-pencil me-2"></i>Editar
+                </button> */}
+
+                <button className="btn btn-info d-flex align-items-center" onClick={verContrato}>
+                    <i className="bi bi-list me-2"></i> Detalhes
                 </button>
             </div>
         </div>

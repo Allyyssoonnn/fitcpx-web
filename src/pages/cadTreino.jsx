@@ -20,6 +20,7 @@ function CadTreino() {
     const [usuario] = useRecoilState(stateUsuario);
     const [sessoes, setSessoes] = useState([]);
     const [removidos, setRemovidos] = useState([]);
+    const [itensRemovidos, setItensRemovidos] = useState([]);
     const [nome_aluno, setNome_aluno] = useState('');
     const [codAluno, setCodAluno] = useState(0);
     const [sexo_aluno, setSexo_aluno] = useState('');
@@ -79,14 +80,13 @@ function CadTreino() {
         }
         if (!podeConfirmar) return;
 
-
         const cod_usuario = usuario.cod_usuario;
         const respTreino = await setTreino({ ...data, sexo_treino: sexo_aluno ?? data?.sexo_treino, cod_usuario, cod_empresa: usuario.cod_empresa });
         if (respTreino.cod_treino)
             if (respTreino.cod_treino) {
-            await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos);
+            await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos, itensRemovidos);
             reset();
-            nSuccess();                     
+            nSuccess();
             navigate("/aluno", { state: { cod_aluno: codAluno } });
         } else toast.error('Erro ao salvar treino');
     }
@@ -192,6 +192,7 @@ function CadTreino() {
                             sessoes={sessoes}
                             setSessoes={setSessoes}
                             setRemovidos={setRemovidos}
+                            setItensRemovidos={setItensRemovidos}
                         />
                     )}
                     {viewTreino == 'painel' && (
@@ -209,6 +210,7 @@ function CadTreino() {
                             grupos={sessoes}
                             setGrupos={setSessoes}
                             setRemovidos={setRemovidos}
+                            setItensRemovidos={setItensRemovidos}
                             getRepeticao={getRepeticao}
                         />
                     )}

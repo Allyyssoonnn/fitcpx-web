@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 import FiltroTreinoInteligente from "./filtroTreinoInteligente";
 import { useState } from "react";
 
-function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio, waitExercicio, adicionarSet }) {
+function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio, waitExercicio, adicionarSet, setItensRemovidos }) {
     const [usuario] = useRecoilState(stateUsuario);
     const { viewTreino, setViewTreino } = useStateApp();
     const [showModalFiltro, setShowModalFiltro] = useState(false);
@@ -63,6 +63,8 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
     }
 
     const remove = (index) => {
+        setItensRemovidos(prev => ([ ...prev, exercicios[index] ]));
+
         // Remove o item pelo índice
         const reorderedExercicios = Array.from(exercicios);
         reorderedExercicios.splice(index, 1);
@@ -105,16 +107,33 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
         } : sessao))
     }
 
-    const selecionaExercicio = (indexSessao, indexExercicio, cod_exercicio) => {
+    const selecionaExercicio = (indexSessao, indexExercicio, cod_exercicio, indexSet) => {
         const exercicioAtt = exerciciosLista.find((exc) => exc.cod_exercicio == cod_exercicio);
 
-        setSessoes(prevSessoes => prevSessoes.map((sessao, idSessao) => idSessao == indexSessao ? {
-            ...sessao,
-            exercicios: sessao.exercicios.map((exercicio, idExercicio) => idExercicio == indexExercicio ? {
-                ...exercicio,
-                ...exercicioAtt,
-            } : exercicio)
-        } : sessao))
+        if (indexSet == null) {
+            // Atualizando exercício base
+            setSessoes(prevSessoes => prevSessoes.map((sessao, idSessao) => idSessao == indexSessao ? {
+                ...sessao,
+                exercicios: sessao.exercicios.map((exercicio, idExercicio) => idExercicio == indexExercicio ? {
+                    ...exercicio,
+                    ...exercicioAtt,
+                } : exercicio)
+            } : sessao))
+        } else {
+            // Atualizando set dentro do exercício base
+            setSessoes(prevSessoes => prevSessoes.map((sessao, idSessao) => idSessao == indexSessao ? {
+                ...sessao,
+                exercicios: sessao.exercicios.map((exercicio, idExercicio) => idExercicio == indexExercicio ? {
+                    ...exercicio,
+                    sets: exercicio.sets?.map((set, i) => indexSet == i ? {
+                        ...set,
+                        ...exercicioAtt,
+                        // Sequencia exercicio precisa ser a mesma do exercicio pai para agrupar
+                        sequencia_sessao_exercicio: exercicio.sequencia_sessao_exercicio,
+                    } : set),
+                } : exercicio)
+            } : sessao))
+        }
     }
 
     const atualizaExercicioAleatorio = (e, indexSessao, indexExercicio, exerciciosFiltrados) => {
@@ -135,11 +154,18 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
         setShowModalFiltro(true);
     }
 
-    function SelectExercicios({ exercicio, index }) {
+    function SelectExercicios({ exercicio, index, indexSet = null }) {
         return (
             <>
                 {exercicio?.nome_exercicio && viewTreino !== 'bloco' ? (
-                    <label>{exercicio.nome_exercicio}</label>
+                    <label>
+                        {exercicio.url_exercicio && (
+                            <label className="badge bg-success me-2">
+                                <i className="bi bi-camera-reels" />
+                            </label>
+                        )}
+                        {exercicio.nome_exercicio}
+                    </label>
                 ) : (
                     <div className="d-flex align-items-center gap-2 w-100">
                         <button
@@ -156,12 +182,19 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                             <i className="bi bi-arrow-clockwise" />
                         </button>
 
+                        {exercicio.url_exercicio && (
+                            <label className="badge bg-success">
+                                <i className="bi bi-camera-reels" />
+                            </label>
+                        )}
+
                         {screen.width > 766 && (<SelectExercicio
                             exercicio={exercicio}
                             index={index}
                             indexSessao={indexSessao}
                             selecionaExercicio={selecionaExercicio}
                             exerciciosLista={exerciciosLista}
+                            indexSet={indexSet}
                         />)}
                     </div>
                 )}
@@ -269,7 +302,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                             <div key={idx} className="d-flex mt-2">
                                                 <div className="d-flex flex-column p-2 bg-light w-100">
                                                     <div className="mb-2 d-flex justify-content-between align-items-center">
-                                                        {screen.width > 766 && (<SelectExercicios exercicio={set} index={index} />)}
+                                                        {screen.width > 766 && (<SelectExercicios exercicio={set} index={index} indexSet={idx} />)}
 
                                                         <div className="d-flex gap-1">
                                                             <button className="btn btn-outline-danger btn-sm"
@@ -331,12 +364,12 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
     </>);
 }
 
-function SelectExercicio({ exercicio, index, indexSessao, selecionaExercicio, exerciciosLista }) {
+function SelectExercicio({ exercicio, index, indexSessao, selecionaExercicio, exerciciosLista, indexSet }) {
     return (
         <div className="form-floating w-100 me-2">
             <select className="form-control"
                 value={exercicio?.cod_exercicio}
-                onChange={e => selecionaExercicio(indexSessao, index, e.target.value)}
+                onChange={e => selecionaExercicio(indexSessao, index, e.target.value, indexSet)}
             >
                 <option value="" hidden>Clique para selecionar</option>
                 {((exercicio?.exerciciosFiltros ?? exerciciosLista))?.map((exc, i) => (

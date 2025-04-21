@@ -139,7 +139,7 @@ function Header() {
                                 />
                             </a>
 
-                            <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                            <div style={{ height: '380px' }} className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div className="message-body">
                                     <div className="d-flex align-items-center mx-7 py-9 border-bottom">
                                         <img
@@ -158,17 +158,21 @@ function Header() {
                                             </p>
                                         </div>
                                     </div>
-                                    <a href="#" onClick={() => navigate('/minhaempresa')} className="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-building fs-6"></i>
                                         <p className="mb-0 fs-3">Minha empresa</p>
                                     </a>
-                                    <a href="#" onClick={() => navigate('/minhaconta')} className="d-flex align-items-center gap-2 dropdown-item">
+                                    <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-person-fill fs-6"></i>
                                         <p className="mb-0 fs-3">Minha conta</p>
                                     </a>
                                     <a href="#" onClick={() => navigate('/licenca')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-unlock fs-6"></i>
                                         <p className="mb-0 fs-3">Licença</p>
+                                    </a>
+                                    <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
+                                        <i className="bi bi-gear fs-6"></i>
+                                        <p className="mb-0 fs-3">Configuração</p>
                                     </a>
                                     <a href="https://fitcpx.com" className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-house fs-6"></i>

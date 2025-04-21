@@ -6,7 +6,7 @@ import EditableText from "../editableText";
 import { arrayBorders } from "../../utils";
 import ListaExercicios from "./listaExercicios";
 
-function Prescricao({ nome, getRepeticao = null, nomeNovoGrupo, nomeArrayGrupo, campoSequencia, array = [], nomeArray, nomeGrupo, filtroComponenteNome, nomeColuna2, grupos = [], setGrupos, setRemovidos, campoSequenciaItem }) {
+function Prescricao({ nome, getRepeticao = null, nomeNovoGrupo, nomeArrayGrupo, campoSequencia, array = [], nomeArray, nomeGrupo, filtroComponenteNome, nomeColuna2, grupos = [], setGrupos, setRemovidos, setItensRemovidos, campoSequenciaItem }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [arrayBase, setArrayBase] = useState([]);
     const [wait, setWait] = useState();
@@ -83,6 +83,7 @@ function Prescricao({ nome, getRepeticao = null, nomeNovoGrupo, nomeArrayGrupo, 
                 campoSequenciaItem={campoSequenciaItem}
                 nome={nome}
                 wait={wait}
+                setItensRemovidos={setItensRemovidos}
             />
         </div>
     )
@@ -103,6 +104,7 @@ function Coluna1({ getRepeticao, nome, nomeGrupo, setSearchTerm, nomeArray, grup
                                         ...exc.sets,
                                         {
                                             ...exercicio,
+                                            // Sequencia exercicio precisa ser a mesma do exercicio pai para agrupar
                                             sequencia_sessao_exercicio: exc.sequencia_sessao_exercicio,
                                             serie_sessao_exercicio: 3,
                                             repeticao_sessao_exercicio: getRepeticao(),
@@ -184,7 +186,7 @@ function Coluna1({ getRepeticao, nome, nomeGrupo, setSearchTerm, nomeArray, grup
     )
 }
 
-function Coluna2({ nome, grupos, setGrupos, adicionarGrupo, nomeColuna2, nomeGrupo, campoSequencia, campoSequenciaItem, setWait, removerGrupo, nomeArrayGrupo, wait }) {
+function Coluna2({ nome, grupos, setGrupos, adicionarGrupo, nomeColuna2, nomeGrupo, campoSequencia, campoSequenciaItem, setWait, removerGrupo, nomeArrayGrupo, wait, setItensRemovidos }) {
 
     const handleDragEnd = (result) => {
         const { source, destination } = result;
@@ -283,6 +285,7 @@ function Coluna2({ nome, grupos, setGrupos, adicionarGrupo, nomeColuna2, nomeGru
                                                                     setSessoes={setGrupos}
                                                                     setWaitExercicio={setWait}
                                                                     waitExercicio={wait}
+                                                                    setItensRemovidos={setItensRemovidos}
                                                                 />
                                                             )}
 

@@ -1,63 +1,43 @@
-<p style="text-align: center;"><strong>Contrato de Prestação de Serviços</strong></p>
-<p style="text-align: center;"><strong>(Treinamento Presencial)</strong></p>
-<p>Por este instrumento particular de prestação de serviços, as partes &lt;razao_social_empresa&gt; (&lt;nome_empresa&gt;), inscrita no CNPJ sob o nº &lt;doc_empresa&gt;, com sede à &lt;endereco_empresa&gt;, nº &lt;numero_empresa&gt;, bairro &lt;bairro_empresa&gt;, CEP &lt;cep_empresa&gt;, na cidade de &lt;cidade_empresa&gt;, &lt;estado_empresa&gt;, doravante denominada CONTRATADO, e &lt;nome_aluno&gt;, portador(a) do RG nº &lt;rg_aluno&gt; e do CPF nº &lt;cpf_aluno&gt;, residente à &lt;endereco_aluno&gt;, nº &lt;numero_aluno&gt;, bairro &lt;bairro_aluno&gt;, CEP &lt;cep_aluno&gt;, na cidade de &lt;cidade_aluno&gt;, &lt;estado_aluno&gt;, doravante denominado(a) CONTRATANTE, resolvem, por mútuo acordo, firmar o presente contrato de prestação de serviços de treinamento físico pessoal, que se regerá pelas cláusulas seguintes:</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA PRIMEIRA – OBJETO DO CONTRATO</strong></p>
-<p>Este contrato tem como objeto a prestação de serviços de Treinamento Físico Pessoal, personalizado conforme as avaliações físicas e clínicas realizadas pelo CONTRATADO e/ou terceiros, considerando as individualidades biológicas, condições físicas e objetivos do CONTRATANTE.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA SEGUNDA – DOS PLANOS DE PAGAMENTO</strong></p>
-<p>O pagamento referente ao plano escolhido pelo CONTRATANTE será efetuado mensalmente, antecedendo a data de vencimento estabelecida na CLÁUSULA TERCEIRA. O CONTRATANTE optou pelo plano &lt;&lt;[DescricaoContrato]&gt;&gt;, com duração de &lt;&lt;[DuracaoContrato]&gt;&gt;, conforme detalhado a seguir:</p>
-<p>&lt;&lt;foreach [modalidade in Modalidades]&gt;&gt;</p>
-<p>- &lt;&lt;[modalidade.DescricaoModalidade]&gt;&gt;</p>
-<ul>
-    <li>Limite de acessos: &lt;&lt;[modalidade.LimiteAcessos]&gt;&gt;</li>
-    <li>Dias liberados para acesso: &lt;&lt;[modalidade.DiasLiberadosParaAcesso]&gt;&gt;</li>
-    <li>Horários liberados para acesso: &lt;&lt;[modalidade.HorariosLiberadosParaAcesso]&gt;&gt;</li>
-</ul>
-<p>&lt;&lt;/foreach&gt;&gt;</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA TERCEIRA – DA MENSALIDADE</strong></p>
-<p>O CONTRATANTE compromete-se a efetuar o pagamento antecipado das mensalidades, no valor de R$&lt;&lt;[ValorTotalContratoFormatado]&gt;&gt;, &lt;&lt;if [ValorAdesao &gt; 0]&gt;&gt;incluindo a taxa de adesão/matrícula de R$&lt;&lt;[ValorAdesaoFormatado]&gt;&gt;,&lt;&lt;/if&gt;&gt; conforme as parcelas a seguir:</p>
-<p>&lt;&lt;foreach [parcela in Parcelas]&gt;&gt;</p>
-<ul>
-    <li>R$&lt;&lt;[parcela.ValorFormatado]&gt;&gt; com vencimento em &lt;&lt;[parcela.DataVencimento]&gt;&gt;</li>
-</ul>
-<p>&lt;&lt;/foreach&gt;&gt;</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA QUARTA – DO PAGAMENTO EM ATRASO</strong></p>
-<p>Em caso de inadimplência, será aplicada uma multa de 2% sobre o valor total da mensalidade. Após 3 dias de atraso, a matrícula será bloqueada. Se a inadimplência persistir até o vigésimo dia, o CONTRATADO poderá rescindir o contrato, cabendo ao CONTRATANTE o pagamento da multa estipulada na CLÁUSULA OITAVA.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA QUINTA – NÃO COMPARECIMENTO</strong></p>
-<p>O atraso superior a 15 minutos, sem aviso prévio, será considerado não comparecimento, sujeitando o CONTRATANTE ao pagamento integral do serviço, sem direito a reposição.</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO PRIMEIRO – ATRASO PERMITIDO</strong></p>
-<p>Atraso sem aviso prévio, não superior a 15 minutos, será tolerado, podendo resultar na diminuição do tempo total da sessão de treino ou na extensão do horário de saída.</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO SEGUNDO – ATRASO COM AVISO PRÉVIO</strong></p>
-<p>Em caso de antecipação de atraso, a parte atrasada deve entrar em contato com a outra parte informando o motivo e a duração do atraso, acordando o ajuste necessário na sessão de treinamento.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA SEXTA – POLÍTICA DE CANCELAMENTO E REAGENDAMENTO</strong></p>
-<p>Para reposição de treino, este deve ser solicitado com no mínimo 12 horas de antecedência, dentro da semana vigente. As trocas podem ser feitas sem limitações, porém, a aula não pode ser transferida para a semana seguinte. Aviso de cancelamento em cima da hora, bem como atraso, será considerado aula dada e não dá direito a reposição.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA SÉTIMA – AVALIAÇÃO DE PROGRESSO</strong></p>
-<p>As avaliações serão realizadas entre 2 e 3 meses, seguidas dos ajustes no treinamento conforme necessário para atingir os objetivos do CONTRATANTE.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA OITAVA – ATESTADO MÉDICO DE APTIDÃO</strong></p>
-<p>O CONTRATANTE deverá apresentar atestado médico atestando sua aptidão física para a prática de exercícios físicos no prazo máximo de quinze dias a partir da assinatura deste contrato, declarando estar em plenas condições de saúde até então.</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO ÚNICO – PLENAS CONDIÇÕES DE SAÚDE O CONTRATANTE</strong></p>
-<p>Até a apresentação do atestado médico, declara estar em plenas condições de saúde, apto a realizar atividades físicas e não portar nenhuma doença, que possa prejudicar a realização de exercícios físicos, isentando o CONTRATADO de quaisquer responsabilidades inerentes a sua saúde.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA NONA – PERÍODOS DE FÉRIAS E FERIADOS</strong></p>
-<p>O CONTRATADO gozará de férias de 12 dias corridos entre dezembro e janeiro, e junho e julho, sem impacto na mensalidade do CONTRATANTE. Em feriados e recessos, não haverá treinamento, sem direito a reposição ou desconto.</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO ÚNICO – TREINAMENTO NO PERÍODO DE FÉRIAS</strong></p>
-<p>Durante o período de férias, o CONTRATANTE poderá solicitar a ficha de treinamento físico para manter sua rotina de exercícios sem o acompanhamento presencial do CONTRATADO.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA DÉCIMA – RENOVAÇÃO DE CONTRATO</strong></p>
-<p>Após o período discriminado na Clausula Segunda, este contrato será renovado automaticamente, bastando para tanto que o CONTRATANTE efetue o pagamento ao mês subsequente.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA DÉCIMA PRIMEIRA – RESCISÃO DE CONTRATO</strong></p>
-<p>Em caso de rescisão, por qualquer motivo, o CONTRATANTE pagará uma multa equivalente a 10% do valor total do contrato, sem prejuízos ao CONTRATADO.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA DÉCIMA SEGUNDA – DO CONGELAMENTO DO PLANO</strong></p>
-<p>O CONTRATANTE poderá solicitar o congelamento do plano por até &lt;&lt;[QuantMaximoDiasSuspensao]&gt;&gt; dias, ficando estabelecidos dois modelos de congelamento do plano, a saber:</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO PRIMEIRO – CONGELAMENTO POR MOTIVOS MÉDICOS</strong></p>
-<p>Contemplam cirurgias de urgência e situações afins, com direito a reposição do período não usufruído no final do contrato.</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO SEGUNDO – CONGELAMENTO POR MOTIVOS PESSOAIS</strong></p>
-<p>Comtemplam viagens, procedimentos estéticos e situações afins. Durante o congelamento, será cobrado 50% do valor da mensalidade, destinado à manutenção do horário contratado. O tempo contratado não será afetado durante o congelamento, mantendo-se a integridade do plano.</p>
-<p style="margin-left: 30px;"><strong>PARÁGRAFO TERCEIRO – PROCEDIMENTOS</strong></p>
-<p>O CONTRATANTE deverá formalizar a solicitação de congelamento por escrito, apresentando os documentos comprobatórios pertinentes, seja atestado médico ou justificativa para motivos pessoais. A formalização deverá ocorrer com antecedência mínima de 15 dias em relação à data de início do congelamento. Em caso de congelamento por motivos médicos, o atestado médico deverá indicar a necessidade do afastamento das atividades físicas durante o período solicitado. O retorno às atividades regulares deverá ser comunicado pelo CONTRATANTE com antecedência mínima de 5 dias úteis.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA DÉCIMA TERCEIRA – USO DA IMAGEM</strong></p>
-<p>O CONTRATADO, livre de quaisquer ônus para com o CONTRATANTE, poderá utilizar-se da sua imagem para fins exclusivos de divulgação das suas atividades, podendo, para tanto, reproduzi-la ou divulgá-la em diversos meios de comunicação.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA DÉCIMA QUARTA – DO FORO</strong></p>
-<p>Fica eleito o Foro da comarca de &lt;cidade_empresa&gt;-&lt;estado_empresa&gt; como competente para dirimir quaisquer questões oriundas deste contrato. Arcando a parte vencida em demanda judicial com as custas processuais a que der causa e com os honorários advocatícios arbitrados do patrono da parte vencedora.</p>
-<p style="margin-left: 20px;"><strong>CLÁUSULA DÉCIMA QUINTA – DISPOSIÇÕES GERAIS</strong></p>
-<p>As partes comprometem-se a cumprir fielmente as disposições estabelecidas neste contrato, declarando que leram e estão de acordo com todos os termos e condições aqui descritos.</p>
+<p class="MsoNormal" align="center" style="margin: 0px; font-size: 16px; font-family: Aptos, sans-serif; text-align: center; line-height: normal;"><strong><span style="font-family: &quot;Aptos Display&quot;, sans-serif;">CONTRATO DE PRESTAÇÃO DE SERVIÇOS PRESENCIAIS</span></strong></p><p class="MsoNormal" align="center" style="margin: 0px; font-size: 16px; font-family: Aptos, sans-serif; text-align: center; line-height: normal;"><strong><span style="font-family: &quot;Aptos Display&quot;, sans-serif;"><br></span></strong></p>
+
+<p>Por este instrumento particular de prestação de serviços, as partes &lt;razao_social_empresa&gt; &lt;nome_empresa&gt;, inscrita no CNPJ sob o nº &lt;doc_empresa&gt;, com sede à &lt;endereco_empresa&gt;, nº &lt;numero_empresa&gt;, bairro &lt;bairro_empresa&gt;, CEP &lt;cep_empresa&gt;, na cidade de &lt;cidade_empresa&gt;, &lt;estado_empresa&gt;, doravante denominada CONTRATADO, e &lt;nome_aluno&gt;, portador(a) do RG nº &lt;rg_aluno&gt; e do CPF nº &lt;cpf_aluno&gt;, residente à &lt;endereco_aluno&gt;, nº &lt;numero_aluno&gt;, bairro &lt;bairro_aluno&gt;, CEP &lt;cep_aluno&gt;, na cidade de &lt;cidade_aluno&gt;, &lt;estado_aluno&gt;, doravante denominado(a) CONTRATANTE, resolvem, por mútuo acordo, firmar o presente contrato de prestação de serviços de treinamento físico pessoal, que se regerá pelas cláusulas seguintes:</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 1 – OBJETO DO CONTRATO</strong></p>
+
+<p>Este contrato tem como objeto a prestação de serviços de &lt;descricao_empresa&gt;, personalizado conforme as avaliações físicas e clínicas realizadas pelo CONTRATADO e/ou terceiros, considerando as individualidades biológicas, condições físicas e objetivos do CONTRATANTE.</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 2 - OBRIGAÇÕES DO CONTRATADO</strong></p>
+
+<p>2.1. Oferecer serviços de forma profissional, respeitando as normas de segurança e higiene.</p>
+<p>2.2. Manter equipamentos e instalações em boas condições de uso.</p>
+<p>2.3. Disponibilizar profissionais qualificados.</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 3 - OBRIGAÇÕES DO CONTRATANTE</strong></p>
+
+<p>3.1. Apresentar atestado médico atual comprovando aptidão.</p>
+<p>3.2. Utilizar os equipamentos adequadamente e seguir orientações dos profissionais.</p>
+<p>3.3. Cobrir custos por danos causados por uso indevido das instalações ou equipamentos.</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 4 - PAGAMENTO</strong></p>
+
+<p>4.1. Valor total: &lt;valor_total&gt;.</p>
+<p>4.2. Mensalidades: &lt;valor_mensal&gt;</p>
+<p>4.3. Multa por atraso: 2% sobre o valor devido e 1% de juros ao mês.</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 5 - CANCELAMENTO E REAGENDAMENTO</strong></p>
+
+<p>5.1. Cancelamentos com menos de 24 horas de antecedência serão cobrados.</p>
+<p>5.2. Rescisão mediante aviso prévio de 30 dias, sujeito a multa de 20% sobre o saldo devedor.</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 6 - USO DE IMAGEM</strong></p>
+
+<p>6.1. O CONTRATANTE autoriza o uso de sua imagem em material promocional, a menos que solicitado de outra forma por escrito.</p>
+
+<p style="margin-left: 20px;"><strong>CLÁUSULA 7 – DISPOSIÇÕES GERAIS</strong></p>
+
+<p>7.1. Este contrato é regido pelas leis do Brasil, com foro eleito em &lt;cidade_empresa&gt;-&lt;estado_empresa&gt;.</p>
+
+<p><br></p>
 <table style="width: 531px; height: 135px;">
     <tbody>
         <tr>
@@ -79,7 +59,7 @@
         <tr>
             <td>
                 <p>ASSINATURA: ________________________</p>
-                
+
             </td>
             <td>
                 <p>ASSINATURA: _________________________</p>
@@ -87,3 +67,5 @@
         </tr>
     </tbody>
 </table>
+<p><br></p>
+<p><br></p>

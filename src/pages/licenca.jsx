@@ -32,7 +32,7 @@ function Licenca() {
     });
 
     useEffect(() => {
-        const pendente = pagamentos.filter((pg) => pg.status_pagamento_usuario === 'PENDING');
+        const pendente = pagamentos.filter((pg) => pg.status_usuario_pagamento === 'PENDING');
         if (pendente.length) setpagamentoPendente(true);
     }, [pagamentos]);
 

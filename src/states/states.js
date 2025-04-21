@@ -48,7 +48,21 @@ export const useNotificacao = () => {
             }
         })
     }
-    return { nSuccess, nError, nConfirm };
+
+    const nLoading = (title, message) => {
+        Swal.fire({
+            title: title ?? "Carregando...",
+            text: message ?? "Aguarde estamos processando.",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
+    }
+
+    const endLoading = () => Swal.close();
+
+    return { nSuccess, nError, nConfirm, nLoading, endLoading };
 }
 
 export const useToggleSidebar = () => {

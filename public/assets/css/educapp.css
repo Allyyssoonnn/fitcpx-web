@@ -77,3 +77,9 @@ aside::-webkit-scrollbar-thumb:hover {
   display: block !important;
 }
 /*  */
+
+.border-info-dashed {
+  border-width: 1px !important;
+  border-style: dashed !important;
+  border-color: var(--bs-info) !important;
+}

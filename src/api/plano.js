@@ -47,3 +47,27 @@ export const recoveryModalidade = async (cod_modalidade) => {
     if (resp.status) return resp;
     throw new Error("Erro ao carregar grupo");
 };
+
+export const setModContrato = async (contrato) => {
+    const resp = await post('/plano/setModContrato', { contrato });
+    if (resp.status) return resp;
+    throw new Error("Erro ao carregar grupo");
+};
+
+export const getModContratos = async (cod_empresa, deleted) => {
+    const resp = await post('/plano/getModContratos', { cod_empresa, deleted });
+    if (resp.status) return resp.contratos;
+    throw new Error("Erro ao carregar grupo");
+};
+
+export const deleteContrato = async (cod_contrato) => {
+    const resp = await post('/plano/deleteContrato', { cod_contrato });
+    if (resp.status) return resp;
+    throw new Error("Erro ao carregar grupo");
+};
+
+export const recoveryContrato = async (cod_contrato) => {
+    const resp = await post('/plano/recoveryContrato', { cod_contrato });
+    if (resp.status) return resp;
+    throw new Error("Erro ao carregar grupo");
+};

@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { post, postImage } from "./api";
+import { post, postFile, postImage } from "./api";
 
 export const getAlunos = async (codUsuario, cod_empresa, deleted) => {
     const resp = await post('/aluno/getAlunos', { cod_usuario: codUsuario, cod_empresa, deleted });
@@ -66,5 +66,29 @@ export const changeAlunoIMG = async (img, data) => {
 export const sendAvaliacaoIMG = async (img, data) => {
     const resp = await postImage('/aluno/sendAvaliacaoIMG', img, data);
     if (resp.status) return resp;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const setAlunoContrato = async (plano) => {
+    const resp = await post('/aluno/setAlunoContrato', { plano });
+    if (resp.status) return resp.alunoContrato;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const sendAlunoContrato = async (cod_aluno_contrato, blob) => {
+    const resp = await postFile('/aluno/sendAlunoContrato', { cod_aluno_contrato }, blob);
+    if (resp.status) return resp;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const getAlunoContratos = async (cod_aluno) => {
+    const resp = await post('/aluno/getAlunoContratos', { cod_aluno });
+    if (resp.status) return resp.alunoContratos;
+    throw new Error("Erro ao carregar alunos");
+};
+
+export const getAlunoContrato = async (cod_aluno_contrato, cod_empresa) => {
+    const resp = await post('/aluno/getAlunoContrato', { cod_aluno_contrato, cod_empresa });
+    if (resp.status) return resp.alunoContrato;
     throw new Error("Erro ao carregar alunos");
 };

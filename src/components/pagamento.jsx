@@ -1,97 +1,169 @@
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
+import { formatarMoeda } from "../utils";
+import { motion } from 'framer-motion';
+import NumberInput from "./numberInput";
+import { useNotificacao } from "../states/states";
+import CardInput from "./CardInput";
 
-function Pagamento({ show, close }) {
+function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoName, resumoValue, onPay, duration, callback }) {
+    const { nLoading, endLoading } = useNotificacao();
     const [index, setIndex] = useState(0);
-
-    const [recorrente, setRecorrente] = useState(null);
     const [formaPagamento, setFormaPagamento] = useState('PIX');
+    const [pago, setPago] = useState(false);
+    const [monthly, setMonthly] = useState(true);
+    const [showCardInfo, setShowCardInfo] = useState(false);
+
+    async function clickPay() {
+        nLoading(null, 'Enviando contrato...');
+        const resp = await onPay(formaPagamento, endLoading, monthly);
+        if (resp) setPago(true);
+    }
+
+    async function clickPayCard(card) {
+        nLoading(null, 'Enviando contrato...');
+        const resp = await onPay(formaPagamento, endLoading, monthly, card);
+        if (resp) setPago(true);
+    }
+
+    async function clickCard() {
+        setShowCardInfo(true);
+    }
+
+    async function concluir() {
+        if (callback) callback();
+    }
+
+    async function onClose() {
+        setShowCardInfo(false);
+        close();
+    }
 
     return (
-        (<Modal show={show} size="lg">
-            <div className="card bg-light">
-                <div className="card-header">
-                    <button className={`${index < 1 ? 'd-none' : ''} btn btn-outline-danger rounded`}
-                        onClick={() => setIndex(index - 1)}
-                    >Voltar</button>
-                </div>
+        <Modal show={show} size="xl">
+            <div className="card bg-light" style={{ minHeight: '80vh' }}>
+                <div className="card-body row m-0">
+                    <div className="col-md-6 d-flex flex-column">
+                        <h5 className="card-title">Pagamento</h5>
 
-                <div className="card-body">
-                    {index == 0 && <TipoPagamento setRecorrente={setRecorrente} setIndex={setIndex} />}
-                    {index == 1 && <FormaPagamento setFormaPagamento={setFormaPagamento} setIndex={setIndex} />}
-                </div>
+                        <div className="border border-warning bg-warning-subtle fs-3 p-3 rounded mt-3 shadow-md h-100 max-h-1/2">
+                            <p className="text-center mb-0"><strong>Resumo</strong></p>
 
-                <div className="card-footer">
-                    <button className="btn btn-danger rounded" onClick={close}>Fechar</button>
+                            {resumoItems?.map((item, index) => (
+                                <p className="mb-0" key={index}>{item[resumoName]} - <strong>{formatarMoeda(item[resumoValue])}</strong></p>
+                            ))}
+
+                            <p className="mb-0 mt-3 text-end">Total - <strong>{formatarMoeda(valor || 0)}</strong></p>
+                        </div>
+
+                        <div className="d-flex p-3 align-items-center">
+                            <button className={`${index >= 1 ? 'd-none' : ''} btn btn-danger rounded`} onClick={onClose}>Fechar</button>
+                            <button className={`${index < 1 ? 'd-none' : ''} btn btn-outline-danger rounded`}
+                                onClick={() => setIndex(index - 1)}
+                            >Voltar</button>
+                        </div>
+                    </div>
+
+                    <div className="col-md-6 d-flex">
+                        {!showCardInfo && (
+                            <div className="card d-flex justify-content-center w-100 h-100">
+                                <div className="card-body d-flex flex-column justify-content-between">
+                                    <div>
+                                        <label className="mb-3">Forma de pagamento</label>
+                                        <FormaPagamento
+                                            formaPagamento={formaPagamento}
+                                            setFormaPagamento={setFormaPagamento}
+                                            cash={cash}
+                                        />
+                                        <div className="border border-bottom-5 border-info m-3"></div>
+
+                                        {(formaPagamento == 'CREDIT_CARD' || formaPagamento == 'PIX') && (
+                                            <div>
+                                                <div className="btn-group d-flex" role="group">
+                                                    <button
+                                                        className={`btn btn-sm ${monthly ? "btn-primary" : "btn-outline-primary"}`} 
+                                                        onClick={() => setMonthly(true)}
+                                                    >Mensal
+                                                    </button>
+
+                                                    <button
+                                                        className={`btn btn-sm ${!monthly ? "btn-primary" : "btn-outline-primary"}`} 
+                                                        onClick={() => setMonthly(false)}
+                                                    >Á vista
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    
+                                    <div>
+                                        {(!pago && formaPagamento !== 'CREDIT_CARD') && (
+                                            <button className="btn btn-success w-100 mt-3" onClick={clickPay}>
+                                                <i className="bi bi-cart me-2" />
+                                                Pagar
+                                            </button>
+                                        )}
+
+                                        {(!pago && formaPagamento == 'CREDIT_CARD') && (
+                                            <button className="btn btn-info w-100 mt-3" onClick={clickCard}>
+                                                <i className="bi bi-cart me-2" />
+                                                Dados do cartão
+                                            </button>
+                                        )}
+
+                                        {pago && (
+                                            <button className="btn btn-info w-100 mt-3" onClick={concluir}>
+                                                <i className="bi bi-cart me-2" />
+                                                Concluir
+                                            </button>
+                                        )}
+
+                                        {(!pago && formaPagamento !== 'CREDIT_CARD') && (
+                                            <p className="text-danger fs-2 text-center mt-1">Contrato será gerado e enviado para assinatura!</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showCardInfo && (
+                            <div className="col-md-6 w-100">
+                                <CardInput submit={clickPayCard} />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </Modal>)
+        </Modal>
     );
 }
 
-function TipoPagamento({ setRecorrente, setIndex }) {
-
-    function select(value) {
-        setRecorrente(value);
-        setIndex(1);
-    }
-
-    return (
-        <div className="d-flex flex-column g-3">
-            <div className="card border border-success col-md-12 shadow-xl hover:scale-105 duration-300">
-                <div className="card-body">
-                    <h5 className="card-title text-success">Pagamento Recorrente</h5>
-                    <p className="card-text">
-                        Pagamento mensal automático. Ideal para quem deseja acesso contínuo ao sistema.
-                        Renova sua licença automaticamente a cada mês. Cancele a qualquer momento, sem taxas adicionais.
-                    </p>
-                    <button onClick={() => select(true)} className="btn btn-success w-100">
-                        Escolher pagamento recorrente
-                    </button>
-                </div>
-            </div>
-
-            <div className="card border border-info col-md-12 shadow-xl hover:scale-105 duration-300">
-                <div className="card-body">
-                    <h5 className="card-title text-info">Pagamento Único</h5>
-                    <p className="card-text">
-                        Pagamento único para 1 mês de acesso. Perfeito para quem precisa do sistema por um período específico.
-                        Após 1 mês, a licença expira.
-                    </p>
-                    <button onClick={() => select(false)} className="btn btn-info w-100">
-                        Escolher pagamento único
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function FormaPagamento({ setFormaPagamento, setIndex }) {
-
+function FormaPagamento({ setFormaPagamento, formaPagamento, cash }) {
     function select(value) {
         setFormaPagamento(value);
-        setIndex(2);
     }
 
-    return (
-        <div className="row gap-3 justify-content-around">
-            <button className="col-md-3 btn btn-outline-success rounded d-flex justify-content-center align-items-center" onClick={() => select('PIX')}>
-                <iconify-icon icon="ic:baseline-pix" width="50" height="50"></iconify-icon>
-                PIX
-            </button>
-            
-            <button className="col-md-3 btn btn-outline-info rounded d-flex justify-content-center align-items-center" onClick={() => select('CREDIT_CARD')}>
-                <iconify-icon icon="ion:card" width="50" height="50"></iconify-icon>
-                Cartão
-            </button>
+    const methods = [
+        { name: 'PIX', value: 'PIX', color: 'success', icon: 'ic:baseline-pix' },
+        { name: 'Crédito', value: 'CREDIT_CARD', color: 'info', icon: 'ion:card' },
+        { name: 'Dinheiro', value: 'CASH', color: 'warning', icon: 'mdi:cash', visivel: cash },
+    ];
 
-            <button className="col-md-3 btn btn-outline-warning rounded d-flex justify-content-center align-items-center" onClick={() => select('CASH')}>
-                <iconify-icon icon="mdi:cash" width="50" height="50"></iconify-icon>
-                Dinheiro
-            </button>
+    return (
+        <div className="d-flex justify-content-around gap-3 w-100">
+            {methods.map((method, index) => (
+                <motion.button key={index}
+                    className={`btn btn-outline-${method.color} rounded d-flex flex-column justify-content-center align-items-center`}
+                    onClick={() => select(method.value)}
+                >
+                    <iconify-icon icon={method.icon} width='50' height='50'/>
+                    {method.name}
+                    <input className="mt-2" type="radio" checked={method.value == formaPagamento} />
+                </motion.button>
+            ))}
         </div>
-    )
+    );
 }
 
 export default Pagamento;

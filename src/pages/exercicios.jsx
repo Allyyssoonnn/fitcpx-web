@@ -100,6 +100,11 @@ function Exercicios() {
                                                 <div className="col-md-6 d-flex flex-column">
                                                     <label>{exercicio.nome_exercicio}</label>
                                                     <div className="d-flex gap-2 mt-2">
+                                                        {exercicio.url_exercicio && (
+                                                            <label className="badge bg-success">
+                                                                <i className="bi bi-camera-reels" />
+                                                            </label>
+                                                        )}
                                                         <label className="badge bg-success text-black">{exercicio?.usuario?.nome_usuario}</label>
                                                         <label className="badge bg-info">{grupo_exercicio_1}</label>
                                                         <label className="badge bg-info">{grupo_exercicio_2}</label>

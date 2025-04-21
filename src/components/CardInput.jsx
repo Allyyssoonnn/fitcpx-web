@@ -160,7 +160,7 @@ const CardInput = ({ submit }) => {
     }
 
     return (
-        <div className="wrapper" id="app">
+        <div className="wrapper p-0" id="app">
             <div className="card-form">
                 <div className="card-list">
                     <div className={`card-item ${isCardFlipped ? '-active' : ''}`}>
@@ -302,7 +302,7 @@ const CardInput = ({ submit }) => {
 
                 <div className="card-form__inner">
                     <div className="card-input">
-                        <label htmlFor="cardNumber" className="card-input__label">Número do cartão</label>
+                        <label htmlFor="cardNumber" className="card-input__label form-label">Número do cartão</label>
                         {/* <input type="text" v-model="cardNumber" v-on:focus="focusInput" v-on:blur="blurInput" data-ref="cardNumber" autocomplete="off" /> */}
                         <ReactInputMask value={cardNumber}
                             onChange={(e) => setCardNumber(e.target.value)}
@@ -373,7 +373,7 @@ const CardInput = ({ submit }) => {
                         </div>
                     </div>
 
-                    <button onClick={finaliza} className="card-form__button">Finalizar pagamento</button>
+                    <button onClick={finaliza} className="card-form__button btn btn-info rounded">Finalizar pagamento</button>
                 </div>
             </div>
 

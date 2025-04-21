@@ -47,10 +47,10 @@ function Assas({ show, recorrente, close }) {
         });
         if (formaPagamento === 'PIX') {
             const pagamento = await processPagamento(formaPagamento, empresa.cod_empresa, usuario.cod_usuario, recorrente);
-            if (pagamento.cod_pagamento_usuario) {
-                const pix = await getPIXPagamento(pagamento.cod_pagamento_usuario);
+            if (pagamento.cod_usuario_pagamento) {
+                const pix = await getPIXPagamento(pagamento.cod_usuario_pagamento);
                 Swal.fire({
-                    title: `${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pagamento?.valor_pagamento_usuario)}`,
+                    title: `${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pagamento?.valor_usuario_pagamento)}`,
                     text: pix.payload,
                     imageUrl: `data:image/png;base64,${pix.encodedImage}`,
                     confirmButtonText: "Confirmar",
