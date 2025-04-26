@@ -124,7 +124,7 @@ function CadAvaliacao() {
         if (cancel) return;
 
         const av = await setAvaliacao(data);
-        enviaImagens(av.cod_avaliacao);
+        enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
         reset();
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
     }

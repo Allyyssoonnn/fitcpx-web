@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import { sendAlunoContrato, setAlunoContrato } from "../api/aluno";
 import { criarPagamentoAluno, getPIXPagamentoAluno } from "../api/pagamento";
 import html2pdf from 'html2pdf.js';
+import SelectModalidades from "../components/selectModalidades";
 
 function ContratacaoPlano() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -29,7 +30,6 @@ function ContratacaoPlano() {
     const [modalPlanos, setModalPlanos] = useState(false);
     const [contratoPreenchido, setContratoPreenchido] = useState();
     const [montandoPlano, setMontandoPlano] = useState(false);
-    const [modalModalidade, setModalModalidade] = useState(false);
     const [selectContrato, setSelectContrato] = useState();
     const [descricao, setDescricao] = useState([]);
     const [pagamentoInicial, setPagamentoInicial] = useState();
@@ -37,12 +37,6 @@ function ContratacaoPlano() {
     const { data: planos, refetch } = useQuery({
         queryKey: ['planos', usuario.cod_empresa],
         queryFn: () => getPlanos(usuario.cod_empresa),
-        initialData: [],
-    });
-
-    const { data: modalidades } = useQuery({
-        queryKey: ['modalidades', usuario.cod_empresa],
-        queryFn: () => getModalidades(usuario.cod_empresa),
         initialData: [],
     });
 
@@ -65,6 +59,24 @@ function ContratacaoPlano() {
 
     useEffect(() => {
         var total = 0;
+
+        //Verificar SubVariacoes das modalidades para desconto
+        plano?.modalidades?.map((mod) => {
+            const subVariacoes = mod?.subvariacoes;
+            if (!subVariacoes?.length) return;
+
+            const subVariacao = subVariacoes.filter((v) => plano?.duracao_plano >= v.duracao_subvariacao);
+            if (!subVariacao.length) {
+                mod.valor_modalidade = mod.valor_modalidade_original;
+                mod.nome_modalidade = mod.nome_modalidade_original;
+                return;
+            }
+            if (subVariacao[0]?.valor_subvariacao) {
+                mod.valor_modalidade = subVariacao[0].valor_subvariacao;
+                mod.nome_modalidade = `${mod.nome_modalidade} - ${String(subVariacao[0].nome_subvariacao)}`;
+            }
+        });
+
         if (plano?.modalidades) plano.modalidades.map((mod) => total += mod.valor_modalidade);
         total = plano?.duracao_plano * total;
         //Antes de adicionar a adesão
@@ -95,11 +107,6 @@ function ContratacaoPlano() {
         setPagando(true);
     }
 
-    function openModalidade(e) {
-        e.preventDefault();
-        setModalModalidade(true);
-    }
-
     function addModalidade(modalidade) {
         setPlano(prev => ({
             ...prev,
@@ -121,6 +128,7 @@ function ContratacaoPlano() {
     async function onPay(formaPagamento, closeLoading, monthly, card) {
         const alunoContrato = await setAlunoContrato({
             ...plano,
+            pagamentoInicial,
             formaPagamento,
             contrato: contratoPreenchido,
             cod_aluno: aluno?.cod_aluno,
@@ -141,7 +149,7 @@ function ContratacaoPlano() {
         await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
 
         if (formaPagamento === 'PIX') {
-            const pagamento = await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, null, null, alunoContrato.cod_aluno_contrato, monthly);
+            const pagamento = await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, null, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial);
 
             if (pagamento.cod_aluno_contrato) {
                 const pix = await getPIXPagamentoAluno(pagamento.cod_aluno_contrato_pagamento, empresa.cod_empresa);
@@ -161,7 +169,7 @@ function ContratacaoPlano() {
 
             return false;
         } else if (formaPagamento === 'CREDIT_CARD') {
-            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, card, null, alunoContrato.cod_aluno_contrato, monthly);
+            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, card, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial);
             closeLoading();
             navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
             return true;
@@ -183,7 +191,6 @@ function ContratacaoPlano() {
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
             />
             <SelectPlano planos={planos} show={modalPlanos} setShow={setModalPlanos} setPlano={setPlano} />
-            <ModalModalidades modalidades={modalidades} show={modalModalidade} setShow={setModalModalidade} addModalidade={addModalidade} />
 
             <div className="card">
                 <div className="card-header">
@@ -233,34 +240,11 @@ function ContratacaoPlano() {
 
                             {montandoPlano && (
                                 <div className="d-flex flex-column">
-                                    <button className="btn btn-outline-success" onClick={openModalidade}>Adicionar modalidade</button>
-
-                                    <h5 className="card-title fs-3 mt-3">Modalidades</h5>
-
-                                    <div className="table-responsive">
-                                        <table className="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nome</th>
-                                                    <th>Valor</th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody>
-                                                {plano?.modalidades?.map((modalidade, index) => (
-                                                    <tr key={index}>
-                                                        <td>{modalidade.nome_modalidade}</td>
-                                                        <td>{formatarMoeda(modalidade?.valor_modalidade || 0)}</td>
-                                                        <td>
-                                                            <button className="btn btn-sm btn-outline-danger" onClick={() => removeModalidade(index)}>
-                                                                <i className="bi bi-trash" />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <SelectModalidades
+                                        addModalidade={addModalidade}
+                                        removeModalidade={removeModalidade}
+                                        modalidadesPlano={plano.modalidades}
+                                    />
 
                                     <h5 className="card-title fs-3 mt-3">Detalhes</h5>
 
@@ -363,68 +347,6 @@ function ContratacaoPlano() {
     );
 }
 
-function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
-    const [modalidade, setModalidade] = useState(null);
-    const [variacao, setVariacao] = useState();
-    
-    function confirmar() {
-        addModalidade({
-            ...modalidade,
-            valor_modalidade: variacao ? variacao.valor_variacao : modalidade.valor_modalidade,
-            nome_modalidade: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_variacao}` : ''}`
-        });
-        setShow(false);
-    }
-
-    function fechar() {
-        setModalidade(null);
-        setVariacao(null);
-        setShow(false);
-    }
-
-    return (
-        <Modal show={show}>
-            <div className="card">
-                <div className="card-header">
-                    <h5 className="card-title">Incluir modalidade</h5>
-                </div>
-
-                <div className="card-body">
-                    <Select
-                        options={modalidades}
-                        value={modalidade?.cod_modalidade}
-                        fieldName='nome_modalidade'
-                        fieldValue='cod_modalidade'
-                        label='Selecionar modalidade'
-                        onChange={(value) => setModalidade(value)}
-                    />
-
-                    <div className="mt-3">
-                        {modalidade?.variaveis_modalidade && (
-                            <Select
-                                options={JSON.parse(modalidade?.variaveis_modalidade)}
-                                fieldName='nome_variacao'
-                                fieldValue='nome_variacao'
-                                label='Selecionar variação'
-                                onChange={(value) => setVariacao(value)}
-                            />
-                        )}
-                    </div>
-
-                    <div className="d-flex justify-content-center mt-3">
-                        <label className="badge bg-info w-100 fs-5">{formatarMoeda((variacao?.valor_variacao ?? modalidade?.valor_modalidade) || 0)}</label>
-                    </div>
-                </div>
-
-                <div className="card-footer d-flex justify-content-between">
-                    <button className="btn btn-danger rounded" onClick={fechar}>Fechar</button>
-                    <button className="btn btn-success rounded" onClick={confirmar} disabled={!modalidade}>Confirmar</button>
-                </div>
-            </div>
-        </Modal>
-    )
-}
-
 function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInicio = new Date()) {
     // Função para decodificar entidades HTML (como &lt; e &gt;)
     function decodeHtml(html) {
@@ -477,7 +399,7 @@ function CardPlano({ plano, selectPlano }) {
             <div className="d-flex justify-content-between w-100 mb-3">
                 <label><strong>Nome: </strong>{plano?.nome_plano ?? '-'}</label>
 
-                <p className="mb-0"><strong>{formatarMoeda((plano?.valor_plano + plano?.valor_adesao) || 0)}</strong></p>
+                <p className="mb-0"><strong>{formatarMoeda(plano?.modalidades?.reduce((valor, mod) => valor + mod.valor_modalidade, 0) + (plano?.valor_adesao ?? 0))}</strong></p>
             </div>
 
             <p className="mb-0"><strong>Valor adesão:</strong> {formatarMoeda(plano?.valor_adesao)}</p>

@@ -85,7 +85,7 @@ function Planos() {
                                                 <label>{plano.nome_plano}</label>
                                                 <div className="d-flex gap-2 mt-2">
                                                     <label className="badge bg-info">{plano?.duracao_plano} {plano?.tipo_duracao_plano}</label>
-                                                    <label className="badge bg-success">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plano?.valor_plano)}</label>
+                                                    <label className="badge bg-success">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plano?.modalidades?.reduce((valor, mod) => valor + mod.valor_modalidade, 0))}</label>
                                                     {plano?.modalidades?.map((modaliade, index) => (
                                                         <label key={index} className="badge bg-warning text-dark">{modaliade?.modalidade?.nome_modalidade}</label>
                                                     ))}

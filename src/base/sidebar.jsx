@@ -3,8 +3,11 @@ import { stateApp, useToggleSidebar } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
+import { PRODUCAO } from "../api/api";
+import { useTranslation } from "react-i18next";
 
 function Sidebar() {
+    const { t } = useTranslation('sidebar');
     const navigate = useNavigate();
     const { toggleSidebar } = useToggleSidebar();
     const [{ openedSidebar }] = useRecoilState(stateApp);
@@ -28,13 +31,13 @@ function Sidebar() {
     }
 
     return (
-        <aside className="left-sidebar with-vertical" style={{ borderLeft: '0.30rem solid #85D446', overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px' }}>
+        <aside className="left-sidebar with-vertical" style={{ borderLeft: `0.30rem solid ${PRODUCAO ? '#85D446' : '#FF0000'}`, overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px' }}>
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm">
 
                     <div className="d-flex align-items-center">
                         <img src="../assets/images/logos/logo.png" alt="" width='45' />
-                        <Typewriter texts={['Bem-vindo', 'Fit Complex']} />
+                        <Typewriter texts={[t('welcome'), 'Fit Complex']} />
                     </div>
 
                     <a onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -57,61 +60,61 @@ function Sidebar() {
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/')} aria-expanded="false">
                                 <i className="bi bi-house fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Dashboard</span>
+                                <span className="hide-menu ps-1">{t('dashboard')}</span>
                             </a>
                         </li>
 
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/alunos')} aria-expanded="false">
                                 <i className="bi bi-person-rolodex fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Lista de alunos</span>
+                                <span className="hide-menu ps-1">{t('students')}</span>
                             </a>
                         </li>
                         
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/agenda')} aria-expanded="false">
                                 <i className="bi bi-calendar-check fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Agenda</span>
+                                <span className="hide-menu ps-1">{t('calendar')}</span>
                             </a>
                         </li>
 
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/planilha')} aria-expanded="false">
                                 <i className="bi bi-journal-bookmark-fill fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Planilha de treino</span>
+                                <span className="hide-menu ps-1">{t('coach')}</span>
                             </a>
                         </li>
 
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/avaliacoes')} aria-expanded="false">
                                 <i className="bi bi-activity fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Avaliações</span>
+                                <span className="hide-menu ps-1">{t('assessment')}</span>
                             </a>
                         </li>
 
                         <li className="sidebar-item">
                             <a className={`sidebar-link p-3 has-arrow ${dropCardapio ? 'active' : ''}`} href="#" onClick={() => setdropCardapio(!dropCardapio)}>
                                 <i className="bi bi-book fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Cardápio</span>
+                                <span className="hide-menu ps-1">{t('nutrition')}</span>
                             </a>
 
                             <ul className={`collapse first-level ${dropCardapio ? 'in' : ''}`}>
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/grupoalimentos')} aria-expanded="false">
                                         <i className="bi bi-collection fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Grupo alimentos</span>
+                                        <span className="hide-menu ps-1">{t('foodGroups')}</span>
                                     </a>
                                 </li>
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/alimentos')} aria-expanded="false">
                                         <i className="bi bi-collection fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Alimentos</span>
+                                        <span className="hide-menu ps-1">{t('foods')}</span>
                                     </a>
                                 </li>
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/cardapios')} aria-expanded="false">
                                         <i className="bi bi-book fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Cardápios</span>
+                                        <span className="hide-menu ps-1">{t('nutrition')}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -120,20 +123,20 @@ function Sidebar() {
                         <li className="sidebar-item">
                             <a className={`sidebar-link p-3 has-arrow ${dropTreino ? 'active' : ''}`} href="#" onClick={() => setDropTreino(!dropTreino)}>
                                 <i className="bi bi-card-checklist fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Treino</span>
+                                <span className="hide-menu ps-1">{t('workout')}</span>
                             </a>
 
                             <ul className={`collapse first-level ${dropTreino ? 'in' : ''}`}>
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/grupoexercicios')} aria-expanded="false">
                                         <i className="bi bi-collection fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Grupo exercícios</span>
+                                        <span className="hide-menu ps-1">{t('workout')}</span>
                                     </a>
                                 </li>
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/exercicios')} aria-expanded="false">
                                         <i className="bi bi-activity fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Exercícios</span>
+                                        <span className="hide-menu ps-1">{t('exercises')}</span>
                                     </a>
                                 </li>
                                 {/* <li className="sidebar-item ms-5">
@@ -145,7 +148,7 @@ function Sidebar() {
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/treinos')} aria-expanded="false">
                                         <i className="bi bi-card-checklist fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Treinos</span>
+                                        <span className="hide-menu ps-1">{t('workout')}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -154,35 +157,35 @@ function Sidebar() {
                         <li className="sidebar-item">
                             <a className={`sidebar-link p-3 has-arrow ${dropFinanceiro ? 'active' : ''}`} href="#" onClick={() => setdropFinanceiro(!dropFinanceiro)}>
                                 <i className="bi bi-bank fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">Financeiro</span>
+                                <span className="hide-menu ps-1">{t('finance')}</span>
                             </a>
 
                             <ul className={`collapse first-level ${dropFinanceiro ? 'in' : ''}`}>
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/resumofinanceiro')} aria-expanded="false">
                                         <i className="bi bi-cash-coin fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Resumo</span>
+                                        <span className="hide-menu ps-1">{t('summary')}</span>
                                     </a>
                                 </li>
 
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/modalidades')} aria-expanded="false">
                                         <i className="bi bi-easel fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Modalidades</span>
+                                        <span className="hide-menu ps-1">{t('services')}</span>
                                     </a>
                                 </li>
 
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/modcontratos')} aria-expanded="false">
                                         <i className="bi bi-paperclip fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Mod. Contratos</span>
+                                        <span className="hide-menu ps-1">{t('contractTemplates')}</span>
                                     </a>
                                 </li>
 
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/planos')} aria-expanded="false">
                                         <i className="bi bi-basket fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Planos</span>
+                                        <span className="hide-menu ps-1">{t('plans')}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -195,24 +198,24 @@ function Sidebar() {
                             </a>
 
                             <ul className={`collapse first-level ${dropAdmin ? 'in' : ''}`}>
-                                <li className="sidebar-item ms-5">
+                                {/* <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/licencapagamentos')} aria-expanded="false">
                                         <i className="bi bi-cash fs-6 me-1"></i>
                                         <span className="hide-menu ps-1">Licença pagamentos</span>
                                     </a>
-                                </li>
+                                </li> */}
 
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
                                         <i className="bi bi-person-lines-fill fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Lista de usuários</span>
+                                        <span className="hide-menu ps-1">{t('users')}</span>
                                     </a>
                                 </li>
 
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
                                         <i className="bi bi-bar-chart fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Relatórios</span>
+                                        <span className="hide-menu ps-1">{t('reports')}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -223,9 +226,9 @@ function Sidebar() {
                     <div className="hide-menu bg-light position-relative mt-7 rounded-3">
                         <div className="d-flex p-2 justify-content-between">
                             <div className="mt-2">
-                                <h4 className="mb-6">Uso gratuito</h4>
+                                <h4 className="mb-6">{t('plan')}</h4>
                                 {/* <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6> */}
-                                <button onClick={() => navigate('/licenca')} className="btn btn-success fs-2 fw-semibold lh-sm">Contratar plano</button>
+                                <button onClick={() => navigate('/licenca')} className="btn btn-success fs-2 fw-semibold lh-sm">{t('subscribe')}</button>
                             </div>
                             
                             <div>

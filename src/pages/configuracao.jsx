@@ -124,7 +124,7 @@ function Conta({ usuario, setusuario }) {
     }
 
     return (
-        <form className="row" onSubmit={handleSubmit(HandleConfirm)}>
+        <div className="row">
             <ImageCropModal
                 show={showModal}
                 image={image}
@@ -182,7 +182,7 @@ function Conta({ usuario, setusuario }) {
                     <div className="card-body p-4">
                         <h4 className="card-title">Informações pessoais</h4>
                         <p className="card-subtitle mb-4">Para alterar informações pessoais edite e salve aqui!</p>
-                        <form>
+                        <form onSubmit={handleSubmit(HandleConfirm)}>
                             <div className="row">
                                 <div className="col-lg-6">
                                     <div className="mb-3">
@@ -240,7 +240,7 @@ function Conta({ usuario, setusuario }) {
                                 <div className="col-12">
                                     <div className="d-flex align-items-center justify-content-end mt-4 gap-6">
                                         <button className="btn btn-success" type="submit">Salvar</button>
-                                        <button className="btn bg-danger-subtle text-danger">Descartar</button>
+                                        {/* <button className="btn bg-danger-subtle text-danger">Descartar</button> */}
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +248,7 @@ function Conta({ usuario, setusuario }) {
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     )
 }
 
@@ -311,7 +311,7 @@ function Empresa({ empresa, setempresa, usuario }) {
     }
 
     return (
-        <form className="row" onSubmit={handleSubmit(HandleConfirm)}>
+        <div className="row">
             <ImageCropModal
                 show={showModal}
                 image={image}
@@ -369,7 +369,7 @@ function Empresa({ empresa, setempresa, usuario }) {
                     <div className="card-body p-4">
                         <h4 className="card-title">Informações pessoais</h4>
                         <p className="card-subtitle mb-4">Para alterar informações pessoais edite e salve aqui!</p>
-                        <form>
+                        <form onSubmit={handleSubmit(HandleConfirm)}>
                             <div className="row">
                                 <div className="col-lg-6">
                                     <div className="mb-3">
@@ -437,7 +437,7 @@ function Empresa({ empresa, setempresa, usuario }) {
                                 <div className="col-12">
                                     <div className="d-flex align-items-center justify-content-end mt-4 gap-6">
                                         <button disabled={usuario.admin_usuario !== 'S'} className="btn btn-success" type="submit">Salvar</button>
-                                        <button disabled={usuario.admin_usuario !== 'S'} className="btn bg-danger-subtle text-danger">Descartar</button>
+                                        {/* <button disabled={usuario.admin_usuario !== 'S'} className="btn bg-danger-subtle text-danger">Descartar</button> */}
                                     </div>
                                 </div>
                             </div>
@@ -445,7 +445,7 @@ function Empresa({ empresa, setempresa, usuario }) {
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     )
 }
 

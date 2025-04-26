@@ -11,6 +11,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 ModuleRegistry.registerModules([ ExcelExportModule ]);
 
 import './scss/CardInput.scss';
+import './i18n';
 
 const queryClient = new QueryClient();
 

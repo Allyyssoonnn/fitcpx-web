@@ -1,0 +1,12 @@
+{
+    "recentPhysicalAssessament": "Recent Physical Assessments",
+    "overview": "Company Overview",
+    "student": "Client",
+    "heigth": "Heigth",
+    "date": "Date",
+    "weight": "Weight",
+    "clientsOverview": "Active Clients",
+    "physicalAssessamentsOverview": "Completed Physicals Assessments",
+    "workoutsOverview": "Created Workouts",
+    "usersOverview": "Created Users"
+}

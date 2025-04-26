@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactInputMask from "react-input-mask";
 import { motion } from 'framer-motion';
+import { PRODUCAO } from "../api/api";
 
-const CardInput = ({ submit }) => {
+const CardInput = ({ submit, submitText = 'Finalizar pagamento' }) => {
     const [currentCardBackground, setCurrentCardBackground] = useState(Math.floor(Math.random() * 25 + 1));
-    const [cardName, setCardName] = useState("Alyson H L Silva");
-    const [cardNumber, setCardNumber] = useState("4111111111111111");
-    const [cardMonth, setCardMonth] = useState("11");
-    const [cardYear, setCardYear] = useState("2030");
-    const [cardCvv, setCardCvv] = useState("123");
+    const [cardName, setCardName] = useState(PRODUCAO ? '' : "Alyson H L Silva");
+    const [cardNumber, setCardNumber] = useState(PRODUCAO ? '' : "4111111111111111");
+    const [cardMonth, setCardMonth] = useState(PRODUCAO ? '' : "11");
+    const [cardYear, setCardYear] = useState(PRODUCAO ? '' : "2030");
+    const [cardCvv, setCardCvv] = useState(PRODUCAO ? '' : "123");
     const [minCardYear, setMinCardYear] = useState(new Date().getFullYear());
     const [amexCardMask] = useState("9999 999999 99999");
     const [otherCardMask] = useState("9999 9999 9999 9999");
@@ -153,7 +154,7 @@ const CardInput = ({ submit }) => {
         };
 
         // Exemplo de como você pode utilizar o objeto (aqui estamos apenas exibindo no console)
-        console.log("Dados do pagamento:", paymentData);
+        // console.log("Dados do pagamento:", paymentData);
 
         // Se tudo estiver correto, finalize o pagamento
         submit(paymentData);
@@ -373,7 +374,7 @@ const CardInput = ({ submit }) => {
                         </div>
                     </div>
 
-                    <button onClick={finaliza} className="card-form__button btn btn-info rounded">Finalizar pagamento</button>
+                    <button onClick={finaliza} className="card-form__button btn btn-info rounded">{submitText}</button>
                 </div>
             </div>
 

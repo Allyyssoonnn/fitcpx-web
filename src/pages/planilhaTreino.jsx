@@ -23,9 +23,9 @@ function PlanilhaTreino() {
 
     useEffect(() => {
         const alunosCache = JSON.parse(localStorage.getItem('planilhatreino'));
-        setAlunos(alunosCache.map((aluno) => ({ ...aluno, indexTreino: 0, indexSessao: 0 })));
+        setAlunos(alunosCache.map((aluno) => ({ ...aluno, indexTreino: -1, indexSessao: 0 })));
     }, []);
-
+    
     function alteraTema() {
         const novoTema = tema === 'light' ? 'dark' : 'light';
         localStorage.setItem('tema', novoTema);
@@ -138,12 +138,14 @@ function PlanilhaTreino() {
                                         <div className="col-12 col-md-6 d-flex flex-column">
                                             <label>Treinos</label>
                                             <div className="btn-group" role="group">
-                                                {alunos[indexAluno]?.treinos?.map((treino, index) => (
-                                                    <>
-                                                        <input type="radio" className="btn-check" name="btnradioTreino" id={`btnradio-treino-${index}`} checked={index == alunos[indexAluno].indexTreino} onClick={() => selectTreino(index)} />
-                                                        <label className="btn btn-outline-primary" htmlFor={`btnradio-treino-${index}`}>{treino.nome_treino}</label>
-                                                    </>
-                                                ))}
+                                                {alunos[indexAluno]?.treinos?.map((treino, index) => {
+                                                    return treino.status_treino == 'A' ? (
+                                                        <>
+                                                            <input type="radio" className="btn-check" name="btnradioTreino" id={`btnradio-treino-${index}`} checked={index == alunos[indexAluno].indexTreino} onClick={() => selectTreino(index)} />
+                                                            <label className="btn btn-outline-primary" htmlFor={`btnradio-treino-${index}`}>{treino.nome_treino}</label>
+                                                        </>
+                                                    ) : <></>;
+                                                })}
                                             </div>
                                         </div>
 

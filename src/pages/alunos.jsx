@@ -5,8 +5,10 @@ import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from '../states/states';
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function Alunos() {
+    const { t } = useTranslation('clients');
     const [usuario] = useRecoilState(stateUsuario);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("A");
@@ -53,7 +55,7 @@ function Alunos() {
                         <div className="card-header">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h4 className="card-title d-none d-md-block">Lista de alunos</h4>
+                                    <h4 className="card-title d-none d-md-block">{t('listName')}</h4>
                                     <label>{filteredAlunos?.length} Alunos</label>
                                 </div>
 
@@ -87,7 +89,7 @@ function Alunos() {
 
                                 <button className="btn btn-success" onClick={() => navigate('/cadaluno')}>
                                     <i className="bi bi-plus-circle me-2"></i>
-                                    Novo aluno
+                                    {t('newButtonText')}
                                 </button>
                             </div>
                         </div>

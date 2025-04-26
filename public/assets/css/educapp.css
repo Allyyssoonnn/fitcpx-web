@@ -83,3 +83,12 @@ aside::-webkit-scrollbar-thumb:hover {
   border-style: dashed !important;
   border-color: var(--bs-info) !important;
 }
+
+.mobile-container {
+  width: 375px; /* ou 360px, 414px, dependendo do "modelo" de celular que quer simular */
+  margin: 0 auto; /* centraliza horizontalmente */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* opcional, pra parecer um "celular" */
+  height: 100vh;
+  overflow: hidden;
+  border: 1px solid #ccc; /* também opcional */
+}

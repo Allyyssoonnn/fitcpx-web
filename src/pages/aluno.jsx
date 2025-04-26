@@ -612,12 +612,6 @@ function CardContrato({ alunoContrato, aluno, refetch }) {
                         {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-danger">Cancelado</label>}
                         {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-success">Ativo</label>}
                     </div>
-                    {/* <div className='col-md-3'>
-                        <strong>Sexo:</strong> {getSexo(cardapio.sexo_treino)}
-                    </div> */}
-                    {/* <div className='col-md-3'>
-                        <strong></strong> {alunoContrato?.refeicoes?.length} {caralunoContratodapio?.refeicoes?.length > 1 ? 'Refeições' : 'Refeição'}
-                    </div> */}
                 </div>
             </div>
 

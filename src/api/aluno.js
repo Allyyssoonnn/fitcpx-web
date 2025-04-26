@@ -13,6 +13,18 @@ export const getAluno = async (codAluno) => {
     throw new Error("Erro ao carregar aluno");
 };
 
+export const getCards = async (codAluno) => {
+    const resp = await post('/aluno/getCards', { cod_aluno: codAluno });
+    if (resp.status) return resp.cards;
+    throw new Error("Erro ao carregar aluno");
+};
+
+export const deleteCard = async (cod_aluno_cartao) => {
+    const resp = await post('/aluno/deleteCard', { cod_aluno_cartao });
+    if (resp.status) return resp.status;
+    throw new Error("Erro ao carregar sessao");
+};
+
 export const setAluno = async (aluno) => {
     const resp = await post('/aluno/setAluno', { aluno });
     if (resp.status) {

@@ -6,8 +6,10 @@ import { useRecoilState } from "recoil";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { verifyEmail } from "../api/usuario";
 import Notificacoes from "../components/notificacoes";
+import { useTranslation } from "react-i18next";
 
 function Header() {
+    const { i18n } = useTranslation();
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
@@ -17,6 +19,8 @@ function Header() {
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [isIos, setIsIos] = useState(false);
+
+    const changeLanguage = (lang) => i18n.changeLanguage(lang);
 
     useEffect(() => {
         const handler = (event) => {
@@ -128,6 +132,8 @@ function Header() {
                         
                         <Notificacoes />
 
+                        <LanguageSelect />
+
                         <li className="nav-item dropdown me-2">
                             <a className="d-flex align-items-center nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img
@@ -158,6 +164,7 @@ function Header() {
                                             </p>
                                         </div>
                                     </div>
+
                                     <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-building fs-6"></i>
                                         <p className="mb-0 fs-3">Minha empresa</p>
@@ -190,5 +197,50 @@ function Header() {
         </header>)
     );
 }
+
+function LanguageSelect() {
+    const { i18n } = useTranslation();
+    const [open, setOpen] = useState(false);
+  
+    const changeLanguage = (lng, event) => {
+      event.stopPropagation();
+      i18n.changeLanguage(lng);
+      setOpen(false);
+    };
+  
+    const toggleMenu = (event) => {
+      event.stopPropagation();
+      setOpen(!open);
+    };
+  
+    return (
+      <div className="position-relative d-inline-block">
+            <button
+                className="btn btn-sm d-flex align-items-center gap-2"
+                onClick={toggleMenu}
+            >
+                <iconify-icon icon={i18n.language === 'pt' ? 'cif:br' : 'cif:us'} width="20"></iconify-icon>
+                {i18n.language === 'pt' ? 'Português' : 'English'}
+                <iconify-icon icon={open ? 'mdi:chevron-up' : 'mdi:chevron-down'} width="20"></iconify-icon>
+            </button>
+    
+            {open && (
+                <div
+                    className="position-absolute bg-white rounded shadow-sm mt-2"
+                    style={{ zIndex: 999, minWidth: '160px' }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button onClick={(e) => changeLanguage('pt', e)} className="dropdown-item d-flex align-items-center gap-2">
+                        <iconify-icon icon="cif:br" width="20"></iconify-icon> Português
+                    </button>
+
+                    <button onClick={(e) => changeLanguage('en', e)} className="dropdown-item d-flex align-items-center gap-2">
+                        <iconify-icon icon="cif:us" width="20"></iconify-icon> English
+                    </button>
+                </div>
+            )}
+      </div>
+    );
+  }
 
 export default Header;

@@ -6,6 +6,7 @@ import { getAlunos, getAvaliacoes } from "../api/aluno";
 import { getUsuarios } from "../api/usuario";
 import { getTreinos } from "../api/treino";
 import { formatarData } from "../utils";
+import { useTranslation } from "react-i18next";
 
 function Dashboard() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -36,6 +37,7 @@ function Dashboard() {
 }
 
 function InfoTotais({ alunos, avaliacoes }) {
+    const { t } = useTranslation('dashboard');
     const [usuario] = useRecoilState(stateUsuario);
 
     const { data: usuarios } = useQuery({
@@ -57,7 +59,7 @@ function InfoTotais({ alunos, avaliacoes }) {
             <div className="card">
                 <div className="card-body">
                     <div className="d-flex flex-column">
-                        <h6 className="card-title">Resumo da empresa</h6>
+                        <h6 className="card-title">{t('overview')}</h6>
 
                         <div className="d-flex border-bottom py-3">
                             <span className="rounded-circle round-48 mb-4 bg-success-subtle text-success d-flex align-items-center justify-content-center">
@@ -65,7 +67,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                             </span>
 
                             <div className="ms-3">
-                                <h6>Alunos ativos</h6>
+                                <h6>{t('clientsOverview')}</h6>
                                 <div className="d-flex align-items-center gap-2">
                                     <h3 className="mb-0">{alunos.length}</h3>
                                     {/* <span className="badge bg-primary-subtle text-primary fw-semibold rounded-pill">+8.5</span> */}
@@ -79,7 +81,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                             </span>
 
                             <div className="ms-3">
-                                <h6>Avaliações realizadas</h6>
+                                <h6>{t('physicalAssessamentsOverview')}</h6>
 
                                 <div className="d-flex align-items-center gap-2">
                                     <h3 className="mb-0">{avaliacoes.length}</h3>
@@ -93,7 +95,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                             </span>
 
                             <div className="ms-3">
-                                <h6>Treinos cadastrados</h6>
+                                <h6>{t('workoutsOverview')}</h6>
 
                                 <div className="d-flex align-items-center gap-2">
                                     <h3 className="mb-0">{treinos.length}</h3>
@@ -107,7 +109,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                             </span>
 
                             <div className="ms-3">
-                                <h6>Usuários do sistema</h6>
+                                <h6>{t('usersOverview')}</h6>
 
                                 <div className="d-flex align-items-center gap-2">
                                     <h3 className="mb-0">{usuarios.length}</h3>
@@ -122,21 +124,22 @@ function InfoTotais({ alunos, avaliacoes }) {
 }
 
 function UltimasAvaliacoes({ alunos, avaliacoes }) {
+    const { t } = useTranslation('dashboard');
 
     return (
         <div className="col-lg-8">
             <div className="card">
                 <div className="card-body">
-                    <h5 className="card-title">Últimas avaliações</h5>
+                    <h5 className="card-title">{t('recentPhysicalAssessament')}</h5>
 
                     <div className="table-responsive">
                         <table className="table text-nowrap align-middle mb-0">
                             <thead>
                                 <tr className="border-2 border-bottom border-primary border-0"> 
-                                    <th scope="col" className="ps-0">Aluno</th>
-                                    <th scope="col" className="ps-0">Data</th>
-                                    <th scope="col" >Altura</th>
-                                    <th scope="col" className="text-center">Peso</th>
+                                    <th scope="col" className="ps-0">{t('student')}</th>
+                                    <th scope="col" className="ps-0">{t('date')}</th>
+                                    <th scope="col" >{t('heigth')}</th>
+                                    <th scope="col" className="text-center">{t('weight')}</th>
                                 </tr>
                             </thead>
 

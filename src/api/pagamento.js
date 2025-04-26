@@ -1,6 +1,30 @@
 import { toast } from "react-toastify";
 import { get, post } from "./api";
 
+export const cashWithdrawal = async (cod_empresa) => {
+    const resp = await post('/pagamento/cashWithdrawal', { cod_empresa });
+    if (resp.status) {
+        return resp.status;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const getBankExtract = async (cod_empresa, month, year) => {
+    const resp = await post('/pagamento/getBankExtract', { cod_empresa, month, year });
+    if (resp.status) {
+        return resp.bankExtract;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const getBalance = async (cod_empresa) => {
+    const resp = await post('/pagamento/getBalance', { cod_empresa });
+    if (resp.status) {
+        return resp.balance;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
 export const gerarIdCarteira = async (cod_empresa) => {
     const resp = await post('/pagamento/gerarIdCarteira', { cod_empresa });
     if (resp.status) {
@@ -9,10 +33,18 @@ export const gerarIdCarteira = async (cod_empresa) => {
     throw new Error("Erro ao carregar agenda");
 };
 
-export const criarPagamentoAluno = async (cod_aluno, formaPagamento, cod_empresa, cod_usuario, dadosCartao, cod_aluno_cartao, cod_aluno_contrato, mensal, meuip) => {
-    const resp = await post('/pagamento/criarPagamentoAluno', { cod_aluno, formaPagamento, cod_empresa, cod_usuario, dadosCartao, cod_aluno_cartao, cod_aluno_contrato, mensal, meuip });
+export const criarPagamentoAluno = async (cod_aluno, formaPagamento, cod_empresa, cod_usuario, dadosCartao, cod_aluno_cartao, cod_aluno_contrato, mensal, pagamentoInicial, meuip) => {
+    const resp = await post('/pagamento/criarPagamentoAluno', { cod_aluno, formaPagamento, cod_empresa, cod_usuario, dadosCartao, cod_aluno_cartao, cod_aluno_contrato, mensal, pagamentoInicial, meuip });
     if (resp.status) {
         return resp.pagamento;
+    } toast.error(resp.message);
+    // throw new Error("Erro ao carregar agenda");
+};
+
+export const createCardToken = async (dadosCartao, cod_empresa, cod_aluno) => {
+    const resp = await post('/pagamento/createCardToken', { dadosCartao, cod_empresa, cod_aluno });
+    if (resp.status) {
+        return resp.status;
     } toast.error(resp.message);
     // throw new Error("Erro ao carregar agenda");
 };

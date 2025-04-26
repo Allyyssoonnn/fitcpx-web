@@ -9,8 +9,10 @@ import { parseCookies, setCookie } from 'nookies';
 import axios from 'axios';
 import { baseURL } from '../api/api';
 import BackToTop from '../components/backToTop';
+import { useTranslation } from 'react-i18next';
 
 function Layout() {
+    const { t } = useTranslation('root');
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
@@ -78,7 +80,7 @@ function Layout() {
                     <Conteudo/>
 
                     <div className="py-6 px-6 text-center">
-                        <p className="mb-0 fs-4">Desenvolvido por Lab Complex Dev LTDA - 59.820.051/0001-02</p>
+                        <p className="mb-0 fs-4">{t('footerText')}</p>
                     {/* <p class="mb-0 fs-4">Desenvolvido por <a href="https://adminmart.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Alyson H.</a>Distribuido por <a href="https://themewagon.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Milton G.</a></p> */}

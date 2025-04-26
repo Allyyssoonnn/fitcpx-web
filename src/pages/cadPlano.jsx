@@ -11,16 +11,21 @@ import JoditEditor from "jodit-react";
 import contratoPresencial from '../utils/contratoPresencial.html?raw';
 import contratoConsultoria from '../utils/contratoConsultoria.html?raw';
 import Select from "../components/baseComponents/select";
+import { dividirParcelas, formatarMoeda } from "../utils";
+import SelectModalidades from "../components/selectModalidades";
 
 function CadPlano() {
     const editor = useRef(null);
     const { nSuccess, nConfirm } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
-    const { register, handleSubmit, control, setValue } = useForm();
+    const { register, handleSubmit, control, setValue, watch } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [contrato, setContrato] = useState('');
     const [selectModalidades, setSelectModalidades] = useState([]);
+
+    const [valorTotal, setValorTotal] = useState(0);
+    const [parcelas, setParcelas] = useState([]);
 
     const { data: modalidades, refetch } = useQuery({
         queryKey: ['modalidades', usuario.cod_empresa],
@@ -38,6 +43,47 @@ function CadPlano() {
             });
         }
     }, [location, setValue, usuario]);
+
+    const duracao_plano = watch('duracao_plano');
+    const valor_adesao = watch('valor_adesao');
+    useEffect(() => {
+        var total = 0;
+
+        //Verificar SubVariacoes das modalidades para desconto
+        selectModalidades?.map((mod) => {
+            // const subVariacoes = mod?.subvariacoes;
+            // if (!subVariacoes?.length) return;
+
+            // const subVariacao = subVariacoes.filter((v) => duracao_plano >= v.duracao_subvariacao);
+            // if (!subVariacao.length) {
+            //     mod.valor_modalidade = mod.valor_modalidade_original;
+            //     mod.nome_modalidade = mod.nome_modalidade_original;
+            //     return;
+            // }
+            // if (subVariacao[0]?.valor_subvariacao) {
+            //     mod.valor_modalidade = subVariacao[0].valor_subvariacao;
+            //     mod.nome_modalidade = `${mod.nome_modalidade} - ${String(subVariacao[0].nome_subvariacao)}`;
+            // }
+        });
+
+        // if (newModalidades?.length) setSelectModalidades(newModalidades);
+
+        if (selectModalidades) selectModalidades.map((mod) => total += mod.valor_modalidade);
+        total = duracao_plano * total;
+        //Antes de adicionar a adesão
+        const parcelas = dividirParcelas(duracao_plano, total);
+        if (valor_adesao) parcelas[0] = valor_adesao + parcelas[0];
+        setValorTotal(total);
+        setParcelas(JSON.stringify(parcelas));
+    }, [selectModalidades, duracao_plano]);
+
+    function addModalidade(modalidade) {
+        setSelectModalidades(prev => [...(prev || []), modalidade]);
+    }
+
+    function removeModalidade(index) {
+        setSelectModalidades(prev => prev?.filter((m, i) => index !== i));
+    }
 
     async function confirma(data) {
         await setPlano({
@@ -97,7 +143,7 @@ function CadPlano() {
                     <div className="row g-3 mt-3">
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Valor plano</label>
-                            <CurrencyInput control={control} name='valor_plano' />
+                            <input disabled className="form-control" value={formatarMoeda(valorTotal)} />
                         </div>
 
                         <div className="col-md-3">
@@ -112,12 +158,10 @@ function CadPlano() {
                 <div className="card-body">
                     <h5 className="card-title fw-semibold mb-4">Modalidades</h5>
 
-                    <MultiSelect
-                        options={modalidades}
-                        chavePesquisa='nome_modalidade'
-                        valueChave='cod_modalidade'
-                        state={selectModalidades}
-                        setState={setSelectModalidades}
+                    <SelectModalidades
+                        addModalidade={addModalidade}
+                        removeModalidade={removeModalidade}
+                        modalidadesPlano={selectModalidades}
                     />
                 </div>
 
