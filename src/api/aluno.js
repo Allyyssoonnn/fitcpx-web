@@ -93,8 +93,8 @@ export const sendAlunoContrato = async (cod_aluno_contrato, blob) => {
     throw new Error("Erro ao carregar alunos");
 };
 
-export const getAlunoContratos = async (cod_aluno) => {
-    const resp = await post('/aluno/getAlunoContratos', { cod_aluno });
+export const getAlunoContratos = async (cod_aluno, cod_empresa) => {
+    const resp = await post('/aluno/getAlunoContratos', { cod_aluno, cod_empresa });
     if (resp.status) return resp.alunoContratos;
     throw new Error("Erro ao carregar alunos");
 };

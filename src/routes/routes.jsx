@@ -36,6 +36,7 @@ import ModContratos from "../pages/modContratos";
 import CadContrato from "../pages/cadContrato";
 import Configuracao from "../pages/configuracao";
 import Contrato from "../pages/contrato";
+import Contratos from "../pages/contratos";
 
 const routes = [
     //Base
@@ -84,6 +85,7 @@ const routes = [
     { path: '/resumofinanceiro', name: 'Licença', element: ResumoFinanceiro },
     { path: '/configuracao', name: 'Licença', element: Configuracao },
     { path: '/contrato', name: 'Licença', element: Contrato },
+    { path: '/contratos', name: 'Licença', element: Contratos },
 ]
   
 export default routes;  
