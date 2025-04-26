@@ -150,7 +150,7 @@ function Aluno() {
                         <div className={`col-sm-8 ${window.innerWidth < 900 ? 'text-center' : ''} mt-4`}>
                             <h3>{aluno?.nome_aluno}</h3>
                             
-                            <div className='d-flex align-items-center mb-2'>
+                            <p>
                                 <label>{calcularIdade(aluno?.data_nascimento_aluno)} Anos</label>
 
                                 <label className={`ms-2 bg-opacity-50 px-2 rounded-3
@@ -162,7 +162,7 @@ function Aluno() {
                                     {aluno?.status_aluno === 'B' ? 'Bloqueado' : ''}
                                     {aluno?.status_aluno === 'I' ? 'Inativo' : ''}
                                 </label>
-                            </div>
+                            </p>
 
                             <p>Email: {aluno?.email_aluno}</p>
 
