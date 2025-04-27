@@ -1,14 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { getAluno, getAlunoContrato, sendAlunoContrato } from "../api/aluno";
+import { cancelAlunoContrato, getAluno, getAlunoContrato, sendAlunoContrato } from "../api/aluno";
 import { useQuery } from "react-query";
 import { adicionarMesData, formatarData, formatarMoeda } from "../utils";
 import JoditEditor from "jodit-react";
 import { useRecoilState } from "recoil";
-import { stateEmpresa } from "../states/states";
+import { stateEmpresa, useNotificacao } from "../states/states";
 import { useEffect } from "react";
 import html2pdf from 'html2pdf.js';
 
 function Contrato() {
+    const { nConfirm } = useNotificacao();
     const [empresa] = useRecoilState(stateEmpresa);
     const navigate = useNavigate();
     const location = useLocation();
@@ -46,6 +47,13 @@ function Contrato() {
         await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
     }
 
+    async function cancelContract() {
+        nConfirm(null, 'Tem certeza que deseja cancelar o contrato?', async () => {
+            await cancelAlunoContrato(cod_aluno_contrato);
+            navigate(-1);
+        });
+    }
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -69,6 +77,8 @@ function Contrato() {
                                 {alunoContrato?.status_aluno_contrato == 'B' && <label className="badge bg-danger">Cancelado</label>}
                                 {alunoContrato?.status_aluno_contrato == 'B' && <label className="badge bg-success">Ativo</label>}
                             </p>
+
+                            <button className="btn btn-sm btn-outline-danger rounded" onClick={cancelContract}>Solicitar cancelamento</button>
                         </div>
                     </div>
                 </div>
