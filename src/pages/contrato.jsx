@@ -68,9 +68,11 @@ function Contrato() {
 
                         <div className="card-body">
                             <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
-                            <p><strong>ID do contrato:</strong> {alunoContrato?.id_aluno_contrato}</p>
+                            <p><strong>ID da assinatura:</strong> {alunoContrato?.id_aluno_contrato}</p>
+                            <p><strong>ID do contrato:</strong> {alunoContrato?.autentique_aluno_contrato}</p>
                             <p><strong>Valor total:</strong> {formatarMoeda(alunoContrato?.total_aluno_contrato)}</p>
                             <p><strong>Expiração:</strong> {formatarData(alunoContrato?.expiracao_aluno_contrato)}</p>
+                            <p><strong>Status do contrato: </strong> {alunoContrato?.statusautentique_aluno_contrato}</p>
                             <p><strong>Status: </strong>
                                 <label className="badge bg-info">{alunoContrato?.status_aluno_contrato}</label>
                             </p>
