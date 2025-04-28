@@ -737,7 +737,7 @@ export function calculaPorcentagemGordura(aluno, avaliacao) {
         const primeiroTermo = 0.368352 * soma;
         const segundoTermo = (0.001153 * soma) ** 2;
         const terceiroTermo = 0.1531198 * idade;
-        return ((10.927073 + primeiroTermo) - segundoTermo + terceiroTermo).toFixed(1);
+        return (10.927073 + primeiroTermo - segundoTermo - terceiroTermo).toFixed(1);
     }
     //18 a 61 anos - Jackson e Pollock - (1978)
     if (avaliacao.cod_protocolo === 4) {
