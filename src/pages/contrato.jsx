@@ -72,10 +72,7 @@ function Contrato() {
                             <p><strong>Valor total:</strong> {formatarMoeda(alunoContrato?.total_aluno_contrato)}</p>
                             <p><strong>Expiração:</strong> {formatarData(alunoContrato?.expiracao_aluno_contrato)}</p>
                             <p><strong>Status: </strong>
-                                {alunoContrato?.status_aluno_contrato == 'P' && <label className="badge bg-warning">Pendente</label>}
-                                {alunoContrato?.status_aluno_contrato == 'B' && <label className="badge bg-danger">Bloqueado</label>}
-                                {alunoContrato?.status_aluno_contrato == 'B' && <label className="badge bg-danger">Cancelado</label>}
-                                {alunoContrato?.status_aluno_contrato == 'B' && <label className="badge bg-success">Ativo</label>}
+                                <label className="badge bg-warning">{alunoContrato.status_aluno_contrato}</label>
                             </p>
 
                             <button className="btn btn-sm btn-outline-danger rounded" onClick={cancelContract}>Solicitar cancelamento</button>
@@ -111,19 +108,19 @@ function Contrato() {
                             {alunoContrato?.pagamentos.map((pagamento, index) => (
                                 <tr key={index} className={`border rounded ${pagamento.status_aluno_contrato_pagamento == 'CONFIRMED' ? 'border-success' : 'border-warning'}`}>
                                     <th scope="row" className="d-flex align-items-center">
-                                        <div className="col-md-6 d-flex flex-column">
-                                            <label>Pagamento</label>
+                                        <div className="col-md-12 d-flex flex-column">
+                                            <label>{formatarData(pagamento.data_aluno_contrato_pagamento)}</label>
+                                            <label className="fs-2 text-muted">{pagamento.statustexto_aluno_contrato_pagamento}</label>
                                             <div className="d-flex gap-2 mt-2">
                                                 {pagamento.status_aluno_contrato_pagamento == 'PENDING' && <label className="badge bg-warning">Pendente</label>}
                                                 {pagamento.status_aluno_contrato_pagamento == 'CONFIRMED' && <label className="badge bg-success">Pago</label>}
                                                 {pagamento.status_aluno_contrato_pagamento == 'RECEIVED' && <label className="badge bg-success">Recebida</label>}
                                                 
-                                                <label className="badge bg-primary">{formatarData(pagamento.expiracao_aluno_contrato_pagamento)}</label>
+                                                <label className="badge bg-danger">{formatarData(pagamento.expiracao_aluno_contrato_pagamento)}</label>
                                                 <label className="badge bg-info">{formatarMoeda(pagamento.valor_aluno_contrato_pagamento)}</label>
 
                                                 {pagamento.forma_aluno_contrato_pagamento == 'PIX' && <label className="badge bg-warning">PIX</label>}
                                                 {pagamento.forma_aluno_contrato_pagamento == 'CREDIT_CARD' && <label className="badge bg-warning">Cartão de crédito</label>}
-
                                             </div>
                                         </div>
                                     </th>

@@ -607,10 +607,7 @@ function CardContrato({ alunoContrato, aluno, refetch }) {
                         <strong>Expiração:</strong> {formatarData(alunoContrato.expiracao_aluno_contrato)}
                     </div>
                     <div className='col-md-3'>
-                        {alunoContrato.status_aluno_contrato == 'P' && <label className="badge bg-warning">Pendente</label>}
-                        {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-danger">Bloqueado</label>}
-                        {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-danger">Cancelado</label>}
-                        {alunoContrato.status_aluno_contrato == 'B' && <label className="badge bg-success">Ativo</label>}
+                        <label className="badge bg-warning">{alunoContrato.status_aluno_contrato}</label>
                     </div>
                 </div>
             </div>

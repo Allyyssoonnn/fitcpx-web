@@ -45,10 +45,8 @@ function CardContrato({ alunoContrato }) {
     }
 
     const rowClass = () => {
-        if (alunoContrato.status_aluno_contrato == 'P') return 'border-start border-warning';
-        if (alunoContrato.status_aluno_contrato == 'A') return 'border-start border-success';
-        if (alunoContrato.status_aluno_contrato == 'C') return 'border-start border-danger';
-        if (alunoContrato.status_aluno_contrato == 'B') return 'border-start border-danger';
+        if (alunoContrato.status_aluno_contrato == 'ACTIVE') return 'border-start border-success';
+        if (alunoContrato.status_aluno_contrato == 'INACTIVE') return 'border-start border-danger';
     }
     
     return (
