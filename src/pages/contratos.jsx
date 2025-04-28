@@ -58,7 +58,7 @@ function CardContrato({ alunoContrato }) {
                 <div className="d-flex gap-2 mt-3">
                     <button className="btn btn-sm btn-outline-info rounded" onClick={verContrato}>Ver contrato</button>
                     <label className="badge bg-success">{formatarMoeda(alunoContrato.total_aluno_contrato)}</label>
-                    <label className="badge bg-info">{JSON.parse(alunoContrato.parcela_aluno_contrato).length} Meses</label>
+                    <label className="badge bg-info">{JSON.parse(alunoContrato?.parcela_aluno_contrato).length} Meses</label>
                     <label className="badge bg-warning">Expiração: {formatarData(alunoContrato.expiracao_aluno_contrato)}</label>
                 </div>
             </td>
