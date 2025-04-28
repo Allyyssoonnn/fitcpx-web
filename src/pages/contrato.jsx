@@ -112,7 +112,7 @@ function Contrato() {
                                 <tr key={index} className={`border rounded ${pagamento.status_aluno_contrato_pagamento == 'CONFIRMED' ? 'border-success' : 'border-warning'}`}>
                                     <th scope="row" className="d-flex align-items-center">
                                         <div className="col-md-6 d-flex flex-column">
-                                            <label>Pagamento {pagamento.parcela_aluno_contrato_pagamento}</label>
+                                            <label>Pagamento</label>
                                             <div className="d-flex gap-2 mt-2">
                                                 {pagamento.status_aluno_contrato_pagamento == 'PENDING' && <label className="badge bg-warning">Pendente</label>}
                                                 {pagamento.status_aluno_contrato_pagamento == 'CONFIRMED' && <label className="badge bg-success">Pago</label>}
