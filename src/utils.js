@@ -116,6 +116,13 @@ export const formatarCPF = (cpf) => {
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 }
 
+export const formatarCNPJ = (cnpj) => {
+    if (!cnpj) return '-';
+    cnpj = cnpj.replace(/\D/g, ''); // Remove tudo que não for dígito
+    if (cnpj.length !== 14) return cnpj; // Se não tiver 14 dígitos, retorna como está
+    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+}
+
 export const camposFiltrosExercicios = {
     grupoPrincipal: ['cod_grupo_exercicio_1', 'cod_grupo_exercicio_2', 'cod_grupo_exercicio_3'],
     grupoSecundario: ['cod_grupo_exercicio_4', 'cod_grupo_exercicio_5', 'cod_grupo_exercicio_6', 'cod_grupo_exercicio_7'],

@@ -5,7 +5,7 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario } from "../states/states";
 import { getModContratos, getModalidades, getPlanos } from "../api/plano";
 import Select from "../components/baseComponents/select";
-import { adicionarMesData, dividirParcelas, formatarCPF, formatarMoeda } from "../utils";
+import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../utils";
 import JoditEditor from "jodit-react";
 import { Modal } from "react-bootstrap";
 import Pagamento from "../components/pagamento";
@@ -34,11 +34,33 @@ function ContratacaoPlano() {
     const [descricao, setDescricao] = useState([]);
     const [pagamentoInicial, setPagamentoInicial] = useState();
 
+    const [errors, setErrors] = useState([]);
+
     const { data: planos, refetch } = useQuery({
         queryKey: ['planos', usuario.cod_empresa],
         queryFn: () => getPlanos(usuario.cod_empresa),
         initialData: [],
     });
+
+    useEffect(() => {
+        let tempErrors = [];
+        if (!aluno?.cpf_aluno) tempErrors.push('[Cadastro do aluno incompleto] - CPF do aluno não informado.');
+        if (!aluno?.email_aluno) tempErrors.push('[Cadastro do aluno incompleto] - E-mail do aluno não informado.');
+        if (!aluno?.telefone_aluno) tempErrors.push('[Cadastro do aluno incompleto] - Telefone do aluno não informado.');
+        if (!aluno?.endereco_aluno) tempErrors.push('[Cadastro do aluno incompleto] - Endereço do aluno não informado.');
+        if (!aluno?.numero_aluno) tempErrors.push('[Cadastro do aluno incompleto] - Endereço (número) do aluno não informado.');
+        if (!aluno?.estado_aluno) tempErrors.push('[Cadastro do aluno incompleto] - UF do aluno não informado.');
+        if (!aluno?.cep_aluno) tempErrors.push('[Cadastro do aluno incompleto] - CEP do aluno não informado.');
+
+        if (!empresa?.doc_empresa) tempErrors.push('[Cadastro da empresa incompleto] - CNPJ da empresa não informado');
+        if (!empresa?.email_empresa) tempErrors.push('[Cadastro da empresa incompleto] - E-mail da empresa não informado');
+        if (!empresa?.telefone_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Telefone da empresa não informado');
+        if (!empresa?.nome_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Nome da empresa não informado');
+        if (!empresa?.endereco_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Endereço da empresa não informado');
+        if (!empresa?.numero_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Endereço (Número) da empresa não informado');
+        if (!empresa?.cidade_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Cidade da empresa não informado');
+        setErrors(tempErrors);
+    }, [aluno, empresa]);
 
     const { data: contratos } = useQuery({
         queryKey: ['contratos', usuario.cod_empresa],
@@ -207,18 +229,53 @@ function ContratacaoPlano() {
                 </div>
 
                 <div className="card-body row">
-                    <h5 className="card-title">Contratação</h5>
+                    <h5 className="card-title mb-3">Contratação de plano</h5>
 
-                    <div className="col-md-4 mb-3">
-                        <label className="form-label">Aluno</label>
-                        <input className="form-control" value={aluno?.nome_aluno} disabled />
+                    <div className="row">
+                        <div className="col-md-6 bg-light rounded p-3">
+                            <h5 className="form-label">Aluno</h5>
+
+                            <label className="fs-4 mb-2">{aluno?.nome_aluno}</label>
+
+                            <p className="mb-1"><strong>CEP:</strong> {aluno?.cep_aluno}</p>
+                            <p className="mb-1"><strong>Endereço:</strong> {aluno?.endereco_aluno}, {aluno?.numero_aluno}</p>
+                            <p className="mb-1"><strong>Cidade:</strong> {aluno?.cidade_aluno} - {aluno?.estado_aluno}</p>
+                            <p className="mb-1"><strong>CPF:</strong> {formatarCPF(aluno?.cpf_aluno)}</p>
+                            <p className="mb-1"><strong>RG:</strong> {aluno?.rg_aluno ?? '-'}</p>
+                        </div>
+
+                        <div className="col-md-6 bg-light rounded p-3">
+                            <h5 className="form-label">Empresa</h5>
+
+                            <label className="fs-4 mb-2">{empresa?.nome_empresa}</label>
+
+                            <p className="mb-1"><strong>CEP:</strong> {empresa?.cep_empresa}</p>
+                            <p className="mb-1"><strong>Endereço:</strong> {empresa?.endereco_empresa}, {empresa?.numero_empresa}</p>
+                            <p className="mb-1"><strong>Cidade:</strong> {empresa?.cidade_empresa} - {empresa?.estado_empresa}</p>
+                            <p className="mb-1"><strong>CPF:</strong> {formatarCNPJ(empresa?.doc_empresa)}</p>
+                        </div>
                     </div>
 
-                    <p className="mb-1"><strong>CEP:</strong> {aluno?.cep_aluno}</p>
-                    <p className="mb-1"><strong>Endereço:</strong> {aluno?.endereco_aluno}, {aluno?.numero_aluno}</p>
-                    <p className="mb-1"><strong>Cidade:</strong> {aluno?.cidade_aluno} - {aluno?.estado_aluno}</p>
-                    <p className="mb-1"><strong>CPF:</strong> {formatarCPF(aluno?.cpf_aluno)}</p>
-                    <p className="mb-1"><strong>RG:</strong> {aluno?.rg_aluno ?? '-'}</p>
+                    {errors.length > 0 && (
+                        <div className="d-flex justify-content-center">
+                                <div className="bg-danger-subtle rounded p-2 col-md-6 mt-3">
+                                    <label className="text-center w-100 mb-2">Alertas - (Solucionar pendências para avançar na contratação)</label>
+                                    {errors.map((error, index) => (
+                                        <p key={index} className="mb-0">{error}</p>
+                                    ))}
+
+                                    <div className="d-flex justify-content-center mt-3 gap-3">
+                                        <button className="btn btn-sm btn-outline-info" onClick={() => navigate('/configuracao')}>
+                                            Ir para configurações
+                                        </button>
+
+                                        <button className="btn btn-sm btn-outline-info" onClick={() => navigate('/cadaluno', { state: { aluno } })}>
+                                            Cadastro do aluno
+                                        </button>
+                                    </div>
+                                </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -346,7 +403,7 @@ function ContratacaoPlano() {
                 </div>
 
                 <div className="card-footer">
-                    <button className="btn btn-success" onClick={confirmar}>Confirmar</button>
+                    <button disabled={errors.length > 0} className="btn btn-success" onClick={confirmar}>Confirmar</button>
                 </div>
             </div>
         </div>
