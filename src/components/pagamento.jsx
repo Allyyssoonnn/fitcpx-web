@@ -6,7 +6,7 @@ import NumberInput from "./numberInput";
 import { useNotificacao } from "../states/states";
 import CardInput from "./CardInput";
 
-function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoName, resumoValue, onPay, duration, callback }) {
+function Pagamento({ show, close, valor, cash = false, afterPay = false, resumoItems = [], resumoName, resumoValue, onPay, duration, callback }) {
     const { nLoading, endLoading } = useNotificacao();
     const [index, setIndex] = useState(0);
     const [formaPagamento, setFormaPagamento] = useState('PIX');
@@ -74,6 +74,7 @@ function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoN
                                             formaPagamento={formaPagamento}
                                             setFormaPagamento={setFormaPagamento}
                                             cash={cash}
+                                            afterPay={afterPay}
                                         />
                                         <div className="border border-bottom-5 border-info m-3"></div>
 
@@ -98,7 +99,14 @@ function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoN
 
                                     
                                     <div>
-                                        {(!pago && formaPagamento !== 'CREDIT_CARD') && (
+                                        {(!pago && formaPagamento === 'AFTER') && (
+                                            <button className="btn btn-success w-100 mt-3" onClick={clickPay}>
+                                                <i className="bi bi-cart me-2" />
+                                                Gerar contrato
+                                            </button>
+                                        )}
+
+                                        {(!pago && formaPagamento === 'PIX') && (
                                             <button className="btn btn-success w-100 mt-3" onClick={clickPay}>
                                                 <i className="bi bi-cart me-2" />
                                                 Pagar
@@ -139,7 +147,7 @@ function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoN
     );
 }
 
-function FormaPagamento({ setFormaPagamento, formaPagamento, cash }) {
+function FormaPagamento({ setFormaPagamento, formaPagamento, cash, afterPay }) {
     function select(value) {
         setFormaPagamento(value);
     }
@@ -148,10 +156,11 @@ function FormaPagamento({ setFormaPagamento, formaPagamento, cash }) {
         { name: 'PIX', value: 'PIX', color: 'success', icon: 'ic:baseline-pix' },
         { name: 'Crédito', value: 'CREDIT_CARD', color: 'info', icon: 'ion:card' },
         { name: 'Dinheiro', value: 'CASH', color: 'warning', icon: 'mdi:cash', visivel: cash },
+        { name: 'Pagar depois', value: 'AFTER', color: 'info', icon: 'mdi:cellphone', visivel: afterPay },
     ];
 
     return (
-        <div className="d-flex justify-content-around gap-3 w-100">
+        <div className="d-flex flex-wrap justify-content-around gap-3 w-100">
             {methods.map((method, index) => (
                 <motion.button key={index}
                     className={`btn btn-outline-${method.color} rounded d-flex flex-column justify-content-center align-items-center`}

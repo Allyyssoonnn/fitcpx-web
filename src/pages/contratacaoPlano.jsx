@@ -173,6 +173,12 @@ function ContratacaoPlano() {
             closeLoading();
             navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
             return true;
+        } else if (formaPagamento === 'AFTER') {
+            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, null, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial);
+            closeLoading();
+
+            navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
+            return true;
         }
     }
 
