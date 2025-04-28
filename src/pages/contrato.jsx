@@ -72,7 +72,7 @@ function Contrato() {
                             <p><strong>Valor total:</strong> {formatarMoeda(alunoContrato?.total_aluno_contrato)}</p>
                             <p><strong>Expiração:</strong> {formatarData(alunoContrato?.expiracao_aluno_contrato)}</p>
                             <p><strong>Status: </strong>
-                                <label className="badge bg-warning">{alunoContrato.status_aluno_contrato}</label>
+                                <label className="badge bg-info">{alunoContrato?.status_aluno_contrato}</label>
                             </p>
 
                             <button className="btn btn-sm btn-outline-danger rounded" onClick={cancelContract}>Solicitar cancelamento</button>
