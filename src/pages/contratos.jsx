@@ -41,25 +41,25 @@ function CardContrato({ alunoContrato }) {
     const navigate = useNavigate();
 
     function verContrato() {
-        navigate('/contrato', { state: { cod_aluno_contrato: alunoContrato.cod_aluno_contrato, cod_aluno: alunoContrato.cod_aluno } });
+        navigate('/contrato', { state: { cod_aluno_contrato: alunoContrato?.cod_aluno_contrato, cod_aluno: alunoContrato?.cod_aluno } });
     }
 
     const rowClass = () => {
-        if (alunoContrato.status_aluno_contrato == 'ACTIVE') return 'border-start border-success';
-        if (alunoContrato.status_aluno_contrato == 'INACTIVE') return 'border-start border-danger';
+        if (alunoContrato?.status_aluno_contrato == 'ACTIVE') return 'border-start border-success';
+        if (alunoContrato?.status_aluno_contrato == 'INACTIVE') return 'border-start border-danger';
     }
     
     return (
         <tr className={rowClass()}>
             <td>
-                <p className="mb-0 fs-5">{alunoContrato.nome_aluno_contrato}</p>
-                <label>Aluno: <strong>{alunoContrato.aluno?.nome_aluno}</strong></label>
+                <p className="mb-0 fs-5">{alunoContrato?.nome_aluno_contrato}</p>
+                <label>Aluno: <strong>{alunoContrato?.aluno?.nome_aluno}</strong></label>
                 
                 <div className="d-flex gap-2 mt-3">
                     <button className="btn btn-sm btn-outline-info rounded" onClick={verContrato}>Ver contrato</button>
-                    <label className="badge bg-success">{formatarMoeda(alunoContrato.total_aluno_contrato)}</label>
+                    <label className="badge bg-success">{formatarMoeda(alunoContrato?.total_aluno_contrato)}</label>
                     <label className="badge bg-info">{JSON.parse(alunoContrato?.parcela_aluno_contrato).length} Meses</label>
-                    <label className="badge bg-warning">Expiração: {formatarData(alunoContrato.expiracao_aluno_contrato)}</label>
+                    <label className="badge bg-warning">Expiração: {formatarData(alunoContrato?.expiracao_aluno_contrato)}</label>
                 </div>
             </td>
         </tr>
