@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { cancelAlunoContrato, getAluno, getAlunoContrato, sendAlunoContrato } from "../api/aluno";
+import { cancelAlunoContrato, downloadAlunoContrato, getAluno, getAlunoContrato, sendAlunoContrato } from "../api/aluno";
 import { useQuery } from "react-query";
 import { adicionarMesData, formatarData, formatarMoeda } from "../utils";
 import JoditEditor from "jodit-react";
@@ -54,6 +54,11 @@ function Contrato() {
         });
     }
 
+    async function baixarContrato(signed) {
+        const url = await downloadAlunoContrato(alunoContrato?.cod_aluno_contrato, signed);
+        window.open(url, '_blank');
+    }
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -95,6 +100,24 @@ function Contrato() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    <div className="d-flex flex-column gap-3">
+                        <button
+                            disabled={!alunoContrato?.autentique_aluno_contrato}
+                            className="btn btn-info rounded w-100"
+                            onClick={() => baixarContrato(false)}
+                        >
+                            Baixar contrato
+                        </button>
+
+                        <button
+                            disabled={!alunoContrato?.autentique_aluno_contrato || alunoContrato?.statusautentique_aluno_contrato !== 'O aluno assinou o contrato.'}
+                            className="btn btn-success rounded w-100"
+                            onClick={() => baixarContrato(true)}
+                        >
+                            Baixar contrato (assinado)
+                        </button>
                     </div>
                 </div>
             </div>
