@@ -72,6 +72,25 @@ function PlanilhaTreino() {
         localStorage.setItem('planilhatreino', JSON.stringify(attAlunos));
     }
 
+    function changeExercicioSet(exercicio, indexSessao, indexExc, indexSet) {
+        const attAlunos = alunos.map((aluno, i) =>
+            indexAluno == i
+            ? { ...aluno, treinos: aluno.treinos.map((treino, idx) => idx == alunos[indexAluno].indexTreino ? {
+                ...treino,
+                sessoes: treino.sessoes.map((sessao, idxSessao) => indexSessao == idxSessao ? {
+                    ...sessao,
+                    exercicios: sessao.exercicios.map((exc, idxExc) => indexExc == idxExc ? {
+                        ...exc,
+                        sets: exc.sets.map((set, idxSet) => idxSet == indexSet ? { ...set, ...exercicio } : set)
+                    } : exc)
+                } : sessao)
+            } : treino ) }
+            : aluno
+        )
+        setAlunos(attAlunos);
+        localStorage.setItem('planilhatreino', JSON.stringify(attAlunos));
+    }
+
     async function selectTreino(index) {
         setAlunos(prev => prev.map((_, i) => i == indexAluno ? { ..._, indexTreino: index } : _));
     }
@@ -231,7 +250,7 @@ function PlanilhaTreino() {
                                                                 style={exc.sets?.length > 0 ? { borderLeft: '0.30rem solid', borderRight: '0.30rem solid' } : {}}
                                                             >
                                                                 <td>
-                                                                    <EditExercicio value={set.nome_exercicio} onUpdate={(v, object) => { changeField(v, idx, indexExc, 'cod_exercicio', indexSet); changeExercicio(object, idx, indexExc) }} exercicios={exercicios} />
+                                                                    <EditExercicio value={set.nome_exercicio} onUpdate={(v, object) => { changeField(v, idx, indexExc, 'cod_exercicio', indexSet); changeExercicioSet(object, idx, indexExc, indexSet) }} exercicios={exercicios} />
                                                                 </td>
                                                                 <td>
                                                                     <Edit value={set.serie_sessao_exercicio} onUpdate={v => changeField(v, idx, indexExc, 'serie_sessao_exercicio', indexSet)} />
