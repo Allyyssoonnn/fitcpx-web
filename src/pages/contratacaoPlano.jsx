@@ -93,9 +93,9 @@ function ContratacaoPlano() {
                 mod.nome_modalidade = mod.nome_modalidade_original;
                 return;
             }
-            if (subVariacao[0]?.valor_subvariacao) {
-                mod.valor_modalidade = subVariacao[0].valor_subvariacao;
-                mod.nome_modalidade = `${mod.nome_modalidade} - ${String(subVariacao[0].nome_subvariacao)}`;
+            if (subVariacao[subVariacao.length - 1]?.valor_subvariacao) {
+                mod.valor_modalidade = subVariacao[subVariacao.length - 1].valor_subvariacao;
+                mod.nome_modalidade = `${mod.nome_modalidade_original} - ${String(subVariacao[subVariacao.length - 1].nome_subvariacao)}`;
             }
         });
 

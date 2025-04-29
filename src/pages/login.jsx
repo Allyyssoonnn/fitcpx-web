@@ -48,7 +48,6 @@ function Login() {
     async function conect(e) {
         e.preventDefault();
         const url = await loginGoogle();
-        console.log(url);        
         if (url) window.location.href = url;
     }
 
