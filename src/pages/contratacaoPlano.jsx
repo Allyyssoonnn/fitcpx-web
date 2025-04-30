@@ -80,32 +80,57 @@ function ContratacaoPlano() {
     }, [montandoPlano]);
 
     useEffect(() => {
-        var total = 0;
+        const planoAtt = calculaValoresDoPlano(plano);
+        setPlano(planoAtt);
+    }, [plano?.duracao_plano]);
 
-        //Verificar SubVariacoes das modalidades para desconto
-        plano?.modalidades?.map((mod) => {
-            const subVariacoes = mod?.subvariacoes;
-            if (!subVariacoes?.length) return;
-
-            const subVariacao = subVariacoes.filter((v) => plano?.duracao_plano >= v.duracao_subvariacao);
-            if (!subVariacao.length) {
-                mod.valor_modalidade = mod.valor_modalidade_original;
-                mod.nome_modalidade = mod.nome_modalidade_original;
-                return;
-            }
-            if (subVariacao[subVariacao.length - 1]?.valor_subvariacao) {
-                mod.valor_modalidade = subVariacao[subVariacao.length - 1].valor_subvariacao;
-                mod.nome_modalidade = `${mod.nome_modalidade_original} - ${String(subVariacao[subVariacao.length - 1].nome_subvariacao)}`;
-            }
+    function calculaValoresDoPlano(plano) {
+        let total = 0;
+        plano?.modalidades?.forEach((mod) => {
+            total += mod.valor_modalidade;
         });
+        total = plano.duracao_plano * total;
+    
+        const parcelas = dividirParcelas(plano.duracao_plano, total);
+        if (plano.valor_adesao) parcelas[0] += plano.valor_adesao;
 
-        if (plano?.modalidades) plano.modalidades.map((mod) => total += mod.valor_modalidade);
-        total = plano?.duracao_plano * total;
-        //Antes de adicionar a adesão
-        const parcelas = dividirParcelas(plano?.duracao_plano, total);
-        if (plano?.valor_adesao) parcelas[0] = plano.valor_adesao + parcelas[0];
-        setPlano(prev => ({ ...prev, valor_plano: total, parcela_plano: JSON.stringify(parcelas) }));
-    }, [plano?.modalidades, plano?.duracao_plano]);
+        return {
+            ...plano,
+            valor_plano: total,
+            parcela_plano: JSON.stringify(parcelas),
+        }
+    }
+
+    function atualizarModalidadesComSubvariacoes(planoAtual) {
+        if (!planoAtual?.modalidades) return planoAtual;
+    
+        const modalidadesAtualizadas = planoAtual.modalidades.map((mod) => {
+            const novaModalidade = { ...mod };
+    
+            const subVariacoes = mod?.subvariacoes;
+            if (!subVariacoes?.length) return novaModalidade;
+    
+            const subVariacao = subVariacoes.filter(
+                (v) => planoAtual.duracao_plano >= v.duracao_subvariacao
+            );
+    
+            if (!subVariacao.length) {
+                novaModalidade.valor_modalidade = mod.valor_modalidade_original;
+                novaModalidade.nome_modalidade = mod.nome_modalidade_original;
+            } else {
+                const ultima = subVariacao[subVariacao.length - 1];
+                novaModalidade.valor_modalidade = ultima.valor_subvariacao;
+                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_subvariacao)}`;
+            }
+    
+            return novaModalidade;
+        });
+    
+        return {
+            ...planoAtual,
+            modalidades: modalidadesAtualizadas,
+        };
+    }
 
     useMemo(() => {
         if (selectContrato?.contrato) {            
@@ -130,10 +155,12 @@ function ContratacaoPlano() {
     }
 
     function addModalidade(modalidade) {
-        setPlano(prev => ({
-            ...prev,
-            modalidades: [...(prev?.modalidades || []), modalidade],
-        }));
+        const planoTemp = {...plano};
+        const modalidades = [...(planoTemp?.modalidades || []), modalidade];
+
+        var planoAtualizado = atualizarModalidadesComSubvariacoes({ ...planoTemp, modalidades });
+        planoAtualizado = calculaValoresDoPlano(planoAtualizado);
+        setPlano(planoAtualizado);
     }
 
     function removeModalidade(index) {
@@ -145,6 +172,13 @@ function ContratacaoPlano() {
 
     function updatePlano(field, value) {
         setPlano(prev => ({ ...prev, [field]: value }));
+    }
+
+    function attValue(v, i) {
+        const planoTemp = {...plano};
+        const modalidades = planoTemp?.modalidades.map((m, index) => index == i ? { ...m, valor_modalidade: v } : planoTemp);
+        var planoAtualizado = calculaValoresDoPlano({ ...planoTemp, modalidades });
+        setPlano(planoAtualizado);
     }
 
     async function onPay(formaPagamento, closeLoading, monthly, card) {
@@ -306,6 +340,7 @@ function ContratacaoPlano() {
                                     <SelectModalidades
                                         addModalidade={addModalidade}
                                         removeModalidade={removeModalidade}
+                                        attValue={attValue}
                                         modalidadesPlano={plano.modalidades}
                                     />
 

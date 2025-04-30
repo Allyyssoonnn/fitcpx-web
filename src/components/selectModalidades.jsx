@@ -6,8 +6,9 @@ import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { getModalidades } from "../api/plano";
+import EditableCurrency from "./editableCurrency";
 
-function SelectModalidades({ modalidadesPlano, addModalidade, removeModalidade }) {
+function SelectModalidades({ modalidadesPlano, attValue, addModalidade, removeModalidade }) {
     const [usuario] = useRecoilState(stateUsuario);
     const [modalModalidade, setModalModalidade] = useState(false);
 
@@ -42,7 +43,13 @@ function SelectModalidades({ modalidadesPlano, addModalidade, removeModalidade }
                         {modalidadesPlano?.map((modalidade, index) => (
                             <tr key={index}>
                                 <td>{modalidade.nome_modalidade}</td>
-                                <td>{formatarMoeda(modalidade?.valor_modalidade || 0)}</td>
+                                {attValue ? (
+                                    <td>
+                                        <EditableCurrency value={modalidade?.valor_modalidade || 0} onUpdate={v => attValue(v, index)} />
+                                    </td>
+                                ) : (
+                                    <td>{formatarMoeda(modalidade?.valor_modalidade || 0)}</td>
+                                )}
                                 <td>
                                     <button className="btn btn-sm btn-outline-danger" onClick={() => removeModalidade(index)}>
                                         <i className="bi bi-trash" />

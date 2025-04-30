@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import AutoNumeric from "autonumeric";
 import { Controller } from "react-hook-form";
 
-function CurrencyInput({ name, control, onChange, required, ...props }) {
+function CurrencyInput({ name, control, onChange, onBlur, onKeyDown, ...props }) {
     const currencyRef = useRef(null);
     const autoNumericRef = useRef(null);
 
@@ -52,6 +52,11 @@ function CurrencyInput({ name, control, onChange, required, ...props }) {
             onBlur={() => {
                 const value = autoNumericRef.current.getNumber(); // Obtém valor numérico real
                 if (onChange) onChange(value);
+                if (onBlur) onBlur(value);
+            }}
+            onKeyDown={(e) => {
+                const value = autoNumericRef.current.getNumber();
+                if (onKeyDown) onKeyDown(e, value);  
             }}
         />
     )
