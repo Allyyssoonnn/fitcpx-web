@@ -121,7 +121,7 @@ function Exercicios() {
                                                 </div>
                                             </th>
                                             <td>
-                                                <div className={`${exercicio.base_exercicio === 'S' ? 'd-none' : ''} dropdown`}>
+                                                <div className='dropdown'>
                                                     <button onClick={e => e.stopPropagation()} className="btn border-0" data-bs-toggle="dropdown">
                                                         <i className="bi bi-three-dots-vertical"></i>
                                                     </button>
@@ -131,11 +131,11 @@ function Exercicios() {
                                                             <i className="bi bi-pencil"></i>
                                                             <p className="mb-0">Editar</p>
                                                         </a>
-                                                        <a onClick={e => { e.stopPropagation(); delExercicio(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.deletedAt ? 'd-none' : ''}`}>
+                                                        <a onClick={e => { e.stopPropagation(); delExercicio(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.base_exercicio === 'S' ? 'd-none' : ''} ${exercicio.deletedAt ? 'd-none' : ''}`}>
                                                             <i className="bi bi-trash"></i>
                                                             <p className="mb-0">Excluir</p>
                                                         </a>
-                                                        <a onClick={e => { e.stopPropagation(); recoveryExec(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.deletedAt ? '' : 'd-none'}`}>
+                                                        <a onClick={e => { e.stopPropagation(); recoveryExec(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.base_exercicio === 'S' ? 'd-none' : ''} ${exercicio.deletedAt ? '' : 'd-none'}`}>
                                                             <i className="bi bi-trash"></i>
                                                             <p className="mb-0">Reverter</p>
                                                         </a>

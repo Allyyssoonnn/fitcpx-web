@@ -16,6 +16,8 @@ function CadExercicio() {
     const [admin] = useRecoilState(stateAdmin);
 
     const urlValue = watch("url_exercicio");
+    const urlValueEmpresa = watch("url_exercicio_empresa");
+    const base_exercicio = watch("base_exercicio");
 
     const { data: grupos, refetch } = useQuery({
         queryKey: ['exercicios', usuario.cod_empresa],
@@ -72,7 +74,11 @@ function CadExercicio() {
         const cleanedData = Object.fromEntries(
             Object.entries(data).map(([key, value]) => [key, value === "" ? null : value])
         );
-        await setExercicio({ ...cleanedData, cod_usuario: usuario?.cod_usuario, cod_empresa: usuario?.cod_empresa, base_exercicio: admin?.cod_admin ? 'S' : 'N' });
+        if (cleanedData.base_exercicio === 'S') {
+            await setExercicio({ cod_exercicio: cleanedData.cod_exercicio, url_exercicio_empresa: cleanedData?.url_exercicio_empresa });
+        } else {
+            await setExercicio({ ...cleanedData, cod_usuario: usuario?.cod_usuario, cod_empresa: usuario?.cod_empresa, base_exercicio: 'N' });
+        }
         nSuccess();
         navigate('/exercicios');
     }
@@ -89,21 +95,33 @@ function CadExercicio() {
                     </div>
 
                     <div className="card-body">
+                        {base_exercicio == 'S' && (
+                            <p className="text-danger">* Exercício base do sistema [Não é possível edição]</p>
+                        )}
                         <h5 className="card-title fw-semibold mb-4">Exercício</h5>
 
                         <div className="col-md-9">
                             <label className="form-label fw-bold">Nome *</label>
-                            <input {...register("nome_exercicio", { required: "O nome é obrigatório" })}
+                            <input disabled={base_exercicio === 'S'} {...register("nome_exercicio", { required: "O nome é obrigatório" })}
                                 className="form-control"
                             />
                         </div>
 
                         <div className="col-md-12">
                             <label className="form-label fw-bold mt-3">URL</label>
-                            <input {...register("url_exercicio")}
+                            <input disabled={base_exercicio === 'S'} {...register("url_exercicio")}
                                 className="form-control"
                             />
                         </div>
+
+                        {base_exercicio == 'S' && (
+                            <div className="col-md-12">
+                                <label className="form-label fw-bold mt-3">URL Próprio (Incluir seu próprio vídeo ao exercício)</label>
+                                <input {...register("url_exercicio_empresa")}
+                                    className="form-control"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -111,7 +129,7 @@ function CadExercicio() {
                     <iframe
                         width="100%"
                         height="300"
-                        src={getYouTubeEmbedUrl(urlValue)}
+                        src={getYouTubeEmbedUrl(urlValueEmpresa ?? urlValue)}
                         title="YouTube video player"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -125,7 +143,7 @@ function CadExercicio() {
                     <div className="row g-3">
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Tipo exercício</label>
-                            <select {...register('cod_tipo_exercicio')} className="form-control">
+                            <select disabled={base_exercicio === 'S'} {...register('cod_tipo_exercicio')} className="form-control">
                                 <option value=''>Selecione o tipo de exercício</option>
                                 {tipo_exercicios.map((te, i) => (
                                     <option value={te.cod_tipo_exercicio} key={i}>{te.nome_tipo_exercicio}</option>
@@ -135,7 +153,7 @@ function CadExercicio() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Exercício resistência</label>
-                            <select {...register('cod_exercicio_resistencia')} className="form-control">
+                            <select disabled={base_exercicio === 'S'} {...register('cod_exercicio_resistencia')} className="form-control">
                                 <option value=''>Selecione a resistência do exercício</option>
                                 {exercicios_resistencias.map((er, i) => (
                                     <option value={er.cod_exercicio_resistencia} key={i}>{er.nome_exercicio_resistencia}</option>
@@ -145,7 +163,7 @@ function CadExercicio() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Indicação</label>
-                            <select {...register('cod_indicacao')} className="form-control">
+                            <select disabled={base_exercicio === 'S'} {...register('cod_indicacao')} className="form-control">
                                 <option value=''>Selecione a indicação do exercício</option>
                                 {indicacoes.map((id, i) => (
                                     <option value={id.cod_indicacao} key={i}>{id.nome_indicacao}</option>
@@ -155,7 +173,7 @@ function CadExercicio() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Padrão movimento</label>
-                            <select {...register('cod_indicacao')} className="form-control">
+                            <select disabled={base_exercicio === 'S'} {...register('cod_indicacao')} className="form-control">
                                 <option value=''>Selecione o padrão de movimento</option>
                                 {padraoes_movimentos.map((pm, i) => (
                                     <option value={pm.cod_padrao_movimento} key={i}>{pm.nome_padrao_movimento}</option>
@@ -169,7 +187,7 @@ function CadExercicio() {
             <div className="accordion">
                 <div className="accordion-item">
                     <h2 className="accordion-header">
-                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        <button disabled={base_exercicio === 'S'} className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
                             Grupos principais
                         </button>
                     </h2>
@@ -178,7 +196,7 @@ function CadExercicio() {
                         <div className="accordion-body row g-3">
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 1</label>
-                                <select {...register('cod_grupo_exercicio_1')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_1')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -188,7 +206,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 2</label>
-                                <select {...register('cod_grupo_exercicio_2')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_2')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -198,7 +216,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 3</label>
-                                <select {...register('cod_grupo_exercicio_3')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_3')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -208,7 +226,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 4</label>
-                                <select {...register('cod_grupo_exercicio_4')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_4')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -230,7 +248,7 @@ function CadExercicio() {
                         <div className="accordion-body row g-3">
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 1</label>
-                                <select {...register('cod_grupo_exercicio_5')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_5')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -240,7 +258,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 2</label>
-                                <select {...register('cod_grupo_exercicio_6')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_6')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -250,7 +268,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 3</label>
-                                <select {...register('cod_grupo_exercicio_7')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_7')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -260,7 +278,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Grupo 4</label>
-                                <select {...register('cod_grupo_exercicio_8')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_grupo_exercicio_8')} className="form-control">
                                     <option value=''>Selecione o grupo de exercício</option>
                                     {grupos.map((gp, i) => (
                                         <option value={gp.cod_grupo_exercicio} key={i}>{gp.nome_grupo_exercicio}</option>
@@ -282,7 +300,7 @@ function CadExercicio() {
                         <div className="accordion-body row g-3">
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Equipamento 1</label>
-                                <select {...register('cod_equipamento_1')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_equipamento_1')} className="form-control">
                                     <option value=''>Selecione o equipamento</option>
                                     {equipamentos.map((eq, i) => (
                                         <option value={eq.cod_equipamento} key={i}>{eq.nome_equipamento}</option>
@@ -292,7 +310,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Equipamento 2</label>
-                                <select {...register('cod_equipamento_2')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_equipamento_2')} className="form-control">
                                     <option value=''>Selecione o equipamento</option>
                                     {equipamentos.map((eq, i) => (
                                         <option value={eq.cod_equipamento} key={i}>{eq.nome_equipamento}</option>
@@ -302,7 +320,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Equipamento 3</label>
-                                <select {...register('cod_equipamento_3')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_equipamento_3')} className="form-control">
                                     <option value=''>Selecione o equipamento</option>
                                     {equipamentos.map((eq, i) => (
                                         <option value={eq.cod_equipamento} key={i}>{eq.nome_equipamento}</option>
@@ -324,7 +342,7 @@ function CadExercicio() {
                         <div className="accordion-body row g-3">
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Articulação 1</label>
-                                <select {...register('cod_articulacao_1')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_articulacao_1')} className="form-control">
                                     <option value=''>Selecione a articulação</option>
                                     {articulacoes.map((at, i) => (
                                         <option value={at.cod_articulacao} key={i}>{at.nome_articulacao}</option>
@@ -334,7 +352,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Articulação 2</label>
-                                <select {...register('cod_articulacao_2')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_articulacao_2')} className="form-control">
                                     <option value=''>Selecione a articulação</option>
                                     {articulacoes.map((at, i) => (
                                         <option value={at.cod_articulacao} key={i}>{at.nome_articulacao}</option>
@@ -344,7 +362,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Articulação 3</label>
-                                <select {...register('cod_articulacao_3')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_articulacao_3')} className="form-control">
                                     <option value=''>Selecione a articulação</option>
                                     {articulacoes.map((at, i) => (
                                         <option value={at.cod_articulacao} key={i}>{at.nome_articulacao}</option>
@@ -354,7 +372,7 @@ function CadExercicio() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Articulação 4</label>
-                                <select {...register('cod_articulacao_4')} className="form-control">
+                                <select disabled={base_exercicio === 'S'} {...register('cod_articulacao_4')} className="form-control">
                                     <option value=''>Selecione a articulação</option>
                                     {articulacoes.map((at, i) => (
                                         <option value={at.cod_articulacao} key={i}>{at.nome_articulacao}</option>
