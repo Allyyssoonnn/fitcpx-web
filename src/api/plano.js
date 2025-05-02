@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { post } from "./api";
 
 export const setPlano = async (plano, modalidades) => {
@@ -38,7 +39,9 @@ export const getModalidades = async (cod_empresa, deleted) => {
 
 export const deleteModalidade = async (cod_modalidade) => {
     const resp = await post('/plano/deleteModalidade', { cod_modalidade });
-    if (resp.status) return resp;
+    if (resp.status) {
+        return resp
+    } else toast.error(resp.message);;
     throw new Error("Erro ao carregar grupo");
 };
 

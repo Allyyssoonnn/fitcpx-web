@@ -18,7 +18,7 @@ function CadPlano() {
     const editor = useRef(null);
     const { nSuccess, nConfirm } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
-    const { register, handleSubmit, control, setValue, watch } = useForm();
+    const { register, handleSubmit, control, setValue, watch, getValues } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [contrato, setContrato] = useState('');
@@ -27,14 +27,8 @@ function CadPlano() {
     const [valorTotal, setValorTotal] = useState(0);
     const [parcelas, setParcelas] = useState([]);
 
-    const { data: modalidades, refetch } = useQuery({
-        queryKey: ['modalidades', usuario.cod_empresa],
-        queryFn: () => getModalidades(usuario.cod_empresa),
-        initialData: [],
-    });
-
     useEffect(() => {
-        const planoRecebido = location.state?.plano;
+        const planoRecebido = location.state?.plano;        
         if (planoRecebido?.modalidades) setSelectModalidades(planoRecebido.modalidades);
         if (planoRecebido?.contrato_plano) setContrato(planoRecebido.contrato_plano);
         if (planoRecebido) {
@@ -46,39 +40,64 @@ function CadPlano() {
 
     const duracao_plano = watch('duracao_plano');
     const valor_adesao = watch('valor_adesao');
+    
     useEffect(() => {
-        var total = 0;
+        (async function load() {
+            if (!duracao_plano) return;
+            const plano = getValues();
+            await atualizarModalidadesComSubvariacoes({ plano, modalidades: selectModalidades });
+            await calculaValoresDoPlano(plano);
+        })();
+    }, [duracao_plano]);
 
-        //Verificar SubVariacoes das modalidades para desconto
-        selectModalidades?.map((mod) => {
-            // const subVariacoes = mod?.subvariacoes;
-            // if (!subVariacoes?.length) return;
-
-            // const subVariacao = subVariacoes.filter((v) => duracao_plano >= v.duracao_subvariacao);
-            // if (!subVariacao.length) {
-            //     mod.valor_modalidade = mod.valor_modalidade_original;
-            //     mod.nome_modalidade = mod.nome_modalidade_original;
-            //     return;
-            // }
-            // if (subVariacao[0]?.valor_subvariacao) {
-            //     mod.valor_modalidade = subVariacao[0].valor_subvariacao;
-            //     mod.nome_modalidade = `${mod.nome_modalidade} - ${String(subVariacao[0].nome_subvariacao)}`;
-            // }
+    function calculaValoresDoPlano(plano) {
+        let total = 0;
+        selectModalidades?.forEach((mod) => {
+            total += mod.valor_modalidade;
         });
-
-        // if (newModalidades?.length) setSelectModalidades(newModalidades);
-
-        if (selectModalidades) selectModalidades.map((mod) => total += mod.valor_modalidade);
-        total = duracao_plano * total;
-        //Antes de adicionar a adesão
-        const parcelas = dividirParcelas(duracao_plano, total);
-        if (valor_adesao) parcelas[0] = valor_adesao + parcelas[0];
+        total = plano.duracao_plano * total;
+    
+        const parcelas = dividirParcelas(plano.duracao_plano, total);
+        if (plano.valor_adesao) parcelas[0] += plano.valor_adesao;
         setValorTotal(total);
-        setParcelas(JSON.stringify(parcelas));
-    }, [selectModalidades, duracao_plano]);
+        return {
+            ...plano,
+            valor_plano: total,
+            parcela_plano: JSON.stringify(parcelas),
+        }
+    }
+
+    function atualizarModalidadesComSubvariacoes(planoAtual) {
+        if (!planoAtual?.modalidades) return planoAtual;
+    
+        const modalidadesAtualizadas = planoAtual.modalidades.map((mod) => {
+            const novaModalidade = { ...mod };
+    
+            const subVariacoes = mod?.subvariacoes;
+            if (!subVariacoes?.length) return novaModalidade;
+    
+            const subVariacao = subVariacoes.filter(
+                (v) => duracao_plano >= v.duracao_subvariacao
+            );
+    
+            if (!subVariacao.length) {
+                novaModalidade.valor_modalidade = mod.valor_modalidade_original;
+                novaModalidade.nome_modalidade = mod.nome_modalidade_original;
+            } else {
+                const ultima = subVariacao[subVariacao.length - 1];
+                novaModalidade.valor_modalidade = ultima.valor_subvariacao;
+                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_subvariacao)}`;
+            }
+    
+            return novaModalidade;
+        });
+        setSelectModalidades(modalidadesAtualizadas);
+    }
 
     function addModalidade(modalidade) {
-        setSelectModalidades(prev => [...(prev || []), modalidade]);
+        var modalidades = [ ...(selectModalidades || []), modalidade ];
+        atualizarModalidadesComSubvariacoes({ modalidades });
+        // setSelectModalidades(prev => [...(prev || []), modalidade]);
     }
 
     function removeModalidade(index) {
@@ -126,7 +145,7 @@ function CadPlano() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Tipo Duração plano</label>
-                            <select {...register('tipo_duracao_plano')} className="form-control">
+                            <select disabled {...register('tipo_duracao_plano')} className="form-control">
                                 <option value='Meses'>Meses</option>
                                 <option value='Semanas'>Semanas</option>
                                 <option value='Dias'>Dias</option>

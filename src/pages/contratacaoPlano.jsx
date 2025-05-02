@@ -80,7 +80,9 @@ function ContratacaoPlano() {
     }, [montandoPlano]);
 
     useEffect(() => {
-        const planoAtt = calculaValoresDoPlano(plano);
+        if (!plano?.duracao_plano) return;
+        var planoAtt = calculaValoresDoPlano(plano);
+        planoAtt = atualizarModalidadesComSubvariacoes(planoAtt);
         setPlano(planoAtt);
     }, [plano?.duracao_plano]);
 
@@ -341,7 +343,7 @@ function ContratacaoPlano() {
                                         addModalidade={addModalidade}
                                         removeModalidade={removeModalidade}
                                         attValue={attValue}
-                                        modalidadesPlano={plano.modalidades}
+                                        modalidadesPlano={plano?.modalidades}
                                     />
 
                                     <h5 className="card-title fs-3 mt-3">Detalhes</h5>

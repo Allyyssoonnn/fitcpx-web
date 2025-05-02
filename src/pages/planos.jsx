@@ -16,7 +16,7 @@ function Planos() {
         queryFn: () => getPlanos(usuario.cod_empresa, deleted),
         initialData: [],
     });
-
+    
     const editarPlano = (plano) => navigate('/cadplano', { state: { plano } });
     const delPlano = async (cod_plano) => {
         await deletePlano(cod_plano);
