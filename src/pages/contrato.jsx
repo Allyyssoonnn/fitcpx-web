@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { cancelAlunoContrato, downloadAlunoContrato, getAluno, getAlunoContrato, sendAlunoContrato } from "../api/aluno";
+import { cancelAlunoContrato, downloadAlunoContrato, getAluno, getAlunoContrato, resendAlunoContrato, sendAlunoContrato } from "../api/aluno";
 import { useQuery } from "react-query";
 import { adicionarMesData, formatarData, formatarMoeda } from "../utils";
 import JoditEditor from "jodit-react";
@@ -33,20 +33,6 @@ function Contrato() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
-    async function sendEmail() {
-        const pdfOptions = {
-            margin: 10,
-            filename: 'contrato.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        const pdfBlob = await html2pdf().from(alunoContrato.arquivo_aluno_contrato).set(pdfOptions).outputPdf('blob');
-
-        await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
-    }
-
     async function cancelContract() {
         nConfirm(null, 'Tem certeza que deseja cancelar o contrato?', async () => {
             await cancelAlunoContrato(cod_aluno_contrato);
@@ -57,6 +43,20 @@ function Contrato() {
     async function baixarContrato(signed) {
         const url = await downloadAlunoContrato(alunoContrato?.cod_aluno_contrato, signed);
         window.open(url, '_blank');
+    }
+
+    async function resendContrato() {
+        const pdfOptions = {
+            margin: 10,
+            filename: 'contrato.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        const pdfBlob = await html2pdf().from(alunoContrato?.arquivo_aluno_contrato).set(pdfOptions).outputPdf('blob');
+
+        await resendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
     }
 
     return (
@@ -103,21 +103,32 @@ function Contrato() {
                     </div>
 
                     <div className="d-flex flex-column gap-3">
-                        <button
-                            disabled={!alunoContrato?.autentique_aluno_contrato}
-                            className="btn btn-info rounded w-100"
-                            onClick={() => baixarContrato(false)}
-                        >
-                            Baixar contrato
-                        </button>
+                        {alunoContrato?.autentique_aluno_contrato == 'Contrato recusado.' ? (
+                            <>
+                                <button
+                                    disabled={!alunoContrato?.autentique_aluno_contrato}
+                                    className="btn btn-info rounded w-100"
+                                    onClick={() => baixarContrato(false)}
+                                >
+                                    Baixar contrato
+                                </button>
 
-                        <button
-                            disabled={!alunoContrato?.autentique_aluno_contrato || alunoContrato?.statusautentique_aluno_contrato !== 'O aluno assinou o contrato.'}
-                            className="btn btn-success rounded w-100"
-                            onClick={() => baixarContrato(true)}
-                        >
-                            Baixar contrato (assinado)
-                        </button>
+                                <button
+                                    disabled={!alunoContrato?.autentique_aluno_contrato || alunoContrato?.statusautentique_aluno_contrato !== 'O aluno assinou o contrato.'}
+                                    className="btn btn-success rounded w-100"
+                                    onClick={() => baixarContrato(true)}
+                                >
+                                    Baixar contrato (assinado)
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                className="btn btn-info"
+                                onClick={resendContrato}
+                            >
+                                Reenviar contrato
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
