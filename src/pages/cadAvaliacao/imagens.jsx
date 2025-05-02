@@ -4,12 +4,9 @@ import ImageCropModal from "../../components/cutImg";
 import Cropper from "cropperjs";
 
 function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImageDescriptions, deletedImages, setDeletedImages }) {
-    const [showModal, setShowModal] = useState(false);
     const [showCropModal, setShowCropModal] = useState(false);
     const [imageToCrop, setImageToCrop] = useState(null);
     const fileInputRefs = useRef({});
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
     const [currentOption, setCurrentOption] = useState(null);
     const [options, setOptions] = useState([1, 2, 3]);
 
@@ -145,63 +142,6 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
         }
     };
 
-    // Função para abrir a câmera e definir a opção para tirar foto
-    const handleTakePhoto = async (option) => {
-        try {
-            setCurrentOption(option);
-            setShowModal(true);
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                videoRef.current.play();
-            }
-        } catch (error) {
-            console.error("Erro ao acessar a câmera:", error);
-        }
-    };
-
-    const capturePhoto = () => {
-        if (canvasRef.current && videoRef.current && currentOption !== null) {
-            const context = canvasRef.current.getContext("2d");
-            context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-            const imageData = canvasRef.current.toDataURL("image/png");
-            console.log(`Foto capturada para a opção ${currentOption}:`, imageData);
-
-            // Enviar imagem para o modal de corte
-            setImageToCrop(imageData);
-            setShowCropModal(true);
-
-            // Parar a câmera após capturar
-            const stream = videoRef.current.srcObject;
-            if (stream) {
-                const tracks = stream.getTracks();
-                tracks.forEach(track => track.stop());
-                videoRef.current.srcObject = null;
-            }
-
-            setShowModal(false);
-        }
-    };
-
-    const changeCam = async () => {
-        try {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-            // Encontra a câmera atual e remove da lista
-            const currentDeviceId = videoRef.current.srcObject.getTracks()[0].getSettings().deviceId;
-            const videoDevicesWithoutCurrent = videoDevices.filter(device => device.deviceId !== currentDeviceId);
-
-            // Seleciona a próxima câmera disponível
-            const nextVideoDevice = videoDevicesWithoutCurrent[0];
-
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: nextVideoDevice.deviceId } });
-            videoRef.current.srcObject = stream;
-        } catch (error) {
-            console.error("Erro ao trocar a câmera:", error);
-        }
-    }
-
     const handleModalConfirm = (croppedImage) => {
         if (currentOption !== null) {
             setCapturedImages((prevImages) => ({
@@ -281,15 +221,10 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
                     <i className="bi bi-upload me-2"></i>
                     Carregar
                 </button>
-                {capturedImages[option] ? (
+                {capturedImages[option] && (
                     <button onClick={e => { e.preventDefault(); removePhoto(option) }} className="btn btn-danger btn-sm">
                         <i className="bi bi-trash me-2"></i>
                         Remover
-                    </button>
-                ) : (
-                    <button onClick={e => { e.preventDefault(); handleTakePhoto(option) }} className="btn btn-success btn-sm">
-                        <i className="bi bi-camera me-2"></i>
-                        Capturar
                     </button>
                 )}
                 <p></p>
@@ -343,41 +278,6 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
 
     return (
         <div className="row g-3">
-            <Modal show={showModal} className="modal fade" id="eventModal" aria-labelledby="eventModalLabel" aria-hidden="true">
-                <div className="modal-dialog-scrollable modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="eventModalLabel">Evento</h5>
-                            <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
-                        </div>
-
-                        <div className="modal-body">
-                            {/* Video e Canvas para captura de fotos */}
-                            {currentOption !== null && (
-                                <div className="camera-container text-center mt-4">
-                                    <video playsinline ref={videoRef} width="320" height="240" style={{ border: "1px solid black" }}></video>
-                                    <br />
-                                    <button onClick={changeCam} className="btn btn-info me-2">
-                                        <i className="bi bi-arrow-down-up me-2"></i>
-                                        Trocar câmera
-                                    </button>
-                                    <button onClick={capturePhoto} className="btn btn-success">
-                                        <i className="bi bi-camera me-2"></i>
-                                        Capturar Foto
-                                    </button>
-                                    <br />
-                                    <canvas ref={canvasRef} width="320" height="240" style={{ display: 'none', border: "1px solid black", marginTop: "10px" }}></canvas>
-                                </div>
-                            )}
-                        </div>
-                        
-                        <div className="modal-footer">
-                            <button className="btn bg-danger-subtle text-danger" type="button" onClick={() => setShowModal(false)}>Fechar</button>
-                        </div>
-                    </div>
-                </div>
-            </Modal>
-
             {/* Modal de Corte */}
             <ImageCropModal
                 show={showCropModal}
