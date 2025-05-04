@@ -37,6 +37,7 @@ import CadContrato from "../pages/cadContrato";
 import Configuracao from "../pages/configuracao";
 import Contrato from "../pages/contrato";
 import Contratos from "../pages/contratos";
+import FitCpxPay from "../pages/fitCpxPay";
 
 const routes = [
     //Base
@@ -86,6 +87,7 @@ const routes = [
     { path: '/configuracao', name: 'Licença', element: Configuracao },
     { path: '/contrato', name: 'Licença', element: Contrato },
     { path: '/contratos', name: 'Licença', element: Contratos },
+    { path: '/cadfitcpxpay', name: 'Licença', element: FitCpxPay },
 ]
   
 export default routes;  

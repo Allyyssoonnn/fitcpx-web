@@ -6,6 +6,7 @@ import { dataURLToBlob, formatarMoeda } from "../utils";
 import { changeEmpresaIMG, changeUsuarioIMG, setEmpresa, setUsuario } from "../api/usuario";
 import { useForm } from "react-hook-form";
 import { gerarIdCarteira } from "../api/pagamento";
+import { useNavigate } from "react-router-dom";
 
 function Configuracao() {
     const [usuario, setusuario] = useRecoilState(stateUsuario);
@@ -52,7 +53,7 @@ function Configuracao() {
                         </div>
                         
                         <div className="tab-pane fade" id="pills-bills" role="tabpanel" aria-labelledby="pills-bills-tab" tabIndex="0">
-                            <Financeiro empresa={empresa} />
+                            <Financeiro />
                         </div>
 
                         <div className="tab-pane fade" id="pills-security" role="tabpanel" aria-labelledby="pills-security-tab" tabIndex="0">
@@ -450,11 +451,12 @@ function Empresa({ empresa, setempresa, usuario }) {
 }
 
 function Financeiro() {
+    const navigate= useNavigate();
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
+    const [usuario] = useRecoilState(stateUsuario);
 
     async function gerarCarteira() {
-        const resp = await gerarIdCarteira(empresa?.cod_empresa);
-        if (resp) setempresa(resp);
+        navigate('/cadfitcpxpay');
     }
 
     return (
@@ -469,10 +471,10 @@ function Financeiro() {
                             <label className="form-label">ID da Carteira</label>
                             <div className="row">
                                 <div className="col-md-10">
-                                    <input disabled className="form-control" value={empresa?.walletid_empresa} />
+                                    <input disabled className="form-control" value={empresa?.stripe_id} />
                                 </div>
                                 <div className="col-md-2">
-                                    <button className="btn btn-outline-primary" onClick={() => navigator.clipboard.writeText(empresa?.walletid_empresa)}>
+                                    <button className="btn btn-outline-primary" onClick={() => navigator.clipboard.writeText(empresa?.stripe_id)}>
                                         <i className="bi bi-clipboard" />
                                     </button>
                                 </div>
@@ -481,16 +483,30 @@ function Financeiro() {
                             <label className="form-label mt-3">(Dev) - ID da Carteira</label>
                             <div className="row">
                                 <div className="col-md-10">
-                                    <input disabled className="form-control" value={empresa?.dev_walletid_empresa} />
+                                    <input disabled className="form-control" value={empresa?.dev_stripe_id} />
                                 </div>
                                 <div className="col-md-2">
-                                    <button className="btn btn-outline-warning" onClick={() => navigator.clipboard.writeText(empresa?.walletid_empresa)}>
+                                    <button className="btn btn-outline-warning" onClick={() => navigator.clipboard.writeText(empresa?.dev_stripe_id)}>
                                         <i className="bi bi-clipboard" />
                                     </button>
                                 </div>
                             </div>
 
-                            <button className="btn btn-info mt-3" onClick={gerarCarteira}>Gerar ID da carteira</button>
+                            <div className="d-flex mt-3 justify-content-around">
+                                <button
+                                    disabled={usuario.admin_usuario === 'N'}
+                                    className="btn btn-info rounded"
+                                    onClick={gerarCarteira}
+                                >
+                                    <i className="bi bi-cash me-2" />
+                                    Criar conta FitCpx Pay
+                                </button>
+
+                                <button className="btn btn-warning rounded">
+                                    <i className="bi bi-exclamation-triangle me-2" />
+                                    Solicitar suporte
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
