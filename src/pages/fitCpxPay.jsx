@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { gerarIdCarteira, getStatusAccount, sendDocuments } from "../api/pagamento";
 import { setEmpresa } from "../api/usuario";
 import { useNavigate } from "react-router-dom";
+import { PRODUCAO } from "../api/api";
+import { toast } from "react-toastify";
 
 function FitCpxPay() {
     const navigate = useNavigate();
@@ -41,7 +43,7 @@ function FitCpxPay() {
 
     async function sendForm() {
         if (!frontDoc || !backDoc) {
-            alert('Por favor, envie ambos os documentos.');
+            toast.error('Por favor, envie ambos os documentos.');
             return;
         }
 
@@ -63,7 +65,7 @@ function FitCpxPay() {
 
     return (
         <div className="container-fluid">
-            <div className="card bg-success-subtle">
+            <div className="card bg-success-subtle col-md-6">
                 <div className="card-body">
                     <h5 className="card-title">Formulário FitCpx Pay</h5>
                     <h6 className="card-subtitle">Formulário para criar conta FitCpx pay para receber pagamentos no sistema.</h6>
@@ -90,7 +92,15 @@ function FitCpxPay() {
 
             <div className="card d-flex justify-content-end col-md-6">
                 <div className="card-body">
-                    <button className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                    {(!PRODUCAO && !empresa.dev_stripe_id) && (
+                        <button disabled={empresa.dev_stripe_id} className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                    )}
+                    {(PRODUCAO && !empresa.stripe_id) && (
+                        <button disabled={empresa.dev_stripe_id} className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                    )}
+                    {((PRODUCAO && empresa.stripe_id) || (!PRODUCAO && empresa.dev_stripe_id)) && (
+                        <p className="text-danger">Formulário já enviado.</p>
+                    )}
                 </div>
             </div>
         </div>

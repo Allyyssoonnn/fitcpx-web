@@ -183,7 +183,9 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, monthly, card) {
+    async function onPay(formaPagamento, closeLoading, monthly, card, paymentMethod) {
+        const paymentId = paymentMethod?.id;
+
         const alunoContrato = await setAlunoContrato({
             ...plano,
             pagamentoInicial,
@@ -207,7 +209,7 @@ function ContratacaoPlano() {
         await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
 
         if (formaPagamento === 'PIX') {
-            const pagamento = await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, null, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial);
+            const pagamento = await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, null, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial, paymentId);
 
             if (pagamento.cod_aluno_contrato) {
                 const pix = await getPIXPagamentoAluno(pagamento.cod_aluno_contrato_pagamento, empresa.cod_empresa);
@@ -227,14 +229,8 @@ function ContratacaoPlano() {
 
             return false;
         } else if (formaPagamento === 'CREDIT_CARD') {
-            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, card, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial);
+            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, card, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial, paymentId);
             closeLoading();
-            navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
-            return true;
-        } else if (formaPagamento === 'AFTER') {
-            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, null, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial);
-            closeLoading();
-
             navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
             return true;
         }

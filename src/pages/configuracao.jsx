@@ -468,7 +468,7 @@ function Financeiro() {
                         <p className="card-subtitle mb-4">Informações do financeiro!</p>
 
                         <div className="mb-3">
-                            <label className="form-label">ID da Carteira</label>
+                            <label className="form-label">ID da Conta</label>
                             <div className="row">
                                 <div className="col-md-10">
                                     <input disabled className="form-control" value={empresa?.stripe_id} />
@@ -480,7 +480,7 @@ function Financeiro() {
                                 </div>
                             </div>
 
-                            <label className="form-label mt-3">(Dev) - ID da Carteira</label>
+                            <label className="form-label mt-3">(Dev) - ID da Conta</label>
                             <div className="row">
                                 <div className="col-md-10">
                                     <input disabled className="form-control" value={empresa?.dev_stripe_id} />

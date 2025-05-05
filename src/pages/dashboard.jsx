@@ -30,12 +30,11 @@ function Dashboard() {
         <div className="container-fluid">
             <div className="row">
                 <div className="col-lg-8">
-                    <LinkFitCpxPay />
-
                     <UltimasAvaliacoes alunos={alunos} avaliacoes={avaliacoes} />
                 </div>
 
                 <div className="col-lg-4">
+                    <LinkFitCpxPay />
                     <InfoTotais alunos={alunos} avaliacoes={avaliacoes} />
                 </div>
             </div>
@@ -54,9 +53,10 @@ function LinkFitCpxPay() {
 
     return (
         <div className="card bg-success-subtle">
-            <div className="card-body text-center d-flex justify-content-between align-items-center flex-wrap">
-                <h6 className="card-title fs-4">Finalize o cadastro recebimento FitCpx Pay e comece a receber</h6>
-                <button className="btn btn-success rounded" onClick={openLink}>Finalizar cadastro FiCpx Pay</button>
+            <div className="card-body text-center d-flex justify-content-center align-items-center flex-wrap">
+                <h6 className="card-title fs-4">Formulário FitCpx Pay</h6>
+                <p>Complete o formulário para receber pagamentos pelo sistema</p>
+                <button className="btn btn-success rounded" onClick={openLink}>Acessar formulário FitCpx Pay</button>
             </div>
         </div>
     )
