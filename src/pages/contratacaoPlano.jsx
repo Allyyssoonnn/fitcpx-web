@@ -183,57 +183,29 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, monthly, card, paymentMethod) {
-        const paymentId = paymentMethod?.id;
+    async function onPay(formaPagamento, closeLoading, monthly, paymentMethodId) {
+        // const alunoContrato = await setAlunoContrato({
+        //     ...plano,
+        //     pagamentoInicial,
+        //     formaPagamento,
+        //     contrato: contratoPreenchido,
+        //     cod_aluno: aluno?.cod_aluno,
+        //     cod_usuario: usuario?.cod_usuario,
+        //     cod_empresa: usuario?.cod_empresa,
+        // });
 
-        const alunoContrato = await setAlunoContrato({
-            ...plano,
-            pagamentoInicial,
-            formaPagamento,
-            contrato: contratoPreenchido,
-            cod_aluno: aluno?.cod_aluno,
-            cod_usuario: usuario?.cod_usuario,
-            cod_empresa: usuario?.cod_empresa,
-        });
+        // const pdfOptions = {
+        //     margin: 10,
+        //     filename: 'contrato.pdf',
+        //     image: { type: 'jpeg', quality: 0.98 },
+        //     html2canvas: { scale: 2 },
+        //     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        // };
 
-        const pdfOptions = {
-            margin: 10,
-            filename: 'contrato.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+        // const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
 
-        const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
-
-        await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
-
-        if (formaPagamento === 'PIX') {
-            const pagamento = await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, null, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial, paymentId);
-
-            if (pagamento.cod_aluno_contrato) {
-                const pix = await getPIXPagamentoAluno(pagamento.cod_aluno_contrato_pagamento, empresa.cod_empresa);
-                closeLoading();
-                Swal.fire({
-                    title: `${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pagamento?.valor_aluno_contrato_pagamento)}`,
-                    text: pix.payload,
-                    imageUrl: `data:image/png;base64,${pix.encodedImage}`,
-                    confirmButtonText: "Confirmar",
-                }).then((result) => {
-                    if (result.isConfirmed) close();
-                    navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
-                })
-
-                return true;
-            }
-
-            return false;
-        } else if (formaPagamento === 'CREDIT_CARD') {
-            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, card, null, alunoContrato.cod_aluno_contrato, monthly, pagamentoInicial, paymentId);
-            closeLoading();
-            navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } });
-            return true;
-        }
+        // await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
+        await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, 17, monthly, paymentMethodId);
     }
 
     return (
@@ -249,6 +221,7 @@ function ContratacaoPlano() {
                 onPay={onPay}
                 duration={plano?.duracao_plano}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
+                aluno={aluno}
             />
             <SelectPlano planos={planos} show={modalPlanos} setShow={setModalPlanos} setPlano={setPlano} />
 

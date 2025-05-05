@@ -39,6 +39,22 @@ export const sendDocuments = async (frontDoc, backDoc, frontDocType, backDocType
     throw new Error("Erro ao carregar alunos");
 };
 
+export const getSetupIntent = async (cod_empresa, cod_aluno) => {
+    const resp = await post('/pagamento/getSetupIntent', { cod_empresa, cod_aluno });
+    if (resp.status) {
+        return resp.clientSecret;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const getCards = async (cod_empresa, cod_aluno) => {
+    const resp = await post('/pagamento/getPaymentsMethod', { cod_empresa, cod_aluno });
+    if (resp.status) {
+        return resp.paymentsMethod;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
 export const getStatusAccount = async (cod_empresa) => {
     const resp = await post('/pagamento/getStatusAccount', { cod_empresa });
     if (resp.status) {
@@ -47,8 +63,8 @@ export const getStatusAccount = async (cod_empresa) => {
     throw new Error("Erro ao carregar agenda");
 };
 
-export const criarPagamentoAluno = async (cod_aluno, formaPagamento, cod_empresa, cod_usuario, dadosCartao, cod_aluno_cartao, cod_aluno_contrato, mensal, pagamentoInicial, paymentId) => {
-    const resp = await post('/pagamento/criarPagamentoAluno', { cod_aluno, formaPagamento, cod_empresa, cod_usuario, dadosCartao, cod_aluno_cartao, cod_aluno_contrato, mensal, pagamentoInicial, paymentId });
+export const criarPagamentoAluno = async (cod_aluno, formaPagamento, cod_empresa, cod_usuario, cod_aluno_contrato, mensal, paymentId) => {
+    const resp = await post('/pagamento/criarPagamentoAluno', { cod_aluno, formaPagamento, cod_empresa, cod_usuario, cod_aluno_contrato, mensal, paymentId });
     if (resp.status) {
         return resp.pagamento;
     } toast.error(resp.message);

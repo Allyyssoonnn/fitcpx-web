@@ -86,7 +86,7 @@ function Header() {
     return (
         (<header className="app-header">
             <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100">
-                <ul className="navbar-nav d-flex flex-row flex-grow-1 w-50 ms-md-3">
+                <ul className="navbar-nav d-flex flex-row flex-grow-1 w-40 ms-md-3">
                     <li onClick={toggleSidebar} className="nav-item d-block d-xl-none">
                         <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse">
                             <i className="bi bi-list fs-6 m-3"></i>
@@ -108,7 +108,7 @@ function Header() {
                     </li>
                 </ul>
 
-                <div className="navbar-collapse justify-content-end px-0 w-50" id="navbarNav">
+                <div className="navbar-collapse justify-content-end px-0 w-60" id="navbarNav">
                     {/* <ul className="navbar-nav flex-row ms-3">
                         <li className={`${empresa.email_confirmado == 'S' ? 'd-none' : 'd-flex'} align-items-center gap-1 bg-warning-subtle rounded-3 p-2`}>
                             <i className="bi bi-exclamation-triangle fs-6 px-2 rounded-5 text-black"></i>
@@ -165,18 +165,6 @@ function Header() {
                                         </div>
                                     </div>
 
-                                    <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
-                                        <i className="bi bi-building fs-6"></i>
-                                        <p className="mb-0 fs-3">Minha empresa</p>
-                                    </a>
-                                    <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
-                                        <i className="bi bi-person-fill fs-6"></i>
-                                        <p className="mb-0 fs-3">Minha conta</p>
-                                    </a>
-                                    <a href="#" onClick={() => navigate('/licenca')} className="d-flex align-items-center gap-2 dropdown-item">
-                                        <i className="bi bi-unlock fs-6"></i>
-                                        <p className="mb-0 fs-3">Licença</p>
-                                    </a>
                                     <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-gear fs-6"></i>
                                         <p className="mb-0 fs-3">Configuração</p>
