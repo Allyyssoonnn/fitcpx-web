@@ -108,12 +108,12 @@ function ContratacaoPlano() {
     
         const modalidadesAtualizadas = planoAtual.modalidades.map((mod) => {
             const novaModalidade = { ...mod };
-    
-            const subVariacoes = mod?.subvariacoes;
+
+            const subVariacoes = mod?.valores;
             if (!subVariacoes?.length) return novaModalidade;
     
             const subVariacao = subVariacoes.filter(
-                (v) => planoAtual.duracao_plano >= v.duracao_subvariacao
+                (v) => planoAtual.duracao_plano >= v.quantidade_modalidade_variacao_valor
             );
     
             if (!subVariacao.length) {
@@ -121,13 +121,13 @@ function ContratacaoPlano() {
                 novaModalidade.nome_modalidade = mod.nome_modalidade_original;
             } else {
                 const ultima = subVariacao[subVariacao.length - 1];
-                novaModalidade.valor_modalidade = ultima.valor_subvariacao;
-                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_subvariacao)}`;
+                novaModalidade.valor_modalidade = ultima.valor_modalidade_variacao_valor;
+                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_modalidade_variacao_valor)}`;
             }
     
             return novaModalidade;
         });
-    
+            
         return {
             ...planoAtual,
             modalidades: modalidadesAtualizadas,

@@ -21,7 +21,7 @@ function CadModalidade() {
 
     useEffect(() => {
         const modalidadeRecebido = location.state?.modalidade;
-        if (modalidadeRecebido?.variaveis_modalidade) setVariacoes(JSON.parse(modalidadeRecebido.variaveis_modalidade))
+        if (modalidadeRecebido?.variacoes) setVariacoes(modalidadeRecebido?.variacoes);
         if (modalidadeRecebido) {
             Object.keys(modalidadeRecebido).forEach((key) => {
                 setValue(key, modalidadeRecebido[key]);
@@ -30,7 +30,7 @@ function CadModalidade() {
     }, [location, setValue, usuario]);
 
     async function confirma(data) {
-        await setModalidade({ ...data, variaveis_modalidade: JSON.stringify(variacoes), cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+        await setModalidade({ ...data, variacoes, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
         nSuccess();
         navigate('/modalidades');
     }
@@ -45,11 +45,11 @@ function CadModalidade() {
         setModalSubVariacao(true);
     }
 
-    const newVariacao = (data) => setVariacoes(prev => ([ ...prev, { ...data, subvariacoes: [] } ]));
+    const newVariacao = (data) => setVariacoes(prev => ([ ...prev, { ...data, valores: [] } ]));
 
     const newDescont = (data) => {
         setVariacoes(prevState => prevState.map((v, i) => indexVariacao == i ? { ...v,
-            subvariacoes: Array.isArray(v.subvariacoes) ? [ ...v.subvariacoes, data ] : [data]
+            valores: Array.isArray(v.valores) ? [ ...v.valores, data ] : [data]
         } : v));
     }
 
@@ -61,7 +61,7 @@ function CadModalidade() {
     function removeSubVariacao(e, index) {
         e.preventDefault();
         setVariacoes(prevState => prevState.map((v, i) => indexVariacao == i ? { ...v,
-            subvariacoes: Array.isArray(v.subvariacoes) ? v.subvariacoes.filter((s, iSub) => iSub !== index) : []
+            valores: Array.isArray(v.valores) ? v.valores.filter((s, iSub) => iSub !== index) : []
         } : v));
     }
     
@@ -114,7 +114,7 @@ function CadModalidade() {
                     <div className="col-md-6">
                         <div className="card">
                             <div className="card-body">
-                                <h5 className="card-title">Variações de preço</h5>
+                                <h5 className="card-title">Variações da modalidade (Valor mensal)</h5>
 
                                 <button className="btn btn-outline-success mt-3" onClick={addPreco}>Adicionar</button>
 
@@ -130,14 +130,15 @@ function CadModalidade() {
                                         <tbody>
                                             {variacoes.map((variacao, index) => (
                                                 <tr key={index}>
-                                                    <td>{variacao.nome_variacao}</td>
-                                                    <td>{formatarMoeda(variacao?.valor_variacao || 0)}</td>
+                                                    <td>{variacao.nome_modalidade_variacao}</td>
+                                                    <td>{formatarMoeda(variacao?.valor_modalidade_variacao || 0)}</td>
                                                     <td>
-                                                        <button className="btn btn-sm btn-outline-danger" onClick={(e) => removeVariacao(e, index)}>
-                                                            <i className="bi bi-trash" />
-                                                        </button>
-                                                        <button className="btn btn-sm btn-outline-success ms-2" onClick={(e) => applyDescont(e, index)}>
+                                                        <button className="btn btn-sm btn-outline-success" onClick={(e) => applyDescont(e, index)}>
+                                                            <span className="me-2">Valores</span>
                                                             <i className="bi bi-cash" />
+                                                        </button>
+                                                        <button className="btn btn-sm btn-outline-danger ms-2" onClick={(e) => removeVariacao(e, index)}>
+                                                            <i className="bi bi-trash" />
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -157,7 +158,8 @@ function CadModalidade() {
                         {indexVariacao >= 0 && (
                             <div className="card">
                                 <div className="card-body">
-                                    <h5 className="card-title">SubVariação de por duração de plano</h5>
+                                    <h5 className="card-title">Valores escalonados</h5>
+                                    <h5 className="card-subtitle">Valores a partir da duração de plano</h5>
                                     <h6>Variação: {variacoes[indexVariacao]?.nome_variacao}</h6>
 
                                     <button className="btn btn-outline-success mt-3" onClick={addSubVariacao}>Adicionar</button>
@@ -173,11 +175,11 @@ function CadModalidade() {
                                             </thead>
 
                                             <tbody>
-                                                {variacoes[indexVariacao]?.subvariacoes?.map((desc, index) => (
+                                                {variacoes[indexVariacao]?.valores?.map((valor, index) => (
                                                     <tr key={index}>
-                                                        <td>{desc.nome_subvariacao}</td>
-                                                        <td>{desc.duracao_subvariacao}</td>
-                                                        <td>{formatarMoeda(desc?.valor_subvariacao || 0)}</td>
+                                                        <td>{valor.nome_modalidade_variacao_valor}</td>
+                                                        <td>{valor.quantidade_modalidade_variacao_valor}</td>
+                                                        <td>{formatarMoeda(valor?.valor_modalidade_variacao_valor || 0)}</td>
                                                         <td>
                                                             <button className="btn btn-sm btn-outline-danger" onClick={(e) => removeSubVariacao(e, index)}>
                                                                 <i className="bi bi-trash" />
@@ -217,12 +219,12 @@ function ModalVariacao({ show, setShow, newVariacao }) {
                 <div className="card-body">
                     <div>
                         <label className="form-label">Nome</label>
-                        <input { ...register('nome_variacao', { required: 'Nome obrigatório!' }) } className="form-control" />
+                        <input { ...register('nome_modalidade_variacao', { required: 'Nome obrigatório!' }) } className="form-control" />
                     </div>
 
                     <div className="mt-3">
                         <label className="form-label">Valor</label>
-                        <CurrencyInput control={control} name='valor_variacao' />
+                        <CurrencyInput control={control} name='valor_modalidade_variacao' />
                     </div>
                 </div>
 
@@ -259,17 +261,17 @@ function ModalSubCariacao({ show, setShow, newDescont }) {
                 <div className="card-body">
                     <div>
                         <label className="form-label">Nome</label>
-                        <input { ...register('nome_subvariacao', { required: 'Nome obrigatório!' }) } className="form-control" />
+                        <input { ...register('nome_modalidade_variacao_valor', { required: 'Nome obrigatório!' }) } className="form-control" />
                     </div>
 
                     <div className="mt-3">
                         <label className="form-label">Duração do plano</label>
-                        <input { ...register('duracao_subvariacao', { required: 'Duração obrigatório!' }) } className="form-control" />
+                        <input { ...register('quantidade_modalidade_variacao_valor', { required: 'Duração obrigatório!' }) } className="form-control" />
                     </div>
 
                     <div className="mt-3">
                         <label className="form-label">Valor</label>
-                        <CurrencyInput control={control} name='valor_subvariacao' />
+                        <CurrencyInput control={control} name='valor_modalidade_variacao_valor' />
                     </div>
                 </div>
 

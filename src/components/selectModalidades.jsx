@@ -71,11 +71,11 @@ function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
     function confirmar() {
         addModalidade({
             ...modalidade,
-            valor_modalidade: variacao ? variacao.valor_variacao : modalidade.valor_modalidade,
-            valor_modalidade_original: variacao ? variacao.valor_variacao : modalidade.valor_modalidade,
-            nome_modalidade: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_variacao}` : ''}`,
-            nome_modalidade_original: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_variacao}` : ''}`,
-            subvariacoes: variacao.subvariacoes ?? [],
+            valor_modalidade: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
+            valor_modalidade_original: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
+            nome_modalidade: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ''}`,
+            nome_modalidade_original: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ''}`,
+            valores: variacao.valores ?? [],
         });
         setShow(false);
     }
@@ -104,11 +104,11 @@ function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
                     />
 
                     <div className="mt-3">
-                        {modalidade?.variaveis_modalidade && (
+                        {modalidade?.variacoes && (
                             <Select
-                                options={JSON.parse(modalidade?.variaveis_modalidade)}
-                                fieldName='nome_variacao'
-                                fieldValue='nome_variacao'
+                                options={modalidade?.variacoes}
+                                fieldName='nome_modalidade_variacao'
+                                fieldValue='nome_modalidade_variacao'
                                 label='Selecionar variação'
                                 onChange={(value) => setVariacao(value)}
                             />
@@ -116,7 +116,7 @@ function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
                     </div>
 
                     <div className="d-flex justify-content-center mt-3">
-                        <label className="badge bg-info w-100 fs-5">{formatarMoeda((variacao?.valor_variacao ?? modalidade?.valor_modalidade) || 0)}</label>
+                        <label className="badge bg-info w-100 fs-5">{formatarMoeda((variacao?.valor_modalidade_variacao ?? modalidade?.valor_modalidade) || 0)}</label>
                     </div>
                 </div>
 
