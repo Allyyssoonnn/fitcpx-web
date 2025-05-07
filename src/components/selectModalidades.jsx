@@ -71,6 +71,7 @@ function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
     function confirmar() {
         addModalidade({
             ...modalidade,
+            cod_modalidade_variacao: variacao ? variacao.cod_modalidade_variacao : null,
             valor_modalidade: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
             valor_modalidade_original: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
             nome_modalidade: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ''}`,

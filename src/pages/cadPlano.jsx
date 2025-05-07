@@ -5,41 +5,29 @@ import { getModalidades, getPlanos, setPlano } from "../api/plano";
 import { useRecoilState } from "recoil";
 import { stateUsuario, useNotificacao } from "../states/states";
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
-import MultiSelect from "../components/multipleSelect";
-import JoditEditor from "jodit-react";
-import contratoPresencial from '../utils/contratoPresencial.html?raw';
-import contratoConsultoria from '../utils/contratoConsultoria.html?raw';
-import Select from "../components/baseComponents/select";
 import { dividirParcelas, formatarMoeda } from "../utils";
 import SelectModalidades from "../components/selectModalidades";
 
 function CadPlano() {
-    const editor = useRef(null);
-    const { nSuccess, nConfirm } = useNotificacao();
+    const { nSuccess } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
     const { register, handleSubmit, control, setValue, watch, getValues } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
-    const [contrato, setContrato] = useState('');
     const [selectModalidades, setSelectModalidades] = useState([]);
-
     const [valorTotal, setValorTotal] = useState(0);
-    const [parcelas, setParcelas] = useState([]);
 
     useEffect(() => {
         const planoRecebido = location.state?.plano;        
-        if (planoRecebido?.modalidades) setSelectModalidades(planoRecebido.modalidades);
-        if (planoRecebido?.contrato_plano) setContrato(planoRecebido.contrato_plano);
+        if (planoRecebido?.modalidades) setSelectModalidades(planoRecebido?.modalidades);
         if (planoRecebido) {
             Object.keys(planoRecebido).forEach((key) => {
                 setValue(key, planoRecebido[key]);
             });
         }
-    }, [location, setValue, usuario]);
-
+    }, [location, setValue]);
+    
     const duracao_plano = watch('duracao_plano');
-    const valor_adesao = watch('valor_adesao');
     
     useEffect(() => {
         (async function load() {
@@ -52,6 +40,7 @@ function CadPlano() {
 
     function calculaValoresDoPlano(plano) {
         let total = 0;
+
         selectModalidades?.forEach((mod) => {
             total += mod.valor_modalidade;
         });
@@ -68,36 +57,43 @@ function CadPlano() {
     }
 
     function atualizarModalidadesComSubvariacoes(planoAtual) {
-        if (!planoAtual?.modalidades) return planoAtual;
-    
+        if (!planoAtual?.modalidades?.length) return planoAtual;
+
         const modalidadesAtualizadas = planoAtual.modalidades.map((mod) => {
-            const novaModalidade = { ...mod };
-    
-            const subVariacoes = mod?.valores;
-            if (!subVariacoes?.length) return novaModalidade;
-    
-            const subVariacao = subVariacoes.filter(
+            var novaModalidade = { ...mod };
+
+            if (mod.cod_modalidade_variacao) {
+                const variacao = mod.variacoes.find((v) => v.cod_modalidade_variacao == mod.cod_modalidade_variacao);
+                novaModalidade.valores = variacao.valores;
+            }
+
+            var valores = novaModalidade?.valores;
+            if (!valores?.length) return novaModalidade;
+
+            const valorQuantidade = valores.filter(
                 (v) => duracao_plano >= v.quantidade_modalidade_variacao_valor
             );
     
-            if (!subVariacao.length) {
-                novaModalidade.valor_modalidade = mod.valor_modalidade_original;
-                novaModalidade.nome_modalidade = mod.nome_modalidade_original;
+            if (!valorQuantidade.length) {
+                novaModalidade.cod_modalidade_variacao_valor = mod.cod_modalidade_variacao_valor || null;
+                novaModalidade.valor_modalidade = mod.valor_modalidade_original || mod.valor_modalidade;
+                novaModalidade.nome_modalidade = mod.nome_modalidade_original || mod.nome_modalidade;
             } else {
-                const ultima = subVariacao[subVariacao.length - 1];
+                const ultima = valorQuantidade[valorQuantidade.length - 1];
+                novaModalidade.cod_modalidade_variacao_valor = ultima.cod_modalidade_variacao_valor;
                 novaModalidade.valor_modalidade = ultima.valor_modalidade_variacao_valor;
-                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_modalidade_variacao_valor)}`;
+                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original || mod.nome_modalidade} - ${String(ultima.nome_modalidade_variacao_valor)}`;
             }
     
             return novaModalidade;
         });
+        
         setSelectModalidades(modalidadesAtualizadas);
     }
 
     function addModalidade(modalidade) {
         var modalidades = [ ...(selectModalidades || []), modalidade ];
         atualizarModalidadesComSubvariacoes({ modalidades });
-        // setSelectModalidades(prev => [...(prev || []), modalidade]);
     }
 
     function removeModalidade(index) {
@@ -109,7 +105,6 @@ function CadPlano() {
             ...data,
             cod_usuario: usuario.cod_usuario,
             cod_empresa: usuario.cod_empresa,
-            contrato_plano: contrato,
         }, selectModalidades);
         nSuccess();
         navigate('/planos');
