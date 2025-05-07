@@ -526,8 +526,8 @@ function Licenca() {
 
                         {[
                             { nome_licenca: 'Gratuito', valor_licenca: 0, adquirido: true, descricao_licenca: 'Plano básico com 3 Alunos e 1 Usuário para uso gratuito.' },
-                            { nome_licenca: 'Parcial', valor_licenca: 0, adquirido: false, descricao_licenca: 'Plano com cadastros ilimitados para gestão permitindo a compra de funções individuais.' },
-                            { nome_licenca: 'Completo', valor_licenca: 0, adquirido: false, descricao_licenca: 'Plano com cadastros ilimitados para gestão com todas funções.' },
+                            { nome_licenca: 'Básico', valor_licenca: 120, adquirido: false, descricao_licenca: 'Plano com cadastros ilimitados para gestão permitindo a compra de funções individuais.' },
+                            { nome_licenca: 'Pro', valor_licenca: 200, adquirido: false, descricao_licenca: 'Plano com cadastros ilimitados para gestão com todas funções.' },
                         ].map((licenca, index) => (<CardLicenca key={index} licenca={licenca} />))}
 
                         {/* <div className="d-flex align-items-center gap-3">

@@ -145,7 +145,7 @@ function Header() {
                                 />
                             </a>
 
-                            <div style={{ height: '380px' }} className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                            <div style={{ height: '280px' }} className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                 <div className="message-body">
                                     <div className="d-flex align-items-center mx-7 py-9 border-bottom">
                                         <img

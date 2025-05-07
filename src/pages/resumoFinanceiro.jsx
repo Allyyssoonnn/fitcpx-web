@@ -83,7 +83,7 @@ function Pagamentos({ empresa }) {
                     <table className="table table-striped table-hover">
                         <tbody>
                             {bankExtract.map((item, index) => {
-                                const isReceived = item.value > 0;
+                                const isReceived = item.amount > 0;
                                 const rowClass = isReceived ? 'border-start border-success' : 'border-start border-danger';
                                 const valueClass = isReceived ? 'text-success' : 'text-danger';
 
@@ -91,12 +91,12 @@ function Pagamentos({ empresa }) {
                                     <tr key={index} className={rowClass}>
                                         <td colSpan={2}>
                                             <div className="d-flex justify-content-between align-items-center mb-1">
-                                                <strong className={valueClass}>{formatarMoeda(item.value)}</strong>
-                                                <span>Saldo: <strong>{formatarMoeda(item.balance)}</strong></span>
+                                                <strong className={valueClass}>{formatarMoeda(item.amount / 100)}</strong>
+                                                <span>Saldo: <strong>{formatarMoeda(item.net / 100)}</strong></span>
                                             </div>
                                             <div className="d-flex flex-column">
                                                 <span>{item.description}</span>
-                                                <small className="text-muted">Data: {formatarData(item.date)}</small>
+                                                <small className="text-muted">Data: {formatarData(new Date(item.created * 1000))}</small>
                                             </div>
                                         </td>
                                     </tr>
@@ -124,36 +124,7 @@ function Taxas() {
 
 function DadosRecebimento({ balance }) {
     const { nError, nLoading, endLoading } = useNotificacao();
-    const pixRef = useRef(null);
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
-    const [pix, setpix] = useState(empresa?.pix_empresa || '');
-    const [editPix, setEditPix] = useState(false);
-    
-    // Aplica o foco quando editPix muda para true
-    useEffect(() => {
-        if (editPix && pixRef.current) {
-            pixRef.current.focus();
-        }
-    }, [editPix]);
-
-    function validarPix(valor) {
-        const regexCpf = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/; // Formato CPF
-        const regexCnpj = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/; // Formato CNPJ
-        const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Formato E-mail
-
-        return regexCpf.test(valor) || regexCnpj.test(valor) || regexEmail.test(valor);
-    }
-
-    async function confirmaPix() {        
-        if (!validarPix(pix)) {
-            nError('Chave PIX inválida!', 'Use um CPF, CNPJ ou E-mail válido.');
-            return;
-        }
-
-        setEditPix(false);
-        const respEmpresa = await setEmpresa({ ...empresa, pix_empresa: pix });
-        setempresa(respEmpresa);
-    }
 
     async function realizarsaque() {
         nLoading(null, 'Solicitando saque...');
@@ -167,40 +138,24 @@ function DadosRecebimento({ balance }) {
                 <h6 className="card-title mb-3">Dados para recebimento</h6>
 
                 <div>
-                    <label className="form-label">Saldo</label>
+                    <label className="form-label">Liquido</label>
                     <p className="text-dark text-center py-1 rounded border border-success bg-success-subtle">
-                        <strong>{formatarMoeda(balance)}</strong>
+                        <strong>{formatarMoeda(balance?.available?.[0]?.amount / 100)}</strong>
+                    </p>
+                    <label className="form-label">Pendente</label>
+                    <p className="text-dark text-center py-1 rounded border border-success bg-info-subtle">
+                        <strong>{formatarMoeda(balance?.pending?.[0]?.amount / 100)}</strong>
                     </p>
                 </div>
 
                 <div>
-                    <label className="form-label">CNPJ</label>
-                    <p>{empresa.doc_empresa || 'Não informado'}</p>
+                    <label className="form-label">Agência - Conta</label>
+                    <p>{empresa.agencia_banco_conta} - {empresa.numero_banco_conta || 'Não informado'}</p>
                 </div>
 
-                <div>
-                    <label className="form-label">Chave PIX <span className="text-muted">(CNPJ, CPF, E-mail)</span></label>
-                    <div className="d-flex align-items-center gap-2">
-                        <input ref={pixRef} disabled={!editPix} value={pix} onChange={e => setpix(e.target.value)} placeholder="Informar chave PIX" className="form-control" />
-                        {!editPix && (
-                            <button onClick={() => setEditPix(true)} className="btn btn-sm btn-outline-primary rounded">
-                                <i className="bi bi-pen" />
-                            </button>
-                        )}
-                        {editPix && (
-                            <button
-                                className="btn btn-sm btn-outline-success rounded"
-                                onKeyDown={e => e.key == 'Enter' ? confirmaPix() : null}
-                                onClick={confirmaPix}
-                            >
-                                <i className="bi bi-check-circle" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                <button className="btn btn-success rounded mt-3 w-100" onClick={realizarsaque}>Solicitar Saque</button>
-                <p className="text-center fs-2">Valor integral com desconto será enviado para o pix informado</p>
+                <button disabled={(balance?.available?.[0]?.amount / 100) < 10} className="btn btn-success rounded mt-3 w-100" onClick={realizarsaque}>Solicitar Saque</button>
+                <p className="text-center fs-2 mb-0">Valor integral com desconto será enviado para conta informada</p>
+                <p className="text-center fs-2 text-danger">Valor mínimo para saque R$10,00</p>
             </div>
         </div>
     )

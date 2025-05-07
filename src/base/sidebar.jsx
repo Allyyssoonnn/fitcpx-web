@@ -230,11 +230,11 @@ function Sidebar() {
                     </ul>
 
                     {/* bg-light-subtle */}
-                    <div className="hide-menu bg-light position-relative mt-7 rounded-3">
+                    {/* <div className="hide-menu bg-light position-relative mt-7 rounded-3">
                         <div className="d-flex p-2 justify-content-between">
                             <div className="mt-2">
                                 <h4 className="mb-6">{t('plan')}</h4>
-                                {/* <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6> */}
+                                <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6>
                                 <button onClick={() => navigate('/licenca')} className="btn btn-success fs-2 fw-semibold lh-sm">{t('subscribe')}</button>
                             </div>
                             
@@ -242,7 +242,7 @@ function Sidebar() {
                                 <img height={50} width={50} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     
                 </nav>
             </div>

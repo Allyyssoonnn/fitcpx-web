@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
-import { formatarMoeda } from "../utils";
 import { motion } from 'framer-motion';
 import { stateEmpresa, useNotificacao } from "../states/states";
 

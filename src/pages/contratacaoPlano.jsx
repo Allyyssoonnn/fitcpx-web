@@ -14,7 +14,7 @@ import MultiSelect from "../components/multipleSelect";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { sendAlunoContrato, setAlunoContrato } from "../api/aluno";
-import { criarPagamentoAluno, getPIXPagamentoAluno } from "../api/pagamento";
+import { criarPagamentoAluno } from "../api/pagamento";
 import html2pdf from 'html2pdf.js';
 import SelectModalidades from "../components/selectModalidades";
 

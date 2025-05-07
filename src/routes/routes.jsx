@@ -6,7 +6,6 @@ import CadAvaliacao from "../pages/cadavaliacao";
 import Avaliacao from "../pages/avaliacao";
 import Agenda from "../pages/agenda";
 import CompareAvaliacao from "../pages/compareAvaliacao";
-import Licenca from "../pages/licenca";
 import CadTreino from "../pages/cadTreino";
 import Treinos from "../pages/treinos";
 import Exercicios from "../pages/exercicios";
@@ -29,7 +28,6 @@ import CadPlano from "../pages/cadPlano";
 import Planos from "../pages/planos";
 import Modalidades from "../pages/modalidades";
 import CadModalidade from "../pages/cadModalidade";
-import LicencaPagamentos from "../pages/licencaPagamentos";
 import ResumoFinanceiro from "../pages/resumoFinanceiro";
 import ContratacaoPlano from "../pages/contratacaoPlano";
 import ModContratos from "../pages/modContratos";
@@ -50,7 +48,6 @@ const routes = [
     { path: '/exercicios', name: 'Licença', element: Exercicios },
     { path: '/grupoexercicios', name: 'Licença', element: GrupoExercicios },
     { path: '/treinos', name: 'Licença', element: Treinos },
-    { path: '/licenca', name: 'Licença', element: Licenca },
     { path: '/cardapios', name: 'Licença', element: Cardapios },
     { path: '/alimentos', name: 'Licença', element: Alimentos },
     { path: '/grupoalimentos', name: 'Licença', element: GrupoAlimentos },
@@ -82,7 +79,6 @@ const routes = [
     { path: '/agenda', name: 'Agenda', element: Agenda },
     { path: '/planilha', name: 'Licença', element: Planilha },
     { path: '/relatorios', name: 'Licença', element: Relatorios },
-    { path: '/licencapagamentos', name: 'Licença', element: LicencaPagamentos },
     { path: '/resumofinanceiro', name: 'Licença', element: ResumoFinanceiro },
     { path: '/configuracao', name: 'Licença', element: Configuracao },
     { path: '/contrato', name: 'Licença', element: Contrato },

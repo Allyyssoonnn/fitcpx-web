@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { getPagamentos } from "../api/pagamento";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { useNavigate } from "react-router-dom";
@@ -9,24 +7,9 @@ function Notificacoes() {
     const navigate = useNavigate();
     const [usuario] = useRecoilState(stateUsuario);
     const [notificacoes, setNotificacoes] = useState([]);
-
-    const { data: pagamentos, refetch } = useQuery({
-        queryKey: ['pagamentos', usuario.cod_usuario],
-        queryFn: () => getPagamentos(usuario.cod_empresa),
-        initialData: [],
-        enabled: !!usuario.cod_empresa,
-    });
     
     useEffect(() => {
         const tempNotificacoes = [];
-        const pendente = pagamentos.filter((pg) => pg.status_usuario_pagamento === 'PENDING');
-        if (pendente.length) {
-            tempNotificacoes.push({
-                title: 'Faturas',
-                content: 'Existe pagamentos de licenças pendentes de pagamento.',
-                onClick: () => navigate('/licencapagamentos'),
-            });
-        }
         setNotificacoes(tempNotificacoes);
     }, []);
 
