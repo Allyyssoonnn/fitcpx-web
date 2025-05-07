@@ -81,8 +81,8 @@ function ContratacaoPlano() {
 
     useEffect(() => {
         if (!plano?.duracao_plano) return;
-        var planoAtt = calculaValoresDoPlano(plano);
-        planoAtt = atualizarModalidadesComSubvariacoes(planoAtt);
+        var planoAtt = atualizarModalidadesComSubvariacoes(plano);
+        planoAtt = calculaValoresDoPlano(planoAtt);
         setPlano(planoAtt);
     }, [plano?.duracao_plano]);
 
@@ -188,7 +188,7 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId) {
+    async function onPay(formaPagamento, closeLoading, paymentMethodId, geraContrato) {
         const alunoContrato = await setAlunoContrato({
             ...plano,
             pagamentoInicial,
@@ -209,7 +209,8 @@ function ContratacaoPlano() {
 
         const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
 
-        await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
+        if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
+
         await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId);
         closeLoading();
     }

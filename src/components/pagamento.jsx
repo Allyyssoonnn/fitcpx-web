@@ -39,35 +39,38 @@ function Pagamento({ show, close, onPay, callback, aluno }) {
 
 function PagamentoInterno({ aluno, close, onPay, callback }) {
     const [empresa] = useRecoilState(stateEmpresa);
-    const { nLoading, endLoading } = useNotificacao();
+    const { nLoading, endLoading, nConfirm } = useNotificacao();
     const [formaPagamento, setFormaPagamento] = useState('MENSAL'); //MENSAL - RECORRENTE - UNICA
     const [savedCards, setSavedCards] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(null);
+    const [geraContrato, setGeraContrato] = useState(true);
 
     const stripe = useStripe();
     const elements = useElements();
 
     async function clickPayCard() {
-        nLoading(null, 'Enviando contrato...');
-
-        var paymentMethodId;
-        if (paymentMethod) paymentMethodId = paymentMethod.id;
-
-        if (formaPagamento === 'CREDIT_CARD' && !paymentMethod) {
-            const clientSecret = await getSetupIntent(empresa.cod_empresa, aluno.cod_aluno);
-        
-            const { error, setupIntent } = await stripe.confirmCardSetup(clientSecret, {
-                payment_method: {
-                    card: elements.getElement(CardElement),
-                },
-            });
-            if (setupIntent?.payment_method) paymentMethodId = setupIntent?.payment_method;
-            if (error) toast.error(error?.message);
-            console.log(error);
-        }
-        
-        const resp = await onPay(formaPagamento, endLoading, paymentMethodId);
-        if (callback) callback();
+        nConfirm(null, 'Confirma a finalização da contratação?', async () => {
+            nLoading(null, 'Enviando contrato...');
+    
+            var paymentMethodId;
+            if (paymentMethod) paymentMethodId = paymentMethod.id;
+    
+            if (formaPagamento === 'RECORRENTE' && !paymentMethod) {
+                const clientSecret = await getSetupIntent(empresa.cod_empresa, aluno.cod_aluno);
+            
+                const { error, setupIntent } = await stripe.confirmCardSetup(clientSecret, {
+                    payment_method: {
+                        card: elements.getElement(CardElement),
+                    },
+                });
+                if (setupIntent?.payment_method) paymentMethodId = setupIntent?.payment_method;
+                if (error) toast.error(error?.message);
+                console.log(error);
+            }
+            
+            const resp = await onPay(formaPagamento, endLoading, paymentMethodId, geraContrato);
+            if (callback) callback();
+        })
     }
 
     function onSelectCard(card) {
@@ -91,6 +94,13 @@ function PagamentoInterno({ aluno, close, onPay, callback }) {
                             formaPagamento={formaPagamento}
                             setFormaPagamento={setFormaPagamento}
                         />
+
+                        <div className="form-check form-switch mt-5">
+                            <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
+                                checked={geraContrato} onChange={() => setGeraContrato(!geraContrato)}
+                            />
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">[Jurídico] - Gerar e enviar contrato para assinatura?</label>
+                        </div>
                     </div>
 
                     <div className="d-flex p-3 align-items-center">
@@ -161,9 +171,11 @@ function PagamentoInterno({ aluno, close, onPay, callback }) {
                                         Finalizar
                                     </button>
 
-                                    <p className="text-danger fs-2 text-center mt-1 mb-0">
-                                        Contrato será gerado e enviado para assinatura!
-                                    </p>
+                                    {geraContrato && (
+                                        <p className="text-danger fs-2 text-center mt-1 mb-0">
+                                            Contrato será gerado e enviado para assinatura!
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>

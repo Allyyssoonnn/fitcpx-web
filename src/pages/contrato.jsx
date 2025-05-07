@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import html2pdf from 'html2pdf.js';
 
 function Contrato() {
-    const { nConfirm } = useNotificacao();
+    const { nConfirm, nLoading, endLoading } = useNotificacao();
     const [empresa] = useRecoilState(stateEmpresa);
     const navigate = useNavigate();
     const location = useLocation();
@@ -35,7 +35,9 @@ function Contrato() {
 
     async function cancelContract() {
         nConfirm(null, 'Tem certeza que deseja cancelar o contrato?', async () => {
+            nLoading();
             await cancelAlunoContrato(cod_aluno_contrato);
+            endLoading();
             navigate(-1);
         });
     }
@@ -73,7 +75,7 @@ function Contrato() {
 
                         <div className="card-body">
                             <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
-                            <p><strong>ID da assinatura:</strong> {alunoContrato?.id_aluno_contrato}</p>
+                            <p><strong>ID da assinatura:</strong> {alunoContrato?.dev_stripe_id}</p>
                             <p><strong>ID do contrato:</strong> {alunoContrato?.autentique_aluno_contrato}</p>
                             <p><strong>Valor total:</strong> {formatarMoeda(alunoContrato?.total_aluno_contrato)}</p>
                             <p><strong>Expiração:</strong> {formatarData(alunoContrato?.expiracao_aluno_contrato)}</p>
@@ -103,7 +105,7 @@ function Contrato() {
                     </div>
 
                     <div className="d-flex flex-column gap-3">
-                        {alunoContrato?.autentique_aluno_contrato == 'Contrato recusado.' ? (
+                        {alunoContrato?.autentique_aluno_contrato == 'Contrato recusado.' && (
                             <>
                                 <button
                                     disabled={!alunoContrato?.autentique_aluno_contrato}
@@ -121,7 +123,9 @@ function Contrato() {
                                     Baixar contrato (assinado)
                                 </button>
                             </>
-                        ) : (
+                        )}
+
+                        {(alunoContrato?.autentique_aluno_contrato != 'Contrato recusado.' && alunoContrato?.autentique_aluno_contrato) && (
                             <button
                                 className="btn btn-info"
                                 onClick={resendContrato}

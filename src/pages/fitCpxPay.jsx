@@ -93,10 +93,10 @@ function FitCpxPay() {
             <div className="card d-flex justify-content-end col-md-6">
                 <div className="card-body">
                     {(!PRODUCAO && !empresa.dev_stripe_id) && (
-                        <button disabled={empresa.dev_stripe_id} className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                        <button className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
                     )}
-                    {(PRODUCAO && !empresa.stripe_id) && (
-                        <button disabled={empresa.dev_stripe_id} className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                    {(!PRODUCAO && !empresa.stripe_id) && (
+                        <button className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
                     )}
                     {((PRODUCAO && empresa.stripe_id) || (!PRODUCAO && empresa.dev_stripe_id)) && (
                         <p className="text-danger">Formulário já enviado.</p>
