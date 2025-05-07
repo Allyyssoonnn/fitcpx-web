@@ -57,7 +57,10 @@ function Agenda() {
             <div className="card">
                 <div className="card-header d-flex justify-between">
                     <div className="col-3 mb-2 mb-sm-0">
-                        <button disabled={usuario?.google?.email_google} onClick={conect}
+                        <button
+                            disabled
+                            // disabled={usuario?.google?.email_google}
+                            onClick={conect}
                             className={`${usuario?.google?.email_google && 'd-none'} btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`} role="button"
                         >
                             <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />

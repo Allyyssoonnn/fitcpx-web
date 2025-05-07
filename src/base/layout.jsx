@@ -30,9 +30,7 @@ function Layout() {
                 const refreshResponse = await axios.post(baseURL + `/${user}/refreshToken`, {
                     refreshToken: cookies.refreshToken,
                 });
-                console.log(refreshResponse);
-                
-                
+                                
                 if (refreshResponse.data.status) {
                     setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
                     setusuario(refreshResponse.data.usuario);

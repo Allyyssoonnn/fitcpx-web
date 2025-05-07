@@ -66,7 +66,6 @@ function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [],
 
         var paymentMethodId;
         if (paymentMethod) paymentMethodId = paymentMethod.id;
-        console.log(paymentMethodId);
 
         if (formaPagamento === 'CREDIT_CARD' && !paymentMethod) {
             const clientSecret = await getSetupIntent(empresa.cod_empresa, aluno.cod_aluno);
@@ -83,6 +82,7 @@ function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [],
         
         const resp = await onPay(formaPagamento, endLoading, monthly, paymentMethodId);
         if (resp) setPago(true);
+        close();
     }
 
     function onSelectCard(card) {

@@ -121,13 +121,14 @@ function ContratacaoPlano() {
                 novaModalidade.nome_modalidade = mod.nome_modalidade_original;
             } else {
                 const ultima = subVariacao[subVariacao.length - 1];
+                novaModalidade.cod_modalidade_variacao_valor = ultima.cod_modalidade_variacao_valor;
                 novaModalidade.valor_modalidade = ultima.valor_modalidade_variacao_valor;
                 novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_modalidade_variacao_valor)}`;
             }
     
             return novaModalidade;
         });
-            
+
         return {
             ...planoAtual,
             modalidades: modalidadesAtualizadas,
@@ -178,34 +179,39 @@ function ContratacaoPlano() {
 
     function attValue(v, i) {
         const planoTemp = {...plano};
-        const modalidades = planoTemp?.modalidades.map((m, index) => index == i ? { ...m, valor_modalidade: v } : planoTemp);
+        const modalidades = planoTemp?.modalidades.map((m, index) => index == i ? {
+            ...m,
+            valor_modalidade: v,
+            valor_modalidade_alterado: v,
+        } : planoTemp);
         var planoAtualizado = calculaValoresDoPlano({ ...planoTemp, modalidades });
         setPlano(planoAtualizado);
     }
 
     async function onPay(formaPagamento, closeLoading, monthly, paymentMethodId) {
-        // const alunoContrato = await setAlunoContrato({
-        //     ...plano,
-        //     pagamentoInicial,
-        //     formaPagamento,
-        //     contrato: contratoPreenchido,
-        //     cod_aluno: aluno?.cod_aluno,
-        //     cod_usuario: usuario?.cod_usuario,
-        //     cod_empresa: usuario?.cod_empresa,
-        // });
+        const alunoContrato = await setAlunoContrato({
+            ...plano,
+            pagamentoInicial,
+            formaPagamento,
+            contrato: contratoPreenchido,
+            cod_aluno: aluno?.cod_aluno,
+            cod_usuario: usuario?.cod_usuario,
+            cod_empresa: usuario?.cod_empresa,
+        });
 
-        // const pdfOptions = {
-        //     margin: 10,
-        //     filename: 'contrato.pdf',
-        //     image: { type: 'jpeg', quality: 0.98 },
-        //     html2canvas: { scale: 2 },
-        //     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        // };
+        const pdfOptions = {
+            margin: 10,
+            filename: 'contrato.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
 
-        // const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
+        const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
 
-        // await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
-        await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, 17, monthly, paymentMethodId);
+        await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
+        await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, monthly, paymentMethodId);
+        closeLoading();
     }
 
     return (
