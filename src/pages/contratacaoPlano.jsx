@@ -188,7 +188,7 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, monthly, paymentMethodId) {
+    async function onPay(formaPagamento, closeLoading, paymentMethodId) {
         const alunoContrato = await setAlunoContrato({
             ...plano,
             pagamentoInicial,
@@ -210,7 +210,7 @@ function ContratacaoPlano() {
         const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
 
         await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
-        await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, monthly, paymentMethodId);
+        await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId);
         closeLoading();
     }
 
@@ -220,10 +220,6 @@ function ContratacaoPlano() {
                 show={pagando}
                 close={() => setPagando(false)}
                 valor={plano?.valor_plano}
-                cash={true}
-                resumoItems={plano?.modalidades}
-                resumoName='nome_modalidade'
-                resumoValue='valor_modalidade'
                 onPay={onPay}
                 duration={plano?.duracao_plano}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}

@@ -11,7 +11,7 @@ import { getCards, getSetupIntent } from "../api/pagamento";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
 
-function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoName, resumoValue, onPay, duration, callback, aluno }) {
+function Pagamento({ show, close, onPay, callback, aluno }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const [accountId, setaccountId] = useState(empresa?.dev_stripe_id || '');
 
@@ -28,11 +28,6 @@ function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoN
             <Elements stripe={stripePromise}>
                 <PagamentoInterno
                     close={close}
-                    valor={valor}
-                    cash={cash}
-                    resumoItems={resumoItems}
-                    resumoName={resumoName}
-                    resumoValue={resumoValue}
                     onPay={onPay}
                     callback={callback}
                     aluno={aluno}
@@ -42,27 +37,18 @@ function Pagamento({ show, close, valor, cash = false, resumoItems = [], resumoN
     );
 }
 
-function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [], resumoName, resumoValue, onPay, clientSecret, callback }) {
+function PagamentoInterno({ aluno, close, onPay, callback }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const { nLoading, endLoading } = useNotificacao();
-    const [index, setIndex] = useState(0);
-    const [formaPagamento, setFormaPagamento] = useState('PIX');
-    const [pago, setPago] = useState(false);
-    const [monthly, setMonthly] = useState(true);
+    const [formaPagamento, setFormaPagamento] = useState('MENSAL'); //MENSAL - RECORRENTE - UNICA
     const [savedCards, setSavedCards] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(null);
 
     const stripe = useStripe();
     const elements = useElements();
 
-    async function clickPay() {
-        nLoading(null, 'Enviando contrato...');
-        // const resp = await onPay(formaPagamento, endLoading, monthly);
-        // if (resp) setPago(true);
-    }
-
     async function clickPayCard() {
-        // nLoading(null, 'Enviando contrato...');
+        nLoading(null, 'Enviando contrato...');
 
         var paymentMethodId;
         if (paymentMethod) paymentMethodId = paymentMethod.id;
@@ -80,18 +66,13 @@ function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [],
             console.log(error);
         }
         
-        const resp = await onPay(formaPagamento, endLoading, monthly, paymentMethodId);
-        if (resp) setPago(true);
-        close();
+        const resp = await onPay(formaPagamento, endLoading, paymentMethodId);
+        if (callback) callback();
     }
 
     function onSelectCard(card) {
         setSavedCards(false);
         setPaymentMethod(card);
-    }
-
-    async function concluir() {
-        if (callback) callback();
     }
 
     async function onClose() {
@@ -101,24 +82,19 @@ function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [],
     return (
         <div className="card bg-light" style={{ minHeight: '80vh' }}>
             <div className="card-body row m-0">
-                <div className="col-md-6 d-flex flex-column">
-                    <h5 className="card-title">Pagamento</h5>
+                <div className="col-md-6 d-flex flex-column card">
+                    <h5 className="mt-3 text-center">Pagamento</h5>
 
-                    <div className="border border-warning bg-warning-subtle fs-3 p-3 rounded mt-3 shadow-md h-100 max-h-1/2">
-                        <p className="text-center mb-0"><strong>Resumo</strong></p>
-
-                        {resumoItems?.map((item, index) => (
-                            <p className="mb-0" key={index}>{item[resumoName]} - <strong>{formatarMoeda(item[resumoValue])}</strong></p>
-                        ))}
-
-                        <p className="mb-0 mt-3 text-end">Total - <strong>{formatarMoeda(valor || 0)}</strong></p>
+                    <div className="card-body d-flex flex-column">
+                        <label className="mb-3">Forma de pagamento</label>
+                        <FormaPagamento
+                            formaPagamento={formaPagamento}
+                            setFormaPagamento={setFormaPagamento}
+                        />
                     </div>
 
                     <div className="d-flex p-3 align-items-center">
-                        <button className={`${index >= 1 ? 'd-none' : ''} btn btn-danger rounded`} onClick={onClose}>Fechar</button>
-                        <button className={`${index < 1 ? 'd-none' : ''} btn btn-outline-danger rounded`}
-                            onClick={() => setIndex(index - 1)}
-                        >Voltar</button>
+                        <button className='btn btn-danger rounded' onClick={onClose}>Fechar</button>
                     </div>
                 </div>
 
@@ -127,42 +103,25 @@ function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [],
                         <div className="card d-flex justify-content-center w-100 h-100">
                             <div className="card-body d-flex flex-column justify-content-between">
                                 <div>
-                                    <label className="mb-3">Forma de pagamento</label>
-                                    <FormaPagamento
-                                        formaPagamento={formaPagamento}
-                                        setFormaPagamento={setFormaPagamento}
-                                        cash={cash}
-                                    />
+                                    <p className="mt-2 text-center">
+                                        {formaPagamento === 'MENSAL' && 'Uma cobrança mensal será gerada podendo ser paga via PIX/Boleto/Cartão'}
+                                        {formaPagamento === 'RECORRENTE' && 'Cobrança automática no cartão de crédito até o vencimento do contrato'}
+                                        {formaPagamento === 'UNICA' && 'Uma cobrança no valor total do contrato será gerada podendo ser paga via PIX/Boleto/Cartão'}
+                                        {formaPagamento === 'MANUAL' && 'Pagamento não será controlado pelo sistema'}
+                                    </p>
                                     <div className="border border-bottom-5 border-info m-3"></div>
 
-                                    {(formaPagamento == 'CREDIT_CARD' || formaPagamento == 'PIX') && (
-                                        <div className="d-flex align-items-center">
-                                            <div className="btn-group d-flex col-6" role="group">
-                                                <button className={`btn btn-sm ${monthly ? "btn-primary" : "btn-outline-primary"}`} 
-                                                    onClick={() => setMonthly(true)}
-                                                >Mensal
-                                                </button>
-
-                                                <button className={`btn btn-sm ${!monthly ? "btn-primary" : "btn-outline-primary"}`} 
-                                                    onClick={() => setMonthly(false)}
-                                                >Á vista
-                                                </button>
-                                            </div>
-
-                                            
-                                            {formaPagamento === 'CREDIT_CARD' && (
-                                                <div className="d-flex col-6 justify-content-end">
-                                                    <button className="btn btn-sm btn-outline-info mt-2"
-                                                        onClick={() => setSavedCards(true)}
-                                                    >
-                                                        Cartões salvos
-                                                    </button>
-                                                </div>
-                                            )}
+                                    {formaPagamento === 'RECORRENTE' && (
+                                        <div className="d-flex col-6">
+                                            <button className="btn btn-sm btn-outline-info mt-2"
+                                                onClick={() => setSavedCards(true)}
+                                            >
+                                                Cartões salvos
+                                            </button>
                                         </div>
                                     )}
 
-                                    {(formaPagamento == 'CREDIT_CARD' && !paymentMethod) && (
+                                    {(formaPagamento == 'RECORRENTE' && !paymentMethod) && (
                                         <>
                                             <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
                                                 <p>Preencher dados do cartão</p>
@@ -197,28 +156,14 @@ function PagamentoInterno({ aluno, close, valor, cash = false, resumoItems = [],
 
                                 
                                 <div>
-                                    {!pago ? (
-                                        <>
-                                            <button 
-                                                className="btn btn-success w-100 mt-3" 
-                                                onClick={formaPagamento === 'CREDIT_CARD' ? clickPayCard : clickPay}
-                                            >
-                                                <i className="bi bi-cart me-2" />
-                                                {formaPagamento === 'AFTER' ? 'Gerar contrato' : 'Pagar'}
-                                            </button>
+                                    <button className="btn btn-success w-100" onClick={clickPayCard}>
+                                        <i className="bi bi-cart me-2" />
+                                        Finalizar
+                                    </button>
 
-                                            {formaPagamento !== 'CREDIT_CARD' && (
-                                                <p className="text-danger fs-2 text-center mt-1">
-                                                    Contrato será gerado e enviado para assinatura!
-                                                </p>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <button className="btn btn-info w-100 mt-3" onClick={concluir}>
-                                            <i className="bi bi-cart me-2" />
-                                            Concluir
-                                        </button>
-                                    )}
+                                    <p className="text-danger fs-2 text-center mt-1 mb-0">
+                                        Contrato será gerado e enviado para assinatura!
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -324,16 +269,16 @@ function Cartoes({ aluno, onConfirm }) {
     );
 }
 
-function FormaPagamento({ setFormaPagamento, formaPagamento, cash }) {
+function FormaPagamento({ setFormaPagamento, formaPagamento }) {
     function select(value) {
         setFormaPagamento(value);
     }
 
     const methods = [
-        { name: 'PIX', value: 'PIX', color: 'success', icon: 'ic:baseline-pix' },
-        { name: 'Crédito', value: 'CREDIT_CARD', color: 'info', icon: 'ion:card' },
-        { name: 'Boleto', value: 'BOLETO', color: 'secondary', icon: 'ion:card' },
-        { name: 'Dinheiro', value: 'CASH', color: 'warning', icon: 'mdi:cash', visivel: cash },
+        { name: 'Mensal', value: 'MENSAL', color: 'success', icon: 'bi:receipt' },
+        { name: 'Recorrente', value: 'RECORRENTE', color: 'info', icon: 'bi-arrow-repeat' },
+        { name: 'Única', value: 'UNICA', color: 'secondary', icon: 'bi:clipboard-check' },
+        { name: 'Manual', value: 'MANUAL', color: 'danger', icon: 'mdi:check' },
     ];
 
     return (
