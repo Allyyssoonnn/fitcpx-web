@@ -96,7 +96,7 @@ function Header() {
                     <li className="nav-item nav-icon-hover-bg rounded-circle d-none d-md-flex">
                         <button className="nav-link" onClick={toggleSidebar}>
                             {/* <iconify-icon icon="solar:list-bold-duotone" className="fs-6"></iconify-icon> */}
-                            <i className={`bi bi-fullscreen${openedSidebar ? '' : '-exit'} fs-4`} />
+                            <i className={`bi ${openedSidebar ? 'bi-arrow-bar-left' : 'bi-arrow-bar-right'} fs-4`} />
                         </button>
                     </li>
                     
