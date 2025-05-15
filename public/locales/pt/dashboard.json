@@ -8,5 +8,9 @@
     "clientsOverview": "Alunos ativos",
     "physicalAssessamentsOverview": "Avaliações físicas realizadas",
     "workoutsOverview": "Treinos cadastrados",
-    "usersOverview": "Usuários"
+    "usersOverview": "Usuários",
+    "recentContracts": "Últimos contratos",
+    "contract": "Contrato",
+    "amount": "Valor total",
+    "dueDate": "Expiração"
 }

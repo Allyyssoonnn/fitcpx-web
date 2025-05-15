@@ -12,15 +12,23 @@ import { toast } from "react-toastify";
 
 function Pagamento({ show, close, onPay, callback, aluno }) {
     const [empresa] = useRecoilState(stateEmpresa);
-    const [accountId, setaccountId] = useState(empresa?.dev_stripe_id || '');
+    const [stripePromise, setStripePromise] = useState(null);
 
     useEffect(() => {
-        setaccountId(empresa?.dev_stripe_id || '');
+        const accountId = PRODUCAO ? empresa?.stripe_id : empresa?.dev_stripe_id;
+        
+        if (!accountId) {
+            toast.error('Preencher formulário para FitCpx Pay.');
+            return;
+        }
+        const promise = loadStripe(
+            PRODUCAO
+                ? 'pk_live_51RKPzOBL0IrftB8edwNRflZ54s2UiIXnwufH4eU1pUV5IW2Dsr914qMWPtS5lSQQZuyA9qP4ekf13PpWxiqNsk2a00y5QIWyjU'
+                : 'pk_test_51RKPzXPd9Pbt6nSARyfESdEWakvQyqlfBS9jdNvKlxPN9u6F8kcx5mISolo9eIzZkKLLt0iVEKm8Ikl0Hg5cfDDv00dG7f25k2',
+            { stripeAccount: accountId }
+        );
+        setStripePromise(promise);
     }, [empresa]);
-
-    const stripePromise = PRODUCAO ?
-    loadStripe('pk_live_51RKPzOBL0IrftB8edwNRflZ54s2UiIXnwufH4eU1pUV5IW2Dsr914qMWPtS5lSQQZuyA9qP4ekf13PpWxiqNsk2a00y5QIWyjU', { stripeAccount: accountId }):
-    loadStripe('pk_test_51RKPzXPd9Pbt6nSARyfESdEWakvQyqlfBS9jdNvKlxPN9u6F8kcx5mISolo9eIzZkKLLt0iVEKm8Ikl0Hg5cfDDv00dG7f25k2', { stripeAccount: accountId });
 
     return (
         <Modal show={show} size="xl">

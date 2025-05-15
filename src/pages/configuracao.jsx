@@ -28,12 +28,12 @@ function Configuracao() {
                             <span className="d-none d-md-block">Empresa</span>
                         </button>
                     </li>
-                    <li className="nav-item" role="presentation">
+                    {/* <li className="nav-item" role="presentation">
                         <button className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3" id="pills-bills-tab" data-bs-toggle="pill" data-bs-target="#pills-bills" type="button" role="tab" aria-controls="pills-bills" aria-selected="false">
                             <i className="bi bi-cash me-2"></i>
                             <span className="d-none d-md-block">Financeiro</span>
                         </button>
-                    </li>
+                    </li> */}
                     <li className="nav-item" role="presentation">
                         <button className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3" id="pills-security-tab" data-bs-toggle="pill" data-bs-target="#pills-security" type="button" role="tab" aria-controls="pills-security" aria-selected="false">
                             <i className="bi bi-unlock me-2"></i>
@@ -52,9 +52,9 @@ function Configuracao() {
                             <Empresa empresa={empresa} setempresa={setempresa} usuario={usuario} />
                         </div>
                         
-                        <div className="tab-pane fade" id="pills-bills" role="tabpanel" aria-labelledby="pills-bills-tab" tabIndex="0">
+                        {/* <div className="tab-pane fade" id="pills-bills" role="tabpanel" aria-labelledby="pills-bills-tab" tabIndex="0">
                             <Financeiro />
-                        </div>
+                        </div> */}
 
                         <div className="tab-pane fade" id="pills-security" role="tabpanel" aria-labelledby="pills-security-tab" tabIndex="0">
                             <Licenca />

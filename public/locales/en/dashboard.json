@@ -8,5 +8,9 @@
     "clientsOverview": "Active Clients",
     "physicalAssessamentsOverview": "Completed Physicals Assessments",
     "workoutsOverview": "Created Workouts",
-    "usersOverview": "Created Users"
+    "usersOverview": "Created Users",
+    "recentContracts": "Recent Contracts",
+    "contract": "Contract",
+    "amount": "Amount",
+    "dueDate": "Due Date"
 }

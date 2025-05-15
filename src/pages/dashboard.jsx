@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario } from "../states/states";
 import { useQuery } from "react-query";
-import { getAlunos, getAvaliacoes } from "../api/aluno";
+import { getAlunoContratos, getAlunos, getAvaliacoes } from "../api/aluno";
 import { getUsuarios } from "../api/usuario";
 import { getTreinos } from "../api/treino";
-import { formatarData } from "../utils";
+import { formatarData, formatarMoeda } from "../utils";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
     const [usuario] = useRecoilState(stateUsuario);
+    const [empresa] = useRecoilState(stateEmpresa);
 
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
@@ -26,10 +27,18 @@ function Dashboard() {
         enabled: !!usuario.cod_empresa
     });
 
+    const { data: contratos, refetch } = useQuery({
+        queryKey: ['contratos', empresa.cod_empresa],
+        queryFn: () => getAlunoContratos(null, empresa.cod_empresa),
+        initialData: [],
+        enabled: !!empresa.cod_empresa,
+    });
+
     return (
         <div className="container-fluid">
             <div className="row">
                 <div className="col-lg-8">
+                    <UltimosContratos contratos={contratos} />
                     <UltimasAvaliacoes alunos={alunos} avaliacoes={avaliacoes} />
                 </div>
 
@@ -40,6 +49,46 @@ function Dashboard() {
             </div>
         </div>
     );
+}
+
+function UltimosContratos({ contratos }) {
+    const { t } = useTranslation('dashboard');
+
+    return (
+        <div className="card">
+            <div className="card-body">
+                <h5 className="card-title">{t('recentContracts')}</h5>
+
+                <div className="table-responsive">
+                    <table className="table text-nowrap align-middle mb-0">
+                        <thead>
+                            <tr className="border-2 border-bottom border-success border-0"> 
+                                <th scope="col" className="ps-0">{t('contract')}</th>
+                                <th scope="col" className="ps-0">{t('student')}</th>
+                                <th scope="col" >{t('dueDate')}</th>
+                                <th scope="col" className="text-center">{t('amount')}</th>
+                            </tr>
+                        </thead>
+
+                        <tbody className="table-group-divider">
+                            {contratos.sort((a, b) => new Date(b.iniciopagamento_aluno_contrato) - new Date(a.iniciopagamento_aluno_contrato))
+                            .slice(0, 5)
+                            .map((contrato) => (
+                                // eslint-disable-next-line react/jsx-key
+                                <tr>
+                                    <th scope="row" className="ps-0 fw-medium">{contrato?.nome_aluno_contrato}</th>
+                                    <th scope="row" className="ps-0 fw-medium">{contrato?.aluno?.nome_aluno}</th>
+                                    <th scope="row" className="ps-0 fw-medium">{formatarData(contrato?.expiracao_aluno_contrato)}</th>
+                                    {/* <td>{contrato?.altura} M</td> */}
+                                    <td className="text-center fw-medium">{formatarMoeda(contrato?.total_aluno_contrato)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function LinkFitCpxPay() {
