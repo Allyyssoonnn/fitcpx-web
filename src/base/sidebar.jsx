@@ -35,7 +35,7 @@ function Sidebar() {
             <div>
                 <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm">
 
-                    <div className="d-flex align-items-center">
+                    <div className="d-flex align-items-center w-100 justify-content-center me-3">
                         <img src="../assets/images/logos/logo.png" alt="" width='45' />
                         <Typewriter texts={[t('welcome'), 'Fit Complex']} />
                     </div>
@@ -59,7 +59,7 @@ function Sidebar() {
 
                         <li className="sidebar-item">
                             <a href="#" className="sidebar-link p-3" onClick={() => go('/')} aria-expanded="false">
-                                <i className="bi bi-house fs-6 me-1"></i>
+                                <i className="bi bi-graph-up fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">{t('dashboard')}</span>
                             </a>
                         </li>
