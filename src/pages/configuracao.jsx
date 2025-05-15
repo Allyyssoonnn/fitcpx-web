@@ -7,6 +7,8 @@ import { changeEmpresaIMG, changeUsuarioIMG, setEmpresa, setUsuario } from "../a
 import { useForm } from "react-hook-form";
 import { gerarIdCarteira } from "../api/pagamento";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
+import { getLicenca, getLicencas } from "../api/licenca";
 
 function Configuracao() {
     const [usuario, setusuario] = useRecoilState(stateUsuario);
@@ -516,24 +518,40 @@ function Financeiro() {
 }
 
 function Licenca() {
+    const [empresa]= useRecoilState(stateEmpresa);
+    
+    const { data: licencas } = useQuery({
+        queryKey: ['licencas'],
+        queryFn: () => getLicencas(),
+        initialData: [],
+    });
+    
+    const { data: licenca } = useQuery({
+        queryKey: ['licenca'],
+        queryFn: () => getLicenca(empresa.cod_empresa),
+        initialData: [],
+        enabled: !!empresa.cod_empresa,
+    });
+
+    async function onCancel() {
+
+    }
+
+    async function onBuy() {
+
+    }
+
     return (
         <div className="row">
             <div className="col-md-6">
                 <div className="card border shadow-none">
                     <div className="card-body p-4">
-                        <h4 className="card-title">Plano atual : <span className="text-success">Gratuito</span></h4>
-                        <p className="card-subtitle">Aqui você pode adquirir um novo plano para evoluir sua ferramenta.</p>
+                        <h4 className="card-title">Planos disponíveis</h4>
+                        <p className="card-subtitle">Aqui você pode contrata um plano para mais limites e opções de trabalho.</p>
 
-                        {[
-                            { nome_licenca: 'Gratuito', valor_licenca: 0, adquirido: true, descricao_licenca: 'Plano básico com 3 Alunos e 1 Usuário para uso gratuito.' },
-                            { nome_licenca: 'Básico', valor_licenca: 120, adquirido: false, descricao_licenca: 'Plano com cadastros ilimitados para gestão permitindo a compra de funções individuais.' },
-                            { nome_licenca: 'Pro', valor_licenca: 200, adquirido: false, descricao_licenca: 'Plano com cadastros ilimitados para gestão com todas funções.' },
-                        ].map((licenca, index) => (<CardLicenca key={index} licenca={licenca} />))}
-
-                        {/* <div className="d-flex align-items-center gap-3">
-                            <button className="btn btn-primary">Change Plan</button>
-                            <button className="btn bg-danger-subtle text-danger">Reset Plan</button>
-                        </div> */}
+                        {licencas.map((licenca, index) => (
+                            <CardLicenca key={index} licenca={licenca} onBuy={licenca ? onBuy : null} />
+                        ))}
                     </div>
                 </div>
             </div>
@@ -541,19 +559,12 @@ function Licenca() {
             <div className="col-md-6">
                 <div className="card border shadow-none">
                     <div className="card-body p-4">
-                        <h4 className="card-title">Funções</h4>
-                        <p className="card-subtitle">Aqui você pode adquirir funções para facilitar seu operacional de trabalho.</p>
+                        <h4 className="card-title">Plano atual : <span className="text-success">{licenca.nome_licenca}</span></h4>
+                        <p className="card-subtitle">Pagamento e verificação de licença.</p>
 
-                        {[
-                            { nome_licenca: 'Treino inteligente', valor_licenca: 0, adquirido: false, descricao_licenca: 'Prescrever treino de maneira automática.' },
-                            { nome_licenca: 'Pagamento', valor_licenca: 0, adquirido: false, descricao_licenca: 'Receber pagamentos utilizando nosso sistema de pagamentos.' },
-                            { nome_licenca: 'Fiscal', valor_licenca: 0, adquirido: false, descricao_licenca: 'Emitir notas fiscais de serviço utilizando nosso sistema fiscal.' },
-                        ].map((licenca, index) => (<CardLicenca key={index} licenca={licenca} />))}
+                        <CardLicenca licenca={licenca} onCancel={onCancel} />
 
-                        {/* <div className="d-flex align-items-center gap-3">
-                            <button className="btn btn-primary">Change Plan</button>
-                            <button className="btn bg-danger-subtle text-danger">Reset Plan</button>
-                        </div> */}
+                        <p className="card-subtitle fs-3 text-danger text-center">Ao contratar um novo plano o plano vigente será cancelado.</p>
                     </div>
                 </div>
             </div>
@@ -561,37 +572,80 @@ function Licenca() {
     )
 }
 
-function CardLicenca({ licenca }) {
+function CardLicenca({ licenca, onCancel, onBuy }) {
+    const variacoes = Array.isArray(licenca?.licencaVariacao) ? licenca?.licencaVariacao : [];
+    const [selectedIndex, setSelectedIndex] = useState(variacoes.length > 0 ? 0 : null);
+
+    const isFree = licenca.nome_licenca === 'Gratuito';
+
+    const renderVariacoes = () => (
+        <div className="px-2 border border-info mt-2 pb-2 d-flex">
+            {variacoes.map((variacao, index) => (
+                <div
+                    key={index}
+                    onClick={() => setSelectedIndex(index)}
+                    className={`d-flex justify-content-between align-items-center mt-2 p-2 border rounded ${
+                        selectedIndex === index ? 'bg-info text-white' : 'bg-light'
+                    }`}
+                    style={{ cursor: 'pointer' }}
+                >
+                    <h5 className="fs-3 fw-semibold mb-0">{variacao.nome_licenca_variacao}</h5>
+                </div>
+            ))}
+        </div>
+    );
 
     return (
-        (<div className={`d-flex flex-column justify-content-between mt-7 mb-1 shadow p-3 rounded ${licenca.adquirido ? 'bg-success-subtle' : 'border border-info'}`}>
-            <div className="d-flex align-items-center gap-3">
-                <div className="text-bg-light rounded-1 p-6 d-flex align-items-center justify-content-center">
-                    <i className="bi bi-box-seam text-dark d-block fs-7" width="22" height="22"></i>
+        <div>
+            <div className={`d-flex flex-column justify-content-between mt-7 mb-1 shadow p-3 rounded ${onCancel ? 'border border-success' : 'border border-info'}`}>
+                <div className="d-flex align-items-center gap-3">
+                    <div className="text-bg-light rounded-1 p-6 d-flex align-items-center justify-content-center">
+                        <i className="bi bi-box-seam text-dark d-block fs-7" width="22" height="22"></i>
+                    </div>
+                    <div>
+                        <h5 className="fs-4 fw-semibold mb-0">{licenca.nome_licenca}</h5>
+                        <p className="mb-0 fs-3">{licenca.descricao_licenca}</p>
+                        <h5 className="fs-4 fw-semibold mb-0">
+                            {selectedIndex !== null
+                                ? formatarMoeda(variacoes[selectedIndex].valor_licenca_variacao)
+                                : formatarMoeda(licenca.valor_licenca)
+                            }
+                            /Mês
+                        </h5>
+                    </div>
                 </div>
-                <div>
-                    <h5 className="fs-4 fw-semibold mb-0">{licenca.nome_licenca}</h5>
-                    <p className="mb-0 fs-3">{licenca.descricao_licenca}</p>
-                    <h5 className="fs-4 fw-semibold mb-0">{formatarMoeda(licenca.valor_licenca)}</h5>
+
+                <div className="d-flex justify-content-end mt-3 align-items-end">
+                    <div className="me-auto">
+                        {variacoes?.length > 0 && renderVariacoes()}
+                    </div>
+
+                    <div>
+                        {!onCancel && (
+                            <button
+                                className="btn btn-info rounded"
+                                disabled={selectedIndex === null || onBuy !== null}
+                                onClick={() => {
+                                    const variacaoSelecionada = variacoes[selectedIndex];
+                                    console.log("Selecionado:", variacaoSelecionada);
+                                    // Aqui pode chamar a função de compra passando a variação
+                                }}
+                            >
+                                <i className="bi bi-cart me-2"></i>
+                                Comprar
+                            </button>
+                        )}
+
+                        {onCancel && (
+                            <button className="btn btn-danger rounded">
+                                <i className="bi bi-x me-2"></i>
+                                Cancelar
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
-
-            <div className="d-flex justify-content-end mt-3">
-                {licenca.adquirido && (
-                    <button disabled className="btn btn-success rounded">
-                        <i className="bi bi-check me-2"></i>
-                        Adquirido
-                    </button>
-                )}
-
-                {!licenca.adquirido && (
-                    <button className="btn btn-info rounded">
-                        <i className="bi bi-cart me-2"></i>
-                        Comprar
-                    </button>
-                )}
-            </div>
-        </div>)
+        </div>
     );
 }
 

@@ -33,6 +33,7 @@ function ContratacaoPlano() {
     const [selectContrato, setSelectContrato] = useState();
     const [descricao, setDescricao] = useState([]);
     const [pagamentoInicial, setPagamentoInicial] = useState();
+    const [geraContrato, setGeraContrato] = useState(true);
 
     const [errors, setErrors] = useState([]);
 
@@ -188,7 +189,7 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId, geraContrato) {
+    async function onPay(formaPagamento, closeLoading, paymentMethodId) {
         const alunoContrato = await setAlunoContrato({
             ...plano,
             pagamentoInicial,
@@ -220,9 +221,7 @@ function ContratacaoPlano() {
             <Pagamento
                 show={pagando}
                 close={() => setPagando(false)}
-                valor={plano?.valor_plano}
                 onPay={onPay}
-                duration={plano?.duracao_plano}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
                 aluno={aluno}
             />
@@ -339,6 +338,13 @@ function ContratacaoPlano() {
                                     value={pagamentoInicial}
                                     onChange={e => setPagamentoInicial(e.target.value)}
                                 />
+                            </div>
+
+                            <div className="form-check form-switch mt-3 ms-3">
+                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
+                                    checked={geraContrato} onChange={() => setGeraContrato(!geraContrato)}
+                                />
+                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault">[Jurídico] - Gerar e enviar contrato para assinatura?</label>
                             </div>
                         </div>
                     </div>

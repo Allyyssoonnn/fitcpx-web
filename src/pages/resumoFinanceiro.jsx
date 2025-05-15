@@ -2,7 +2,7 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa, useNotificacao } from "../states/states";
 import { useEffect, useRef, useState } from "react";
 import { setEmpresa } from "../api/usuario";
-import { cashWithdrawal, getBalance, getBankExtract } from "../api/pagamento";
+import { getBalance, getBankExtract } from "../api/pagamento";
 import { useQuery } from "react-query";
 import { formatarData, formatarMoeda } from "../utils";
 
@@ -96,7 +96,8 @@ function Pagamentos({ empresa }) {
                                             </div>
                                             <div className="d-flex flex-column">
                                                 <span>{item.description}</span>
-                                                <small className="text-muted">Data: {formatarData(new Date(item.created * 1000))}</small>
+                                                <small className="text-muted">Data da transação: {formatarData(new Date(item.created * 1000))}</small>
+                                                <small className="text-success">Disponível para saque: {formatarData(new Date(item.available_on * 1000))}</small>
                                             </div>
                                         </td>
                                     </tr>
@@ -114,23 +115,19 @@ function Taxas() {
     return (
         <div className="card">
             <div className="card-body">
-                <h6 className="card-title">Taxas</h6>
-                <p>Taxa de saque: <strong>R$ 2,00/Saque</strong></p>
-                <p className="text-center fs-2 m-0">Ao realizar o saque será descontado a taxa</p>
+                <h6 className="card-title">Saques</h6>
+                <p>Saques são realizados diariamente após a retenção de 30 dias, por questões de segurança.</p>
+                {/* <p className="text-center fs-2 m-0">Ao realizar o saque, será descontada uma taxa</p> */}
             </div>
         </div>
     )
 }
 
 function DadosRecebimento({ balance }) {
-    const { nError, nLoading, endLoading } = useNotificacao();
-    const [empresa, setempresa] = useRecoilState(stateEmpresa);
+    const [empresa] = useRecoilState(stateEmpresa);
 
-    async function realizarsaque() {
-        nLoading(null, 'Solicitando saque...');
-        await cashWithdrawal(empresa.cod_empresa);
-        endLoading();
-    }
+    const availableAmount = balance?.available?.[0]?.amount ?? 0;
+    const pendingAmount = balance?.pending?.[0]?.amount ?? 0;
 
     return (
         <div className="card">
@@ -138,24 +135,22 @@ function DadosRecebimento({ balance }) {
                 <h6 className="card-title mb-3">Dados para recebimento</h6>
 
                 <div>
-                    <label className="form-label">Liquido</label>
-                    <p className="text-dark text-center py-1 rounded border border-success bg-success-subtle">
-                        <strong>{formatarMoeda(balance?.available?.[0]?.amount / 100)}</strong>
+                    <label className="form-label">Disponível para saque</label>
+                    <p className="text-dark text-center py-1 rounded border border-success bg-success">
+                        <strong>{formatarMoeda(availableAmount / 100)}</strong>
                     </p>
-                    <label className="form-label">Pendente</label>
-                    <p className="text-dark text-center py-1 rounded border border-success bg-info-subtle">
-                        <strong>{formatarMoeda(balance?.pending?.[0]?.amount / 100)}</strong>
+                    <label className="form-label">Saldo</label>
+                    <p className="text-dark text-center py-1 rounded border border-success bg-success-subtle">
+                        <strong>{formatarMoeda(pendingAmount / 100)}</strong>
                     </p>
                 </div>
+
+                <p className="text-center fs-2">Informações bancárias para depósito</p>
 
                 <div>
                     <label className="form-label">Agência - Conta</label>
                     <p>{empresa.agencia_banco_conta} - {empresa.numero_banco_conta || 'Não informado'}</p>
                 </div>
-
-                <button disabled={(balance?.available?.[0]?.amount / 100) < 10} className="btn btn-success rounded mt-3 w-100" onClick={realizarsaque}>Solicitar Saque</button>
-                <p className="text-center fs-2 mb-0">Valor integral com desconto será enviado para conta informada</p>
-                <p className="text-center fs-2 text-danger">Valor mínimo para saque R$10,00</p>
             </div>
         </div>
     )

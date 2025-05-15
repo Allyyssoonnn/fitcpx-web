@@ -1,14 +1,6 @@
 import { toast } from "react-toastify";
 import { get, post, postImage } from "./api";
 
-export const cashWithdrawal = async (cod_empresa) => {
-    const resp = await post('/pagamento/cashWithdrawal', { cod_empresa });
-    if (resp.status) {
-        return resp.status;
-    } else toast.error(resp.message);
-    throw new Error("Erro ao carregar agenda");
-};
-
 export const getBankExtract = async (cod_empresa, month, year) => {
     const resp = await post('/pagamento/getBankExtract', { cod_empresa, month, year });
     if (resp.status) {
@@ -40,9 +32,33 @@ export const sendDocuments = async (frontDoc, backDoc, frontDocType, backDocType
 };
 
 export const getSetupIntent = async (cod_empresa, cod_aluno) => {
-    const resp = await post('/pagamento/getSetupIntent', { cod_empresa, cod_aluno });
+    const resp = await post('/pagamento/getIntentPayment', { cod_empresa, cod_aluno });
     if (resp.status) {
         return resp.clientSecret;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const getSetupIntentCard = async (cod_empresa, cod_aluno) => {
+    const resp = await post('/pagamento/getSetupIntentCard', { cod_empresa, cod_aluno });
+    if (resp.status) {
+        return resp.clientSecret;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const updateMethodPayment = async (cod_empresa, cod_aluno, paymentId, cobrarRecorrente) => {
+    const resp = await post('/pagamento/updateMethodPayment', { cod_empresa, cod_aluno, paymentId, cobrarRecorrente });
+    if (resp.status) {
+        return resp.clientSecret;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const updatePaymentIntentStatus = async (paymentId, status) => {
+    const resp = await post('/pagamento/updatePaymentIntentStatus', { paymentId, status });
+    if (resp.status) {
+        return resp;
     } else toast.error(resp.message);
     throw new Error("Erro ao carregar agenda");
 };
@@ -51,6 +67,22 @@ export const getCards = async (cod_empresa, cod_aluno) => {
     const resp = await post('/pagamento/getPaymentsMethod', { cod_empresa, cod_aluno });
     if (resp.status) {
         return resp.paymentsMethod;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const getIntentPayment = async (cod_empresa, cod_aluno_contrato_pagamento) => {
+    const resp = await post('/pagamento/getIntentPayment', { cod_empresa, cod_aluno_contrato_pagamento });
+    if (resp.status) {
+        return resp.payment;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const doRefundPayment = async (cod_empresa, cod_aluno_contrato_pagamento) => {
+    const resp = await post('/pagamento/doRefundPayment', { cod_empresa, cod_aluno_contrato_pagamento });
+    if (resp.status) {
+        return resp.payment;
     } else toast.error(resp.message);
     throw new Error("Erro ao carregar agenda");
 };
