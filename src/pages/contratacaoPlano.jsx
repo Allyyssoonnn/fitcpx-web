@@ -223,7 +223,7 @@ function ContratacaoPlano() {
                 close={() => setPagando(false)}
                 onPay={onPay}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
-                aluno={aluno}
+                client={aluno}
             />
             <SelectPlano planos={planos} show={modalPlanos} setShow={setModalPlanos} setPlano={setPlano} />
 

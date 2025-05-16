@@ -16,3 +16,27 @@ export const getLicenca = async (cod_empresa) => {
     } else toast.error(resp.message);
     throw new Error("Erro ao carregar agenda");
 };
+
+export const cancelLicenca = async (cod_empresa_licenca) => {
+    const resp = await post('/licenca/cancelLicenca', { cod_empresa_licenca });
+    if (resp.status) {
+        return resp.licenca;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const buyLicenca = async (cod_empresa, cod_licenca, formaPagamento, paymentMethodId) => {
+    const resp = await post('/licenca/buyLicenca', { cod_empresa, cod_licenca, formaPagamento, paymentMethodId });
+    if (resp.status) {
+        return resp.licenca;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};
+
+export const getPayments = async (cod_empresa) => {
+    const resp = await post('/licenca/getPayments', { cod_empresa });
+    if (resp.status) {
+        return resp.payments;
+    } else toast.error(resp.message);
+    throw new Error("Erro ao carregar agenda");
+};

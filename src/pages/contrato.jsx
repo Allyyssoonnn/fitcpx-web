@@ -83,7 +83,7 @@ function Contrato() {
             refetch();
         })
     }
-
+        
     return (
         <div className="container-fluid">
             <Pagamento
@@ -92,7 +92,7 @@ function Contrato() {
                 close={() => setPagando(false)}
                 onPay={onPay}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
-                aluno={aluno}
+                client={aluno}
             />
 
             <div className="row">
@@ -180,70 +180,88 @@ function Contrato() {
                 </div>
             </div>
 
-            <div className="card">
-                <div className="card-header">
-                    <h5 className="card-title">Pagamentos</h5>
-                </div>
-
+            <div className="card border-0 shadow-sm mb-4">
                 <div className="card-body">
-                    <div className="table-responsive">
-                        <table id="basic-datatables" className="display table table-striped table-hover">
-                            {alunoContrato?.pagamentos.map((pagamento, index) => (
-                                <tr key={index} className={`border rounded ${pagamento.status_aluno_contrato_pagamento == 'CONFIRMED' ? 'border-success' : 'border-warning'}`}>
-                                    <th scope="row" className="d-flex align-items-center">
-                                        <div className="col-md-12 d-flex flex-column">
-                                            <label>{formatarData(pagamento.data_aluno_contrato_pagamento)}</label>
-                                            <label className="fs-2 text-muted">{pagamento.statustexto_aluno_contrato_pagamento}</label>
-                                            <div className="d-flex gap-2 mt-2">
-                                                {pagamento.status_aluno_contrato_pagamento == 'Pendente' && <label className="badge bg-warning">Pendente</label>}
-                                                {pagamento.status_aluno_contrato_pagamento == 'requires_payment_method' && <label className="badge bg-warning">Pendente</label>}
-                                                {pagamento.status_aluno_contrato_pagamento == 'succeeded' && <label className="badge bg-success">Pago</label>}
-                                                {pagamento.status_aluno_contrato_pagamento == 'refund' && <label className="badge bg-danger">Reembolsado</label>}
-                                                {/* {pagamento.status_aluno_contrato_pagamento == 'RECEIVED' && <label className="badge bg-success">Recebida</label>} */}
-                                                
-                                                <label className="badge bg-danger">{formatarData(pagamento.expiracao_aluno_contrato_pagamento)}</label>
-                                                <label className="badge bg-info">{formatarMoeda(pagamento.valor_aluno_contrato_pagamento)}</label>
-                                                <label className="badge bg-success">{pagamento.forma_aluno_contrato_pagamento}</label>
+                    <h5 className="mb-3 fw-semibold text-dark">Pagamentos</h5>
 
-                                                {pagamento.forma_aluno_contrato_pagamento == 'PIX' && <label className="badge bg-warning">PIX</label>}
-                                                {pagamento.forma_aluno_contrato_pagamento == 'CREDIT_CARD' && <label className="badge bg-warning">Cartão de crédito</label>}
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <td>
-                                        <span className={`w-100 d-flex justify-content-end gap-2`}>
-                                            {pagamento.status_aluno_contrato_pagamento == 'requires_payment_method' && (
-                                                <button onClick={() => pay(pagamento)} className="btn btn btn-outline-success rounded">
-                                                    <i className="bi bi-check-circle me-2" />
-                                                    Pagar
-                                                </button>
-                                            )}
-                                            {pagamento.status_aluno_contrato_pagamento == 'succeeded' && (
-                                                <button onClick={() => refund(pagamento)} className="btn btn btn-outline-danger rounded">
-                                                    <i className="bi bi-check-circle me-2" />
-                                                    Reembolsar
-                                                </button>
-                                            )}
-                                        </span>
-                                        {/* <span className={`w-100 d-flex justify-content-end gap-2 ${pagamento.status_aluno_contrato_pagamento == 'CONFIRMED' ? '' : 'd-none'}`}>
-                                            <button disabled className="btn btn btn-outline-primary rounded">
-                                                <i className="bi bi-check-circle me-2" />
-                                                Exportar NF
-                                            </button>
-                                        </span> */}
-                                        {/* <span className={`w-100 d-flex justify-content-end gap-2 ${pagamento.status_aluno_contrato_pagamento == 'PENDING' ? '' : 'd-none'}`}>
-                                            <button className={`btn btn btn-outline-success rounded ${pagamento?.forma_aluno_contrato_pagamento !== 'PIX' && 'd-none'}`}>
-                                                <i className="bi bi-check-circle me-2" />
-                                                Pagar
-                                            </button>
-                                        </span> */}
-                                    </td>
-                                </tr>
-                            ))}
-                        </table>
-                    </div>
+                    {alunoContrato?.pagamentos?.length < 1 ? (
+                        <p className="text-muted">Nenhum pagamento registrado</p>
+                    ) : (
+                        <div className="table-responsive">
+                            <table className="table table-borderless align-middle">
+                                <thead className="text-secondary small text-uppercase">
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th>Expiração</th>
+                                        <th>Valor</th>
+                                        <th>Forma</th>
+                                        <th className="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {alunoContrato?.pagamentos?.map((pagamento, index) => (
+                                        <tr key={index} className="border-top">
+                                            <td>{formatarData(pagamento.data_aluno_contrato_pagamento)}</td>
+                                            <td>
+                                                <span className="d-block small text-muted">{pagamento.statustexto_aluno_contrato_pagamento}</span>
+
+                                                {pagamento.status_aluno_contrato_pagamento === 'succeeded' && (
+                                                    <span className="badge bg-success-subtle text-success mt-1">Pago</span>
+                                                )}
+                                                {(pagamento.status_aluno_contrato_pagamento === 'Pendente' ||
+                                                    pagamento.status_aluno_contrato_pagamento === 'requires_payment_method') && (
+                                                    <span className="badge bg-warning-subtle text-warning mt-1">Pendente</span>
+                                                )}
+                                                {pagamento.status_aluno_contrato_pagamento === 'refund' && (
+                                                    <span className="badge bg-danger-subtle text-danger mt-1">Reembolsado</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <span className="badge bg-light text-dark">
+                                                    {formatarData(pagamento.expiracao_aluno_contrato_pagamento)}
+                                                </span>
+                                            </td>
+                                            <td className="text-muted">
+                                                {formatarMoeda(pagamento.valor_aluno_contrato_pagamento)}
+                                            </td>
+                                            <td>
+                                                {pagamento.forma_aluno_contrato_pagamento === 'PIX' && (
+                                                    <span className="badge bg-warning-subtle text-dark">PIX</span>
+                                                )}
+                                                {pagamento.forma_aluno_contrato_pagamento === 'CREDIT_CARD' && (
+                                                    <span className="badge bg-primary-subtle text-dark">Cartão</span>
+                                                )}
+                                            </td>
+                                            <td className="text-end">
+                                                {pagamento.status_aluno_contrato_pagamento === 'requires_payment_method' && (
+                                                    <button
+                                                        onClick={() => pay(pagamento)}
+                                                        className="btn btn-sm btn-outline-success"
+                                                    >
+                                                        <i className="bi bi-credit-card me-1" />
+                                                        Pagar
+                                                    </button>
+                                                )}
+                                                {pagamento.status_aluno_contrato_pagamento === 'succeeded' && (
+                                                    <button
+                                                        onClick={() => refund(pagamento)}
+                                                        className="btn btn-sm btn-outline-danger"
+                                                    >
+                                                        <i className="bi bi-arrow-counterclockwise me-1" />
+                                                        Reembolsar
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             </div>
+
 
             <div className="card">
                 <div className="card-header d-flex justify-content-between">

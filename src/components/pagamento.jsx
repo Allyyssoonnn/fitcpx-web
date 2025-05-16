@@ -6,28 +6,37 @@ import { stateEmpresa, useNotificacao } from "../states/states";
 import { loadStripe } from '@stripe/stripe-js';
 import { PRODUCAO } from "../api/api";
 import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js";
-import { getCards, getSetupIntent, updateMethodPayment, updatePaymentIntentStatus } from "../api/pagamento";
+import { getCards, getSetupIntent, getSetupIntentCard, updateMethodPayment, updatePaymentIntentStatus } from "../api/pagamento";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
 
-function Pagamento({ show, close, onPay, callback, aluno, payment }) {
+function Pagamento({ show, close, onPay, callback, client, payment, licenca }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const [stripePromise, setStripePromise] = useState(null);
 
     useEffect(() => {
-        const accountId = PRODUCAO ? empresa?.stripe_id : empresa?.dev_stripe_id;
-        
-        if (!accountId) {
-            toast.error('Preencher formulário para FitCpx Pay.');
-            return;
+        if (licenca) {
+            const promise = loadStripe(
+                PRODUCAO
+                    ? 'pk_live_51RKPzOBL0IrftB8edwNRflZ54s2UiIXnwufH4eU1pUV5IW2Dsr914qMWPtS5lSQQZuyA9qP4ekf13PpWxiqNsk2a00y5QIWyjU'
+                    : 'pk_test_51RKPzXPd9Pbt6nSARyfESdEWakvQyqlfBS9jdNvKlxPN9u6F8kcx5mISolo9eIzZkKLLt0iVEKm8Ikl0Hg5cfDDv00dG7f25k2',
+            );
+            setStripePromise(promise);
+        } else {
+            const accountId = PRODUCAO ? empresa?.stripe_id : empresa?.dev_stripe_id;
+            
+            if (!accountId) {
+                toast.error('Preencher formulário para FitCpx Pay.');
+                return;
+            }
+            const promise = loadStripe(
+                PRODUCAO
+                    ? 'pk_live_51RKPzOBL0IrftB8edwNRflZ54s2UiIXnwufH4eU1pUV5IW2Dsr914qMWPtS5lSQQZuyA9qP4ekf13PpWxiqNsk2a00y5QIWyjU'
+                    : 'pk_test_51RKPzXPd9Pbt6nSARyfESdEWakvQyqlfBS9jdNvKlxPN9u6F8kcx5mISolo9eIzZkKLLt0iVEKm8Ikl0Hg5cfDDv00dG7f25k2',
+                { stripeAccount: accountId }
+            );
+            setStripePromise(promise);
         }
-        const promise = loadStripe(
-            PRODUCAO
-                ? 'pk_live_51RKPzOBL0IrftB8edwNRflZ54s2UiIXnwufH4eU1pUV5IW2Dsr914qMWPtS5lSQQZuyA9qP4ekf13PpWxiqNsk2a00y5QIWyjU'
-                : 'pk_test_51RKPzXPd9Pbt6nSARyfESdEWakvQyqlfBS9jdNvKlxPN9u6F8kcx5mISolo9eIzZkKLLt0iVEKm8Ikl0Hg5cfDDv00dG7f25k2',
-            { stripeAccount: accountId }
-        );
-        setStripePromise(promise);
     }, [empresa]);
 
     return (
@@ -36,17 +45,18 @@ function Pagamento({ show, close, onPay, callback, aluno, payment }) {
                 {payment ? (
                     <PagamentoIntent
                         close={close}
-                        onPay={onPay}
                         callback={callback}
-                        aluno={aluno}
+                        client={client}
                         payment={payment}
+                        licenca={licenca}
                     />
                 ) : (
                     <PagamentoInterno
                         close={close}
                         onPay={onPay}
                         callback={callback}
-                        aluno={aluno}
+                        client={client}
+                        licenca={licenca}
                     />
                 )}
             </Elements>
@@ -54,7 +64,7 @@ function Pagamento({ show, close, onPay, callback, aluno, payment }) {
     );
 }
 
-function PagamentoIntent({ aluno, close, onPay, callback, payment }) {
+function PagamentoIntent({ client, close, callback, payment, licenca }) {
     const { nLoading, endLoading } = useNotificacao();
     const [empresa] = useRecoilState(stateEmpresa);
 
@@ -86,8 +96,10 @@ function PagamentoIntent({ aluno, close, onPay, callback, payment }) {
                     payment_method: paymentMethod.id,
                     setup_future_usage: cobrarRecorrente ? 'off_session' : undefined,
                 });
-                if (result?.paymentIntent?.status) await updatePaymentIntentStatus(payment.id, result.paymentIntent.status);
-                if (paymentMethod.id) await updateMethodPayment(empresa.cod_empresa, aluno.cod_aluno, paymentMethod.id, cobrarRecorrente);
+                console.log(result);
+                
+                if (result?.paymentIntent?.status) await updatePaymentIntentStatus(payment.id, result.paymentIntent.status, cobrarRecorrente, licenca);
+                if (paymentMethod.id && !licenca) await updateMethodPayment(empresa.cod_empresa, client.cod_aluno, paymentMethod.id);
                 callback?.(result);
             } else {
                 // Cartão novo
@@ -95,16 +107,16 @@ function PagamentoIntent({ aluno, close, onPay, callback, payment }) {
                     payment_method: {
                         card: elements.getElement(CardElement),
                         billing_details: {
-                            name: aluno.nome_aluno,
-                            email: aluno.email_aluno,
+                            name: client.nome_aluno ?? client.nome_empresa,
+                            email: client.email_aluno ?? client.email_empresa,
                         },
                     },
                     setup_future_usage: cobrarRecorrente ? 'off_session' : undefined,
                 });
                 const paymentMethodId = result.paymentIntent.payment_method;
                 
-                if (result?.paymentIntent?.status) await updatePaymentIntentStatus(payment.id, result.paymentIntent.status);
-                if (paymentMethodId) await updateMethodPayment(empresa.cod_empresa, aluno.cod_aluno, paymentMethodId, cobrarRecorrente);
+                if (result?.paymentIntent?.status) await updatePaymentIntentStatus(payment.id, result.paymentIntent.status, cobrarRecorrente, licenca);
+                if (paymentMethodId && !licenca) await updateMethodPayment(empresa.cod_empresa, client.cod_aluno, paymentMethodId);
                 callback?.(result);
             }
         }
@@ -163,6 +175,7 @@ function PagamentoIntent({ aluno, close, onPay, callback, payment }) {
         // }
 
         endLoading();
+        close();
     }
 
     return (
@@ -309,14 +322,14 @@ function PagamentoIntent({ aluno, close, onPay, callback, payment }) {
                                 </div>
                             </div>
                         </div>
-                    ) : <Cartoes aluno={aluno} onConfirm={onSelectCard} />}
+                    ) : <Cartoes client={client} onConfirm={onSelectCard} licenca={licenca} />}
                 </div>
             </div>
         </div>
     )
 }
 
-function PagamentoInterno({ aluno, close, onPay, callback }) {
+function PagamentoInterno({ client, close, onPay, callback, licenca }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const { nLoading, endLoading, nConfirm } = useNotificacao();
     const [formaPagamento, setFormaPagamento] = useState('MENSAL'); //MENSAL - RECORRENTE - UNICA
@@ -335,7 +348,7 @@ function PagamentoInterno({ aluno, close, onPay, callback }) {
             if (paymentMethod) paymentMethodId = paymentMethod.id;
     
             if (formaPagamento === 'RECORRENTE' && !paymentMethod) {
-                const clientSecret = await getSetupIntent(empresa.cod_empresa, aluno.cod_aluno);
+                const clientSecret = await getSetupIntentCard(empresa.cod_empresa, client.cod_aluno, licenca);
             
                 const { error, setupIntent } = await stripe.confirmCardSetup(clientSecret, {
                     payment_method: {
@@ -379,6 +392,7 @@ function PagamentoInterno({ aluno, close, onPay, callback }) {
                         <FormaPagamento
                             formaPagamento={formaPagamento}
                             setFormaPagamento={setFormaPagamento}
+                            licenca={licenca}
                         />
                     </div>
 
@@ -452,24 +466,24 @@ function PagamentoInterno({ aluno, close, onPay, callback }) {
                                 </div>
                             </div>
                         </div>
-                    ) : <Cartoes aluno={aluno} onConfirm={onSelectCard} />}
+                    ) : <Cartoes client={client} onConfirm={onSelectCard} licenca={licenca} />}
                 </div>
             </div>
         </div>
     );
 }
 
-function Cartoes({ aluno, onConfirm }) {
+function Cartoes({ client, onConfirm, licenca }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const [cards, setCards] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-  
+
     useEffect(() => {
         const loadCards = async () => {
             try {
                 setIsLoading(true);
-                const data = await getCards(empresa.cod_empresa, aluno.cod_aluno);
+                const data = await getCards(empresa.cod_empresa, client.cod_aluno, licenca);
                 setCards(data || []);
                 
                 // Seleciona o primeiro cartão por padrão, se existir
@@ -484,7 +498,7 @@ function Cartoes({ aluno, onConfirm }) {
         };
   
         loadCards();
-    }, [empresa.cod_empresa, aluno.cod_aluno]);
+    }, [empresa.cod_empresa, client]);
   
     const handleCardSelection = (cardId) => {
         setSelectedCardId(cardId);
@@ -554,7 +568,7 @@ function Cartoes({ aluno, onConfirm }) {
     );
 }
 
-function FormaPagamento({ setFormaPagamento, formaPagamento }) {
+function FormaPagamento({ setFormaPagamento, formaPagamento, licenca }) {
     function select(value) {
         setFormaPagamento(value);
     }
@@ -562,22 +576,24 @@ function FormaPagamento({ setFormaPagamento, formaPagamento }) {
     const methods = [
         { name: 'Mensal', value: 'MENSAL', color: 'success', icon: 'bi:receipt' },
         { name: 'Recorrente', value: 'RECORRENTE', color: 'info', icon: 'bi-arrow-repeat' },
-        { name: 'Única', value: 'UNICA', color: 'secondary', icon: 'bi:clipboard-check' },
-        { name: 'Manual', value: 'MANUAL', color: 'danger', icon: 'mdi:check' },
+        { name: 'Única', value: 'UNICA', color: 'secondary', icon: 'bi:clipboard-check', disabled: licenca },
+        { name: 'Manual', value: 'MANUAL', color: 'danger', icon: 'mdi:check', disabled: licenca },
     ];
 
     return (
         <div className="d-flex flex-wrap justify-content-around gap-3 w-100">
-            {methods.map((method, index) => (
-                <motion.button key={index}
-                    className={`btn btn-outline-${method.color} rounded d-flex flex-column justify-content-center align-items-center`}
-                    onClick={() => select(method.value)}
-                >
-                    <iconify-icon icon={method.icon} width='50' height='50'/>
-                    {method.name}
-                    <input className="mt-2" type="radio" checked={method.value == formaPagamento} />
-                </motion.button>
-            ))}
+            {methods.map((method, index) => {
+                if (!method.disabled) return (
+                    <motion.button key={index}
+                        className={`btn btn-outline-${method.color} rounded d-flex flex-column justify-content-center align-items-center`}
+                        onClick={() => select(method.value)}
+                    >
+                        <iconify-icon icon={method.icon} width='50' height='50'/>
+                        {method.name}
+                        <input className="mt-2" type="radio" checked={method.value == formaPagamento} />
+                    </motion.button>
+                )
+            })}
         </div>
     );
 }
