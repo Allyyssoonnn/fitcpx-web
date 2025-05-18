@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -12,7 +12,8 @@ import { conectedGoogle, conectGoogle, getAgenda, setAgenda, syncGoogleEvents } 
 import { useQuery } from "react-query";
 import { getAlunos } from "../api/aluno";
 import { getGoogleConnect } from "../api/usuario";
-
+import FitSelectForm from "../components/baseComponents/FitSelectForm";
+import FitInputForm from "../components/baseComponents/FitInputForm";
 
 function Agenda() {
     const [usuario, setusuario] = useRecoilState(stateUsuario);
@@ -90,25 +91,33 @@ function Agenda() {
 
 function Calendario() {
     const [usuario] = useRecoilState(stateUsuario);
-    const { handleSubmit, register, setValue } = useForm();
+    const { handleSubmit, register, setValue, formState: { errors }, reset } = useForm();
+
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
         queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
         initialData: [],
         enabled: !!usuario.cod_empresa
     });
+
     const { data: agenda } = useQuery({
         queryKey: ['agenda', usuario.cod_usuario],
         queryFn: async () => {
             const resp = await getAgenda(usuario.cod_empresa)
             const data = resp.map(e => ({
                 id: e.cod_agenda,
-                cod_aluno: e.cod_aluno,
                 title: e.nome_evento,
                 start: e.data_inicio,
                 end: e.data_fim,
-                extendedProps: { calendar: "Primary" },
-            }));
+                backgroundColor: e.cor_evento,
+                borderColor: e.cor_evento,
+                extendedProps: {
+                    cod_aluno: e.cod_aluno,
+                    tipo_evento: e.tipo_evento,
+                    descricao_evento: e.descricao_evento,
+                    cor_evento: e.cor_evento,
+                },
+            }))
             return data;
         },
         initialData: [],
@@ -138,14 +147,14 @@ function Calendario() {
 
         // Função de redimensionamento da janela
         const handleResize = () => {
-        const isSmallScreen = window.innerWidth <= 1199;
-        if (isSmallScreen) {
-            calendarApi.changeView("listWeek");
-            calendarApi.setOption("height", 900);
-        } else {
-            calendarApi.changeView("dayGridMonth");
-            calendarApi.setOption("height", 1052);
-        }
+            const isSmallScreen = window.innerWidth <= 1199;
+            if (isSmallScreen) {
+                calendarApi.changeView("listWeek");
+                calendarApi.setOption("height", 900);
+            } else {
+                calendarApi.changeView("dayGridMonth");
+                calendarApi.setOption("height", 1052);
+            }
         };
 
         // Adiciona listener para resize
@@ -163,6 +172,7 @@ function Calendario() {
     };
 
     const handleDateClick = (info) => {
+        reset();
         const clickedDate = new Date(info.start);
 
         // Ajustar para o formato YYYY-MM-DDTHH:MM (sem segundos)
@@ -175,10 +185,25 @@ function Calendario() {
             return;
         }
 
-        setValue('inicio', start);
-        setValue('fim', end);
+        setValue('data_inicio', start);
+        setValue('data_fim', end);
         setShowModal(true);
     };
+
+    const handleEventClick = (info) => {
+        const event = info.event;
+
+        // Preenche os campos do formulário com os dados do evento
+        setValue('nome_evento', event.title);
+        setValue('descricao_evento', event.extendedProps.descricao_evento);
+        setValue('cod_aluno', event.extendedProps.cod_aluno);
+        setValue('tipo_evento', event.extendedProps.tipo_evento);
+        setValue('cor_evento', event.backgroundColor);
+        setValue('data_inicio', event.start.toISOString().slice(0, 16));
+        setValue('data_fim', event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));
+
+        setShowModal(true);
+    }
 
     const tooltip = (
         <Tooltip id="tooltip">
@@ -191,7 +216,7 @@ function Calendario() {
             </div>
         </Tooltip>
     );
-
+    
     return (
         <div style={{ height: "900px" }}>
             <FullCalendar
@@ -210,6 +235,7 @@ function Calendario() {
                     },
                 }}
                 select={handleDateClick}
+                eventClick={handleEventClick}
                 headerToolbar={{
                     left: "prev,next addEventButton",
                     center: "title",
@@ -234,58 +260,71 @@ function Calendario() {
 
                         <div className="modal-body">
                             <div className="row">
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Tipo de Cadastro</label>
+                                <div className="d-flex gap-2 mt-6">
                                     <OverlayTrigger placement="bottom" overlay={tooltip}>
                                         <i className='bi bi-question-circle text-danger ms-2'></i>
                                     </OverlayTrigger>
-                                    <select {...register('tipo_cadastro', { value: 'E' })} className="form-control">
-                                        <option value='E'>Evento</option>
-                                        <option value='D'>Disponibilidade</option>
-                                    </select>
-                                </div>
-                                
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Nome do evento</label>
-                                    <input { ...register('nome_evento', { required: 'O nome do evento é obrigatório' }) } id="event-title" type="text" className="form-control" />
+
+                                    <FitSelectForm
+                                        classNameContainer="w-100"
+                                        nameField="Tipo de Evento"
+                                        errors={errors}
+                                        {...register('tipo_evento', { value: 'E' })} 
+                                    >
+                                        <option value='Evento'>Evento</option>
+                                        <option value='Disponibilidade'>Disponibilidade</option>
+                                    </FitSelectForm>
                                 </div>
 
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Descrição do evento</label>
-                                    <input { ...register('descricao_evento', { required: 'O nome do evento é obrigatório' }) } id="event-title" type="text" className="form-control" />
-                                </div>
+                                <FitInputForm
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Nome do evento"
+                                    errors={errors}
+                                    { ...register('nome_evento', { required: true }) }
+                                />
 
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Tipo do evento</label>
-                                    <input { ...register('tipo_evento') } id="event-title" type="text" className="form-control" />
-                                </div>
+                                <FitInputForm
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Descrição do evento"
+                                    errors={errors}
+                                    { ...register('descricao_evento', { required: true }) }
+                                />
 
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Cor</label>
-                                    <select {...register('cor_evento')} className="form-control">
-                                        <option value=''>Selecione a cor</option>
-                                    </select>
-                                </div>
+                                <FitInputForm
+                                    type="color"
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Cor"
+                                    errors={errors}
+                                    { ...register('cor_evento') }
+                                />
 
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Aluno (opcional)</label>
-                                    <select {...register('cod_aluno')} className="form-control">
-                                        <option value=''>Selecione o aluno</option>
-                                        {alunos.map((aluno, index) => (
-                                            <option key={index} value={aluno.cod_aluno}>{aluno.nome_aluno}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                                <FitSelectForm
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Aluno (opcional)"
+                                    errors={errors}
+                                    { ...register('cod_aluno') }
+                                >
+                                    <option value={null}></option>
+                                    {alunos.map((aluno, index) => (
+                                        <option key={index} value={aluno.cod_aluno}>{aluno.nome_aluno}</option>
+                                    ))}
+                                </FitSelectForm>
 
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Inicio</label>
-                                    <input { ...register('data_inicio', { required: 'A data de inicio é obrigatória' }) } id="event-start-date" type="datetime-local" className="form-control" />
-                                </div>
+                                <FitInputForm
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Inicio"
+                                    errors={errors}
+                                    type="datetime-local"
+                                    { ...register('data_inicio', { required: true }) }
+                                />
 
-                                <div className="col-md-12 mt-6">
-                                    <label className="form-label">Fim</label>
-                                    <input { ...register('data_fim', { required: 'A data de fim é obrigatória' }) } id="event-end-date" type="datetime-local" className="form-control" />
-                                </div>
+                                <FitInputForm
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Fim"
+                                    errors={errors}
+                                    type="datetime-local"
+                                    { ...register('data_fim', { required: true }) }
+                                />
                             </div>
                         </div>
                         

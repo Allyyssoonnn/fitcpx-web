@@ -21,7 +21,7 @@ const FitSelectForm = forwardRef<HTMLSelectElement, FitSelectFormProps>(({
 }, ref) => {
 
     return (
-        <div className="col-md-3">
+        <div className={classNameContainer}>
             <label className="form-label">{nameField}</label>
             <select
                 ref={ref}

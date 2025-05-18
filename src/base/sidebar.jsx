@@ -92,7 +92,7 @@ function Sidebar() {
                             </a>
                         </li>
 
-                        <li className="sidebar-item">
+                        <li className="sidebar-item d-none">
                             <a className={`sidebar-link p-3 has-arrow ${dropCardapio ? 'active' : ''}`} href="#" onClick={() => setdropCardapio(!dropCardapio)}>
                                 <i className="bi bi-book fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">{t('nutrition')}</span>
