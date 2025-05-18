@@ -7,7 +7,8 @@ type FitInputFormProps = {
     classNameContainer: string,
     name: string,
     errors: FieldErrors,
-    type: string
+    type: string,
+    textHelp: string,
 } & React.HTMLAttributes<HTMLInputElement>;
 
 const FitInputForm = forwardRef<HTMLInputElement, FitInputFormProps>(({
@@ -17,6 +18,7 @@ const FitInputForm = forwardRef<HTMLInputElement, FitInputFormProps>(({
     name,
     errors,
     type = 'text',
+    textHelp,
     ...inputProps
 }, ref) => {
     
@@ -38,6 +40,10 @@ const FitInputForm = forwardRef<HTMLInputElement, FitInputFormProps>(({
 
             {errors[name]?.type === "minLength" && (
                 <p className="text-danger fs-2" role="alert">{nameField} muito curto</p>
+            )}
+
+            {(!errors[name] && textHelp) && (
+                <p className="text-info fs-2" role="alert">{textHelp}</p>
             )}
         </div>
     )

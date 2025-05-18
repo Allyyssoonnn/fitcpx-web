@@ -5,10 +5,12 @@ import { setAluno } from '../api/aluno';
 import { stateUsuario, useNotificacao } from '../states/states';
 import { useRecoilState } from 'recoil';
 import { limpaForm } from '../utils';
+import FitInputForm from '../components/baseComponents/FitInputForm';
+import FitSelectForm from '../components/baseComponents/FitSelectForm';
 
 function CadAluno() {
     const { nSuccess } = useNotificacao();
-    const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
+    const { handleSubmit, register, setValue, watch, formState: { isSubmitting, errors } } = useForm();
     const location = useLocation();
     const navigate = useNavigate();
     const [usuario] = useRecoilState(stateUsuario);
@@ -74,64 +76,95 @@ function CadAluno() {
                 <h5 className="card-title fw-semibold mb-4">Informações pessoais</h5>
 
                 <div className="row g-3">
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">Nome *</label>
-                        <input { ...register('nome_aluno', { required: 'O nome é obrigatório' }) } type="text" className="form-control"/>
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">CPF</label>
-                        <input { ...register('cpf_aluno') } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">RG</label>
-                        <input { ...register('rg_aluno') } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">Telefone *</label>
-                        <input { ...register('telefone_aluno', { required: 'O telefone é obrigatório' }) } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">Data de nascimento *</label>
-                        <input { ...register('data_nascimento_aluno', { required: 'A data de nascimento é obrigatória' }) } type="date" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">Sexo *</label>
-                        <select {...register('sexo_aluno', { required: 'O sexo é obrigatório' })} className="form-control">
-                            <option value="M">Masculino</option>
-                            <option value="F">Feminino</option>
-                        </select>
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">Etnia *</label>
-                        <select {...register('etnia_aluno', { required: 'A raça é obrigatória' })} className="form-control">
-                            <option value="Caucasiano">Caucasiano</option>
-                            <option value="Negro">Negro</option>
-                            <option value="Asiático">Asiático</option>
-                        </select>
-                    </div>
+                    <FitInputForm
+                        nameField='Nome *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('nome_aluno', { required: true, minLength: 5 }) }
+                    />
+
+                    <FitInputForm
+                        nameField='CPF'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('cpf_aluno') }
+                    />
+
+                    <FitInputForm
+                        nameField='RG'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('rg_aluno') }
+                    />
+
+                    <FitInputForm
+                        nameField='Telefone *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('telefone_aluno', { required: true }) }
+                    />
+
+                    <FitInputForm
+                        type="date"
+                        nameField='Data de nascimento *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('data_nascimento_aluno') }
+                    />
+
+                    <FitSelectForm
+                        nameField='Sexo *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        {...register('sexo_aluno', { required: true })}
+                    >
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </FitSelectForm>
+
+                    <FitSelectForm
+                        nameField='Etnia *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        {...register('etnia_aluno', { required: true })}
+                    >
+                        <option value="Caucasiano">Caucasiano</option>
+                        <option value="Negro">Negro</option>
+                        <option value="Asiático">Asiático</option>
+                    </FitSelectForm>
                 </div>
 
                 <h5 className="card-title fw-semibold mb-4 mt-5">Acesso do app</h5>
 
                 <div className='row g-3'>
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">E-mail *</label>
-                        <input { ...register('email_aluno', { required: 'O e-mail é obrigatório' }) } type="email" className="form-control" aria-describedby="emailHelp" />
-                        <div id="emailHelp" className="form-text">O aluno usará para acessar a plataforma</div>
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label fw-bold">Senha *</label>
-                        <input { ...register('senha_aluno', { required: 'A senha é obrigatória' }) } type="password" className="form-control" id="exampleInputPassword1" />
-                    </div>
+                    <FitInputForm
+                        textHelp='O aluno usará para acessar o app do aluno'
+                        type="email"
+                        nameField='E-mail *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('email_aluno', { required: true, minLength: 5 }) }
+                    />
+
+                    <FitInputForm
+                        type="password"
+                        nameField='Senha *'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('senha_aluno', { required: true, minLength: 5 }) }
+                    />
                 </div>
 
                 <h5 className="card-title fw-semibold mb-4 mt-5">Endereço</h5>
 
                 <div className="row g-3">
-                    <div className="col-md-3">
-                        <label className="form-label">CEP</label>
-                        <input { ...register('cep_aluno') } type="text" className="form-control" />
-                    </div>
+                    <FitInputForm
+                        nameField='CEP'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('cep_aluno') }
+                    />
+                    
                     <div className="col-md-3">
                         <label className="form-label">Estado</label>
                         <input { ...register('estado_aluno') } type="text" className="form-control" />
@@ -140,22 +173,34 @@ function CadAluno() {
                         <label className="form-label">Cidade</label>
                         <input { ...register('cidade_aluno') } type="text" className="form-control" />
                     </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Endereço</label>
-                        <input { ...register('endereco_aluno') } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Número</label>
-                        <input { ...register('numero_aluno') } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Bairro</label>
-                        <input { ...register('bairro_aluno') } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Complemento</label>
-                        <input { ...register('complemento_aluno') } type="text" className="form-control" />
-                    </div>
+
+                    <FitInputForm
+                        nameField='Endereço'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('endereco_aluno') }
+                    />
+
+                    <FitInputForm
+                        nameField='Número'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('numero_aluno', { maxLength: 10 }) }
+                    />
+
+                    <FitInputForm
+                        nameField='Bairro'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('bairro_aluno') }
+                    />
+
+                    <FitInputForm
+                        nameField='Complemento'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('complemento_aluno') }
+                    />
                 </div>
 
                 <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
