@@ -1,6 +1,6 @@
 import axios from "axios";
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
-export const PRODUCAO = false;
+export const PRODUCAO = true;
 
 export const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
 
@@ -16,11 +16,7 @@ api.interceptors.response.use((response) => response, async (error) => {
         originalRequest._retry = true;
 
         try {
-            var user;
-            if (import.meta.env.VITE_BUILD_TYPE == 'aluno') user = 'appaluno';
-            if (import.meta.env.VITE_BUILD_TYPE == 'admin') user = 'appadmin';
-            if (import.meta.env.VITE_BUILD_TYPE == 'usuario') user = 'usuario';
-            const refreshResponse = await axios.post(baseURL + `/${user}/refreshToken`, {
+            const refreshResponse = await axios.post(baseURL + `/usuario/refreshToken`, {
                 refreshToken: cookies.refreshToken,
             });
             
