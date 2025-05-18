@@ -7,21 +7,25 @@ import { Modal } from 'react-bootstrap';
 import { useState } from 'react';
 import { stateUsuario } from '../states/states';
 import { useRecoilState } from 'recoil';
+import FitInputForm from '../components/baseComponents/FitInputForm';
 
 function Register() {
     const navigate = useNavigate();
-    const { handleSubmit, register, setError, clearErrors, watch } = useForm();
+    const { handleSubmit, register, setError, clearErrors, watch, formState: { errors } } = useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const acceptTerms = watch("acceptTerms");
 
     async function registrar(data) {
+        console.log(data);
+        
         if (!data.acceptTerms) {
             setError("acceptTerms", { type: "manual", message: "Você deve aceitar os termos e condições." });
             return;
         } else {
             clearErrors("acceptTerms");
         }
+        
         const resp = await post('/usuario/register', data);
 
         if (resp.status) {
@@ -43,35 +47,43 @@ function Register() {
                         <div className="col-md-8 col-lg-6 col-xxl-3">
                             <div className="card mb-0">
                                 <div className="card-body">
-                                    <a href="/entrar" className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center">
-                                        {/* <img src="../assets/images/logos/logo-light.svg" alt="" /> */}
-                                        {/* <h1 style={{ borderLeft: '0.30rem solid #85D446' }}>FitNGen</h1> */}
-                                        <img src="../assets/images/logos/logo_horizontal.png" width='220' alt="" />
-                                    </a>
-                                    
-                                    <p className="text-center">Renove seu profissionalismo</p>
+                                    <div className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center align-items-center">
+                                        <img src="../assets/images/logos/logo.png" width='60' alt="" />
+                                        <h1 className="mb-0 ms-3">Fit Cpx</h1>
+                                    </div>
 
                                     <form onSubmit={handleSubmit(registrar)}>
-                                        <div className="mb-3">
-                                            <label htmlFor="exampleInputtext1" className="form-label">Nome</label>
-                                            <input { ...register('nome_usuario') } type="text" className="form-control" id="exampleInputtext1" aria-describedby="textHelp" />
-                                        </div>
+                                        <FitInputForm
+                                            classNameContainer='mb-3'
+                                            nameField='Nome'
+                                            errors={errors}
+                                            { ...register('nome_usuario', { required: true, minLength: 5 }) }
+                                        />
 
-                                        <div className="mb-3">
-                                            <label htmlFor="exampleInputEmail1" className="form-label">E-mail</label>
-                                            <input { ...register('email_usuario') } type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-                                        </div>
+                                        <FitInputForm
+                                            type='email'
+                                            classNameContainer='mb-3'
+                                            nameField='E-mail'
+                                            errors={errors}
+                                            { ...register('email_usuario', { required: true }) }
+                                        />
 
-                                        <div className="mb-4">
-                                            <label htmlFor="exampleInputPassword1" className="form-label">Senha</label>
-                                            <input { ...register('senha_usuario') } type="password" className="form-control" id="exampleInputPassword1" />
-                                        </div>
+                                        <FitInputForm
+                                            type='password'
+                                            classNameContainer='mb-3'
+                                            nameField='Senha'
+                                            errors={errors}
+                                            { ...register('senha_usuario', { required: true, minLength: 5 }) }
+                                        />
 
-                                        <div className="mb-4">
-                                            <label htmlFor="exampleInputPassword1" className="form-label">Confirmar senha</label>
-                                            <input { ...register('senha_confirma') } type="password" className="form-control" id="exampleInputPassword1" />
-                                        </div>
-                                        
+                                        <FitInputForm
+                                            type='password'
+                                            classNameContainer='mb-3'
+                                            nameField='Confirmar senha'
+                                            errors={errors}
+                                            { ...register('senha_confirma', { required: true, minLength: 5 }) }
+                                        />
+
                                         <div className="mb-4 form-check">
                                             <input { ...register('acceptTerms') } type="checkbox" className="form-check-input" id="acceptTerms" />
                                             <label className="form-check-label" htmlFor="acceptTerms">
@@ -108,9 +120,9 @@ function Register() {
                         <h2>Termos e Condições</h2>
                     </div>
 
-                    <div className='card-body' style={{ maxHeight: '400px', overflowY: 'auto', padding: '1rem', border: '1px solid #ddd' }}>
-                        <p> {termos} </p>
-                    </div>
+                    <pre style={{ whiteSpace: 'pre-wrap', maxHeight: '400px', overflowY: 'auto', padding: '1rem', border: '1px solid #ddd' }}>
+                        {termos}
+                    </pre>
 
                     <button onClick={() => setIsModalOpen(false)} className="btn btn-primary mt-3">Fechar</button>
                 </div>
@@ -128,7 +140,7 @@ Bem-vindo(a) ao nosso sistema. Ao acessar ou utilizar este serviço, você conco
 
 2. Objetivo do Sistema
 
-Este sistema foi desenvolvido para [descrever a finalidade do sistema, ex: gestão de dados, monitoramento, comunicação, etc.]. O usuário está ciente de que o uso do sistema é de sua inteira responsabilidade.
+Este sistema foi desenvolvido para Gestão de aluno para profissionais da saúde. O usuário está ciente de que o uso do sistema é de sua inteira responsabilidade.
 
 3. Responsabilidades do Usuário
 

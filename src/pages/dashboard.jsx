@@ -3,11 +3,12 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario } from "../states/states";
 import { useQuery } from "react-query";
 import { getAlunoContratos, getAlunos, getAvaliacoes } from "../api/aluno";
-import { getUsuarios } from "../api/usuario";
+import { getUsuarios, setEmpresa, verifyEmail } from "../api/usuario";
 import { getTreinos } from "../api/treino";
 import { formatarData, formatarMoeda } from "../utils";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Dashboard() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -38,6 +39,10 @@ function Dashboard() {
         <div className="container-fluid">
             <div className="row">
                 <div className="col-lg-8">
+                    <VerifyEmail />
+                </div>
+
+                <div className="col-lg-8">
                     <UltimosContratos contratos={contratos} />
                     <UltimasAvaliacoes alunos={alunos} avaliacoes={avaliacoes} />
                 </div>
@@ -49,6 +54,55 @@ function Dashboard() {
             </div>
         </div>
     );
+}
+
+function VerifyEmail() {
+    const [empresa, setempresa] = useRecoilState(stateEmpresa);
+    const [code, setCode] = useState('');
+
+    function verificarEmail() {
+        const count = Number(localStorage.getItem('emailCount'));
+        if (count >= 5) {
+            toast.error('Muitos E-mail solicitado, aguarde para tentar novamente');
+            return;
+        }
+        localStorage.setItem('emailCount', count ? count + 1 : 1);
+        verifyEmail(empresa.cod_empresa);
+    }
+
+    async function confirmEmail() {
+        if (code !== empresa.email_codigo) {
+            setCode('');
+            toast.error('Código incorreto');
+            return;
+        }
+
+        const attEmpresa = await setEmpresa({ cod_empresa: empresa.cod_empresa, email_confirmado: 'S' });
+        if (attEmpresa) setempresa({ ...empresa, email_confirmado: 'S' });
+        toast.success('Código confirmado, obrigado');
+    }
+
+    return (
+        <ul>
+            <li className={`${empresa.email_confirmado == 'S' ? 'd-none' : 'd-flex'} flex-row align-items-start justify-content-between gap-1 bg-warning-subtle rounded-3 p-3 ps-3`}>
+                <div className="col-lg-6">
+                    <div className="d-flex align-items-center mb-0">
+                        <i className="bi bi-exclamation-triangle fs-6 px-2 rounded-5 text-warning"></i>
+                        <h6 className="fs-3 mb-0">E-mail não verificado</h6>
+                    </div>
+                    <p className="mb-2">Confirme seu E-mail para aproveitar todos nosso recursos</p>
+                    <button onClick={verificarEmail} className="btn btn-sm btn-outline-info rounded ms-3">Enviar código novamente</button>
+                </div>
+
+                <div className="col-lg-4">
+                    <div className="d-flex align-items-center">
+                        <input className="form-control" placeholder="XXXX" maxLength={4} onChange={e => setCode(e.target.value)} value={code} />
+                        <button onClick={confirmEmail} className="btn btn-sm btn-info rounded ms-3">Verificar</button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    )
 }
 
 function UltimosContratos({ contratos }) {

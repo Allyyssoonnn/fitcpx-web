@@ -62,10 +62,6 @@ function Header() {
         document.documentElement.setAttribute("data-bs-theme", novoTema);
     }
 
-    function verificarEmail() {
-        verifyEmail(empresa.cod_empresa);
-    }
-
     const handleInstallClick = async () => {
         if (isIos) {
             alert("Para instalar este app, abra o menu de compartilhamento e selecione 'Adicionar à Tela de Início'.");
@@ -109,14 +105,6 @@ function Header() {
                 </ul>
 
                 <div className="navbar-collapse justify-content-end px-0 w-60" id="navbarNav">
-                    {/* <ul className="navbar-nav flex-row ms-3">
-                        <li className={`${empresa.email_confirmado == 'S' ? 'd-none' : 'd-flex'} align-items-center gap-1 bg-warning-subtle rounded-3 p-2`}>
-                            <i className="bi bi-exclamation-triangle fs-6 px-2 rounded-5 text-black"></i>
-                            <h6 className="fs-3 mb-0">E-mail não verificado</h6>
-                            <button onClick={verificarEmail} className="btn btn-sm btn-success">Verificar</button>
-                        </li>
-                    </ul> */}
-
                     <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                         {/* <a href="#" onClick={() => navigate('/cadaluno')} className="btn btn-success me-2 d-none d-md-block">
                             <span className="d-none d-md-block"><i className="bi bi-plus-circle me-2"></i>Novo aluno</span>
