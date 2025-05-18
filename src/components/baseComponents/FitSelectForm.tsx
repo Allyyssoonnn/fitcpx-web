@@ -24,6 +24,7 @@ const FitSelectForm = forwardRef<HTMLSelectElement, FitSelectFormProps>(({
         <div className="col-md-3">
             <label className="form-label">{nameField}</label>
             <select
+                ref={ref}
                 { ...inputProps }
                 className={`form-control ${errors[name] && 'border-danger'} ${inputProps.className || ''}`}
             >

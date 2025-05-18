@@ -4,10 +4,12 @@ import { stateUsuario, useNotificacao } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useLocation, useNavigate } from "react-router-dom";
 import { setUsuario } from "../api/usuario";
+import FitInputForm from "../components/baseComponents/FitInputForm";
+import FitStateForm from "../components/baseComponents/FitStateForm";
 
 function CadUsuario() {
     const { nSuccess } = useNotificacao();
-    const { handleSubmit, register, setValue, watch, formState: { isSubmitting } } = useForm();
+    const { handleSubmit, register, setValue, watch, formState: { isSubmitting, errors } } = useForm();
     const [usuario] = useRecoilState(stateUsuario);
     const navigate = useNavigate();
     const location = useLocation();
@@ -73,26 +75,26 @@ function CadUsuario() {
                     <h5 className="card-title fw-semibold mb-4">Usuário</h5>
 
                     <div className="row g-3">
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Nome *</label>
-                            <input {...register("nome_usuario", { required: "O nome é obrigatório" })}
-                                className="form-control"
-                            />
-                        </div>
+                        <FitInputForm
+                            nameField="Nome *"
+                            classNameContainer="col-md-3"
+                            {...register("nome_usuario", { required: true })}
+                            errors={errors}
+                        />
 
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Telefone</label>
-                            <input {...register("telefone_usuario")}
-                                className="form-control"
-                            />
-                        </div>
+                        <FitInputForm
+                            nameField="Telefone"
+                            classNameContainer="col-md-3"
+                            {...register("telefone_usuario")}
+                            errors={errors}
+                        />
 
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Celular</label>
-                            <input {...register("celular_usuario")}
-                                className="form-control"
-                            />
-                        </div>
+                        <FitInputForm
+                            nameField="Celular"
+                            classNameContainer="col-md-3"
+                            {...register("celular_usuario")}
+                            errors={errors}
+                        />
                     </div>
                 </div>
             </div>
@@ -102,19 +104,19 @@ function CadUsuario() {
                     <h5 className="card-title fw-semibold mb-4">Acesso ao sistema</h5>
 
                     <div className="row g-3">
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">E-mail *</label>
-                            <input {...register("email_usuario", { required: "O e-mail é obrigatório" })}
-                                className="form-control"
-                            />
-                        </div>
+                        <FitInputForm
+                            nameField="E-mail *"
+                            classNameContainer="col-md-3"
+                            {...register("email_usuario", { required: true })}
+                            errors={errors}
+                        />
 
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Senha *</label>
-                            <input {...register("senha_usuario", { required: "O e-mail é obrigatório" })}
-                                className="form-control"
-                            />
-                        </div>
+                        <FitInputForm
+                            nameField="Senha *"
+                            classNameContainer="col-md-3"
+                            {...register("senha_usuario", { required: true })}
+                            errors={errors}
+                        />
                     </div>
                 </div>
             </div>
@@ -124,34 +126,54 @@ function CadUsuario() {
                     <h5 className="card-title fw-semibold mb-4">Endereço</h5>
 
                     <div className="row g-3">
-                        <div className="col-md-3">
-                            <label className="form-label">CEP</label>
-                            <input { ...register('cep_usuario') } type="text" className="form-control" />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Estado</label>
-                            <input { ...register('estado_usuario') } type="text" className="form-control" />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Cidade</label>
-                            <input { ...register('cidade_usuario') } type="text" className="form-control" />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Endereço</label>
-                            <input { ...register('endereco_usuario') } type="text" className="form-control" />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Número</label>
-                            <input { ...register('numero_usuario') } type="text" className="form-control" />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Bairro</label>
-                            <input { ...register('bairro_usuario') } type="text" className="form-control" />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Complemento</label>
-                            <input { ...register('complemento_usuario') } type="text" className="form-control" />
-                        </div>
+                        <FitInputForm
+                            nameField="CEP"
+                            classNameContainer="col-md-3"
+                            {...register("cep_usuario")}
+                            errors={errors}
+                        />
+
+                        <FitStateForm
+                            nameField="Estado"
+                            classNameContainer="col-md-3"
+                            {...register("estado_usuario")}
+                            errors={errors}
+                        />
+
+                        <FitInputForm
+                            nameField='Cidade'
+                            classNameContainer='col-md-3'
+                            errors={errors}
+                            { ...register('cidade_usuario') }
+                        />
+                        
+                        <FitInputForm
+                            nameField="Endereço"
+                            classNameContainer="col-md-3"
+                            {...register("endereco_usuario")}
+                            errors={errors}
+                        />
+
+                        <FitInputForm
+                            nameField="Número"
+                            classNameContainer="col-md-3"
+                            {...register("numero_usuario")}
+                            errors={errors}
+                        />
+
+                        <FitInputForm
+                            nameField="Bairro"
+                            classNameContainer="col-md-3"
+                            {...register("bairro_usuario")}
+                            errors={errors}
+                        />
+
+                        <FitInputForm
+                            nameField="Complemento"
+                            classNameContainer="col-md-3"
+                            {...register("complemento_usuario")}
+                            errors={errors}
+                        />
                     </div>
                 </div>
 

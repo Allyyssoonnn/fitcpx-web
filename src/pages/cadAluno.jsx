@@ -7,6 +7,7 @@ import { useRecoilState } from 'recoil';
 import { limpaForm } from '../utils';
 import FitInputForm from '../components/baseComponents/FitInputForm';
 import FitSelectForm from '../components/baseComponents/FitSelectForm';
+import FitStateForm from '../components/baseComponents/FitStateForm';
 
 function CadAluno() {
     const { nSuccess } = useNotificacao();
@@ -165,14 +166,19 @@ function CadAluno() {
                         { ...register('cep_aluno') }
                     />
                     
-                    <div className="col-md-3">
-                        <label className="form-label">Estado</label>
-                        <input { ...register('estado_aluno') } type="text" className="form-control" />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Cidade</label>
-                        <input { ...register('cidade_aluno') } type="text" className="form-control" />
-                    </div>
+                    <FitStateForm
+                        nameField="Estado"
+                        classNameContainer="col-md-3"
+                        {...register("estado_aluno")}
+                        errors={errors}
+                    />
+                    
+                    <FitInputForm
+                        nameField='Cidade'
+                        classNameContainer='col-md-3'
+                        errors={errors}
+                        { ...register('cidade_aluno') }
+                    />
 
                     <FitInputForm
                         nameField='Endereço'
