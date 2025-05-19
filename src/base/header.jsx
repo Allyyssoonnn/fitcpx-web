@@ -3,24 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { stateApp, stateEmpresa, stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { verifyEmail } from "../api/usuario";
 import Notificacoes from "../components/notificacoes";
 import { useTranslation } from "react-i18next";
 
 function Header() {
-    const { i18n } = useTranslation();
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
-    const [empresa] = useRecoilState(stateEmpresa);
     const { toggleTheme, theme } = useStateApp();
 
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [isIos, setIsIos] = useState(false);
-
-    const changeLanguage = (lang) => i18n.changeLanguage(lang);
 
     useEffect(() => {
         const handler = (event) => {
