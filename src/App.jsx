@@ -10,8 +10,11 @@ import Recovery from './pages/recovery';
 import RecuperacaoSenha from './pages/recuperacaoSenha';
 
 import ErrorBoundaryWrapper from './base/errorBoundary';
+import { useAppVersionChecker } from './hooks/useAppVersionChecker';
 
-function App() {    
+function App() {
+    useAppVersionChecker();
+
     return (
         <BrowserRouter>
             <Suspense

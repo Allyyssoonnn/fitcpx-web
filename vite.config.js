@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 import compression from 'vite-plugin-compression';
+import fs from 'fs';
+import crypto from 'crypto';
 
 const buildType = process.env.VITE_BUILD_TYPE || "usuario";
 
@@ -14,6 +16,7 @@ export default defineConfig({
       threshold: 1024, // Só comprime arquivos maiores que 1KB
     }),
     react(),
+    metaPlugin(),
     VitePWA({
       registerType: "prompt",
       manifest: {
@@ -53,3 +56,32 @@ export default defineConfig({
     },
   },
 })
+
+function metaPlugin() {
+  return {
+    name: 'vite-meta-hash',
+    closeBundle() {
+      const distPath = path.resolve(__dirname, `dist-${buildType}`);
+      const files = fs.readdirSync(distPath);
+      const hash = crypto.createHash('sha256');
+
+      files.forEach((file) => {
+        if (file.endsWith('.js')) {
+          const content = fs.readFileSync(path.join(distPath, file));
+          hash.update(content);
+        }
+      });
+
+      const output = {
+        hash: hash.digest('hex').slice(0, 10),
+        timestamp: Date.now(),
+      };
+
+      fs.writeFileSync(
+        path.join(distPath, 'meta.json'),
+        JSON.stringify(output)
+      );
+      console.log('✅ meta.json gerado com hash:', output.hash);
+    },
+  };
+}
