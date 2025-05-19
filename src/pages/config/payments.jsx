@@ -59,7 +59,7 @@ function Payments({ cod_empresa }) {
                                 license.status_empresa_licenca === 'requires_payment_method') && (
                                 <span className="badge bg-warning-subtle text-warning ms-2">Bloqueado</span>
                             )}
-                            {license.status_empresa_licenca === 'Cancelled' && (
+                            {license.status_empresa_licenca === 'Canceled' && (
                                 <span className="badge bg-danger-subtle text-danger ms-2">Cancelado</span>
                             )}
                         </h5>
