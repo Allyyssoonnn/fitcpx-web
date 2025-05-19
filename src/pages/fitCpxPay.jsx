@@ -7,10 +7,12 @@ import { setEmpresa } from "../api/usuario";
 import { useNavigate } from "react-router-dom";
 import { PRODUCAO } from "../api/api";
 import { toast } from "react-toastify";
+import FitInputForm from '../components/baseComponents/FitInputForm';
+import FitStateForm from '../components/baseComponents/FitStateForm';
 
 function FitCpxPay() {
     const navigate = useNavigate();
-    const { register, setValue } = useForm();
+    const { register, setValue, handleSubmit, formState: { errors } } = useForm();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
 
@@ -21,15 +23,21 @@ function FitCpxPay() {
     useEffect(() => {
         if (empresa) {
             Object.keys(empresa).forEach((key) => {
-                setValue(key, empresa[key]);
+                setValue(`empresa.${key}`, empresa[key]);
             });
         }
     }, [empresa]);
 
     useEffect(() => {
-        if (empresa) {
-            getStatusAccount(empresa.cod_empresa);
+        if (usuario) {
+            Object.keys(usuario).forEach((key) => {
+                setValue(`usuario.${key}`, usuario[key]);
+            });
         }
+    }, [usuario]);
+
+    useEffect(() => {
+        if (empresa) getStatusAccount(empresa.cod_empresa);
     }, []);
 
     const fileToBase64 = (file) => {
@@ -41,7 +49,9 @@ function FitCpxPay() {
         });
     };
 
-    async function sendForm() {
+    async function sendForm(data) {
+        const { empresa, usuario } = data;
+
         if (!frontDoc || !backDoc) {
             toast.error('Por favor, envie ambos os documentos.');
             return;
@@ -50,12 +60,8 @@ function FitCpxPay() {
         const frontBase64 = await fileToBase64(frontDoc);
         const backBase64 = await fileToBase64(backDoc);
 
-        if (type === 'company' && empresa?.cod_empresa) {
-            // const respEmpresa = await setEmpresa({ cod_empresa: empresa?.cod_empresa, ...data });
-            // setempresa(respEmpresa);
-        } else if (type === 'individual') {
-            //
-        }
+        const respEmpresa = await setEmpresa({ cod_empresa: empresa?.cod_empresa, ...data });
+        setempresa(respEmpresa);
 
         await gerarIdCarteira(empresa?.cod_empresa, usuario?.cod_usuario);
         await sendDocuments(frontBase64, backBase64, empresa.cod_empresa, usuario.cod_usuario);
@@ -64,7 +70,7 @@ function FitCpxPay() {
     }
 
     return (
-        <div className="container-fluid">
+        <form className="container-fluid" onSubmit={handleSubmit(sendForm)}>
             <div className="card bg-success-subtle col-md-6">
                 <div className="card-body">
                     <h5 className="card-title">Formulário FitCpx Pay</h5>
@@ -73,8 +79,8 @@ function FitCpxPay() {
                 </div>
             </div>
 
-            <form>
-                <Empresa register={register} />
+            <div>
+                <Empresa register={register} errors={errors} />
 
                 <div className="row g-3">
                     <DocumentUpload
@@ -84,30 +90,31 @@ function FitCpxPay() {
                         setBackDoc={setBackDoc}
                     />
 
-                    <DadosBancarios register={register} />
+                    <DadosBancarios register={register} errors={errors} />
                 </div>
-            </form>
+            </div>
 
-            <Usuario />
+            <Usuario register={register} errors={errors} />
 
             <div className="card d-flex justify-content-end col-md-6">
                 <div className="card-body">
                     {(!PRODUCAO && !empresa.dev_stripe_id) && (
-                        <button className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                        <button type="submit" className="btn btn-success rounded">Enviar formulário</button>
                     )}
-                    {(!PRODUCAO && !empresa.stripe_id) && (
-                        <button className="btn btn-success rounded" onClick={sendForm}>Enviar formulário</button>
+                    {(PRODUCAO && !empresa.stripe_id) && (
+                        <button type="submit" className="btn btn-success rounded">Enviar formulário</button>
                     )}
                     {((PRODUCAO && empresa.stripe_id) || (!PRODUCAO && empresa.dev_stripe_id)) && (
                         <p className="text-danger">Formulário já enviado.</p>
                     )}
                 </div>
             </div>
-        </div>
+        </form>
     )
 }
 
-function DadosBancarios({ register }) {
+function DadosBancarios({ register, errors }) {
+    const [usuario] = useRecoilState(stateUsuario);
 
     return (
         <div className="col-md-6">
@@ -118,33 +125,45 @@ function DadosBancarios({ register }) {
 
                     <div className="row">
                         <div>
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Titular da conta</label>
-                                <input className='form-control' {...register('titular_banco_conta')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Titular da conta'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.titular_banco_conta', { required: true }) }
+                            />
                         </div>
                     </div>
                     <div className="row">
                         <div>
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Código do banco</label>
-                                <input className='form-control' {...register('codigo_banco_conta')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Código do banco'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.codigo_banco_conta', { required: true }) }
+                            />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-lg-3">
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Agência</label>
-                                <input className='form-control' {...register('agencia_banco_conta')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Agência'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.agencia_banco_conta', { required: true }) }
+                            />
                         </div>
 
                         <div className="col-lg-9">
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Número da conta</label>
-                                <input className='form-control' {...register('numero_banco_conta')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Número da conta'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.numero_banco_conta', { required: true }) }
+                            />
                         </div>
                     </div>
                 </div>
@@ -153,9 +172,8 @@ function DadosBancarios({ register }) {
     )
 }
 
-function Empresa({ register }) {
-    const [usuario, setusuario] = useRecoilState(stateUsuario);
-    const [empresa, setempresa] = useRecoilState(stateEmpresa);
+function Empresa({ register, errors }) {
+    const [usuario] = useRecoilState(stateUsuario);
 
     return (
         <div className="card">
@@ -166,66 +184,99 @@ function Empresa({ register }) {
                 <form>
                     <div className="row">
                         <div className="col-lg-6">
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Nome</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('nome_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Nome'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.nome_empresa', { required: true }) }
+                            />
 
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Descrição</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('descricao_empresa')} />
-                            </div>
-                            
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext1" className="form-label">Telefone</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('telefone_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Descrição'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.descricao_empresa', { required: false }) }
+                            />
 
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">CEP</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('cep_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Telefone'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.telefone_empresa', { required: true }) }
+                            />
+
+                            <FitInputForm
+                                nameField='CEP'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.cep_empresa', { required: true }) }
+                            />
                         </div>
 
                         <div className="col-lg-6">
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext1" className="form-label">Email</label>
-                                <input disabled className='form-control' {...register('email_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Email'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.email_empresa', { required: true }) }
+                            />
 
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext" className="form-label">Razão social</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('razao_social_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Razão social'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.razao_social_empresa', { required: true }) }
+                            />
 
-                            <div className="mb-3">
-                                <label htmlFor="exampleInputtext3" className="form-label">Celular</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('celular_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Celular'
+                                classNameContainer='mb-3'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.celular_empresa', { required: true }) }
+                            />
 
                             <div className="mb-3 row">
-                                <div className="mb-3 col-6">
-                                    <label className="form-label">Cidade</label>
-                                    <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('cidade_empresa')} />
-                                </div>
+                                <FitInputForm
+                                    nameField='Cidade'
+                                    classNameContainer='mb-3 col-6'
+                                    errors={errors}
+                                    disabled={usuario.admin_usuario !== 'S'}
+                                    { ...register('empresa.cidade_empresa', { required: true }) }
+                                />
 
-                                <div className="mb-3 col-6">
-                                    <label className="form-label">Estado</label>
-                                    <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('estado_empresa')} />
-                                </div>
+                                <FitStateForm
+                                    nameField='Estado'
+                                    classNameContainer='mb-3 col-6'
+                                    errors={errors}
+                                    disabled={usuario.admin_usuario !== 'S'}
+                                    { ...register('empresa.estado_empresa', { required: true }) }
+                                />
                             </div>
                         </div>
 
                         <div className="col-12 row">
-                            <div className="col-10">
-                                <label htmlFor="exampleInputtext4" className="form-label">Endereço</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('endereco_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Endereço'
+                                classNameContainer='col-10'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.endereco_empresa', { required: true }) }
+                            />
 
-                            <div className="col-2">
-                                <label htmlFor="exampleInputtext4" className="form-label">Número</label>
-                                <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('numero_empresa')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Número'
+                                classNameContainer='col-2'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.numero_empresa', { required: true }) }
+                            />
                         </div>
                     </div>
                 </form>
@@ -234,18 +285,8 @@ function Empresa({ register }) {
     )
 }
 
-function Usuario() {
-    const { register, setValue } = useForm();
+function Usuario({ register, errors }) {
     const [usuario, setusuario] = useRecoilState(stateUsuario);
-    const [empresa, setempresa] = useRecoilState(stateEmpresa);
-
-    useEffect(() => {
-        if (usuario) {
-            Object.keys(usuario).forEach((key) => {
-                setValue(key, usuario[key]);
-            });
-        }
-    }, [usuario]);
 
     return (
         <div className="card">
@@ -255,56 +296,83 @@ function Usuario() {
 
                 <form className="row">
                     <div className="col-lg-6">
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputtext" className="form-label">Nome</label>
-                            <input className='form-control' {...register('nome_usuario')} />
-                        </div>
-                        
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputtext1" className="form-label">Telefone</label>
-                            <input className='form-control' {...register('telefone_usuario')} />
-                        </div>
+                        <FitInputForm
+                            nameField='Nome'
+                            classNameContainer='mb-3'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.nome_usuario', { required: true }) }
+                        />
 
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputtext" className="form-label">CEP</label>
-                            <input className='form-control' {...register('cep_usuario')} />
-                        </div>
+                        <FitInputForm
+                            nameField='Telefone'
+                            classNameContainer='mb-3'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.telefone_usuario', { required: true }) }
+                        />
+
+                        <FitInputForm
+                            nameField='CEP'
+                            classNameContainer='mb-3'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.cep_usuario', { required: true }) }
+                        />
                     </div>
 
                     <div className="col-lg-6">
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputtext1" className="form-label">Email</label>
-                            <input disabled className='form-control' {...register('email_usuario')} />
-                        </div>
+                        <FitInputForm
+                            nameField='E-mail'
+                            classNameContainer='mb-3'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.email_usuario', { required: true }) }
+                        />
 
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputtext3" className="form-label">Celular</label>
-                            <input className='form-control' {...register('celular_usuario')} />
-                        </div>
+                        <FitInputForm
+                            nameField='Celular'
+                            classNameContainer='mb-3'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.celular_usuario', { required: true }) }
+                        />
 
                         <div className="mb-3 row">
-                            <div className="mb-3 col-6">
-                                <label className="form-label">Cidade</label>
-                                <input className='form-control' {...register('cidade_usuario')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Cidade'
+                                classNameContainer='mb-3 col-6'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('usuario.cidade_usuario', { required: true }) }
+                            />
 
-                            <div className="mb-3 col-6">
-                                <label className="form-label">Estado</label>
-                                <input className='form-control' {...register('estado_usuario')} />
-                            </div>
+                            <FitInputForm
+                                nameField='Estado'
+                                classNameContainer='mb-3 col-6'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('usuario.estado_usuario', { required: true }) }
+                            />
                         </div>
                     </div>
 
                     <div className="col-12 row">
-                        <div className="col-10">
-                            <label htmlFor="exampleInputtext4" className="form-label">Endereço</label>
-                            <input className='form-control' {...register('endereco_usuario')} />
-                        </div>
+                        <FitInputForm
+                            nameField='Endereço'
+                            classNameContainer='col-10'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.endereco_usuario', { required: true }) }
+                        />
 
-                        <div className="col-2">
-                            <label htmlFor="exampleInputtext4" className="form-label">Número</label>
-                            <input className='form-control' {...register('numero_usuario')} />
-                        </div>
+                        <FitInputForm
+                            nameField='Número'
+                            classNameContainer='col-2'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.numero_usuario', { required: true }) }
+                        />
                     </div>
                 </form>
             </div>

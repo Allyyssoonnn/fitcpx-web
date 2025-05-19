@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { stateUsuario } from "../states/states";
+import { stateEmpresa, stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { conectedGoogle, conectGoogle, getAgenda, setAgenda, syncGoogleEvents } from "../api/agenda";
 import { useQuery } from "react-query";
@@ -16,6 +16,7 @@ import FitSelectForm from "../components/baseComponents/FitSelectForm";
 import FitInputForm from "../components/baseComponents/FitInputForm";
 
 function Agenda() {
+    const [empresa] = useRecoilState(stateEmpresa);
     const [usuario, setusuario] = useRecoilState(stateUsuario);
 
     useEffect(() => {
@@ -25,7 +26,7 @@ function Agenda() {
             const scope = params.get("scope");
         
             if (code) {
-                const resp = await conectedGoogle(code, scope, usuario?.cod_empresa);
+                const resp = await conectedGoogle(code, scope, empresa?.cod_empresa);
                 
                 // Remove code e scope da URL
                 params.delete("code");
@@ -34,13 +35,13 @@ function Agenda() {
                 // Atualiza a URL sem os parâmetros
                 window.history.replaceState({}, document.title, window.location.pathname + '?' + params.toString());
 
-                const resp2 = await getGoogleConnect(usuario?.cod_empresa);
+                const resp2 = await getGoogleConnect(empresa?.cod_empresa);
                 setusuario(prev => ({ ...prev, google: resp2 }));
             }
         })();
         (async function getConnected() {
             // if (usuario?.google?.email_google) return;
-            const resp = await getGoogleConnect(usuario?.cod_empresa);
+            const resp = await getGoogleConnect(empresa?.cod_empresa);
             setusuario(prev => ({ ...prev, google: resp }));
         })();
     }, []);
@@ -90,6 +91,7 @@ function Agenda() {
 }
 
 function Calendario() {
+    const [empresa] = useRecoilState(stateEmpresa);
     const [usuario] = useRecoilState(stateUsuario);
     const { handleSubmit, register, setValue, formState: { errors }, reset } = useForm();
 
@@ -103,7 +105,7 @@ function Calendario() {
     const { data: agenda } = useQuery({
         queryKey: ['agenda', usuario.cod_usuario],
         queryFn: async () => {
-            const resp = await getAgenda(usuario.cod_empresa)
+            const resp = await getAgenda(empresa.cod_empresa)
             const data = resp.map(e => ({
                 id: e.cod_agenda,
                 title: e.nome_evento,

@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
 import { FieldErrors } from "react-hook-form";
+import { getNestedError } from "../../utils";
 
 type FitInputFormProps = {
     nameField: string,
@@ -31,18 +32,18 @@ const FitInputForm = forwardRef<HTMLInputElement, FitInputFormProps>(({
                 type={type}
                 { ...inputProps }
                 name={name}
-                className={`form-control ${errors[name] && 'border-danger'} ${inputProps.className || ''}`}
+                className={`form-control ${getNestedError(errors, name) && 'border-danger'} ${inputProps.className || ''}`}
             />
 
-            {errors[name]?.type === "required" && (
+            {getNestedError(errors, name)?.type === "required" && (
                 <p className="text-danger fs-2" role="alert">{nameField} obrigatório</p>
             )}
 
-            {errors[name]?.type === "minLength" && (
+            {getNestedError(errors, name)?.type === "minLength" && (
                 <p className="text-danger fs-2" role="alert">{nameField} muito curto</p>
             )}
 
-            {(!errors[name] && textHelp) && (
+            {(!getNestedError(errors, name) && textHelp) && (
                 <p className="text-info fs-2" role="alert">{textHelp}</p>
             )}
         </div>

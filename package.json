@@ -10,11 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:usuario": "cross-env VITE_BUILD_TYPE=usuario vite build",
-    "build:aluno": "cross-env VITE_BUILD_TYPE=aluno vite build",
-    "build:admin": "cross-env VITE_BUILD_TYPE=admin vite build",
-    "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite",
-    "dev:aluno": "cross-env VITE_BUILD_TYPE=aluno vite",
-    "dev:admin": "cross-env VITE_BUILD_TYPE=admin vite"
+    "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",

@@ -2,6 +2,10 @@ export function ordenaAvalicaoData(avaliacoes) {
     return avaliacoes.sort((a, b) => new Date(a.data_avaliacao) - new Date(b.data_avaliacao))
 }
 
+export const getNestedError = (obj, path) => {
+    return path.split('.').reduce((acc, part) => acc?.[part], obj);
+};
+
 export function preventForm(e) { if (e?.key == 'Enter') e.preventDefault() };
 
 export function getAvaliacaoNutricional(aluno, avaliacao, objetivo, nivel_atividade) {
