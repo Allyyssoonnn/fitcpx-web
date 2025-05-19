@@ -201,18 +201,19 @@ function PagamentoIntent({ client, close, callback, payment, licenca }) {
                                         </button>
                                     )
                                 }
-                                if (methodPayment === 'boleto') {
-                                    return (
-                                        <button key={index}
-                                            className='btn btn-outline-info rounded d-flex flex-column justify-content-center align-items-center'
-                                            onClick={() => setFormaPagamento(methodPayment)}
-                                        >
-                                            <iconify-icon icon='iconamoon:invoice' width='50' height='50'/>
-                                            Boleto
-                                            <input className="mt-2" type="radio" checked={methodPayment == formaPagamento} />
-                                        </button>
-                                    )
-                                }
+                                // ADICIONAR OPÇÃO PAGAR BOLETO ANTES DE TIRA COMENTARIO
+                                // if (methodPayment === 'boleto') {
+                                //     return (
+                                //         <button key={index}
+                                //             className='btn btn-outline-info rounded d-flex flex-column justify-content-center align-items-center'
+                                //             onClick={() => setFormaPagamento(methodPayment)}
+                                //         >
+                                //             <iconify-icon icon='iconamoon:invoice' width='50' height='50'/>
+                                //             Boleto
+                                //             <input className="mt-2" type="radio" checked={methodPayment == formaPagamento} />
+                                //         </button>
+                                //     )
+                                // }
                                 if (methodPayment === 'pix') {
                                     return (
                                         <button key={index}
