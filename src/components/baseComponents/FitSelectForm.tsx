@@ -2,7 +2,6 @@ import React, { forwardRef } from "react";
 import { FieldErrors } from "react-hook-form";
 import { getNestedError } from "../../utils";
 
-
 type FitSelectFormProps = {
     nameField: string,
     classNameContainer: string,
@@ -27,6 +26,7 @@ const FitSelectForm = forwardRef<HTMLSelectElement, FitSelectFormProps>(({
             <select
                 ref={ref}
                 { ...inputProps }
+                name={name}
                 className={`form-control ${getNestedError(errors, name) && 'border-danger'} ${inputProps.className || ''}`}
             >
                 {children}

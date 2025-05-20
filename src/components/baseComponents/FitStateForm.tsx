@@ -29,6 +29,7 @@ const FitStateForm = forwardRef<HTMLSelectElement, FitStateFormProps>(({
             <select
                 ref={ref}
                 { ...inputProps }
+                name={name}
                 className={`form-control ${errors[name] && 'border-danger'} ${inputProps.className || ''}`}
             >
                 <option value='' disabled></option>
