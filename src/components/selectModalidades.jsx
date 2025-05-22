@@ -8,7 +8,7 @@ import { stateUsuario } from "../states/states";
 import { getModalidades } from "../api/plano";
 import EditableCurrency from "./editableCurrency";
 
-function SelectModalidades({ modalidadesPlano, attValue, addModalidade, removeModalidade }) {
+function SelectModalidades({ modalidadesPlano, attValue, addModalidade, removeModalidade, allowSubVariacao = true }) {
     const [usuario] = useRecoilState(stateUsuario);
     const [modalModalidade, setModalModalidade] = useState(false);
 
@@ -25,7 +25,13 @@ function SelectModalidades({ modalidadesPlano, attValue, addModalidade, removeMo
 
     return (
         <div className="d-flex flex-column">
-            <ModalModalidades modalidades={modalidades} show={modalModalidade} setShow={setModalModalidade} addModalidade={addModalidade} />
+            <ModalModalidades
+                modalidades={modalidades}
+                show={modalModalidade}
+                setShow={setModalModalidade}
+                addModalidade={addModalidade}
+                allowSubVariacao={allowSubVariacao}
+            />
             <button className="btn btn-outline-success" onClick={openModalidade}>Adicionar modalidade</button>
 
             <h5 className="card-title fs-3 mt-3">Modalidades</h5>
@@ -42,7 +48,7 @@ function SelectModalidades({ modalidadesPlano, attValue, addModalidade, removeMo
                     <tbody>
                         {modalidadesPlano?.map((modalidade, index) => (
                             <tr key={index}>
-                                <td>{modalidade.nome_modalidade}</td>
+                                <td>{modalidade.quantidade_modalidade && (`${modalidade.quantidade_modalidade}x - `)}{modalidade.nome_modalidade}</td>
                                 {attValue ? (
                                     <td>
                                         <EditableCurrency value={modalidade?.valor_modalidade || 0} onUpdate={v => attValue(v, index)} />
@@ -64,19 +70,21 @@ function SelectModalidades({ modalidadesPlano, attValue, addModalidade, removeMo
     )
 }
 
-function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
+function ModalModalidades({ show, setShow, modalidades, addModalidade, allowSubVariacao }) {
     const [modalidade, setModalidade] = useState(null);
     const [variacao, setVariacao] = useState();
+    const [quantidade, setQuantidade] = useState(1);
     
     function confirmar() {
         addModalidade({
             ...modalidade,
-            cod_modalidade_variacao: variacao ? variacao.cod_modalidade_variacao : null,
+            quantidade_modalidade: quantidade,
+            cod_modalidade_variacao: variacao ? variacao.cod_modalidade_variacao : 1,
             valor_modalidade: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
             valor_modalidade_original: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
             nome_modalidade: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ''}`,
             nome_modalidade_original: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ''}`,
-            valores: variacao.valores ?? [],
+            valores: variacao?.valores ?? [],
         });
         setShow(false);
     }
@@ -104,8 +112,20 @@ function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
                         onChange={(value) => setModalidade(value)}
                     />
 
+                    {!allowSubVariacao && (
+                        <div className="mt-3">
+                            <label className="form-label">Quantidade</label>
+                            <input
+                                className="form-control"
+                                type="number"
+                                value={quantidade}
+                                onChange={e => setQuantidade(e.target.value)}
+                            />
+                        </div>
+                    )}
+
                     <div className="mt-3">
-                        {modalidade?.variacoes && (
+                        {(modalidade?.variacoes && allowSubVariacao) && (
                             <Select
                                 options={modalidade?.variacoes}
                                 fieldName='nome_modalidade_variacao'

@@ -10,7 +10,7 @@ import { getCards, getSetupIntent, getSetupIntentCard, updateMethodPayment, upda
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
 
-function Pagamento({ show, close, onPay, callback, client, payment, licenca }) {
+function Pagamento({ show, close, onPay, callback, client, payment, licenca, atSigth }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const [stripePromise, setStripePromise] = useState(null);
 
@@ -57,6 +57,7 @@ function Pagamento({ show, close, onPay, callback, client, payment, licenca }) {
                         callback={callback}
                         client={client}
                         licenca={licenca}
+                        atSigth={atSigth}
                     />
                 )}
             </Elements>
@@ -330,7 +331,7 @@ function PagamentoIntent({ client, close, callback, payment, licenca }) {
     )
 }
 
-function PagamentoInterno({ client, close, onPay, callback, licenca }) {
+function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const { nLoading, endLoading, nConfirm } = useNotificacao();
     const [formaPagamento, setFormaPagamento] = useState('MENSAL'); //MENSAL - RECORRENTE - UNICA
@@ -394,6 +395,7 @@ function PagamentoInterno({ client, close, onPay, callback, licenca }) {
                             formaPagamento={formaPagamento}
                             setFormaPagamento={setFormaPagamento}
                             licenca={licenca}
+                            atSigth={atSigth}
                         />
                     </div>
 
@@ -569,15 +571,15 @@ function Cartoes({ client, onConfirm, licenca }) {
     );
 }
 
-function FormaPagamento({ setFormaPagamento, formaPagamento, licenca }) {
+function FormaPagamento({ setFormaPagamento, formaPagamento, licenca, atSigth }) {
     function select(value) {
         setFormaPagamento(value);
     }
 
     const methods = [
-        { name: 'Mensal', value: 'MENSAL', color: 'success', icon: 'bi:receipt' },
-        { name: 'Recorrente', value: 'RECORRENTE', color: 'info', icon: 'bi-arrow-repeat' },
-        { name: 'Única', value: 'UNICA', color: 'secondary', icon: 'bi:clipboard-check', disabled: licenca },
+        { name: 'Mensal', value: 'MENSAL', color: 'success', icon: 'bi:receipt', disabled: atSigth },
+        { name: atSigth ? 'Cartão' : 'Recorrente', value: 'RECORRENTE', color: 'info', icon: 'bi-arrow-repeat' },
+        { name: atSigth ? 'Fatura' : 'Única', value: 'UNICA', color: 'secondary', icon: 'bi:clipboard-check', disabled: licenca },
         { name: 'Manual', value: 'MANUAL', color: 'danger', icon: 'mdi:check', disabled: licenca },
     ];
 

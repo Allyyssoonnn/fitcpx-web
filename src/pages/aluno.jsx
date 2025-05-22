@@ -11,6 +11,7 @@ import PopConfirm from '../components/popConfirm';
 import { useRecoilState } from 'recoil';
 import { stateUsuario } from '../states/states';
 import Swal from 'sweetalert2';
+import { getAlunoSessaoPacote, getAlunoSessoesPacote } from '../api/sessao';
 
 function Aluno() {
     const location = useLocation();
@@ -52,6 +53,12 @@ function Aluno() {
     const { data: cardapios, refetch: refetchCardapio } = useQuery({
         queryKey: ['cardapios'],
         queryFn: () => getCardapios({ cod_aluno }),
+        initialData: []
+    });
+
+    const { data: alunoSessoes } = useQuery({
+        queryKey: ['alunoSessoes'],
+        queryFn: () => getAlunoSessoesPacote(cod_aluno),
         initialData: []
     });
 
@@ -115,7 +122,7 @@ function Aluno() {
     if (isLoading) return <></>;
 
     return (
-        (<div className="container-fluid">
+        <div className="container-fluid">
             <ImageCropModal
                 show={showModal}
                 image={image}
@@ -167,11 +174,11 @@ function Aluno() {
                             <p>Email: {aluno?.email_aluno}</p>
 
                             <div className='row'>
-                                <button className='btn btn-outline-info me-2 col-md-3 mt-2' onClick={() => navigate('/contratacaoplano', { state: { aluno } })}>
+                                {/* <button className='btn btn-outline-info me-2 col-md-3 mt-2' onClick={() => navigate('/contratacaoplano', { state: { aluno } })}>
                                     <i className="bi bi-card-text me-2"></i>
                                     <span className='d-iline-block d-md-none'>Contratar</span>
                                     <span className='d-none d-md-inline-block'>Contratar plano</span>
-                                </button>
+                                </button> */}
 
                                 <button className='btn btn-warning me-2 col-md-3 mt-2' onClick={() => navigate('/cadaluno', { state: { aluno } })}>
                                     <i className="bi bi-pencil me-2"></i>
@@ -300,20 +307,38 @@ function Aluno() {
                             </>
                         }>
                             <div className='text-center'>
-                                {/* <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadcardapio', { state: { aluno } })}>
+                                <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/contratacaoplano', { state: { aluno } })}>
                                     <i className="bi bi-plus-circle me-2"></i>
-                                    Adicionar Cardápio
-                                </button> */}
+                                    Contratar plano
+                                </button>
 
                                 {alunoContratos?.map((alunoContrato, index) => (
                                     <CardContrato key={index} alunoContrato={alunoContrato} aluno={aluno} refetch={refetchContrato} />
                                 ))}
                             </div>
                         </Tab>
+
+                        <Tab eventKey="sessoes" title={
+                            <>
+                                <span className="d-none d-md-block"><i className="bi bi-calendar2-check me-2"></i>Sessões</span>
+                                <span className="d-block d-md-none"><i className="bi bi-calendar2-check me-2"></i>Sessões</span>
+                            </>
+                        }>
+                            <div className='text-center'>
+                                <button className='btn btn-success w-100 rounded-2' onClick={() => navigate('/contratacaosessao', { state: { aluno } })}>
+                                    <i className="bi bi-plus-circle me-2"></i>
+                                    Adicionar Sessão
+                                </button>
+
+                                {alunoSessoes?.map((alunoSessao, index) => (
+                                    <CardSessao key={index} alunoSessao={alunoSessao} aluno={aluno} refetch={refetchContrato} />
+                                ))}
+                            </div>
+                        </Tab>
                     </Tabs>
                 </div>
             </div>
-        </div>)
+        </div>
     );
 }
 
@@ -621,6 +646,53 @@ function CardContrato({ alunoContrato, aluno, refetch }) {
                 </button> */}
 
                 <button className="btn btn-info d-flex align-items-center" onClick={verContrato}>
+                    <i className="bi bi-list me-2"></i> Detalhes
+                </button>
+            </div>
+        </div>
+    )
+}
+
+function CardSessao({ alunoSessao, aluno, refetch }) {
+    const navigate = useNavigate();
+
+    async function verSessao() {
+        navigate('/pacoteSessao', { state: { cod_aluno_sessao_pacote: alunoSessao.cod_aluno_sessao_pacote, cod_aluno: aluno.cod_aluno } });
+    }
+    console.log(alunoSessao);
+    
+    return (
+        <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>
+            <div style={{ borderTop: '0.30rem solid #85D446' }} className='card-body rounded-3'>
+                <h5 className="card-title">Pacote: {alunoSessao.nome_aluno_sessao_pacote}</h5>
+
+                <div className='row'>
+                    <div className='col-md-3'>
+                        <strong>Sessões:</strong> {alunoSessao.sessoes?.length}
+                    </div>
+                    <div className='col-md-3'>
+                        <strong>Data:</strong> {alunoSessao.data_aluno_sessao_pacote}
+                    </div>
+                    <div className='col-md-3'>
+                        <strong>Expiração:</strong> {formatarData(alunoSessao.expiracao_aluno_sessao_pacote)}
+                    </div>
+                    <div className='col-md-3'>
+                        <label className="badge bg-success">
+                            {alunoSessao.status_aluno_sessao_pacote === 'succeeded' ? 'Pago' : 'Pendente'}
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div className='card-footer bg-light d-flex justify-content-around py-3'>
+                {/* <button
+                    className="btn btn-primary d-flex align-items-center"
+                    onClick={() => navigate('/cadcardapio', { state: { cardapio, aluno } })}
+                >
+                    <i className="bi bi-pencil me-2"></i>Editar
+                </button> */}
+
+                <button className="btn btn-info d-flex align-items-center" onClick={verSessao}>
                     <i className="bi bi-list me-2"></i> Detalhes
                 </button>
             </div>

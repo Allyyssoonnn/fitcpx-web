@@ -37,7 +37,7 @@ function Sidebar() {
 
                     <div className="d-flex align-items-center w-100 justify-content-center me-3">
                         <img src="../assets/images/logos/logo.png" alt="" width='45' />
-                        <Typewriter texts={[t('welcome'), 'Fit Complex']} />
+                        <Typewriter texts={[t('welcome'), 'Fit Cpx']} />
                     </div>
 
                     <a onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
