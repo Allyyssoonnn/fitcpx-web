@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil";
-import { stateEmpresa, stateUsuario } from "../../states/states";
+import { stateEmpresa, stateUsuario, useNotificacao } from "../../states/states";
 import { useForm } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
 import { gerarIdCarteira, getStatusAccount, sendDocuments } from "../../api/pagamento";
@@ -12,9 +12,11 @@ import FitStateForm from '../../components/baseComponents/FitStateForm';
 import Usuario from "./comp.usuarioFitCpxPay";
 import DocumentUpload from "./comp.documentFitCpxPay";
 import DadosBancarios from "./comp.bankFitCpxPay";
+import StripeStatus from "./comp.stripeStatus";
 
 function FitCpxPay() {
     const navigate = useNavigate();
+    const { nLoading, endLoading } = useNotificacao();
     const { register, setValue, handleSubmit, formState: { errors } } = useForm();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
@@ -38,10 +40,6 @@ function FitCpxPay() {
         }
     }, [usuario]);
 
-    useEffect(() => {
-        if (empresa) getStatusAccount(empresa.cod_empresa);
-    }, []);
-
     const fileToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -52,25 +50,39 @@ function FitCpxPay() {
     };
 
     async function sendForm(data) {
+        nLoading();
         const { empresa, usuario } = data;
 
-        if ((usuario.front_doc_id && usuario.back_doc_id) && (!frontDoc || !backDoc)) {
+        if (!frontDoc || !backDoc) {
             toast.error('Por favor, envie ambos os documentos.');
             return;
         }
 
+        const frontType = frontDoc.type;
+        const backType = backDoc.type;
         const frontBase64 = await fileToBase64(frontDoc);
         const backBase64 = await fileToBase64(backDoc);
 
-        const respEmpresa = await setEmpresa({ cod_empresa: empresa?.cod_empresa, ...empresa });
+        const camposIgnoradosEmpresa = ['stripe_customer_id', 'dev_stripe_customer_id', 'dev_stripe_id', 'stripe_id'];
+        const empresaFormLimpo = Object.fromEntries(
+            Object.entries(empresa).filter(([key]) => !camposIgnoradosEmpresa.includes(key))
+        );
+
+        const respEmpresa = await setEmpresa({ cod_empresa: empresa?.cod_empresa, ...empresaFormLimpo });
         setempresa(respEmpresa);
 
-        const respUsuario = await setUsuario({ cod_usuario: usuario?.cod_usuario, ...usuario });
+        const camposIgnorados = ['stripe_id', 'dev_stripe_id', 'stripe_account_id', 'dev_stripe_account_id'];
+        const usuarioFormLimpo = Object.fromEntries(
+            Object.entries(usuario).filter(([key]) => !camposIgnorados.includes(key))
+        );
+
+        const respUsuario = await setUsuario({ cod_usuario: usuario?.cod_usuario, ...usuarioFormLimpo });
         setusuario(respUsuario);
 
         await gerarIdCarteira(empresa?.cod_empresa, usuario?.cod_usuario);
-        await sendDocuments(frontBase64, backBase64, empresa.cod_empresa, usuario.cod_usuario);
+        await sendDocuments(frontBase64, backBase64, frontType, backType, empresa.cod_empresa, usuario.cod_usuario);
 
+        endLoading();
         navigate('/dashboard');
     }
 
@@ -84,29 +96,18 @@ function FitCpxPay() {
                 </div>
             </div>
 
+            <StripeStatus cod_empresa={empresa.cod_empresa} />
+
             <div>
                 <Empresa register={register} errors={errors} />
 
                 <div className="row g-3">
-                    {(usuario.front_doc_id && usuario.back_doc_id) ? (
-                        <div className="col-lg-6">
-                            <div className="card">
-                                <div className="card-body text-center">
-                                    <h5 className="mb-3">Documento já enviado</h5>
-                                    <div className="bg-success text-white d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style={{ width: 60, height: 60 }}>
-                                        <i className="bi bi-check fs-6" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <DocumentUpload
-                            frontDoc={frontDoc}
-                            backDoc={backDoc}
-                            setFrontDoc={setFrontDoc}
-                            setBackDoc={setBackDoc}
-                        />
-                    )}
+                    <DocumentUpload
+                        frontDoc={frontDoc}
+                        backDoc={backDoc}
+                        setFrontDoc={setFrontDoc}
+                        setBackDoc={setBackDoc}
+                    />
 
                     <DadosBancarios register={register} errors={errors} prefixField='empresa' />
                 </div>
@@ -116,14 +117,15 @@ function FitCpxPay() {
 
             <div className="card d-flex justify-content-end col-md-6">
                 <div className="card-body">
-                    {(!PRODUCAO && !empresa.dev_stripe_id) && (
-                        <button type="submit" className="btn btn-success rounded">Enviar formulário</button>
+                    {(!PRODUCAO) && (
+                        <button type="submit" className="btn btn-info rounded">
+                            {empresa.dev_stripe_id ? 'Atualizar dados' : 'Enviar formulário'}
+                        </button>
                     )}
-                    {(PRODUCAO && !empresa.stripe_id) && (
-                        <button type="submit" className="btn btn-success rounded">Enviar formulário</button>
-                    )}
-                    {((PRODUCAO && empresa.stripe_id) || (!PRODUCAO && empresa.dev_stripe_id)) && (
-                        <p className="text-danger">Formulário já enviado.</p>
+                    {(PRODUCAO) && (
+                        <button type="submit" className="btn btn-success rounded">
+                            {empresa.stripe_id ? 'Atualizar dados' : 'Enviar formulário'}
+                        </button>
                     )}
                 </div>
             </div>

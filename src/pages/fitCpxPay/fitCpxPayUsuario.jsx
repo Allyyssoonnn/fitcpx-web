@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { stateUsuario } from "../../states/states";
+import { stateUsuario, useNotificacao } from "../../states/states";
 import { toast } from "react-toastify";
 import { setUsuario } from "../../api/usuario";
-import { gerarIdCarteira } from "../../api/pagamento";
+import { gerarIdCarteira, sendDocuments } from "../../api/pagamento";
 import { PRODUCAO } from "../../api/api";
 import Usuario from "./comp.usuarioFitCpxPay";
 import DocumentUpload from "./comp.documentFitCpxPay";
 import DadosBancarios from "./comp.bankFitCpxPay";
+import StripeStatus from "./comp.stripeStatus";
 
 function FitCpxPayUsuario() {
     const navigate = useNavigate();
+    const { nLoading, endLoading } = useNotificacao();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const { register, setValue, handleSubmit, formState: { errors } } = useForm();
 
@@ -37,20 +39,33 @@ function FitCpxPayUsuario() {
     };
 
     async function sendForm(data) {
-        if ((usuario.front_doc_id && usuario.back_doc_id) && (!frontDoc || !backDoc)) {
+        nLoading();
+        const { usuario: usuarioForm } = data;
+
+        if (!frontDoc || !backDoc) {
             toast.error('Por favor, envie ambos os documentos.');
+            endLoading();
             return;
         }
 
+        const frontType = frontDoc.type;
+        const backType = backDoc.type;
         const frontBase64 = await fileToBase64(frontDoc);
         const backBase64 = await fileToBase64(backDoc);
 
-        const respUsuario = await setUsuario({ cod_usuario: usuario?.cod_usuario, ...data });
+        const camposIgnorados = ['stripe_id', 'dev_stripe_id', 'stripe_account_id', 'dev_stripe_account_id'];
+
+        const usuarioFormLimpo = Object.fromEntries(
+            Object.entries(usuarioForm).filter(([key]) => !camposIgnorados.includes(key))
+        );
+
+        const respUsuario = await setUsuario({ cod_usuario: usuario?.cod_usuario, ...usuarioFormLimpo });
         setusuario(respUsuario);
 
         await gerarIdCarteira(null, usuario?.cod_usuario);
-        // await sendDocuments(frontBase64, backBase64, empresa.cod_empresa, usuario.cod_usuario);
+        await sendDocuments(frontBase64, backBase64, frontType, backType, null, usuario.cod_usuario);
 
+        endLoading();
         navigate('/dashboard');
     }
 
@@ -64,42 +79,32 @@ function FitCpxPayUsuario() {
                 </div>
             </div>
 
+            <StripeStatus cod_usuario={usuario.cod_usuario} />
+
             <Usuario register={register} errors={errors} />
 
             <div className="row g-3">
-                {(usuario.front_doc_id && usuario.back_doc_id) ? (
-                    <div className="col-lg-6">
-                        <div className="card">
-                            <div className="card-body text-center">
-                                <h5 className="mb-3">Documento já enviado</h5>
-                                <div className="bg-success text-white d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style={{ width: 60, height: 60 }}>
-                                    <i className="bi bi-check fs-6" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <DocumentUpload
-                        frontDoc={frontDoc}
-                        backDoc={backDoc}
-                        setFrontDoc={setFrontDoc}
-                        setBackDoc={setBackDoc}
-                    />
-                )}
+                <DocumentUpload
+                    frontDoc={frontDoc}
+                    backDoc={backDoc}
+                    setFrontDoc={setFrontDoc}
+                    setBackDoc={setBackDoc}
+                />
 
-                <DadosBancarios register={register} errors={errors} prefixField='empresa' />
+                <DadosBancarios register={register} errors={errors} prefixField='usuario' />
             </div>
 
             <div className="card d-flex justify-content-end col-md-6">
                 <div className="card-body">
-                    {(!PRODUCAO && !usuario.dev_stripe_account_id) && (
-                        <button type="submit" className="btn btn-success rounded">Enviar formulário</button>
+                    {(!PRODUCAO) && (
+                        <button type="submit" className="btn btn-info rounded">
+                            {usuario.dev_stripe_account_id ? 'Atualizar dados' : 'Enviar formulário'}
+                        </button>
                     )}
-                    {(PRODUCAO && !usuario.stripe_account_id) && (
-                        <button type="submit" className="btn btn-success rounded">Enviar formulário</button>
-                    )}
-                    {((PRODUCAO && usuario.stripe_account_id) || (!PRODUCAO && usuario.dev_stripe_account_id)) && (
-                        <p className="text-danger">Formulário já enviado.</p>
+                    {(PRODUCAO) && (
+                        <button type="submit" className="btn btn-success rounded">
+                            {usuario.stripe_account_id ? 'Atualizar dados' : 'Enviar formulário'}
+                        </button>
                     )}
                 </div>
             </div>

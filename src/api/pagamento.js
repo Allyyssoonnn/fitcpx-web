@@ -87,10 +87,10 @@ export const doRefundPayment = async (cod_empresa, cod_aluno_contrato_pagamento)
     throw new Error("Erro ao carregar agenda");
 };
 
-export const getStatusAccount = async (cod_empresa) => {
-    const resp = await post('/pagamento/getStatusAccount', { cod_empresa });
+export const getStatusAccount = async (cod_empresa, cod_usuario) => {
+    const resp = await post('/pagamento/getStatusAccount', { cod_empresa, cod_usuario });
     if (resp.status) {
-        return resp.clientSecret;
+        return resp.data;
     } else toast.error(resp.message);
     throw new Error("Erro ao carregar agenda");
 };
