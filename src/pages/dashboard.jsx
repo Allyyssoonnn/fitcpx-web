@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal } from "react-bootstrap";
+import CardIconFitCpxPay from "../components/baseComponents/CardIconFitCpxPay";
 
 function Dashboard() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -156,6 +157,9 @@ function LinkFitCpxPay() {
             <Modal show={showModal} size="lg" centered>
                 <div className="card border-0 shadow-lg rounded-4">
                     <div className="card-body row g-4 p-4">
+                        <CardIconFitCpxPay>
+                            <h5 className="card-title">Selecione o tipo de conta</h5>
+                        </CardIconFitCpxPay>
 
                         {/* Usuário */}
                         <div className="col-md-6">
@@ -187,8 +191,8 @@ function LinkFitCpxPay() {
 
                     </div>
 
-                    <div className="card-footer border-0 bg-transparent text-end px-4 pb-4">
-                        <button className="btn btn-outline-danger px-4 rounded-pill" onClick={() => setShowModal(false)}>
+                    <div className="card-footer border-0 bg-transparent px-4 pb-4">
+                        <button className="btn btn-outline-danger px-4 rounded" onClick={() => setShowModal(false)}>
                             Fechar
                         </button>
                     </div>

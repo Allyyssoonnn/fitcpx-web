@@ -57,7 +57,7 @@ function Pagamentos({ empresa }) {
     }, [month, year]);
 
     return (
-        <div className="card border border-success">
+        <div className="card">
             <div className="card-body">
                 <CardIconFitCpxPay>
                     <h6 className="card-title mb-3">Resumo financeiro</h6>
@@ -116,11 +116,9 @@ function Pagamentos({ empresa }) {
 
 function Taxas() {
     return (
-        <div className="card border border-success">
+        <div className="card">
             <div className="card-body">
-                <CardIconFitCpxPay>
-                    <h6 className="card-title">Saques</h6>
-                </CardIconFitCpxPay>
+                <h6 className="card-title">Saques</h6>
                 <p>Saques são realizados diariamente após a retenção de 30 dias, por questões de segurança.</p>
                 {/* <p className="text-center fs-2 m-0">Ao realizar o saque, será descontada uma taxa</p> */}
             </div>
@@ -135,11 +133,9 @@ function DadosRecebimento({ balance }) {
     const pendingAmount = balance?.pending?.[0]?.amount ?? 0;
 
     return (
-        <div className="card border border-success">
+        <div className="card">
             <div className="card-body">
-                <CardIconFitCpxPay>
-                    <h6 className="card-title mb-3">Dados para recebimento</h6>
-                </CardIconFitCpxPay>
+                <h6 className="card-title mb-3">Dados para recebimento</h6>
 
                 <div>
                     <label className="form-label">Disponível para saque</label>

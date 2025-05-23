@@ -2,26 +2,36 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getModalidades, setModalidade, setPlano } from "../api/plano";
 import { useRecoilState } from "recoil";
-import { stateUsuario, useNotificacao } from "../states/states";
+import { stateEmpresa, stateUsuario, useNotificacao } from "../states/states";
 import { useEffect, useState } from "react";
 import CurrencyInput from "../components/currencyInput";
 import { Modal } from "react-bootstrap";
 import { formatarMoeda } from "../utils";
+import CardIconFitCpxPay from "../components/baseComponents/CardIconFitCpxPay";
+import FitInputForm from "../components/baseComponents/FitInputForm";
+import { getUsuarios } from "../api/usuario";
+import { useQuery } from "react-query";
+import FitSelectForm from "../components/baseComponents/FitSelectForm";
+import { PRODUCAO } from "../api/api";
 
 function CadModalidade() {
     const { nSuccess } = useNotificacao();
+    const [empresa] = useRecoilState(stateEmpresa);
     const [usuario] = useRecoilState(stateUsuario);
     const { register, handleSubmit, control, setValue } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [modalVariacao, setModalVariacao] = useState(false);
     const [modalSubVariacao, setModalSubVariacao] = useState(false);
+    const [modalComissao, setModalComissao] = useState(false);
     const [variacoes, setVariacoes] = useState([]);
     const [indexVariacao, setIndexVariacao] = useState(-1);
+    const [comissao, setComissao] = useState({});
 
     useEffect(() => {
         const modalidadeRecebido = location.state?.modalidade;
         if (modalidadeRecebido?.variacoes) setVariacoes(modalidadeRecebido?.variacoes);
+        if (modalidadeRecebido?.comissao_modalidade) setComissao(JSON.parse(modalidadeRecebido.comissao_modalidade));
         if (modalidadeRecebido) {
             Object.keys(modalidadeRecebido).forEach((key) => {
                 setValue(key, modalidadeRecebido[key]);
@@ -30,7 +40,8 @@ function CadModalidade() {
     }, [location, setValue, usuario]);
 
     async function confirma(data) {
-        await setModalidade({ ...data, variacoes, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+        const jsonComisao = comissao?.cod_usuario ? JSON.stringify(comissao) : null;
+        await setModalidade({ ...data, comissao_modalidade: jsonComisao, variacoes, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
         nSuccess();
         navigate('/modalidades');
     }
@@ -40,11 +51,17 @@ function CadModalidade() {
         setModalVariacao(true);
     }
 
+    function addComissao(e) {
+        e.preventDefault();
+        setModalComissao(true);
+    }
+
     function addSubVariacao(e) {
         e.preventDefault();
         setModalSubVariacao(true);
     }
 
+    const newComissao = (data) => setComissao(data);
     const newVariacao = (data) => setVariacoes(prev => ([ ...prev, { ...data, valores: [] } ]));
 
     const newDescont = (data) => {
@@ -56,6 +73,11 @@ function CadModalidade() {
     function removeVariacao(e, index) {
         e.preventDefault();
         setVariacoes(prev => prev.filter((v, i) => index !== i));
+    }
+
+    function removeComissao(e) {
+        e.preventDefault();
+        setComissao(null);
     }
 
     function removeSubVariacao(e, index) {
@@ -73,7 +95,8 @@ function CadModalidade() {
     return (
         <div className="container-fluid">
             <ModalVariacao show={modalVariacao} setShow={setModalVariacao} newVariacao={newVariacao} />
-            <ModalSubCariacao show={modalSubVariacao} setShow={setModalSubVariacao} newDescont={newDescont} />
+            <ModalSubVariacao show={modalSubVariacao} setShow={setModalSubVariacao} newDescont={newDescont} />
+            <ModalComissao show={modalComissao} setShow={setModalComissao} newComissao={newComissao} />
 
             <form onSubmit={handleSubmit(confirma)}>
                 <div className="card">
@@ -107,6 +130,49 @@ function CadModalidade() {
                                 <input {...register("descricao_modalidade")} className="form-control" />
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className="card border border-success">
+                    <div className="card-body">
+                        <CardIconFitCpxPay>
+                            <h5 className="card-title fw-semibold">Comissão</h5>
+                            <h5 className="card-subtitle fw-semibold">Selecione quem recebe por essa modalidade</h5>
+                            <h5 className="card-subtitle fs-2 mb-4">(Na confirmação do pagamento referente a modalidade é feito o repasse automaticamente)</h5>
+                        </CardIconFitCpxPay>
+
+                        <button className="btn btn-outline-success" onClick={addComissao}>Adicionar</button>
+
+                        <div className="table-responsive">
+                            <table className="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Porcentagem</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>{empresa?.nome_empresa}</td>
+                                        <td>{100 - (comissao?.porcentagem_usuario || 0)}%</td>
+                                    </tr>
+                                    {comissao?.cod_usuario && (
+                                        <tr>
+                                            <td>{comissao.nome_usuario}</td>
+                                            <td>{comissao.porcentagem_usuario}%</td>
+                                            <td>
+                                                <button className="btn btn-sm btn-outline-danger ms-2" onClick={(e) => removeComissao(e)}>
+                                                    <i className="bi bi-trash" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p className="text-danger fs-2">[Atenção] - Mudanças em quem recebe afetarão contratos vigentes</p>
                     </div>
                 </div>
 
@@ -238,7 +304,7 @@ function ModalVariacao({ show, setShow, newVariacao }) {
     )
 }
 
-function ModalSubCariacao({ show, setShow, newDescont }) {
+function ModalSubVariacao({ show, setShow, newDescont }) {
     const { register, handleSubmit, control, reset } = useForm();
 
     function confirmar(data) {
@@ -279,6 +345,65 @@ function ModalSubCariacao({ show, setShow, newDescont }) {
                     <button className="btn btn-danger rounded" onClick={() => setShow(false)}>Fechar</button>
 
                     <button type="submit" className="btn btn-success rounded">Confirmar</button>
+                </div>
+            </form>
+        </Modal>
+    )
+}
+
+function ModalComissao({ show, setShow, newComissao }) {
+    const [usuario] = useRecoilState(stateUsuario);
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm();
+
+    const { data: usuarios, refetch } = useQuery({
+        queryKey: ['usuarios', usuario.cod_usuario],
+        queryFn: () => getUsuarios(usuario.cod_empresa),
+        initialData: [],
+        enabled: !!usuario.cod_empresa,
+    });
+
+    async function confirmar(data) {
+        reset();
+        const usuario = usuarios.find((user) => user.cod_usuario == data.cod_usuario);
+        newComissao({ ...data, nome_usuario: usuario.nome_usuario });
+        setShow(false);
+    }
+
+    return (
+        <Modal show={show}>
+            <form className="card" onSubmit={handleSubmit(confirmar)}>
+                <div className="card-header">
+                    <h5 className="card-title">Adicionar conta de comissão</h5>
+                </div>
+
+                <div className="card-body">
+                    <FitSelectForm
+                        nameField="Usuário"
+                        textHelp="Apenas usuário com conta no FitCpx Pay está disponível"
+                        errors={errors}
+                        { ...register('cod_usuario', { required: true }) }
+                    >
+                        {usuarios.map((user, index) => (
+                            <option
+                                key={index}
+                                disabled={(!PRODUCAO && !user.dev_stripe_account_id) || (PRODUCAO && !user.stripe_account_id)}
+                                value={user.cod_usuario}
+                            >{user.nome_usuario}</option>
+                        ))}
+                    </FitSelectForm>
+
+                    <FitInputForm
+                        classNameContainer="mt-3"
+                        type="number"
+                        nameField="Porcentagem"
+                        errors={errors}
+                        { ...register('porcentagem_usuario', { required: true, min: 1, max: 100 }) }
+                    />
+                </div>
+
+                <div className="card-footer d-flex justify-content-between">
+                    <button className="btn btn-danger rounded" onClick={() => setShow(false)}>Cancelar</button>
+                    <button className="btn btn-success rounded" type="submit">Confirmar</button>
                 </div>
             </form>
         </Modal>
