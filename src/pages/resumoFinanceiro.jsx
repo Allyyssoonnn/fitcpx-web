@@ -5,6 +5,7 @@ import { setEmpresa } from "../api/usuario";
 import { getBalance, getBankExtract } from "../api/pagamento";
 import { useQuery } from "react-query";
 import { formatarData, formatarMoeda } from "../utils";
+import CardIconFitCpxPay from "../components/baseComponents/CardIconFitCpxPay";
 
 function ResumoFinanceiro() {
     const [empresa] = useRecoilState(stateEmpresa);
@@ -56,9 +57,11 @@ function Pagamentos({ empresa }) {
     }, [month, year]);
 
     return (
-        <div className="card">
+        <div className="card border border-success">
             <div className="card-body">
-                <h6 className="card-title mb-3">Resumo financeiro</h6>
+                <CardIconFitCpxPay>
+                    <h6 className="card-title mb-3">Resumo financeiro</h6>
+                </CardIconFitCpxPay>
 
                 <div className="d-flex gap-2 mb-4 align-items-end">
                     <div className="flex-grow-1">
@@ -113,9 +116,11 @@ function Pagamentos({ empresa }) {
 
 function Taxas() {
     return (
-        <div className="card">
+        <div className="card border border-success">
             <div className="card-body">
-                <h6 className="card-title">Saques</h6>
+                <CardIconFitCpxPay>
+                    <h6 className="card-title">Saques</h6>
+                </CardIconFitCpxPay>
                 <p>Saques são realizados diariamente após a retenção de 30 dias, por questões de segurança.</p>
                 {/* <p className="text-center fs-2 m-0">Ao realizar o saque, será descontada uma taxa</p> */}
             </div>
@@ -130,9 +135,11 @@ function DadosRecebimento({ balance }) {
     const pendingAmount = balance?.pending?.[0]?.amount ?? 0;
 
     return (
-        <div className="card">
+        <div className="card border border-success">
             <div className="card-body">
-                <h6 className="card-title mb-3">Dados para recebimento</h6>
+                <CardIconFitCpxPay>
+                    <h6 className="card-title mb-3">Dados para recebimento</h6>
+                </CardIconFitCpxPay>
 
                 <div>
                     <label className="form-label">Disponível para saque</label>

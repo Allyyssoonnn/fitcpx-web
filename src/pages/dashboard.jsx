@@ -198,7 +198,7 @@ function LinkFitCpxPay() {
             <div className="card-body text-center d-flex flex-column justify-content-center align-items-center flex-wrap">
                 <img src="/assets/images/logos/FC Pay.png" width={150} />
                 <h6 className="card-title fs-4">FitCpx Pay</h6>
-                <p>Preenche o formulário e comece a receber pelo sistema</p>
+                <p>Preencha o formulário e simplifique seu acesso com recebimento automático</p>
                 <button className="btn btn-success rounded" onClick={() => setShowModal(true)}>Ver mais</button>
             </div>
         </div>
