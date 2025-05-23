@@ -9,6 +9,7 @@ import { formatarData, formatarMoeda } from "../utils";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Modal } from "react-bootstrap";
 
 function Dashboard() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -148,18 +149,57 @@ function UltimosContratos({ contratos }) {
 function LinkFitCpxPay() {
     const navigate = useNavigate();
     const [empresa] = useRecoilState(stateEmpresa);
-
-    async function openLink() {
-        // const link = await getLinkAccount(empresa.cod_empresa);
-        navigate('/cadfitcpxpay');
-    }
+    const [showModal, setShowModal] = useState(false);
 
     return (
-        <div className="card bg-success-subtle">
-            <div className="card-body text-center d-flex justify-content-center align-items-center flex-wrap">
-                <h6 className="card-title fs-4">Formulário FitCpx Pay</h6>
-                <p>Complete o formulário para receber pagamentos pelo sistema</p>
-                <button className="btn btn-success rounded" onClick={openLink}>Acessar formulário FitCpx Pay</button>
+        <div className="card border border-success">
+            <Modal show={showModal} size="lg" centered>
+                <div className="card border-0 shadow-lg rounded-4">
+                    <div className="card-body row g-4 p-4">
+
+                        {/* Usuário */}
+                        <div className="col-md-6">
+                            <div className="bg-info-subtle p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-between shadow-sm">
+                                <div>
+                                    <div className="bg-info text-white d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style={{ width: 60, height: 60 }}>
+                                        <i className="bi bi-person fs-4" />
+                                    </div>
+                                    <h5 className="fw-semibold">Usuário</h5>
+                                </div>
+                                <p>Preencha o cadastro do usuário (CPF) e comece a receber</p>
+                                <button className="btn btn-info w-100 mt-3 text-white fw-semibold" onClick={() => navigate('/cadfitcpxpayusuario')}>Acessar formulário</button>
+                            </div>
+                        </div>
+
+                        {/* Empresa */}
+                        <div className="col-md-6">
+                            <div className="bg-success-subtle p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-between shadow-sm">
+                                <div>
+                                    <div className="bg-success text-white d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style={{ width: 60, height: 60 }}>
+                                        <i className="bi bi-building fs-4" />
+                                    </div>
+                                    <h5 className="fw-semibold">Empresa</h5>
+                                </div>
+                                <p>Preencha o cadastro da empresa (CNPJ) e comece a receber</p>
+                                <button className="btn btn-success w-100 mt-3 text-white fw-semibold" onClick={() => navigate('/cadfitcpxpay')}>Acessar formulário</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div className="card-footer border-0 bg-transparent text-end px-4 pb-4">
+                        <button className="btn btn-outline-danger px-4 rounded-pill" onClick={() => setShowModal(false)}>
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            <div className="card-body text-center d-flex flex-column justify-content-center align-items-center flex-wrap">
+                <img src="/assets/images/logos/FC Pay.png" width={150} />
+                <h6 className="card-title fs-4">FitCpx Pay</h6>
+                <p>Preenche o formulário e comece a receber pelo sistema</p>
+                <button className="btn btn-success rounded" onClick={() => setShowModal(true)}>Ver mais</button>
             </div>
         </div>
     )
