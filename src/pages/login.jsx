@@ -111,7 +111,7 @@ function Login() {
 
                                         <div className="d-flex align-items-center justify-content-center">
                                             <p className="fs-4 mb-0 fw-bold">Não tem conta?</p>
-                                            <a className="text-primary fw-bold ms-2" href="/registrar">Criar conta</a>
+                                            <a id="register" className="text-primary fw-bold ms-2" href="/registrar">Criar conta</a>
                                         </div>
                                     </form>
                                 </div>

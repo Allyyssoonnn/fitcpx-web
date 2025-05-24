@@ -56,6 +56,7 @@ function Register() {
 
                                     <form onSubmit={handleSubmit(registrar)}>
                                         <FitInputForm
+                                            id='name'
                                             classNameContainer='mb-3'
                                             nameField='Nome'
                                             errors={errors}
@@ -63,6 +64,7 @@ function Register() {
                                         />
 
                                         <FitInputForm
+                                            id='email'
                                             type='email'
                                             classNameContainer='mb-3'
                                             nameField='E-mail'
@@ -71,6 +73,7 @@ function Register() {
                                         />
 
                                         <FitInputForm
+                                            id='password'
                                             type='password'
                                             classNameContainer='mb-3'
                                             nameField='Senha'
@@ -79,6 +82,7 @@ function Register() {
                                         />
 
                                         <FitInputForm
+                                            id='confirm-password'
                                             type='password'
                                             classNameContainer='mb-3'
                                             nameField='Confirmar senha'
@@ -96,7 +100,7 @@ function Register() {
                                             )}
                                         </div>
 
-                                        <button type='submit' className="btn btn-primary w-100 py-8 fs-4 mb-4">Registrar</button>
+                                        <button id='register' type='submit' className="btn btn-primary w-100 py-8 fs-4 mb-4">Registrar</button>
                                         
                                         <div className="d-flex align-items-center justify-content-center">
                                             <p className="fs-4 mb-0 fw-bold">Já tem uma conta?</p>
