@@ -83,12 +83,12 @@ function Login() {
                                     <form onSubmit={handleSubmit(login)}>
                                         <div className="mb-3">
                                             <label className="form-label">E-mail</label>
-                                            <input { ...register('email') } type="email" className="form-control" aria-describedby="emailHelp" />
+                                            <input id="email" { ...register('email') } type="email" className="form-control" aria-describedby="emailHelp" />
                                         </div>
 
                                         <div className="mb-4">
                                             <label className="form-label">Senha</label>
-                                            <input { ...register('senha') } type="password" className="form-control" />
+                                            <input id="password" { ...register('senha') } type="password" className="form-control" />
                                         </div>
 
                                         <div className="d-flex align-items-center justify-content-between mb-4">
@@ -102,7 +102,7 @@ function Login() {
                                             <a className="text-primary fw-bold" href="/recuperar">Esqueceu a senha?</a>
                                         </div>
 
-                                        <button type="submit" className="btn btn-primary w-100 py-8 fs-4 mb-4">Entrar</button>
+                                        <button id="sign-in" type="submit" className="btn btn-primary w-100 py-8 fs-4 mb-4">Entrar</button>
 
                                         <button onClick={conect} className="btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8 mb-3 w-100" role="button">
                                             <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
