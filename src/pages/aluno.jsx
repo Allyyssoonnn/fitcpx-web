@@ -659,7 +659,6 @@ function CardSessao({ alunoSessao, aluno, refetch }) {
     async function verSessao() {
         navigate('/pacoteSessao', { state: { cod_aluno_sessao_pacote: alunoSessao.cod_aluno_sessao_pacote, cod_aluno: aluno.cod_aluno } });
     }
-    console.log(alunoSessao);
     
     return (
         <div className='card shadow-sm rounded-3 border-0 bg-white mt-4'>

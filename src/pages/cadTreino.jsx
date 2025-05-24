@@ -7,14 +7,15 @@ import { getExercicios, setSessao, setTreino } from "../api/treino";
 import { useQuery } from "react-query";
 import { arrayBorders, preventForm } from "../utils";
 import { toast } from "react-toastify";
-import { useNavigationBlocker } from "../components/useNavigationBlocker";
 import Prescricao from "../components/prescricao/prescricao";
 import TreinoInteligente from "../components/prescricao/treinoInteligente";
+import { useFormStore } from "../hooks/useFormStore";
 
 function CadTreino() {
+    const { formData, setTreinoForm } = useFormStore();
     const { nSuccess } = useNotificacao();
     const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { isDirty, isSubmitting } } = useForm();
-    const navigate = useNavigationBlocker(isDirty);
+    const navigate = useNavigate();
     const location = useLocation();
     const { viewTreino, setViewTreino } = useStateApp();
     const [usuario] = useRecoilState(stateUsuario);
@@ -45,6 +46,12 @@ function CadTreino() {
             Object.keys(treinoRecebido).forEach((key) => {
                 setValue(key, treinoRecebido[key]);
             });
+        } else {
+            if (formData.treino?.cod_aluno == alunoRecebido?.cod_aluno) {
+                Object.keys(formData.treino).forEach((key) => {
+                    setValue(key, formData.treino[key]);
+                });
+            }
         }
         var sessaoKey = treinoRecebido?.sessoes?.map((sessao, index) => ({
             ...sessao,
@@ -52,6 +59,11 @@ function CadTreino() {
         }))
         if (treinoRecebido?.sessoes) setSessoes(sessaoKey);
     }, [location, setValue, usuario]);
+
+    const watched = watch();
+    useEffect(() => {
+        setTreinoForm(watched);
+    }, [JSON.stringify(watched)]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });

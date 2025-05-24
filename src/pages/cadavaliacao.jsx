@@ -1,25 +1,26 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation, unstable_usePrompt } from "react-router-dom";
-import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { stateUsuario } from "../states/states";
 import { useRecoilState } from "recoil";
 import { sendAvaliacaoIMG, setAvaliacao } from "../api/aluno";
 import { useQuery } from "react-query";
 import { getProtocolos } from '../api/usuario';
-import { calcularIdade, dataURLToBlob, getSexo, preventForm } from "../utils";
+import { calcularIdade, dataURLToBlob, preventForm } from "../utils";
 import Imagens from "./cadAvaliacao/imagens";
 import { toast } from "react-toastify";
 import Dobras from "./cadAvaliacao/dobras";
 import Perimetros from "./cadAvaliacao/perimetros";
 import Diametros from "./cadAvaliacao/diametros";
 import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
-import { useNavigationBlocker } from "../components/useNavigationBlocker";
+import { useFormStore } from "../hooks/useFormStore";
 
 function CadAvaliacao() {
-    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { errors, isDirty, isSubmitting } } = useForm();
-    const navigate = useNavigationBlocker(isDirty);
+    const { formData, setAvaliacaoForm } = useFormStore();
+    const { handleSubmit, register, setValue, getValues, watch, reset, formState: { errors, isSubmitting } } = useForm();
+    const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
 
@@ -29,13 +30,10 @@ function CadAvaliacao() {
         initialData: [],
     });
 
-    const formValues = watch();
     const [capturedImages, setCapturedImages] = useState({});
     const [imageDescriptions, setImageDescriptions] = useState({});
     const [deletedImages, setDeletedImages] = useState([]);
-
     const [aluno, setAluno] = useState();
-    const [isListening, setIsListening] = useState(false);
     const [activeTab, setActiveTab] = useState("perimetros");
     const [perimetros, setPerimetros] = useState(perimetroFields);
     const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
@@ -46,9 +44,7 @@ function CadAvaliacao() {
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
     const [protocolo, setProtocolo] = useState("");
     const [ocultarCampos, setOcultarCampos] = useState(false);
-    const [restaurouCache, setRestaurouCache] = useState(false);
 
-    //Trata configurações inicias como o carregamento da avaliação caso for uma edição
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
@@ -71,27 +67,23 @@ function CadAvaliacao() {
                     [index + 1]: img.descricao_imagem,
                 }));
             })
+        } else {
+            if (formData.avaliacao?.cod_aluno == alunoRecebido?.cod_aluno) {
+                Object.keys(formData.avaliacao).forEach((key) => {
+                    setValue(key, formData.avaliacao[key]);
+                });
+            }
         }
     }, [location, setValue, usuario]);
     
-    //Carrega o cache salvo caso necessário
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
-        const avaliacaoCache = localStorage.getItem('avaliacaoCache');
-        if (avaliacaoCache && !avaliacaoRecebida) {
-            const cacheAvaliacaoObj = JSON.parse(avaliacaoCache);
-            Object.keys(cacheAvaliacaoObj).forEach((key) => {
-                setValue(key, cacheAvaliacaoObj[key]); // Restaura cada campo
-            });
-            setRestaurouCache(true);     
+        if (avaliacaoRecebida) {
+            Object.keys(avaliacaoRecebida).forEach((key) => {
+                setValue(key, avaliacaoRecebida[key]);
+            });   
         }
     }, [setValue, location]);
-
-    //Salva os campos em cache
-    useEffect(() => {
-        if (!formValues || !restaurouCache) return;
-        localStorage.setItem('avaliacaoCache', JSON.stringify(formValues));
-    }, [formValues, restaurouCache]);
 
     useEffect(() => {
         const loadFromLocalStorage = (key, setter) => {
@@ -109,6 +101,11 @@ function CadAvaliacao() {
         loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
+
+    const watched = watch();
+    useEffect(() => {
+        setAvaliacaoForm(watched);
+    }, [JSON.stringify(watched)]);
     
     if (isLoading) return <></>;
 
@@ -127,6 +124,7 @@ function CadAvaliacao() {
         enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
         reset();
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
+        useFormStore.getState().clearForm();
     }
 
     const enviaImagens = async (cod_avaliacao) => {
@@ -145,69 +143,12 @@ function CadAvaliacao() {
 
         try {
             const resp = await sendAvaliacaoIMG(formData, { cod_avaliacao, deletedImages: JSON.stringify(deletedImages) });
-    
-            resp.status
-            ? console.log('Imagens enviadas com sucesso!')
-            : console.error('Erro ao enviar as imagens:', resp.msg);
+            resp.status ? console.log('Imagens enviadas com sucesso!') : console.error('Erro ao enviar as imagens:', resp.msg);
         } catch (error) {
             console.error('Erro na requisição:', error);
         }
     };
 
-    function processVoiceCommand(command) {
-        function normalizeString(str) {
-            return str
-            .normalize('NFD') // Normaliza para decompor os caracteres acentuados
-            .replace(/[\u0300-\u036f]/g, '') // Remove os acentos
-            .replace(/\s+/g, '_') // Substitui espaços por underscores
-            .toLowerCase(); // Converte para minúsculo
-        }
-
-        const regex = /alterar\s([a-zA-Z0-9_áéíóúãõ\s]+)\spara\s(.*)/i;
-        const match = command.normalize('NFD').replace(/[\u0300-\u036f]/g, '').match(regex);
-        
-        if (match) {
-            const field = normalizeString(match[1]);
-            const value = match[2];
-    
-            if (field === 'diametro_punho' && getFieldState('biestiloide_punho')) setValue('biestiloide_punho', value);
-            if (field === 'diametro_umeral' && getFieldState('biepicondilo_umeral')) setValue('biepicondilo_umeral', value);
-            if (field === 'diametro_femoral' && getFieldState('biepicondilo_femoral')) setValue('biepicondilo_femoral', value);
-            
-            // eslint-disable-next-line no-prototype-builtins
-            if (getValues().hasOwnProperty(field)) {
-                setValue(field, value);
-                console.log(`Alterando ${field} para: ${value}`);
-            } else {
-                console.log('Campo não encontrado!');
-            }
-        } else {
-            console.log('Comando inválido. Tente algo como "Alterar peso para 70"');
-        }
-    }
-
-    function startListening() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert('Seu navegador não suporta a API de reconhecimento de fala.');
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'pt-BR';
-        recognition.interimResults = false;
-
-        recognition.start();
-        recognition.onstart = () => setIsListening(true);
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            console.log('Comando reconhecido:', transcript);
-            processVoiceCommand(transcript);
-        };
-        recognition.onerror = (event) => console.error('Erro no reconhecimento de fala:', event.error);
-        recognition.onend = () => setIsListening(false);
-    }
-    
     const resetOrdering = () => {
         localStorage.removeItem('perimetros');
         localStorage.removeItem('perimetrosDireito');
@@ -253,6 +194,12 @@ function CadAvaliacao() {
         </Tooltip>
     );
 
+    function clear() {
+        reset();
+        useFormStore.getState().clearForm();
+        localStorage.removeItem('avaliacaoCache');
+    }
+
     return (
         <div className="container-fluid">
             <div className="card">
@@ -260,13 +207,6 @@ function CadAvaliacao() {
                     <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
                         <i className="bi bi-backspace me-2"></i>
                         Voltar
-                    </button>
-
-                    <button style={{ zIndex: 1050 }} className="btn btn-primary position-fixed bottom-0 end-0 m-3"
-                        onClick={e => { e.preventDefault(); startListening(); }}
-                    >
-                        <i className="bi bi-mic me-2"></i>
-                        {isListening ? 'Ouvindo...' : 'Ativar Comando de Voz'}
                     </button>
 
                     {activeTab === 'perimetros' && (
@@ -304,7 +244,7 @@ function CadAvaliacao() {
 
                         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                             <li>
-                                <button className="dropdown-item" onClick={() => { reset(); localStorage.removeItem('avaliacaoCache'); }}>
+                                <button className="dropdown-item" onClick={clear}>
                                     <i className="bi bi-trash me-3"></i>
                                     Limpar
                                 </button>
@@ -321,6 +261,7 @@ function CadAvaliacao() {
                             <label className="form-label">Aluno</label>
                             <input value={`${calcularIdade(aluno?.data_nascimento_aluno)} - Anos / ${aluno?.nome_aluno}`} disabled className="form-control" />
                         </div>
+
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Protocolo *</label>
                             <select {...register('cod_protocolo', { required: 'Protocolo necessário!' })} className="form-control" onChange={e => setProtocolo(Number(e.target.value))}>
@@ -336,6 +277,7 @@ function CadAvaliacao() {
                                 ))}
                             </select>
                         </div>
+
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Tipo *
                                 <OverlayTrigger placement="bottom" overlay={tooltip}>
@@ -347,6 +289,7 @@ function CadAvaliacao() {
                                 <option value='complexo'>Complexo</option>
                             </select>
                         </div>
+
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Data da Avaliação *</label>
                             <input {...register("data_avaliacao", { required: "A data é obrigatória" })}
@@ -355,6 +298,7 @@ function CadAvaliacao() {
                                 defaultValue={new Date().toISOString().split('T')[0]}
                             />
                         </div>
+
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Peso (kg) *</label>
                             <input {...register("peso", { required: "O peso é obrigatório" })}
@@ -363,6 +307,7 @@ function CadAvaliacao() {
                                 className="form-control"
                             />
                         </div>
+
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Altura (m) *</label>
                             <input {...register("altura", { required: "A altura é obrigatória" })}
@@ -372,6 +317,7 @@ function CadAvaliacao() {
                             />
                         </div>
                     </div>
+
                     <div className="row g-3 m-1">
                         <div className="form-check">
                             <input value={ocultarCampos} onChange={e => setOcultarCampos(e.target.checked)} type="checkbox" className="form-check-input" id="ocultarCampos"/>

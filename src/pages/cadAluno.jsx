@@ -8,8 +8,10 @@ import { limpaForm } from '../utils';
 import FitInputForm from '../components/baseComponents/FitInputForm';
 import FitSelectForm from '../components/baseComponents/FitSelectForm';
 import FitStateForm from '../components/baseComponents/FitStateForm';
+import { useFormStore } from '../hooks/useFormStore';
 
 function CadAluno() {
+    const { formData, setAlunoForm } = useFormStore();
     const { nSuccess } = useNotificacao();
     const { handleSubmit, register, setValue, watch, formState: { isSubmitting, errors } } = useForm();
     const location = useLocation();
@@ -56,8 +58,17 @@ function CadAluno() {
             Object.keys(alunoRecebido).forEach((key) => {
                 setValue(key, alunoRecebido[key]);
             });
+        } else {
+            Object.keys(formData.aluno).forEach((key) => {
+                setValue(key, formData.aluno[key]);
+            });
         }
     }, [alunoRecebido, setValue]);
+
+    const watched = watch();
+    useEffect(() => {
+        setAlunoForm(watched);
+    }, [JSON.stringify(watched)]);
 
     async function confirma(data) {
         await setAluno(limpaForm(data));
