@@ -62,18 +62,18 @@ function metaPlugin() {
     name: 'vite-meta-hash',
     closeBundle() {
       const distPath = path.resolve(__dirname, `dist-${buildType}`);
-      const files = fs.readdirSync(distPath);
-      const hash = crypto.createHash('sha256');
+      const files = fs.readdirSync(distPath).filter(f => f.endsWith('.js'));
 
+      let combined = '';
       files.forEach((file) => {
-        if (file.endsWith('.js')) {
-          const content = fs.readFileSync(path.join(distPath, file));
-          hash.update(content);
-        }
+        const content = fs.readFileSync(path.join(distPath, file), 'utf-8');
+        combined += `/** ${file} **/\n${content}\n`;
       });
 
+      const hash = crypto.createHash('sha256').update(combined).digest('hex').slice(0, 10);
+
       const output = {
-        hash: hash.digest('hex').slice(0, 10),
+        hash,
         timestamp: Date.now(),
       };
 
@@ -81,7 +81,8 @@ function metaPlugin() {
         path.join(distPath, 'meta.json'),
         JSON.stringify(output)
       );
-      console.log('✅ meta.json gerado com hash:', output.hash);
+
+      console.log('✅ meta.json gerado com hash:', hash);
     },
   };
 }
