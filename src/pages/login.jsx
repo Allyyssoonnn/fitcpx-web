@@ -15,12 +15,6 @@ function Login() {
     const [empresa, setEmpresa] = useRecoilState(stateEmpresa);
 
     useEffect(() => {
-        const cookies = parseCookies(null);
-        if (cookies.token || cookies.refreshToken) {
-            toast.success('Bem vindo de volta!');
-            navigate('/');
-        } else setusuario({});
-
         (async function conect() {
             const params = new URLSearchParams(window.location.search);
             const code = params.get("code");
@@ -35,7 +29,7 @@ function Login() {
                     setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
                     setusuario(resp.usuario);
                     setEmpresa(resp.empresa);
-                    navigate('/');
+                    window.location.href = '/';
                 } else {
                     toast.error(resp?.msg);
                 }

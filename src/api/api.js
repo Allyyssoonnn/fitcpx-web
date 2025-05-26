@@ -27,6 +27,7 @@ api.interceptors.response.use((response) => response, async (error) => {
             }
         } catch (e) {
             destroyCookie(null, 'token');
+            localStorage.removeItem('recoil-persist');
             window.location.replace('/entrar');
         }
     }

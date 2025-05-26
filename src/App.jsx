@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from './base/layout';
 import Login from './pages/login';
 import Register from './pages/register';
@@ -11,10 +11,14 @@ import RecuperacaoSenha from './pages/recuperacaoSenha';
 
 import ErrorBoundaryWrapper from './base/errorBoundary';
 import { useAppVersionChecker } from './hooks/useAppVersionChecker';
+import { parseCookies } from 'nookies';
+import routes from './routes/routes';
+import PrivateRoute from './routes/PrivateRoute';
 
 function App() {
     useAppVersionChecker();
-
+    const cookies = parseCookies(null);
+    
     return (
         <BrowserRouter>
             <Suspense
@@ -27,7 +31,31 @@ function App() {
                 <ToastContainer theme="colored" />
                     <ErrorBoundaryWrapper>
                         <Routes>
-                            <Route name='Inicio' path='*' element={<Layout />} />
+                            <Route name='Inicio' path='/'
+                                element={
+                                    <PrivateRoute isAuthenticated={!!cookies.refreshToken}>
+                                        <Layout />
+                                    </PrivateRoute>
+                                }
+                            >
+                                <>
+                                    {routes.map((route, idx) => {
+                                        return (
+                                            route.element && (
+                                                <Route
+                                                    key={idx}
+                                                    path={route.path}
+                                                    exact={route.exact}
+                                                    name={route.name}
+                                                    element={<route.element />}
+                                                />
+                                            )
+                                        )
+                                    })}
+                                    <Route path="/" element={<Navigate to="dashboard" replace />} />
+                                </>
+                            </Route>
+                            
                             <Route path='/entrar' element={<Login />} />
                             <Route path='/registrar' element={<Register />} />
                             <Route path='/recuperar' element={<Recovery />} />

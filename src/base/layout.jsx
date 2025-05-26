@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { stateEmpresa, stateUsuario, useToggleSidebar } from '../states/states';
-import Conteudo from './conteudo';
 import Header from './header';
 import Sidebar from './sidebar';
 import { useRecoilState } from 'recoil';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { parseCookies, setCookie } from 'nookies';
 import axios from 'axios';
 import { baseURL } from '../api/api';
@@ -19,24 +18,25 @@ function Layout() {
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
 
     useEffect(() => {
+        //Function to update info data
         (async function load() {
             if (!usuario?.cod_usuario || !empresa?.cod_empresa) {
                 const cookies = parseCookies();
-                var user;
-                if (import.meta.env.VITE_BUILD_TYPE == 'aluno') user = 'appaluno';
-                if (import.meta.env.VITE_BUILD_TYPE == 'admin') user = 'appadmin';
-                if (import.meta.env.VITE_BUILD_TYPE == 'usuario') user = 'usuario';
-    
-                const refreshResponse = await axios.post(baseURL + `/${user}/refreshToken`, {
+
+                console.log('[Layout] - Verify refreshToken');
+                
+                const refreshResponse = await axios.post(baseURL + `/usuario/refreshToken`, {
                     refreshToken: cookies.refreshToken,
                 });
-                                
+
                 if (refreshResponse.data.status) {
                     setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
                     setusuario(refreshResponse.data.usuario);
                     setempresa(refreshResponse.data.empresa);
+                    console.log('[Layout] - Success Verify refreshToken');
                 } else {
                     navigate('/entrar');
+                    console.log('[Layout] - Failed Verify refreshToken');
                 }
             }
         })();
@@ -75,7 +75,7 @@ function Layout() {
                 <div className="body-wrapper">
                     <Header />
                     
-                    <Conteudo/>
+                    <Outlet />
 
                     <div className="py-6 px-6 text-center">
                         <p className="mb-0 fs-4">{t('footerText')}</p>

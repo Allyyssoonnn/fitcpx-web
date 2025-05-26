@@ -6,5 +6,7 @@ export default defineConfig({
   use: {
     headless: true,
     baseURL: 'http://localhost:5173',
+    storageState: 'state.json', // usa o state salvo pelo globalSetup
   },
+  globalSetup: './global-setup.ts', // caminho para o arquivo do setup
 });

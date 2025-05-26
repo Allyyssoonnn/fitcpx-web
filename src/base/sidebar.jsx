@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 function Sidebar() {
     const { t } = useTranslation('sidebar');
     const navigate = useNavigate();
-    const { toggleSidebar } = useToggleSidebar();
+    const { openSidebar, closeSidebar } = useToggleSidebar();
     const [{ openedSidebar }] = useRecoilState(stateApp);
 
     const [dropTreino, setDropTreino] = useState(false);
@@ -40,7 +40,7 @@ function Sidebar() {
                         <Typewriter texts={[t('welcome'), 'Fit Complex', 'Fit Cpx']} />
                     </div>
 
-                    <a onClick={toggleSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                    <a onClick={openedSidebar ? closeSidebar : openSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                         <i className="bi bi-x fs-8"></i>
                     </a>
                 </div>

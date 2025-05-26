@@ -67,8 +67,9 @@ export const useNotificacao = () => {
 
 export const useToggleSidebar = () => {
     const [appState, setAppState] = useRecoilState(stateApp);
-    const toggleSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: !prevState.openedSidebar }));
-    return { toggleSidebar, openedSidebar: appState.openedSidebar };
+    const openSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: true }));
+    const closeSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: false }));
+    return { openSidebar, closeSidebar, openedSidebar: appState.openedSidebar };
 }
 
 export const useStateApp = () => {

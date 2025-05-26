@@ -20,6 +20,7 @@ function Alunos() {
         initialData: [],
         enabled: !!usuario.cod_empresa,
     });
+    console.log(alunos)
 
     useEffect(() => {
         refetch();
@@ -36,6 +37,7 @@ function Alunos() {
             aluno.status_aluno === statusFilter
         )
     }, [alunos, searchTerm, statusFilter]);
+    console.log(filteredAlunos)
 
     const delAlun = async (cod_aluno) => {
         await deleteAluno(cod_aluno);

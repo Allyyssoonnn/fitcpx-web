@@ -51,7 +51,7 @@ function CadAluno() {
             }
         })
         
-    }, [watch]);
+    }, [watch, usuario]);
 
     useEffect(() => {
         if (alunoRecebido) {
@@ -89,6 +89,7 @@ function CadAluno() {
 
                 <div className="row g-3">
                     <FitInputForm
+                        id='name'
                         nameField='Nome *'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -96,6 +97,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='cpf'
                         nameField='CPF'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -103,6 +105,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='rg'
                         nameField='RG'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -110,6 +113,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='phone'
                         nameField='Telefone *'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -117,6 +121,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='birthdate'
                         type="date"
                         nameField='Data de nascimento *'
                         classNameContainer='col-md-3'
@@ -125,6 +130,7 @@ function CadAluno() {
                     />
 
                     <FitSelectForm
+                        id='gender'
                         nameField='Sexo *'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -135,6 +141,7 @@ function CadAluno() {
                     </FitSelectForm>
 
                     <FitSelectForm
+                        id='ethnicity'
                         nameField='Etnia *'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -150,6 +157,7 @@ function CadAluno() {
 
                 <div className='row g-3'>
                     <FitInputForm
+                        id='email'
                         textHelp='O aluno usará para acessar o app do aluno'
                         type="email"
                         nameField='E-mail *'
@@ -159,6 +167,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='password'
                         type="password"
                         nameField='Senha *'
                         classNameContainer='col-md-3'
@@ -171,6 +180,7 @@ function CadAluno() {
 
                 <div className="row g-3">
                     <FitInputForm
+                        id='cep'
                         nameField='CEP'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -178,6 +188,7 @@ function CadAluno() {
                     />
                     
                     <FitStateForm
+                        id='state'
                         nameField="Estado"
                         classNameContainer="col-md-3"
                         {...register("estado_aluno")}
@@ -185,6 +196,7 @@ function CadAluno() {
                     />
                     
                     <FitInputForm
+                        id='city'
                         nameField='Cidade'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -192,6 +204,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='address'
                         nameField='Endereço'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -199,6 +212,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='number'
                         nameField='Número'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -206,6 +220,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='neighborhood'
                         nameField='Bairro'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -213,6 +228,7 @@ function CadAluno() {
                     />
 
                     <FitInputForm
+                        id='address2'
                         nameField='Complemento'
                         classNameContainer='col-md-3'
                         errors={errors}
@@ -220,7 +236,7 @@ function CadAluno() {
                     />
                 </div>
 
-                <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
+                <button id='submit' disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                     <i className="bi bi-check me-2"></i>
                     Confirmar
                 </button>
