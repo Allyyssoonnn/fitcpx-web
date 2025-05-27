@@ -367,16 +367,13 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
 function SelectExercicio({ exercicio, index, indexSessao, selecionaExercicio, exerciciosLista, indexSet }) {
     return (
         <div className="form-floating w-100 me-2">
-            <select className="form-control"
-                value={exercicio?.cod_exercicio}
-                onChange={e => selecionaExercicio(indexSessao, index, e.target.value, indexSet)}
-            >
-                <option value="" hidden>Clique para selecionar</option>
-                {((exercicio?.exerciciosFiltros ?? exerciciosLista))?.map((exc, i) => (
-                    <option key={i} value={exc.cod_exercicio}>{exc.nome_exercicio}</option>
-                ))}
-            </select>
-            <label className="form-label">Exercicío (Clique para selecionar)</label>
+            <AutoComplete
+                chave='cod_exercicio'
+                valueChave={exercicio.cod_exercicio}
+                sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
+                chavePesquisa='nome_exercicio'
+                onChange={(cod_exercicio, exercicio) => selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)}
+            />
         </div>
     )
 }

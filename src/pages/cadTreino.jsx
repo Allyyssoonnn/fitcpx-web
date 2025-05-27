@@ -7,7 +7,6 @@ import { getExercicios, setSessao, setTreino } from "../api/treino";
 import { useQuery } from "react-query";
 import { arrayBorders, preventForm } from "../utils";
 import { toast } from "react-toastify";
-import Prescricao from "../components/prescricao/prescricao";
 import TreinoInteligente from "../components/prescricao/treinoInteligente";
 import { useFormStore } from "../hooks/useFormStore";
 
@@ -17,7 +16,6 @@ function CadTreino() {
     const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { isDirty, isSubmitting } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
-    const { viewTreino, setViewTreino } = useStateApp();
     const [usuario] = useRecoilState(stateUsuario);
     const [sessoes, setSessoes] = useState([]);
     const [removidos, setRemovidos] = useState([]);
@@ -25,12 +23,6 @@ function CadTreino() {
     const [nome_aluno, setNome_aluno] = useState('');
     const [codAluno, setCodAluno] = useState(0);
     const [sexo_aluno, setSexo_aluno] = useState('');
-
-    const { data: exercicios, refetch } = useQuery({
-        queryKey: ['exercicios', usuario.cod_usuario],
-        queryFn: () => getExercicios(usuario.cod_usuario),
-        initialData: [],
-    });
 
     useEffect(() => {
         const treinoRecebido = location.state?.treino;
@@ -181,51 +173,16 @@ function CadTreino() {
             <div className="card">
                 <div className="card-header d-flex justify-content-between flex-wrap">
                     <h5 className="card-title fw-semibold m-3">Prescrição</h5>
-
-                    <div className="col-md-3 col-12">
-                        <label className="form-label">Visualização</label>
-                        <div className="form-control rounded btn-group" role="group">
-                            <input checked={viewTreino == 'painel'} onClick={() => setViewTreino('painel')} type="radio" className="btn-check" name="btnradio" id="btncheck1" />
-                            <label className="btn btn-sm btn-outline-primary" htmlFor="btncheck1">
-                                <i className="bi bi-copy" />
-                            </label>
-                            
-                            <input checked={viewTreino == 'bloco'} onClick={() => setViewTreino('bloco')} type="radio" className="btn-check" name="btnradio" id="btncheck3" />
-                            <label className="btn btn-sm btn-outline-primary" htmlFor="btncheck3">
-                                <i className="bi bi-view-stacked" />
-                            </label>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="card-body p-1">
-                    {(!viewTreino || viewTreino == 'bloco') && (
-                        <TreinoInteligente
-                            sessoes={sessoes}
-                            setSessoes={setSessoes}
-                            setRemovidos={setRemovidos}
-                            setItensRemovidos={setItensRemovidos}
-                        />
-                    )}
-                    {viewTreino == 'painel' && (
-                        <Prescricao
-                            nomeNovoGrupo='Treino'
-                            nome='Exercícios'
-                            nomeColuna2='Sessões'
-                            nomeArray='nome_exercicio'
-                            nomeArrayGrupo='exercicios'
-                            campoSequencia='sequencia_sessao'
-                            campoSequenciaItem='sequencia_exercicio'
-                            nomeGrupo='nome_sessao'
-                            array={exercicios}
-                            filtroComponenteNome='Exercícios'
-                            grupos={sessoes}
-                            setGrupos={setSessoes}
-                            setRemovidos={setRemovidos}
-                            setItensRemovidos={setItensRemovidos}
-                            getRepeticao={getRepeticao}
-                        />
-                    )}
+                    <TreinoInteligente
+                        sessoes={sessoes}
+                        setSessoes={setSessoes}
+                        setRemovidos={setRemovidos}
+                        setItensRemovidos={setItensRemovidos}
+                        getRepeticao={getRepeticao}
+                    />
                 </div>
 
                 <div className="card-footer">

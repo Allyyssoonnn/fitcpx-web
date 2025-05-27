@@ -6,7 +6,7 @@ import ListaExercicios from "./listaExercicios";
 import { arrayBorders } from "../../utils";
 import GerarTreino from "./gerarTreino";
 
-function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovidos }) {
+function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovidos, getRepeticao }) {
     const [wait, setWait] = useState();
 
     const updateNomeSessao = (index, newName) => {
@@ -35,7 +35,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                 sequencia_sessao_exercicio: sessoes[indexSessao]?.exercicios?.length + 1,
                 sets: [],
                 serie_sessao_exercicio:  3,
-                repeticao_sessao_exercicio: 12,
+                repeticao_sessao_exercicio: getRepeticao(),
                 intervalo_sessao_exercicio: 60,
                 carga_sessao_exercicio: 0,
             } ]

@@ -98,8 +98,8 @@ function VerifyEmail() {
 
                 <div className="col-lg-4">
                     <div className="d-flex align-items-center">
-                        <input className="form-control" placeholder="XXXX" maxLength={4} onChange={e => setCode(e.target.value)} value={code} />
-                        <button onClick={confirmEmail} className="btn btn-sm btn-info rounded ms-3">Verificar</button>
+                        <input id="email-code" className="form-control" placeholder="XXXX" maxLength={4} onChange={e => setCode(e.target.value)} value={code} />
+                        <button id="confirm-email" onClick={confirmEmail} className="btn btn-sm btn-info rounded ms-3">Verificar</button>
                     </div>
                 </div>
             </li>

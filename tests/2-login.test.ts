@@ -9,7 +9,7 @@ test('Login', async ({ page }) => {
     });
 
     await page.fill('input[id="email"]', 'alyson.personalstudio@gmail.com');
-    await page.fill('input[id="password"]', '24052025');
+    await page.fill('input[id="password"]', '12345');
 
     await page.click('button[id="sign-in"]');
 

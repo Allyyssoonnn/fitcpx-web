@@ -94,56 +94,58 @@ function Exercicios() {
                                         const grupo_exercicio_6 = exercicio?.grupo_exercicio_6?.nome_grupo_exercicio;
                                         const grupo_exercicio_7 = exercicio?.grupo_exercicio_7?.nome_grupo_exercicio;
                                         const grupo_exercicio_8 = exercicio?.grupo_exercicio_8?.nome_grupo_exercicio;
+                                        
                                         return (
-                                        <tr key={exercicio.cod_treino} style={{ borderLeft: exercicio.base_exercicio === 'S' ? '0.30rem solid rgb(212, 212, 70)' : '' }}>
-                                            <th scope="row" className="d-flex align-items-center">
-                                                <div className="col-md-6 d-flex flex-column">
-                                                    <label>{exercicio.nome_exercicio}</label>
-                                                    <div className="d-flex gap-2 mt-2">
-                                                        {exercicio.url_exercicio && (
-                                                            <label className="badge bg-success">
-                                                                <i className="bi bi-camera-reels" />
-                                                            </label>
-                                                        )}
-                                                        <label className="badge bg-success text-black">{exercicio?.usuario?.nome_usuario}</label>
-                                                        <label className="badge bg-info">{grupo_exercicio_1}</label>
-                                                        <label className="badge bg-info">{grupo_exercicio_2}</label>
-                                                        <label className="badge bg-info">{grupo_exercicio_3}</label>
-                                                        <label className="badge bg-info">{grupo_exercicio_4}</label>
-                                                        <label className="badge bg-primary">{grupo_exercicio_5}</label>
-                                                        <label className="badge bg-primary">{grupo_exercicio_6}</label>
-                                                        <label className="badge bg-primary">{grupo_exercicio_7}</label>
-                                                        <label className="badge bg-primary">{grupo_exercicio_8}</label>
-                                                        {/* <label className="badge bg-dark">{treino.nome_exercicio}</label> */}
-                                                        {/* <label className="badge bg-dark">{treino.nivel_treino}</label> */}
-                                                        {/* <label className="text-muted">{treino.nome_usuario}</label> */}
+                                            <tr key={exercicio.cod_treino} style={{ borderLeft: exercicio.base_exercicio === 'S' ? '0.30rem solid rgb(212, 212, 70)' : '' }}>
+                                                <th scope="row" className="d-flex align-items-center">
+                                                    <div className="col-md-6 d-flex flex-column">
+                                                        <label>{exercicio.nome_exercicio}</label>
+                                                        <div className="d-flex gap-2 mt-2">
+                                                            {exercicio.url_exercicio && (
+                                                                <label className="badge bg-success">
+                                                                    <i className="bi bi-camera-reels" />
+                                                                </label>
+                                                            )}
+                                                            <label className="badge bg-success text-black">{exercicio?.usuario?.nome_usuario}</label>
+                                                            <label className="badge bg-info">{grupo_exercicio_1}</label>
+                                                            <label className="badge bg-info">{grupo_exercicio_2}</label>
+                                                            <label className="badge bg-info">{grupo_exercicio_3}</label>
+                                                            <label className="badge bg-info">{grupo_exercicio_4}</label>
+                                                            <label className="badge bg-primary">{grupo_exercicio_5}</label>
+                                                            <label className="badge bg-primary">{grupo_exercicio_6}</label>
+                                                            <label className="badge bg-primary">{grupo_exercicio_7}</label>
+                                                            <label className="badge bg-primary">{grupo_exercicio_8}</label>
+                                                            {/* <label className="badge bg-dark">{treino.nome_exercicio}</label> */}
+                                                            {/* <label className="badge bg-dark">{treino.nivel_treino}</label> */}
+                                                            {/* <label className="text-muted">{treino.nome_usuario}</label> */}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </th>
-                                            <td>
-                                                <div className='dropdown'>
-                                                    <button onClick={e => e.stopPropagation()} className="btn border-0" data-bs-toggle="dropdown">
-                                                        <i className="bi bi-three-dots-vertical"></i>
-                                                    </button>
+                                                </th>
+                                                <td>
+                                                    <div className='dropdown'>
+                                                        <button onClick={e => e.stopPropagation()} className="btn border-0" data-bs-toggle="dropdown">
+                                                            <i className="bi bi-three-dots-vertical"></i>
+                                                        </button>
 
-                                                    <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
-                                                        <a onClick={e => { e.stopPropagation(); editarExercicio(exercicio); }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
-                                                            <i className="bi bi-pencil"></i>
-                                                            <p className="mb-0">Editar</p>
-                                                        </a>
-                                                        <a onClick={e => { e.stopPropagation(); delExercicio(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.base_exercicio === 'S' ? 'd-none' : ''} ${exercicio.deletedAt ? 'd-none' : ''}`}>
-                                                            <i className="bi bi-trash"></i>
-                                                            <p className="mb-0">Excluir</p>
-                                                        </a>
-                                                        <a onClick={e => { e.stopPropagation(); recoveryExec(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.base_exercicio === 'S' ? 'd-none' : ''} ${exercicio.deletedAt ? '' : 'd-none'}`}>
-                                                            <i className="bi bi-trash"></i>
-                                                            <p className="mb-0">Reverter</p>
-                                                        </a>
+                                                        <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
+                                                            <a onClick={e => { e.stopPropagation(); editarExercicio(exercicio); }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
+                                                                <i className="bi bi-pencil"></i>
+                                                                <p className="mb-0">Editar</p>
+                                                            </a>
+                                                            <a onClick={e => { e.stopPropagation(); delExercicio(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.base_exercicio === 'S' ? 'd-none' : ''} ${exercicio.deletedAt ? 'd-none' : ''}`}>
+                                                                <i className="bi bi-trash"></i>
+                                                                <p className="mb-0">Excluir</p>
+                                                            </a>
+                                                            <a onClick={e => { e.stopPropagation(); recoveryExec(exercicio.cod_exercicio); }} href="#" className={`d-flex align-items-center gap-2 dropdown-item ${exercicio.base_exercicio === 'S' ? 'd-none' : ''} ${exercicio.deletedAt ? '' : 'd-none'}`}>
+                                                                <i className="bi bi-trash"></i>
+                                                                <p className="mb-0">Reverter</p>
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )})}
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
                                 </tbody>
                             </table>
                         </div>

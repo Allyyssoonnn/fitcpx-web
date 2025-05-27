@@ -13,10 +13,14 @@ test('Register', async ({ page }) => {
 
     await page.fill('input[id="name"]', 'Teste FitCpx');
     await page.fill('input[id="email"]', 'alyson.personalstudio@gmail.com');
-    await page.fill('input[id="password"]', '24052025');
-    await page.fill('input[id="confirm-password"]', '24052025');
+    await page.fill('input[id="password"]', '12345');
+    await page.fill('input[id="confirm-password"]', '12345');
     await page.click('input[id="acceptTerms"]');
-
+    
     await page.click('button[id="register"]');
     await expect(page).toHaveURL(/.*\/dashboard/);
+
+    await page.fill('input[id="email-code"]', '1234');
+    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="confirm-email"]');
 });

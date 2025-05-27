@@ -52,8 +52,16 @@ const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = ()
 
     const filteredSuggestions = useMemo(() => {
         if (inputValue.trim()) {
+            const searchTerms = inputValue.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ").filter(Boolean);
+
             return sugestoes.filter((suggestion) =>
-                suggestion[chavePesquisa].toLowerCase().includes(inputValue.toLowerCase())
+                searchTerms.every(term =>
+                    suggestion[chavePesquisa]
+                        ?.toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .includes(term)
+                )
             );
         }
         return [];

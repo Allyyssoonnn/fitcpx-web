@@ -10,8 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:usuario": "cross-env VITE_BUILD_TYPE=usuario vite build",
-    "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite",
-    "reset": "MYSQL_PWD='2025@Fitcpx#2025' mysql -u root -h localhost -e \"DROP DATABASE IF EXISTS educapp; CREATE DATABASE educapp;\" && npx sequelize-cli db:migrate"
+    "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",
