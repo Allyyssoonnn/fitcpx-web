@@ -256,14 +256,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
 
                                             {screen.width < 766 && (
                                                 <div className="my-3">
-                                                        <AutoComplete
-                                                            id={`inputExercise-${index}-session-${indexSessao}-set-null`}
-                                                            chave='cod_exercicio'
-                                                            valueChave={exercicio.cod_exercicio}
-                                                            sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
-                                                            chavePesquisa='nome_exercicio'
-                                                            onChange={(cod_exercicio, exercicio) => selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)}
-                                                        />
+                                                    <AutoComplete
+                                                        id={`inputExercise-${index}-session-${indexSessao}-set-null`}
+                                                        chave='cod_exercicio'
+                                                        valueChave={exercicio.cod_exercicio}
+                                                        sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
+                                                        chavePesquisa='nome_exercicio'
+                                                        onChange={(cod_exercicio, exercicio) => selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)}
+                                                    />
                                                 </div>
                                             )}
 
