@@ -118,14 +118,14 @@ function CadTreino() {
                     <div className="row g-3">
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Nome *</label>
-                            <input {...register("nome_treino", { required: "O nome é obrigatório" })}
+                            <input id="name" {...register("nome_treino", { required: "O nome é obrigatório" })}
                                 className="form-control"
                             />
                         </div>
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Frequência *</label>
-                            <input {...register("frequencia_treino", { required: "Frequência de treino é obrigatório" })}
+                            <input id="periodicity" {...register("frequencia_treino", { required: "Frequência de treino é obrigatório" })}
                                 type="number"
                                 step="0.01"
                                 className="form-control"
@@ -134,7 +134,7 @@ function CadTreino() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Nível *</label>
-                            <select {...register('nivel_treino', { required: 'Nível de treino necessário!' })} className="form-control">
+                            <select id="difficulty" {...register('nivel_treino', { required: 'Nível de treino necessário!' })} className="form-control">
                                 <option value=''>Selecione o nível do treino</option>
                                 <option value='Iniciante'>Iniciante</option>
                                 <option value='Intermediário'>Intermediário</option>
@@ -144,7 +144,7 @@ function CadTreino() {
 
                         <div className={`col-md-3 ${sexo_aluno ? 'd-none' : ''}`}>
                             <label className="form-label fw-bold">Sexo *</label>
-                            <select {...register('sexo_treino', { required: 'O sexo é obrigatório' })} className="form-control">
+                            <select id="gender" {...register('sexo_treino', { required: 'O sexo é obrigatório' })} className="form-control">
                                 <option value="M">Masculino</option>
                                 <option value="F">Feminino</option>
                             </select>
@@ -152,14 +152,14 @@ function CadTreino() {
                         
                         <div className="col-md-6">
                             <label className="form-label fw-bold">Observação</label>
-                            <input {...register("observacao_treino")}
+                            <input id="observation" {...register("observacao_treino")}
                                 className="form-control"
                             />
                         </div>
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Desenvolvimento *</label>
-                            <select {...register('desenvolvimento_treino', { required: 'O desenvolvimento é obrigatório' })} className="form-control">
+                            <select id="development" {...register('desenvolvimento_treino', { required: 'O desenvolvimento é obrigatório' })} className="form-control">
                                 <option value="">Selecione o desenvolvimento</option>
                                 <option value="Força">Força</option>
                                 <option value="Hipertrofia">Hipertrofia</option>
@@ -186,7 +186,7 @@ function CadTreino() {
                 </div>
 
                 <div className="card-footer">
-                    <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
+                    <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                         <i className="bi bi-check me-2"></i>
                         Confirmar
                     </button>

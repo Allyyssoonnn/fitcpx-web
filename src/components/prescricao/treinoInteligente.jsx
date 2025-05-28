@@ -138,7 +138,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                                                         <GerarTreino setSessoes={setSessoes} indexSessao={index} />
                                                     )}
 
-                                                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#panelsStayOpen-collapse${index}`} aria-expanded="true" aria-controls={`panelsStayOpen-collapse${index}`}>
+                                                    <button id={`btnSession-${index}`} className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#panelsStayOpen-collapse${index}`} aria-expanded="true" aria-controls={`panelsStayOpen-collapse${index}`}>
                                                         <EditableText
                                                             title={true}
                                                             key={index}
@@ -184,7 +184,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                                                             setItensRemovidos={setItensRemovidos}
                                                         />
 
-                                                        <button className="btn btn-outline-success rounded w-100 mt-3" onClick={e => adicionarExercicio(e, index)}>
+                                                        <button id={`addExercise-${index}`} className="btn btn-outline-success rounded w-100 mt-3" onClick={e => adicionarExercicio(e, index)}>
                                                             <i className="bi bi-plus me-2" />
                                                             Adicionar exercício
                                                         </button>
@@ -200,7 +200,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                 </Droppable>
             </DragDropContext>
 
-            <button className="btn btn-outline-primary w-100" onClick={adicionarSessao}>
+            <button id="addSessions" className="btn btn-outline-primary w-100" onClick={adicionarSessao}>
                 <i className="bi bi-plus me-2" />
                 Adicionar sessão
             </button>

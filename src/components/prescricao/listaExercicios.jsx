@@ -272,11 +272,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                 {screen.width < 766 && (<SelectExercicio exercicio={exercicio} index={index} />)}
                                                 
                                                 <div className="form-floating col-md-3 col-6">
-                                                    <input id="seriesInput" value={exercicio.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Séries"/>
+                                                    <input name={`setsExercise-${index}-session-${indexSessao}`} id="seriesInput" value={exercicio.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Séries"/>
                                                     <label htmlFor="seriesInput">Séries</label>
                                                 </div>
                                                 <div className="form-floating col-md-3 col-6">
-                                                    <input id="repInput" value={exercicio.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Repetições"/>
+                                                    <input name={`repsExercise-${index}-session-${indexSessao}`} id="repInput" value={exercicio.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Repetições"/>
                                                     <label htmlFor="repInput">Repetições</label>
                                                 </div>
                                                 <div className="form-floating col-md-3 col-6">
@@ -284,11 +284,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                     <label htmlFor="cargaInput">Carga (kg)</label>
                                                 </div>
                                                 <div className="form-floating col-md-3 col-6">
-                                                    <input id="interInput" value={exercicio.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Intervalo"/>
+                                                    <input name={`intervalExercise-${index}-session-${indexSessao}`} id="interInput" value={exercicio.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Intervalo"/>
                                                     <label htmlFor="interInput">Intervalo</label>
                                                 </div>
                                                 <div className="form-floating col-md-6">
-                                                    <input id="interInput" value={exercicio.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Observação"/>
+                                                    <input name={`observationExercise-${index}-session-${indexSessao}`} id="interInput" value={exercicio.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Observação"/>
                                                     <label htmlFor="interInput">Observação</label>
                                                 </div>
                                                 <div className="d-flex align-items-center justify-content-around col-md-6 border border-info rounded">
@@ -313,13 +313,13 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                         </div>
                                                     </div>
 
-                                                    <div className="d-flex row g-3">
+                                                    <div id={`optionsExercise-${index}`} className="d-flex row g-3">
                                                         <div className="form-floating col-md-3 col-6">
-                                                            <input id="seriesInput" value={set.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Séries"/>
+                                                            <input name={`setsExercise-${index}-session-${indexSessao}`} id="seriesInput" value={set.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Séries"/>
                                                             <label htmlFor="seriesInput">Séries</label>
                                                         </div>
                                                         <div className="form-floating col-md-3 col-6">
-                                                            <input id="repInput" value={set.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Repetições"/>
+                                                            <input name={`repsExercise-${index}-session-${indexSessao}`} id="repInput" value={set.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Repetições"/>
                                                             <label htmlFor="repInput">Repetições</label>
                                                         </div>
                                                         <div className="form-floating col-md-3 col-6">
@@ -327,11 +327,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                             <label htmlFor="cargaInput">Carga (kg)</label>
                                                         </div>
                                                         <div className="form-floating col-md-3 col-6">
-                                                            <input id="interInput" value={set.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Intervalo"/>
+                                                            <input name={`intervalExercise-${index}-session-${indexSessao}`} id="interInput" value={set.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Intervalo"/>
                                                             <label htmlFor="interInput">Intervalo</label>
                                                         </div>
                                                         <div className="form-floating col-md-6">
-                                                            <input id="interInput" value={set.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Observação"/>
+                                                            <input name={`observationExercise-${index}-session-${indexSessao}`} id="interInput" value={set.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Observação"/>
                                                             <label htmlFor="interInput">Observação</label>
                                                         </div>
                                                         <div className="d-flex align-items-center justify-content-around col-md-6 border border-info rounded">
@@ -368,6 +368,7 @@ function SelectExercicio({ exercicio, index, indexSessao, selecionaExercicio, ex
     return (
         <div className="form-floating w-100 me-2">
             <AutoComplete
+                id={`inputExercise-${index}-session-${indexSessao}`}
                 chave='cod_exercicio'
                 valueChave={exercicio.cod_exercicio}
                 sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}

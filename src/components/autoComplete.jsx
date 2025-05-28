@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 
-const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = () => {}, onKeyDown, style, autoFocus, onChange, className = '' }) => {
+const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = () => {}, onKeyDown, style, autoFocus, onChange, className = '', id }) => {
     const [inputValue, setInputValue] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isClickingSuggestion, setIsClickingSuggestion] = useState(false);
@@ -80,12 +80,14 @@ const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = ()
                 style={style}
                 autoFocus={autoFocus}
                 onFocus={() => setShowSuggestions(true)}
+                id={id}
             />
             {showSuggestions && (
-                <ul className="list-group position-absolute w-100" style={{ zIndex: 1000 }}>
+                <ul id={`listExercises`} className="list-group position-absolute w-100" style={{ zIndex: 1000 }}>
                     {filteredSuggestions.length > 0 ? (
                         filteredSuggestions.map((suggestion, index) => (
                         <li
+                            id={`listExerciseOption-${index}`}
                             key={index}
                             className="list-group-item list-group-item-action"
                             onMouseDown={() => setIsClickingSuggestion(true)}

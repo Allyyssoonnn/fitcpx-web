@@ -75,7 +75,9 @@ function Layout() {
                 <div className="body-wrapper">
                     <Header />
                     
-                    <Outlet />
+                    {!(!usuario?.cod_usuario && !empresa?.cod_empresa) ? (
+                        <Outlet />
+                    ) : <a>Carregando...</a>}
 
                     <div className="py-6 px-6 text-center">
                         <p className="mb-0 fs-4">{t('footerText')}</p>

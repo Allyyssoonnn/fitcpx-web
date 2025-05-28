@@ -270,7 +270,7 @@ function Aluno() {
                         }>
                             <div className='text-center'>
                                 <AddTreino show={modalAddTreino} close={() => setModalAddTreino(false)} aluno={aluno} />
-                                <button className='btn btn-success w-100 rounded-2' onClick={() => setModalAddTreino(true)}>
+                                <button id='addWorkout' className='btn btn-success w-100 rounded-2' onClick={() => setModalAddTreino(true)}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Treino
                                 </button>
@@ -388,7 +388,7 @@ function AddTreino({ show, close, aluno }) {
                     </div>
 
                     <div className="d-flex flex-row justify-content-around p-3">
-                        <button className='btn btn-outline-success rounded-1 w-30' onClick={() => navigate('/cadtreino', { state: { aluno } })}>
+                        <button id='newWorkoutMethod' className='btn btn-outline-success rounded-1 w-30' onClick={() => navigate('/cadtreino', { state: { aluno } })}>
                             Novo treino
                             <br></br>
                             <i className="bi bi-file-earmark-plus"></i>

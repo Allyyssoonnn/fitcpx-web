@@ -100,10 +100,10 @@ function Alunos() {
                             <table id="basic-datatables" className="display table table-striped table-hover">
                                 <tbody>
                                     {!filteredAlunos?.length ? <h5 className="text-center">Nenhum aluno cadastrado</h5> : <></>}
-                                    {filteredAlunos.map((aluno) => {
+                                    {filteredAlunos.map((aluno, index) => {
                                         let idade = calcularIdade(aluno.data_nascimento_aluno);
                                         return (
-                                        <tr key={aluno.cod_aluno} onClick={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}>
+                                        <tr id={`aluno-${index}`} key={aluno.cod_aluno} onClick={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}>
                                             <th scope="row" className="d-flex align-items-center">
                                                 <img
                                                     src={aluno.imagem_aluno ? `${aluno.imagem_aluno}` : 'https://placehold.co/150x150?text=img'}
