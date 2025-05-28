@@ -117,8 +117,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                                             {...provided.draggableProps}
                                             // {...provided.dragHandleProps}
                                             key={index}
-                                            className={`accordion rounded-2 mb-1 border-2 ${arrayBorders[index]}`}
-                                            // style={{ border: '0.15rem solid #85D446' }}
+                                            className={`accordion rounded-2 mb-1`}
                                         >
                                             <div className="accordion-item">
                                                 <div className="card-header accordion-header d-flex justify-content-between align-items-center">
@@ -171,7 +170,7 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                                                 </div>
                     
                                                 <div id={`panelsStayOpen-collapse${index}`} className="accordion-collapse collapse">
-                                                    <div className="accordion-body">
+                                                    <div className="accordion-body px-0">
                                                         <ListaExercicios
                                                             exercicios={sessao?.exercicios ?? []}
                                                             setSessoes={setSessoes}
@@ -180,10 +179,12 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                                                             setItensRemovidos={setItensRemovidos}
                                                         />
 
-                                                        <button id={`addExercise-${index}`} className="btn btn-outline-success rounded w-100 mt-3" onClick={e => adicionarExercicio(e, index)}>
-                                                            <i className="bi bi-plus me-2" />
-                                                            Adicionar exercício
-                                                        </button>
+                                                        <div className="w-100 d-flex justify-content-end">
+                                                            <button id={`addExercise-${index}`} className="btn btn-outline-success rounded col-md-6 col-12 mt-3" onClick={e => adicionarExercicio(e, index)}>
+                                                                <i className="bi bi-plus me-2" />
+                                                                Adicionar exercício
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
