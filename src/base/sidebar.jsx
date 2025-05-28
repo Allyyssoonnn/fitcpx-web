@@ -130,7 +130,7 @@ function Sidebar() {
                                 <li className="sidebar-item ms-5">
                                     <a href="#" className="sidebar-link p-1" onClick={() => go('/grupoexercicios')} aria-expanded="false">
                                         <i className="bi bi-collection fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">{t('workout')}</span>
+                                        <span className="hide-menu ps-1">{t('muscles')}</span>
                                     </a>
                                 </li>
                                 <li className="sidebar-item ms-5">

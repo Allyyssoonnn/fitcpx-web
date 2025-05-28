@@ -282,7 +282,7 @@ function Aluno() {
                             </div>
                         </Tab>
 
-                        <Tab eventKey="cardapio" title={
+                        {/* <Tab eventKey="cardapio" title={
                             <>
                                 <span className="d-none d-md-block"><i className="bi bi-book me-2"></i>Cardápio</span>
                                 <span className="d-block d-md-none"><i className="bi bi-book me-2"></i>Cardápio</span>
@@ -298,7 +298,7 @@ function Aluno() {
                                     <CardCardapio key={index} cardapio={cardapio} aluno={aluno} refetch={refetchCardapio} />
                                 ))}
                             </div>
-                        </Tab>
+                        </Tab> */}
 
                         <Tab eventKey="contratos" title={
                             <>
