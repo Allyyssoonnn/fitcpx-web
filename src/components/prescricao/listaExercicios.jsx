@@ -9,9 +9,8 @@ import { useQuery } from "react-query";
 import FiltroTreinoInteligente from "./filtroTreinoInteligente";
 import { useState } from "react";
 
-function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio, waitExercicio, adicionarSet, setItensRemovidos }) {
+function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, setItensRemovidos }) {
     const [usuario] = useRecoilState(stateUsuario);
-    const { viewTreino, setViewTreino } = useStateApp();
     const [showModalFiltro, setShowModalFiltro] = useState(false);
     // const [indexSessaoFiltro, setIndexSessaoFiltro] = useState();
     const [indexExercicioFiltro, setIndexExercicioFiltro] = useState();
@@ -156,58 +155,43 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
 
     function SelectExercicios({ exercicio, index, indexSet = null }) {
         return (
-            <>
-                {exercicio?.nome_exercicio && viewTreino !== 'bloco' ? (
-                    <label>
-                        {exercicio.url_exercicio && (
-                            <label className="badge bg-success me-2">
-                                <i className="bi bi-camera-reels" />
-                            </label>
-                        )}
-                        {exercicio.nome_exercicio}
+            <div className="d-flex align-items-center gap-2 w-100">
+                <button
+                    onClick={(e) => openFiltroTreinoInteligente(e, index)}
+                    className='btn rounded btn-info'
+                >
+                    <i className="bi bi-lightbulb" />
+                </button>
+
+                <button
+                    onClick={(e) => atualizaExercicioAleatorio(e, indexSessao, index, exercicio?.exerciciosFiltros ?? [])}
+                    className='btn rounded btn-outline-warning'
+                >
+                    <i className="bi bi-arrow-clockwise" />
+                </button>
+
+                {exercicio.url_exercicio && (
+                    <label className="badge bg-success">
+                        <i className="bi bi-camera-reels" />
                     </label>
-                ) : (
-                    <div className="d-flex align-items-center gap-2 w-100">
-                        <button
-                            onClick={(e) => openFiltroTreinoInteligente(e, index)}
-                            className={`${viewTreino === 'painel' ? 'd-none' : ''} btn rounded btn-info`}
-                        >
-                            <i className="bi bi-lightbulb" />
-                        </button>
-
-                        <button
-                            onClick={(e) => atualizaExercicioAleatorio(e, indexSessao, index, exercicio?.exerciciosFiltros ?? [])}
-                            className={`${viewTreino === 'painel' ? 'd-none' : ''} btn rounded btn-outline-warning`}
-                        >
-                            <i className="bi bi-arrow-clockwise" />
-                        </button>
-
-                        {exercicio.url_exercicio && (
-                            <label className="badge bg-success">
-                                <i className="bi bi-camera-reels" />
-                            </label>
-                        )}
-
-                        {screen.width > 766 && (<SelectExercicio
-                            exercicio={exercicio}
-                            index={index}
-                            indexSessao={indexSessao}
-                            selecionaExercicio={selecionaExercicio}
-                            exerciciosLista={exerciciosLista}
-                            indexSet={indexSet}
-                        />)}
-                    </div>
                 )}
-            </>
+                
+                <div className="form-floating w-100 me-2">
+                    <AutoComplete
+                        id={`inputExercise-${index}-session-${indexSessao}-set-${indexSet}`}
+                        chave='cod_exercicio'
+                        valueChave={exercicio.cod_exercicio}
+                        sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
+                        chavePesquisa='nome_exercicio'
+                        onChange={(cod_exercicio, exercicio) => selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)}
+                    />
+                </div>
+            </div>
         )
     }
 
-    function newSet(exercicio, index) {        
-        if (viewTreino == 'bloco') {
-            adicionarSet(indexSessao, index);
-        } else {
-            setWaitExercicio({ indexSessao, index });
-        }
+    function newSet(exercicio, index) {
+        adicionarSet(indexSessao, index);
     }
 
     return (<>
@@ -243,13 +227,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                 <SelectExercicios exercicio={exercicio} index={index} />
 
                                                 <div className="dropdown">
-                                                    <button onClick={e => e.stopPropagation()} className="btn btn-outline-primary rounded" data-bs-toggle="dropdown">
+                                                    <button id={`optionsExercise-${index}-session-${indexSessao}`} onClick={e => e.stopPropagation()} className="btn btn-outline-primary rounded" data-bs-toggle="dropdown">
                                                         <i className="bi bi-three-dots-vertical"></i>
                                                     </button>
 
                                                     <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up rounded p-1 bg-white">
                                                         <a className="d-flex align-items-center gap-2 btn btn-sm btn-outline-primary rounded mb-1"
                                                             onClick={(e) => { e.preventDefault(); newSet(exercicio, index); }} href="#"
+                                                            id={`addSetMethod-exercise-${index}-session-${indexSessao}`}
                                                         >
                                                             <i className="bi bi-collection"></i>
                                                             <p className="mb-0">
@@ -269,8 +254,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                             </div>
 
                                             <div className="d-flex row g-3">
-                                                {screen.width < 766 && (<SelectExercicio exercicio={exercicio} index={index} />)}
-                                                
                                                 <div className="form-floating col-md-3 col-6">
                                                     <input name={`setsExercise-${index}-session-${indexSessao}`} id="seriesInput" value={exercicio.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value)} className="form-control form-control-sm" placeholder="Séries"/>
                                                     <label htmlFor="seriesInput">Séries</label>
@@ -298,11 +281,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                             </div>
                                         </div>
 
-                                        {exercicio.sets?.map((set, idx) => (
+                                                                                {exercicio.sets
+                                        ?.slice() // Cria uma cópia para não alterar o original
+                                        .sort((a, b) => new Date(a.createdAt) + new Date(b.createdAt))
+                                        .map((set, idx) => (
                                             <div key={idx} className="d-flex mt-2">
                                                 <div className="d-flex flex-column p-2 bg-light w-100">
                                                     <div className="mb-2 d-flex justify-content-between align-items-center">
-                                                        {screen.width > 766 && (<SelectExercicios exercicio={set} index={index} indexSet={idx} />)}
+                                                        <SelectExercicios exercicio={set} index={index} indexSet={idx} />
 
                                                         <div className="d-flex gap-1">
                                                             <button className="btn btn-outline-danger btn-sm"
@@ -315,11 +301,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
 
                                                     <div id={`optionsExercise-${index}`} className="d-flex row g-3">
                                                         <div className="form-floating col-md-3 col-6">
-                                                            <input name={`setsExercise-${index}-session-${indexSessao}`} id="seriesInput" value={set.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Séries"/>
+                                                            <input name={`setsExercise-${index}-session-${indexSessao}-set-${idx}`} id="seriesInput" value={set.serie_sessao_exercicio} onChange={e => updateField(index, 'serie_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Séries"/>
                                                             <label htmlFor="seriesInput">Séries</label>
                                                         </div>
                                                         <div className="form-floating col-md-3 col-6">
-                                                            <input name={`repsExercise-${index}-session-${indexSessao}`} id="repInput" value={set.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Repetições"/>
+                                                            <input name={`repsExercise-${index}-session-${indexSessao}-set-${idx}`} id="repInput" value={set.repeticao_sessao_exercicio} onChange={e => updateField(index, 'repeticao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Repetições"/>
                                                             <label htmlFor="repInput">Repetições</label>
                                                         </div>
                                                         <div className="form-floating col-md-3 col-6">
@@ -327,11 +313,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                             <label htmlFor="cargaInput">Carga (kg)</label>
                                                         </div>
                                                         <div className="form-floating col-md-3 col-6">
-                                                            <input name={`intervalExercise-${index}-session-${indexSessao}`} id="interInput" value={set.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Intervalo"/>
+                                                            <input name={`intervalExercise-${index}-session-${indexSessao}-set-${idx}`} id="interInput" value={set.intervalo_sessao_exercicio} onChange={e => updateField(index, 'intervalo_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Intervalo"/>
                                                             <label htmlFor="interInput">Intervalo</label>
                                                         </div>
                                                         <div className="form-floating col-md-6">
-                                                            <input name={`observationExercise-${index}-session-${indexSessao}`} id="interInput" value={set.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Observação"/>
+                                                            <input name={`observationExercise-${index}-session-${indexSessao}-set-${idx}`} id="interInput" value={set.observacao_sessao_exercicio} onChange={e => updateField(index, 'observacao_sessao_exercicio', e.target.value, idx)} className="form-control form-control-sm" placeholder="Observação"/>
                                                             <label htmlFor="interInput">Observação</label>
                                                         </div>
                                                         <div className="d-flex align-items-center justify-content-around col-md-6 border border-info rounded">
@@ -342,15 +328,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
                                                 </div>
                                             </div>
                                         ))}
-
-                                        <div className={`${index === waitExercicio?.index && waitExercicio?.indexSessao === indexSessao ? '' : 'd-none' } border border-info p-2 text-center`}>
-                                            <label>
-                                                {exercicio.sets?.length == 0 ? 'Bi-set ' : ''}
-                                                {exercicio.sets?.length == 1 ? 'Tri-set ' : ''}
-                                                {exercicio.sets?.length >= 2 ? 'Super-set ' : ''}
-                                                aguardando seleção
-                                            </label>
-                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -362,21 +339,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, setWaitExercicio
             </Droppable>
         </DragDropContext>
     </>);
-}
-
-function SelectExercicio({ exercicio, index, indexSessao, selecionaExercicio, exerciciosLista, indexSet }) {
-    return (
-        <div className="form-floating w-100 me-2">
-            <AutoComplete
-                id={`inputExercise-${index}-session-${indexSessao}`}
-                chave='cod_exercicio'
-                valueChave={exercicio.cod_exercicio}
-                sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
-                chavePesquisa='nome_exercicio'
-                onChange={(cod_exercicio, exercicio) => selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)}
-            />
-        </div>
-    )
 }
 
 export default ListaExercicios;

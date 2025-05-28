@@ -83,7 +83,11 @@ const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = ()
                 id={id}
             />
             {showSuggestions && (
-                <ul id={`listExercises`} className="list-group position-absolute w-100" style={{ zIndex: 1000 }}>
+                <ul
+                    id={`listExercises`}
+                    className="list-group position-absolute w-100"
+                    style={{ zIndex: 1000, maxHeight: '400px', overflowY: 'auto' }}
+                >
                     {filteredSuggestions.length > 0 ? (
                         filteredSuggestions.map((suggestion, index) => (
                         <li

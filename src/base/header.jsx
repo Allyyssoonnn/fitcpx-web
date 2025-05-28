@@ -7,7 +7,7 @@ import Notificacoes from "../components/notificacoes";
 import { useTranslation } from "react-i18next";
 
 function Header() {
-    const { openedSidebar, toggleSidebar } = useToggleSidebar();
+    const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const { toggleTheme, theme } = useStateApp();
@@ -77,14 +77,14 @@ function Header() {
         (<header className="app-header">
             <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100">
                 <ul className="navbar-nav d-flex flex-row flex-grow-1 w-40 ms-md-3">
-                    <li onClick={toggleSidebar} className="nav-item d-block d-xl-none">
+                    <li onClick={openedSidebar ? closeSidebar : openSidebar} className="nav-item d-block d-xl-none">
                         <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse">
                             <i className="bi bi-list fs-6 m-3"></i>
                         </a>
                     </li>
 
                     <li className="nav-item nav-icon-hover-bg rounded-circle d-none d-md-flex">
-                        <button className="nav-link" onClick={toggleSidebar}>
+                        <button className="nav-link" onClick={openedSidebar ? closeSidebar : openSidebar}>
                             {/* <iconify-icon icon="solar:list-bold-duotone" className="fs-6"></iconify-icon> */}
                             <i className={`bi ${openedSidebar ? 'bi-arrow-bar-left' : 'bi-arrow-bar-right'} fs-4`} />
                         </button>

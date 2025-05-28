@@ -7,8 +7,6 @@ import { arrayBorders } from "../../utils";
 import GerarTreino from "./gerarTreino";
 
 function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovidos, getRepeticao }) {
-    const [wait, setWait] = useState();
-
     const updateNomeSessao = (index, newName) => {
         setSessoes((prevWorkouts) =>
             prevWorkouts.map((workout, i) =>
@@ -178,8 +176,6 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                                                             exercicios={sessao?.exercicios ?? []}
                                                             setSessoes={setSessoes}
                                                             indexSessao={index}
-                                                            waitExercicio={wait}
-                                                            setWaitExercicio={setWait}
                                                             adicionarSet={adicionarSet}
                                                             setItensRemovidos={setItensRemovidos}
                                                         />
