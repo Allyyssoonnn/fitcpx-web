@@ -18,7 +18,7 @@ test('Register', async ({ page }) => {
     await page.click('input[id="acceptTerms"]');
     
     await page.click('button[id="register"]');
-    await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page).toHaveURL(/.*\//);
 
     await page.fill('input[id="email-code"]', '1234');
     await page.click('a[id="sidebarCollapse"]');

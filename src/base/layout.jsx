@@ -35,8 +35,8 @@ function Layout() {
                     setempresa(refreshResponse.data.empresa);
                     console.log('[Layout] - Success Verify refreshToken');
                 } else {
-                    navigate('/entrar');
                     console.log('[Layout] - Failed Verify refreshToken');
+                    navigate('/entrar');
                 }
             }
         })();

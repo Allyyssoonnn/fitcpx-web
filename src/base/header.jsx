@@ -42,6 +42,7 @@ function Header() {
         destroyCookie(null, 'user');
         destroyCookie(null, 'token');
         destroyCookie(null, 'refreshToken');
+        localStorage.removeItem('recoil-persist');
         setusuario({});
         navigate('/entrar');
     }

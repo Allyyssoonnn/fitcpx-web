@@ -12,7 +12,7 @@ function Login() {
     const { handleSubmit, register } = useForm();
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
-    const [empresa, setEmpresa] = useRecoilState(stateEmpresa);
+    const [empresa, setempresa] = useRecoilState(stateEmpresa);
 
     useEffect(() => {
         (async function conect() {
@@ -28,7 +28,7 @@ function Login() {
                     setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });
                     setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
                     setusuario(resp.usuario);
-                    setEmpresa(resp.empresa);
+                    setempresa(resp.empresa);
                     window.location.href = '/';
                 } else {
                     toast.error(resp?.msg);
@@ -52,8 +52,8 @@ function Login() {
             setCookie(null, 'token', resp.token, { maxAge: 60 * 60 * 7 });
             setCookie(null, 'refreshToken', resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
             setusuario(resp.usuario);
-            setEmpresa(resp.empresa);
-            navigate('/');
+            setempresa(resp.empresa);
+            window.location.href = '/';
         } else {
             toast.error(resp?.msg);
         }
