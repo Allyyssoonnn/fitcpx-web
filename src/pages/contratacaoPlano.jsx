@@ -150,7 +150,7 @@ function ContratacaoPlano() {
             return;
         }
 
-        if (!contratoPreenchido) {
+        if (!contratoPreenchido && geraContrato) {
             toast.error('Nenhum contrato preenchido!');
             return;
         }
@@ -189,31 +189,35 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId) {
-        const alunoContrato = await setAlunoContrato({
-            ...plano,
-            pagamentoInicial,
-            formaPagamento,
-            contrato: contratoPreenchido,
-            cod_aluno: aluno?.cod_aluno,
-            cod_usuario: usuario?.cod_usuario,
-            cod_empresa: usuario?.cod_empresa,
-        });
+    async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard) {
+        try {
+            const alunoContrato = await setAlunoContrato({
+                ...plano,
+                pagamentoInicial,
+                formaPagamento,
+                contrato: contratoPreenchido,
+                cod_aluno: aluno?.cod_aluno,
+                cod_usuario: usuario?.cod_usuario,
+                cod_empresa: usuario?.cod_empresa,
+            });
 
-        const pdfOptions = {
-            margin: 10,
-            filename: 'contrato.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+            const pdfOptions = {
+                margin: 10,
+                filename: 'contrato.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
-        const pdfBlob = await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob');
+            const pdfBlob = contratoPreenchido ? await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob') : null;
 
-        if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
+            if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
 
-        await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId);
-        closeLoading();
+            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId, formCard);
+            closeLoading();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (

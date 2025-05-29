@@ -26,7 +26,7 @@ function Pagamento({ show, close, onPay, callback, client, payment, licenca, atS
             const accountId = PRODUCAO ? empresa?.stripe_id : empresa?.dev_stripe_id;
             
             if (!accountId) {
-                toast.error('Preencher formulário para FitCpx Pay.');
+                // toast.error('Preencher formulário para FitCpx Pay.');
                 return;
             }
             const promise = loadStripe(
@@ -215,18 +215,18 @@ function PagamentoIntent({ client, close, callback, payment, licenca }) {
                                 //         </button>
                                 //     )
                                 // }
-                                if (methodPayment === 'pix') {
-                                    return (
-                                        <button key={index}
-                                            className='btn btn-outline-success rounded d-flex flex-column justify-content-center align-items-center'
-                                            onClick={() => setFormaPagamento(methodPayment)}
-                                        >
-                                            <iconify-icon icon='ic:baseline-pix' width='50' height='50'/>
-                                            PIX
-                                            <input className="mt-2" type="radio" checked={methodPayment == formaPagamento} />
-                                        </button>
-                                    )
-                                }
+                                // if (methodPayment === 'pix') {
+                                //     return (
+                                //         <button key={index}
+                                //             className='btn btn-outline-success rounded d-flex flex-column justify-content-center align-items-center'
+                                //             onClick={() => setFormaPagamento(methodPayment)}
+                                //         >
+                                //             <iconify-icon icon='ic:baseline-pix' width='50' height='50'/>
+                                //             PIX
+                                //             <input className="mt-2" type="radio" checked={methodPayment == formaPagamento} />
+                                //         </button>
+                                //     )
+                                // }
                             })}
                         </div>
 
@@ -337,6 +337,14 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
     const [formaPagamento, setFormaPagamento] = useState('MENSAL'); //MENSAL - RECORRENTE - UNICA
     const [savedCards, setSavedCards] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(null);
+    const [formCard, setFormCard] = useState({
+        number: PRODUCAO ? '' : '4111111111111111',
+        month: PRODUCAO ? '' : '11',
+        year: PRODUCAO ? '' : '2030',
+        code: PRODUCAO ? '' : '123',
+    });
+
+    const updateFormCard = (field, value) => setFormCard((prev) => ({ ...prev, [field]: value }));
 
     const stripe = useStripe();
     const elements = useElements();
@@ -344,6 +352,13 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
     async function clickPayCard() {
         nConfirm(null, 'Confirma a finalização da contratação?', async () => {
             nLoading(null, 'Enviando contrato...');
+
+            if (formaPagamento == 'PARCELADO') {
+                await onPay(formaPagamento, endLoading, null, formCard);
+                if (callback) callback();
+                endLoading();
+                return;
+            }
     
             var errorPayment = null;
             var paymentMethodId;
@@ -413,7 +428,7 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                                         {formaPagamento === 'MENSAL' && 'Uma cobrança mensal será gerada podendo ser paga via PIX/Boleto/Cartão'}
                                         {formaPagamento === 'RECORRENTE' && 'Cobrança automática no cartão de crédito até o vencimento do contrato'}
                                         {formaPagamento === 'UNICA' && 'Uma cobrança no valor total do contrato será gerada podendo ser paga via PIX/Boleto/Cartão'}
-                                        {formaPagamento === 'MANUAL' && 'Pagamento não será controlado pelo sistema'}
+                                        {formaPagamento === 'PARCELADO' && 'Uma cobrança no valor total podendo ser parcelada será gerada'}
                                     </p>
                                     <div className="border border-bottom-5 border-info m-3"></div>
 
@@ -436,6 +451,19 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                                                 />
                                             </div>
                                             <p className="text-danger text-center mb-0">Dados de cartão não passam por nossos servidores.</p>
+                                        </>
+                                    )}
+
+                                    {formaPagamento == 'PARCELADO' && (
+                                        <>
+                                            <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
+                                                <p>Preencher dados do cartão</p>
+
+                                                <input value={formCard.number} onChange={e => updateFormCard('number', e.target.value)} className="col-6" placeholder="Número do cartão" />
+                                                <input value={formCard.month} onChange={e => updateFormCard('month', e.target.value)}  className="col-2" placeholder="Mes" />
+                                                <input value={formCard.year} onChange={e => updateFormCard('year', e.target.value)}  className="col-2" placeholder="Ano" />
+                                                <input value={formCard.code} onChange={e => updateFormCard('code', e.target.value)}  className="col-2" placeholder="CCV" />
+                                            </div>
                                         </>
                                     )}
 
@@ -580,6 +608,7 @@ function FormaPagamento({ setFormaPagamento, formaPagamento, licenca, atSigth })
         { name: 'Mensal', value: 'MENSAL', color: 'success', icon: 'bi:receipt', disabled: atSigth },
         { name: atSigth ? 'Cartão' : 'Recorrente', value: 'RECORRENTE', color: 'info', icon: 'bi-arrow-repeat' },
         { name: atSigth ? 'Fatura' : 'Única', value: 'UNICA', color: 'secondary', icon: 'bi:clipboard-check', disabled: licenca },
+        { name: 'Parcelado', value: 'PARCELADO', color: 'primary', icon: 'bi:credit-card' },
         { name: 'Manual', value: 'MANUAL', color: 'danger', icon: 'mdi:check', disabled: licenca },
     ];
 

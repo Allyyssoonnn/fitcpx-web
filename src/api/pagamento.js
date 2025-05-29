@@ -95,8 +95,8 @@ export const getStatusAccount = async (cod_empresa, cod_usuario) => {
     throw new Error("Erro ao carregar agenda");
 };
 
-export const criarPagamentoAluno = async (cod_aluno, formaPagamento, cod_empresa, cod_usuario, cod_aluno_contrato, paymentId) => {
-    const resp = await post('/pagamento/criarPagamentoAluno', { cod_aluno, formaPagamento, cod_empresa, cod_usuario, cod_aluno_contrato, paymentId });
+export const criarPagamentoAluno = async (cod_aluno, formaPagamento, cod_empresa, cod_usuario, cod_aluno_contrato, paymentId, formCard) => {
+    const resp = await post('/pagamento/criarPagamentoAluno', { cod_aluno, formaPagamento, cod_empresa, cod_usuario, cod_aluno_contrato, paymentId, formCard });
     if (resp.status) {
         return resp.pagamento;
     } toast.error(resp.message);

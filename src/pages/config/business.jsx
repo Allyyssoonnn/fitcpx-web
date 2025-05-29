@@ -119,9 +119,18 @@ function Business({ empresa, setempresa, usuario }) {
             <div className="col-12">
                 <div className="card w-100 border position-relative overflow-hidden mb-0">
                     <div className="card-body p-4">
-                        <h4 className="card-title">Informações pessoais</h4>
-                        <p className="card-subtitle mb-4">Para alterar informações pessoais edite e salve aqui!</p>
+                        <h4 className="card-title">Informações da empresa</h4>
+                        <p className="card-subtitle mb-4">Para alterar informações da empresa edite e salve aqui!</p>
                         <form onSubmit={handleSubmit(HandleConfirm)}>
+                            <div className="row">
+                                <div className="col-lg-6">
+                                    <div className="mb-3">
+                                        <label htmlFor="exampleInputtext" className="form-label">CNPJ</label>
+                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('doc_empresa')} />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="row">
                                 <div className="col-lg-6">
                                     <div className="mb-3">

@@ -55,6 +55,7 @@ function FitCpxPay() {
 
         if (!frontDoc || !backDoc) {
             toast.error('Por favor, envie ambos os documentos.');
+            endLoading();
             return;
         }
 
@@ -79,7 +80,7 @@ function FitCpxPay() {
         const respUsuario = await setUsuario({ cod_usuario: usuario?.cod_usuario, ...usuarioFormLimpo });
         setusuario(respUsuario);
 
-        await gerarIdCarteira(empresa?.cod_empresa, usuario?.cod_usuario);
+        await gerarIdCarteira(empresa?.cod_empresa, usuario?.cod_usuario, 'ASAAS');
         await sendDocuments(frontBase64, backBase64, frontType, backType, empresa.cod_empresa, usuario.cod_usuario);
 
         endLoading();
@@ -144,6 +145,16 @@ function Empresa({ register, errors }) {
 
                 <form>
                     <div className="row">
+                        <div className="col-lg-12">
+                            <FitInputForm
+                                nameField='CNPJ'
+                                classNameContainer='mb-3 col-lg-6'
+                                errors={errors}
+                                disabled={usuario.admin_usuario !== 'S'}
+                                { ...register('empresa.doc_empresa', { required: true }) }
+                            />
+                        </div>
+
                         <div className="col-lg-6">
                             <FitInputForm
                                 nameField='Nome'
