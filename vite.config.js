@@ -6,8 +6,6 @@ import compression from 'vite-plugin-compression';
 import fs from 'fs';
 import crypto from 'crypto';
 
-const buildType = process.env.VITE_BUILD_TYPE || "usuario";
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -50,7 +48,7 @@ export default defineConfig({
         drop_console: true, // Remove console.log()
       },
     },
-    outDir: `dist-${buildType}`, // Gera dist-usuario ou dist-aluno
+    outDir: 'dist',
     rollupOptions: {
       input: path.resolve(__dirname, "index.html"),
     },
@@ -61,7 +59,7 @@ function metaPlugin() {
   return {
     name: 'vite-meta-hash',
     closeBundle() {
-      const distPath = path.resolve(__dirname, `dist-${buildType}`);
+      const distPath = path.resolve(__dirname, 'dist');
       const files = fs.readdirSync(distPath).filter(f => f.endsWith('.js'));
 
       let combined = '';
