@@ -19,6 +19,7 @@ jobs:
         port: 22
         script: |
           cd Git/educapp
+          git pull origin main
           docker compose pull
-          docker compose build --no-cache
+          # docker compose build --no-cache
           docker compose up -d --remove-orphans --build
