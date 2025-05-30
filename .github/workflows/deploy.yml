@@ -20,4 +20,4 @@ jobs:
         script: |
           cd Git/educapp
           docker compose pull
-          docker compose up -d --remove-orphans --build frontend
+          docker compose up -d --remove-orphans --build
