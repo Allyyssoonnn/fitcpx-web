@@ -65,7 +65,7 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/alunos')} aria-expanded="false">
+                            <a id="clients" href="#" className="sidebar-link p-3" onClick={() => go('/alunos')} aria-expanded="false">
                                 <i className="bi bi-person-rolodex fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">{t('students')}</span>
                             </a>
@@ -155,7 +155,7 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a className={`sidebar-link p-3 has-arrow ${dropFinanceiro ? 'active' : ''}`} href="#" onClick={() => setdropFinanceiro(!dropFinanceiro)}>
+                            <a id="finance" className={`sidebar-link p-3 has-arrow ${dropFinanceiro ? 'active' : ''}`} href="#" onClick={() => setdropFinanceiro(!dropFinanceiro)}>
                                 <i className="bi bi-bank fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">{t('finance')}</span>
                             </a>
@@ -176,7 +176,7 @@ function Sidebar() {
                                 </li>
 
                                 <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/modalidades')} aria-expanded="false">
+                                    <a id="services" href="#" className="sidebar-link p-1" onClick={() => go('/modalidades')} aria-expanded="false">
                                         <i className="bi bi-easel fs-6 me-1"></i>
                                         <span className="hide-menu ps-1">{t('services')}</span>
                                     </a>
@@ -199,7 +199,7 @@ function Sidebar() {
                         </li>
 
                         <li className="sidebar-item">
-                            <a className={`sidebar-link p-3 has-arrow ${dropAdmin ? 'active' : ''}`} href="#" onClick={() => setDropAdmin(!dropAdmin)}>
+                            <a id="admin" className={`sidebar-link p-3 has-arrow ${dropAdmin ? 'active' : ''}`} href="#" onClick={() => setDropAdmin(!dropAdmin)}>
                                 <i className="bi bi-person-vcard fs-6 me-1"></i>
                                 <span className="hide-menu ps-1">ADMIN</span>
                             </a>
@@ -213,7 +213,7 @@ function Sidebar() {
                                 </li> */}
 
                                 <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
+                                    <a id="users" href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
                                         <i className="bi bi-person-lines-fill fs-6 me-1"></i>
                                         <span className="hide-menu ps-1">{t('users')}</span>
                                     </a>

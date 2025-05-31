@@ -12,6 +12,16 @@ export function Usuario({ register, errors }) {
                 <h6>Dados do responsável pela empresa</h6>
 
                 <form className="row">
+                    <div className="col-lg-12">
+                        <FitInputForm
+                            nameField='CPF'
+                            classNameContainer='mb-3 col-lg-6'
+                            errors={errors}
+                            disabled={usuario.admin_usuario !== 'S'}
+                            { ...register('usuario.cpf_usuario', { required: true }) }
+                        />
+                    </div>
+
                     <div className="col-lg-6">
                         <FitInputForm
                             nameField='Nome'

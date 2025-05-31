@@ -8,7 +8,7 @@ import { stateEmpresa, useNotificacao } from "../states/states";
 import { useEffect, useState } from "react";
 import html2pdf from 'html2pdf.js';
 import { PRODUCAO } from "../api/api";
-import Pagamento from "../components/pagamento";
+import Pagamento from "../components/payment/pagamento";
 import { doRefundPayment, getIntentPayment } from "../api/pagamento";
 
 function Contrato() {
@@ -73,10 +73,6 @@ function Contrato() {
         setPagando(true);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId, geraContrato) {
-        //
-    }
-
     async function refund(pagamento) {
         nConfirm(null, 'Confirma reembolso?', async () => {
             const resp = await doRefundPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
@@ -90,7 +86,7 @@ function Contrato() {
                 payment={payment}
                 show={pagando}
                 close={() => setPagando(false)}
-                onPay={onPay}
+                onPay={() => {}}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
                 client={aluno}
             />
@@ -206,6 +202,9 @@ function Contrato() {
                                             <td>
                                                 <span className="d-block small text-muted">{pagamento.statustexto_aluno_contrato_pagamento}</span>
 
+                                                {pagamento.status_aluno_contrato_pagamento === 'confirmed' && (
+                                                    <span className="badge bg-success-subtle text-success mt-1">Confirmado</span>
+                                                )}
                                                 {pagamento.status_aluno_contrato_pagamento === 'succeeded' && (
                                                     <span className="badge bg-success-subtle text-success mt-1">Pago</span>
                                                 )}
@@ -223,7 +222,7 @@ function Contrato() {
                                                 </span>
                                             </td>
                                             <td className="text-muted">
-                                                {formatarMoeda(pagamento.valor_aluno_contrato_pagamento)}
+                                                {formatarMoeda(pagamento?.valor_aluno_contrato_pagamento)}
                                             </td>
                                             <td>
                                                 {pagamento.forma_aluno_contrato_pagamento === 'PIX' && (
@@ -234,7 +233,7 @@ function Contrato() {
                                                 )}
                                             </td>
                                             <td className="text-end">
-                                                {pagamento.status_aluno_contrato_pagamento === 'requires_payment_method' && (
+                                                {(pagamento.status_aluno_contrato_pagamento === 'requires_payment_method' && !pagamento.asaas_id) && (
                                                     <button
                                                         onClick={() => pay(pagamento)}
                                                         className="btn btn-sm btn-outline-success"
@@ -243,7 +242,8 @@ function Contrato() {
                                                         Pagar
                                                     </button>
                                                 )}
-                                                {pagamento.status_aluno_contrato_pagamento === 'succeeded' && (
+                                                
+                                                {(pagamento.status_aluno_contrato_pagamento === 'succeeded' && !pagamento.asaas_id) && (
                                                     <button
                                                         onClick={() => refund(pagamento)}
                                                         className="btn btn-sm btn-outline-danger"

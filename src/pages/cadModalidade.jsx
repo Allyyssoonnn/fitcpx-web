@@ -113,21 +113,21 @@ function CadModalidade() {
                         <div className="row g-3">
                             <div className="col-md-5">
                                 <label className="form-label fw-bold">Nome *</label>
-                                <input {...register("nome_modalidade", { required: "O nome é obrigatório" })}
+                                <input id="name" {...register("nome_modalidade", { required: "O nome é obrigatório" })}
                                     className="form-control"
                                 />
                             </div>
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Valor sessão</label>
-                                <CurrencyInput control={control} name='valor_modalidade' />
+                                <CurrencyInput id='value' control={control} name='valor_modalidade' />
                             </div>
                         </div>
 
                         <div className="row g-3 mt-2">
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Descrição *</label>
-                                <input {...register("descricao_modalidade")} className="form-control" />
+                                <input id="description" {...register("descricao_modalidade")} className="form-control" />
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@ function CadModalidade() {
                             <div className="card-body">
                                 <h5 className="card-title">Variações da modalidade (Valor mensal)</h5>
 
-                                <button className="btn btn-outline-success mt-3" onClick={addPreco}>Adicionar</button>
+                                <button id="newVarService" className="btn btn-outline-success mt-3" onClick={addPreco}>Adicionar</button>
 
                                 <div className="table-responsive">
                                     <table className="table table-striped">
@@ -215,7 +215,7 @@ function CadModalidade() {
                             </div>
 
                             <div className="card-footer">
-                                <button type='submit' className="btn btn-success">Confirmar</button>
+                                <button id="submit" type='submit' className="btn btn-success">Confirmar</button>
                             </div>
                         </div>
                     </div>
@@ -285,19 +285,19 @@ function ModalVariacao({ show, setShow, newVariacao }) {
                 <div className="card-body">
                     <div>
                         <label className="form-label">Nome</label>
-                        <input { ...register('nome_modalidade_variacao', { required: 'Nome obrigatório!' }) } className="form-control" />
+                        <input id="nameVarService" { ...register('nome_modalidade_variacao', { required: 'Nome obrigatório!' }) } className="form-control" />
                     </div>
 
                     <div className="mt-3">
                         <label className="form-label">Valor</label>
-                        <CurrencyInput control={control} name='valor_modalidade_variacao' />
+                        <CurrencyInput id='valueVarService' control={control} name='valor_modalidade_variacao' />
                     </div>
                 </div>
 
                 <div className="card-footer d-flex justify-content-between">
                     <button className="btn btn-danger rounded" onClick={() => setShow(false)}>Fechar</button>
 
-                    <button type="submit" className="btn btn-success rounded">Confirmar</button>
+                    <button id="submitVarService" type="submit" className="btn btn-success rounded">Confirmar</button>
                 </div>
             </form>
         </Modal>

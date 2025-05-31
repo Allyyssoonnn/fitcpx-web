@@ -126,7 +126,7 @@ function Business({ empresa, setempresa, usuario }) {
                                 <div className="col-lg-6">
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext" className="form-label">CNPJ</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('doc_empresa')} />
+                                        <input id="cnpj" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('doc_empresa')} />
                                     </div>
                                 </div>
                             </div>
@@ -135,50 +135,50 @@ function Business({ empresa, setempresa, usuario }) {
                                 <div className="col-lg-6">
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext" className="form-label">Nome</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('nome_empresa')} />
+                                        <input id="name" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('nome_empresa')} />
                                     </div>
 
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext" className="form-label">Descrição</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('descricao_empresa')} />
+                                        <input id="description" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('descricao_empresa')} />
                                     </div>
                                     
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext1" className="form-label">Telefone</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('telefone_empresa')} />
+                                        <input id="phone" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('telefone_empresa')} />
                                     </div>
 
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext" className="form-label">CEP</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('cep_empresa')} />
+                                        <input id="cep" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('cep_empresa')} />
                                     </div>
                                 </div>
 
                                 <div className="col-lg-6">
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext1" className="form-label">Email</label>
-                                        <input disabled className='form-control' {...register('email_empresa')} />
+                                        <input id="email" disabled className='form-control' {...register('email_empresa')} />
                                     </div>
 
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext" className="form-label">Razão social</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('razao_social_empresa')} />
+                                        <input id="razao-social" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('razao_social_empresa')} />
                                     </div>
 
                                     <div className="mb-3">
                                         <label htmlFor="exampleInputtext3" className="form-label">Celular</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('celular_empresa')} />
+                                        <input id="cellphone" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('celular_empresa')} />
                                     </div>
 
                                     <div className="mb-3 row">
                                         <div className="mb-3 col-6">
                                             <label className="form-label">Cidade</label>
-                                            <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('cidade_empresa')} />
+                                            <input id="city" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('cidade_empresa')} />
                                         </div>
 
                                         <div className="mb-3 col-6">
                                             <label className="form-label">Estado</label>
-                                            <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('estado_empresa')} />
+                                            <input id="state" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('estado_empresa')} />
                                         </div>
                                     </div>
                                 </div>
@@ -186,18 +186,18 @@ function Business({ empresa, setempresa, usuario }) {
                                 <div className="col-12 row">
                                     <div className="col-10">
                                         <label htmlFor="exampleInputtext4" className="form-label">Endereço</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('endereco_empresa')} />
+                                        <input id="address" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('endereco_empresa')} />
                                     </div>
 
                                     <div className="col-2">
                                         <label htmlFor="exampleInputtext4" className="form-label">Número</label>
-                                        <input disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('numero_empresa')} />
+                                        <input id="number" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('numero_empresa')} />
                                     </div>
                                 </div>
                                 
                                 <div className="col-12">
                                     <div className="d-flex align-items-center justify-content-end mt-4 gap-6">
-                                        <button disabled={usuario.admin_usuario !== 'S'} className="btn btn-success" type="submit">Salvar</button>
+                                        <button id="submit" disabled={usuario.admin_usuario !== 'S'} className="btn btn-success" type="submit">Salvar</button>
                                         {/* <button disabled={usuario.admin_usuario !== 'S'} className="btn bg-danger-subtle text-danger">Descartar</button> */}
                                     </div>
                                 </div>

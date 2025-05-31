@@ -64,6 +64,7 @@ const DobrasCampos = ({ protocolo, register, setValue, startSpeechRecognition, m
                             <div className="col-md-4" key={campo}>
                                 <label className={`form-label ${hasAsterisk ? "fw-bold" : ""}`}>{campo.replace("_", " ").replace(/^./, (char) => char.toUpperCase())} {hasAsterisk ? " *" : ""} (mm)</label>
                                 <MediaInput
+                                    id={campo}
                                     required={camposComAsterisco.has(campo)}
                                     campo={campo}
                                     register={register}

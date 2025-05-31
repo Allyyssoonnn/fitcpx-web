@@ -185,7 +185,7 @@ function LinkFitCpxPay() {
                                     <h5 className="fw-semibold">Empresa</h5>
                                 </div>
                                 <p>Preencha o cadastro da empresa (CNPJ) e comece a receber</p>
-                                <button className="btn btn-success w-100 mt-3 text-white fw-semibold" onClick={() => navigate('/cadfitcpxpay')}>Acessar formulário</button>
+                                <button id="fitcpxpay-business" className="btn btn-success w-100 mt-3 text-white fw-semibold" onClick={() => navigate('/cadfitcpxpay')}>Acessar formulário</button>
                             </div>
                         </div>
 
@@ -203,7 +203,7 @@ function LinkFitCpxPay() {
                 <img src="/assets/images/logos/FC Pay.png" width={150} />
                 <h6 className="card-title fs-4">FitCpx Pay</h6>
                 <p>Preencha o formulário e simplifique seu acesso com recebimento automático</p>
-                <button className="btn btn-success rounded" onClick={() => setShowModal(true)}>Ver mais</button>
+                <button id="open-fitcpxpay" className="btn btn-success rounded" onClick={() => setShowModal(true)}>Ver mais</button>
             </div>
         </div>
     )

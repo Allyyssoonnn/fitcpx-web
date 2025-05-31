@@ -8,7 +8,7 @@ import Select from "../components/baseComponents/select";
 import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../utils";
 import JoditEditor from "jodit-react";
 import { Modal } from "react-bootstrap";
-import Pagamento from "../components/pagamento";
+import Pagamento from "../components/payment/pagamento";
 import NumberInput from "../components/numberInput";
 import MultiSelect from "../components/multipleSelect";
 import { toast } from "react-toastify";
@@ -189,7 +189,7 @@ function ContratacaoPlano() {
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard) {
+    async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard, typePayment) {
         try {
             const alunoContrato = await setAlunoContrato({
                 ...plano,
@@ -213,7 +213,7 @@ function ContratacaoPlano() {
 
             if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
 
-            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId, formCard);
+            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId, formCard, typePayment);
             closeLoading();
         } catch (error) {
             console.log(error);

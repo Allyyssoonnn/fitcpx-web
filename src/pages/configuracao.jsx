@@ -28,7 +28,7 @@ function Configuracao() {
 
     const tabs = [
         { id: "account", label: "Conta", icon: "bi-person" },
-        { id: "notifications", label: "Empresa", icon: "bi-building" },
+        { id: "business", label: "Empresa", icon: "bi-building" },
         { id: "security", label: "Licença", icon: "bi-unlock" },
         { id: "bills", label: "Pagamentos", icon: "bi-cash" },
     ];
@@ -40,6 +40,7 @@ function Configuracao() {
                     {tabs.map((tab) => (
                         <li key={tab.id} className="nav-item" role="presentation">
                             <button
+                                id={`tab-${tab.id}`}
                                 className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3 ${tabAtiva === tab.id ? "active" : ""}`}
                                 type="button"
                                 onClick={() => setTabAtiva(tab.id)}
@@ -58,7 +59,7 @@ function Configuracao() {
                                 <Account usuario={usuario} setusuario={setusuario} />
                             </div>
                         )}
-                        {tabAtiva === "notifications" && (
+                        {tabAtiva === "business" && (
                             <div className="tab-pane fade show active">
                                 <Business empresa={empresa} setempresa={setempresa} usuario={usuario} />
                             </div>

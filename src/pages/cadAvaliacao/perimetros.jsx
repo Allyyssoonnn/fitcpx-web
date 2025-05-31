@@ -2,34 +2,33 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import MediaInput from "../../components/mediaInput";
 
-function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoPerimetro, setMetodoPerimetro,
-    isEditingEnabled, ocultarCampos, tipoAvaliacao, register, setValue, startSpeechRecognition, getValues,
-    setPerimetros, setPerimetrosDireito, setPerimetrosEsquerdo, watch
+function Perimetros({ metodoPerimetro, setMetodoPerimetro,
+    isEditingEnabled, ocultarCampos, tipoAvaliacao, register, setValue, startSpeechRecognition, getValues, watch
 }) {
     
     const onDragEnd = (result) => {
-        const { destination, source } = result;
-        if (!destination) return;
+        // const { destination, source } = result;
+        // if (!destination) return;
 
-        if (source.droppableId === "perimetros") {
-            const updatedPerimetros = Array.from(perimetros);
-            const [removed] = updatedPerimetros.splice(source.index, 1);
-            updatedPerimetros.splice(destination.index, 0, removed);
-            setPerimetros(updatedPerimetros);
-            localStorage.setItem("perimetros", JSON.stringify(updatedPerimetros));
-        } else if (source.droppableId === "perimetrosDireito") {
-            const updatedPerimetros = Array.from(perimetrosDireito);
-            const [removed] = updatedPerimetros.splice(source.index, 1);
-            updatedPerimetros.splice(destination.index, 0, removed);
-            setPerimetrosDireito(updatedPerimetros);
-            localStorage.setItem("perimetrosDireito", JSON.stringify(updatedPerimetros));
-        } else if (source.droppableId === "perimetrosEsquerdo") {
-            const updatedPerimetros = Array.from(perimetrosEsquerdo);
-            const [removed] = updatedPerimetros.splice(source.index, 1);
-            updatedPerimetros.splice(destination.index, 0, removed);
-            setPerimetrosEsquerdo(updatedPerimetros);
-            localStorage.setItem("perimetrosEsquerdo", JSON.stringify(updatedPerimetros));
-        }
+        // if (source.droppableId === "perimetros") {
+        //     const updatedPerimetros = Array.from(perimetros);
+        //     const [removed] = updatedPerimetros.splice(source.index, 1);
+        //     updatedPerimetros.splice(destination.index, 0, removed);
+        //     setPerimetros(updatedPerimetros);
+        //     localStorage.setItem("perimetros", JSON.stringify(updatedPerimetros));
+        // } else if (source.droppableId === "perimetrosDireito") {
+        //     const updatedPerimetros = Array.from(perimetrosDireito);
+        //     const [removed] = updatedPerimetros.splice(source.index, 1);
+        //     updatedPerimetros.splice(destination.index, 0, removed);
+        //     setPerimetrosDireito(updatedPerimetros);
+        //     localStorage.setItem("perimetrosDireito", JSON.stringify(updatedPerimetros));
+        // } else if (source.droppableId === "perimetrosEsquerdo") {
+        //     const updatedPerimetros = Array.from(perimetrosEsquerdo);
+        //     const [removed] = updatedPerimetros.splice(source.index, 1);
+        //     updatedPerimetros.splice(destination.index, 0, removed);
+        //     setPerimetrosEsquerdo(updatedPerimetros);
+        //     localStorage.setItem("perimetrosEsquerdo", JSON.stringify(updatedPerimetros));
+        // }
     };
         
     return (
@@ -68,6 +67,7 @@ function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoP
                                                 </label>
                                             </div>
                                             <MediaInput
+                                                id={field.name}
                                                 campo={field.name}
                                                 register={register}
                                                 setValue={setValue}
@@ -106,6 +106,7 @@ function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoP
                                                 </label>
                                             </div>
                                             <MediaInput
+                                                id={field.name}
                                                 campo={field.name}
                                                 register={register}
                                                 setValue={setValue}
@@ -144,6 +145,7 @@ function Perimetros({ perimetros, perimetrosDireito, perimetrosEsquerdo, metodoP
                                                 </label>
                                             </div>
                                             <MediaInput
+                                                id={field.name}
                                                 campo={field.name}
                                                 register={register}
                                                 setValue={setValue}
@@ -179,5 +181,32 @@ const tooltipMetodo = (
         </div>
     </Tooltip>
 );
+
+const perimetros = [
+    { name: 'pescoco', label: 'Pescoço (cm)', icon: 'bi bi-body' },
+    { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
+    { name: 'torax_expirado', label: 'Tórax expirado (cm)', icon: 'bi bi-body' },
+    { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
+    // { name: 'punho', label: 'Punho (cm)', icon: 'bi bi-shoe-prints' },
+    { name: 'cintura', label: 'Cintura (cm)', icon: 'bi bi-body' },
+    { name: 'abdomen', label: 'Abdômen (cm)', icon: 'bi bi-body' },
+    { name: 'quadril', label: 'Quadril (cm)', icon: 'bi bi-body' },
+];
+
+const perimetrosDireito = [
+    { name: 'braco_relaxado_direito', label: 'Braço relaxado direito (cm)', icon: 'bi bi-body' },
+    { name: 'braco_contraido_direito', label: 'Braço contraído direito (cm)', icon: 'bi bi-body' },
+    { name: 'antebraco_direito', label: 'Antebraço direito (cm)', icon: 'bi bi-rulers' },
+    { name: 'coxa_direita', label: 'Coxa direita (cm)', icon: 'bi bi-shoe-prints' },
+    { name: 'panturrilha_direita', label: 'Panturrilha direita (cm)', icon: 'bi bi-shoe-prints' },
+];
+
+const perimetrosEsquerdo = [
+    { name: 'braco_relaxado_esquerdo', label: 'Braço relaxado esquerdo (cm)', icon: 'bi bi-body' },
+    { name: 'braco_contraido_esquerdo', label: 'Braço contraído esquerdo (cm)', icon: 'bi bi-body' },
+    { name: 'antebraco_esquerdo', label: 'Antebraço esquerdo (cm)', icon: 'bi bi-rulers' },
+    { name: 'coxa_esquerda', label: 'Coxa esquerda (cm)', icon: 'bi bi-shoe-prints' },
+    { name: 'panturrilha_esquerda', label: 'Panturrilha esquerda (cm)', icon: 'bi bi-shoe-prints' },
+];
 
 export default Perimetros;

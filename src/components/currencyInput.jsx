@@ -23,7 +23,7 @@ function CurrencyInput({ name, control, onChange, onBlur, onKeyDown, ...props })
         <Controller
             name={name}
             control={control}
-            defaultValue=""
+            defaultValue={0}
             render={({ field }) => (
                 <input
                     className='form-control'

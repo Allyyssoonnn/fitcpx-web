@@ -7,7 +7,7 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa, useNotificacao } from "../../states/states";
 import { useEffect, useState } from "react";
 import html2pdf from 'html2pdf.js';
-import Pagamento from "../../components/pagamento";
+import Pagamento from "../../components/payment/pagamento";
 import { doRefundPayment, getIntentPayment } from "../../api/pagamento";
 import { getAlunoSessaoPacote } from "../../api/sessao";
 

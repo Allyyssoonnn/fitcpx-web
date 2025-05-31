@@ -74,6 +74,14 @@ function CadUsuario() {
                 <div className="card-body">
                     <h5 className="card-title fw-semibold mb-4">Usuário</h5>
 
+                    <FitInputForm
+                        id="idnumber"
+                        nameField="CPF"
+                        classNameContainer="col-md-3 mb-3"
+                        {...register("cpf_usuario", { required: true })}
+                        errors={errors}
+                    />
+
                     <div className="row g-3">
                         <FitInputForm
                             nameField="Nome *"
@@ -83,6 +91,7 @@ function CadUsuario() {
                         />
 
                         <FitInputForm
+                            id="phone"
                             nameField="Telefone"
                             classNameContainer="col-md-3"
                             {...register("telefone_usuario")}
@@ -90,6 +99,7 @@ function CadUsuario() {
                         />
 
                         <FitInputForm
+                            id="cellphone"
                             nameField="Celular"
                             classNameContainer="col-md-3"
                             {...register("celular_usuario")}
@@ -127,6 +137,7 @@ function CadUsuario() {
 
                     <div className="row g-3">
                         <FitInputForm
+                            id="cep"
                             nameField="CEP"
                             classNameContainer="col-md-3"
                             {...register("cep_usuario")}
@@ -155,6 +166,7 @@ function CadUsuario() {
                         />
 
                         <FitInputForm
+                            id="number"
                             nameField="Número"
                             classNameContainer="col-md-3"
                             {...register("numero_usuario")}
@@ -178,7 +190,7 @@ function CadUsuario() {
                 </div>
 
                 <div className="card-footer">
-                    <button disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
+                    <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
                         <i className="bi bi-check me-2"></i>
                         Confirmar
                     </button>

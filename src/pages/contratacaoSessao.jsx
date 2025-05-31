@@ -7,7 +7,7 @@ import SelectModalidades from "../components/selectModalidades";
 import NumberInput from "../components/numberInput";
 import { toast } from "react-toastify";
 import { createPaySessao, setAlunoSessaoPacote } from "../api/sessao";
-import Pagamento from "../components/pagamento";
+import Pagamento from "../components/payment/pagamento";
 
 
 function ContratacaoSessao() {

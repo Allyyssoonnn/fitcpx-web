@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { calcularMedianaOuRepetido } from "../utils";
 
-function MediaInput({ campo, register, setValue, startSpeechRecognition, metodo, required, defaultValue, watch }) {
+function MediaInput({ campo, register, setValue, startSpeechRecognition, metodo, required, defaultValue, id }) {
     const [valor1, setValor1] = useState("");
     const [valor2, setValor2] = useState("");
     const [valor3, setValor3] = useState("");
@@ -50,6 +50,7 @@ function MediaInput({ campo, register, setValue, startSpeechRecognition, metodo,
                 )}
 
                 <input
+                    id={id}
                     value={media}
                     onChange={changeValue}
                     readOnly={metodo === "media"}

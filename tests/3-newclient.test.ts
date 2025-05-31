@@ -4,7 +4,7 @@ test('New Client', async ({ page }) => {
     await page.goto('http://localhost:5173/cadaluno');
     
     await page.fill('input[id="name"]', 'Test client');
-    await page.fill('input[id="cpf"]', '00000000000');
+    await page.fill('input[id="cpf"]', '10940113988');
     await page.fill('input[id="rg"]', '0000000');
     await page.fill('input[id="phone"]', '00000000000');
     await page.fill('input[id="birthdate"]', '2001-09-11');

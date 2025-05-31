@@ -3,7 +3,7 @@ import { stateEmpresa, stateUsuario, useNotificacao } from "../../states/states"
 import { useEffect, useState } from "react";
 import { dataURLToBlob, formatarMoeda } from "../../utils";
 import { buyLicenca, cancelLicenca, getLicenca, getLicencas } from "../../api/licenca";
-import Pagamento from "../../components/pagamento";
+import Pagamento from "../../components/payment/pagamento";
 import { useQuery } from "react-query";
 
 function License() {

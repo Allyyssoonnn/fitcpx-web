@@ -1,12 +1,11 @@
 import { useQuery } from "react-query";
 import { getPayments } from "../../api/licenca";
 import { formatarData, formatarMoeda } from "../../utils";
-import Pagamento from "../../components/pagamento";
+import Pagamento from "../../components/payment/pagamento";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { stateEmpresa } from "../../states/states";
 import { getIntentPayment } from "../../api/pagamento";
-
 
 function Payments({ cod_empresa }) {
     const [empresa] = useRecoilState(stateEmpresa);

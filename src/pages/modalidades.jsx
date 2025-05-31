@@ -66,7 +66,7 @@ function Modalidades() {
                             <label className="form-label ms-1" htmlFor="deleted">Registros deletados</label>
                         </div>
 
-                        <button className="btn btn-success" onClick={() => navigate('/cadmodalidade')}>
+                        <button id="newService" className="btn btn-success" onClick={() => navigate('/cadmodalidade')}>
                             <i className="bi bi-plus-circle me-2"></i>
                             Nova modalidade
                         </button>

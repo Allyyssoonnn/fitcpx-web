@@ -118,7 +118,7 @@ function Header() {
                         <LanguageSelect />
 
                         <li className="nav-item dropdown me-2">
-                            <a className="d-flex align-items-center nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a className="d-flex align-items-center nav-link nav-icon-hover" href="javascript:void(0)" id="imgMenu" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img
                                     src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
                                     alt=""
@@ -128,7 +128,7 @@ function Header() {
                                 />
                             </a>
 
-                            <div style={{ height: '280px' }} className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                            <div style={{ height: '280px' }} className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="imgMenu">
                                 <div className="message-body">
                                     <div className="d-flex align-items-center mx-7 py-9 border-bottom">
                                         <img
@@ -148,7 +148,7 @@ function Header() {
                                         </div>
                                     </div>
 
-                                    <a href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
+                                    <a id="imgMenu-config" href="#" onClick={() => navigate('/configuracao')} className="d-flex align-items-center gap-2 dropdown-item">
                                         <i className="bi bi-gear fs-6"></i>
                                         <p className="mb-0 fs-3">Configuração</p>
                                     </a>

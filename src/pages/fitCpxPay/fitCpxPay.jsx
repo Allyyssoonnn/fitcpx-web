@@ -80,7 +80,7 @@ function FitCpxPay() {
         const respUsuario = await setUsuario({ cod_usuario: usuario?.cod_usuario, ...usuarioFormLimpo });
         setusuario(respUsuario);
 
-        await gerarIdCarteira(empresa?.cod_empresa, usuario?.cod_usuario, 'ASAAS');
+        await gerarIdCarteira(empresa?.cod_empresa, usuario?.cod_usuario);
         await sendDocuments(frontBase64, backBase64, frontType, backType, empresa.cod_empresa, usuario.cod_usuario);
 
         endLoading();
@@ -119,7 +119,7 @@ function FitCpxPay() {
             <div className="card d-flex justify-content-end col-md-6">
                 <div className="card-body">
                     {(!PRODUCAO) && (
-                        <button type="submit" className="btn btn-info rounded">
+                        <button id="submit" type="submit" className="btn btn-info rounded">
                             {empresa.dev_stripe_id ? 'Atualizar dados' : 'Enviar formulário'}
                         </button>
                     )}

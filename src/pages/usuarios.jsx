@@ -72,40 +72,40 @@ function Usuarios() {
                         <div className="table-responsive">
                             <table id="basic-datatables" className="display table table-striped table-hover">
                                 <tbody>
-                                    {filteredUsuarios.map((usuario) => {
+                                    {filteredUsuarios.map((usuario, index) => {
                                         return (
-                                        <tr key={usuario.cod_aluno}>
-                                            <th scope="row" className="d-flex align-items-center">
-                                                <img
-                                                    src={usuario.imagem_usuario ? `${usuario.imagem_usuario}` : 'https://placehold.co/150x150?text=img'}
-                                                    alt="Foto do Aluno" 
-                                                    className="img-fluid rounded-circle me-3" 
-                                                    style={{ width: '50px', height: '50px' }}
-                                                    loading="lazy"
-                                                />
-                                                <div className="col-md-10 d-flex flex-column">
-                                                    <label>{usuario.nome_usuario}</label>
-                                                    <div className="d-flex gap-2 mt-2">
-                                                        <label className="badge bg-danger text-white">{usuario?.admin_usuario == 'S' && 'ADMIN'}</label>
+                                            <tr key={usuario.cod_aluno}>
+                                                <th scope="row" className="d-flex align-items-center">
+                                                    <img
+                                                        src={usuario.imagem_usuario ? `${usuario.imagem_usuario}` : 'https://placehold.co/150x150?text=img'}
+                                                        alt="Foto do Aluno" 
+                                                        className="img-fluid rounded-circle me-3" 
+                                                        style={{ width: '50px', height: '50px' }}
+                                                        loading="lazy"
+                                                    />
+                                                    <div className="col-md-10 d-flex flex-column">
+                                                        <label>{usuario.nome_usuario}</label>
+                                                        <div className="d-flex gap-2 mt-2">
+                                                            <label className="badge bg-danger text-white">{usuario?.admin_usuario == 'S' && 'ADMIN'}</label>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </th>
-                                            <td>
-                                                <div className="dropdown">
-                                                    <button onClick={e => e.stopPropagation()} className="btn border-0" data-bs-toggle="dropdown">
-                                                        <i className="bi bi-three-dots-vertical"></i>
-                                                    </button>
+                                                </th>
+                                                <td>
+                                                    <div className="dropdown">
+                                                        <button id={`option-user-${index}`} onClick={e => e.stopPropagation()} className="btn border-0" data-bs-toggle="dropdown">
+                                                            <i className="bi bi-three-dots-vertical"></i>
+                                                        </button>
 
-                                                    <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
-                                                        <a onClick={e => { e.stopPropagation(); editarUsuario(usuario) }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
-                                                            <i className="bi bi-pencil"></i>
-                                                            <p className="mb-0">Editar</p>
-                                                        </a>
+                                                        <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up">
+                                                            <a id={`edit-user-${index}`} onClick={e => { e.stopPropagation(); editarUsuario(usuario) }} href="#" className="d-flex align-items-center gap-2 dropdown-item">
+                                                                <i className="bi bi-pencil"></i>
+                                                                <p className="mb-0">Editar</p>
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )})}
+                                                </td>
+                                            </tr>
+                                        );})}
                                 </tbody>
                             </table>
                         </div>

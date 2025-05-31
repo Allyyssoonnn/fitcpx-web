@@ -15,6 +15,7 @@ function DadosBancarios({ register, errors, prefixField }) {
                     <div className="row">
                         <div>
                             <FitInputForm
+                                id="ownerbank"
                                 nameField='Titular da conta'
                                 classNameContainer='mb-3'
                                 errors={errors}
@@ -26,6 +27,7 @@ function DadosBancarios({ register, errors, prefixField }) {
                     <div className="row">
                         <div>
                             <FitInputForm
+                                id="codebank"
                                 nameField='Código do banco'
                                 classNameContainer='mb-3'
                                 errors={errors}
@@ -37,6 +39,7 @@ function DadosBancarios({ register, errors, prefixField }) {
                     <div className="row">
                         <div className="col-lg-3">
                             <FitInputForm
+                                id="agencybank"
                                 nameField='Agência'
                                 classNameContainer='mb-3'
                                 errors={errors}
@@ -47,6 +50,7 @@ function DadosBancarios({ register, errors, prefixField }) {
 
                         <div className="col-lg-9">
                             <FitInputForm
+                                id="numberbank"
                                 nameField='Número da conta'
                                 classNameContainer='mb-3'
                                 errors={errors}

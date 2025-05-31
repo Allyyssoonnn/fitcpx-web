@@ -25,7 +25,7 @@ function CadAvaliacao() {
     const [usuario] = useRecoilState(stateUsuario);
 
     const { data: protocolos, isLoading } = useQuery({
-        queryKey: ['protocolo', ],
+        queryKey: ['protocolo'],
         queryFn: () => getProtocolos(usuario.cod_usuario),
         initialData: [],
     });
@@ -35,15 +35,22 @@ function CadAvaliacao() {
     const [deletedImages, setDeletedImages] = useState([]);
     const [aluno, setAluno] = useState();
     const [activeTab, setActiveTab] = useState("perimetros");
-    const [perimetros, setPerimetros] = useState(perimetroFields);
-    const [perimetrosDireito, setPerimetrosDireito] = useState(perimetroDireitoFields);
-    const [perimetrosEsquerdo, setPerimetrosEsquerdo] = useState(perimetroEsquerdoFields);
     const [metodoDobras, setMetodoDobras] = useState('normal');
     const [metodoPerimetro, setMetodoPerimetro] = useState('normal');
-    const [tipoAvaliacao, setTipoAvaliacao] = useState('simples');
+    const [tipoAvaliacao, setTipoAvaliacao] = useState('');
     const [isEditingEnabled, setIsEditingEnabled] = useState(false); 
-    const [protocolo, setProtocolo] = useState("");
+    const [protocolo, setProtocolo] = useState(0);
     const [ocultarCampos, setOcultarCampos] = useState(false);
+
+    const [cod_protocolo, tipo_avaliacao] = watch(['cod_protocolo', 'tipo_avaliacao']);
+
+    useEffect(() => {
+        if (cod_protocolo && cod_protocolo !== protocolo) setProtocolo(Number(cod_protocolo));
+    }, [cod_protocolo]);
+
+    useEffect(() => {
+        if (tipo_avaliacao && tipo_avaliacao !== protocolo) setTipoAvaliacao(tipo_avaliacao);
+    }, [tipo_avaliacao]);
 
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
@@ -96,9 +103,9 @@ function CadAvaliacao() {
         if (!isSupported) {
             alert('Seu navegador não suporta reconhecimento de fala.');
         }
-        loadFromLocalStorage("perimetros", setPerimetros);
-        loadFromLocalStorage("perimetrosDireito", setPerimetrosDireito);
-        loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
+        // loadFromLocalStorage("perimetros", setPerimetros);
+        // loadFromLocalStorage("perimetrosDireito", setPerimetrosDireito);
+        // loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
@@ -153,9 +160,9 @@ function CadAvaliacao() {
         localStorage.removeItem('perimetros');
         localStorage.removeItem('perimetrosDireito');
         localStorage.removeItem('perimetrosEsquerdo');
-        setPerimetros(perimetroFields);
-        setPerimetrosDireito(perimetroDireitoFields);
-        setPerimetrosEsquerdo(perimetroEsquerdoFields);
+        // setPerimetros(perimetroFields);
+        // setPerimetrosDireito(perimetroDireitoFields);
+        // setPerimetrosEsquerdo(perimetroEsquerdoFields);
     }
 
     const startSpeechRecognition = (inputName) => {
@@ -209,7 +216,7 @@ function CadAvaliacao() {
                         Voltar
                     </button>
 
-                    {activeTab === 'perimetros' && (
+                    {/* {activeTab === 'perimetros' && (
                         <button
                             type="button"
                             className={`btn ${isEditingEnabled ? 'btn-warning' : 'btn-warning'} mb-3 me-3`}
@@ -229,7 +236,7 @@ function CadAvaliacao() {
                             <i className="bi bi-back me-2"></i>
                             Resetar ordenação
                         </button>
-                    )}
+                    )} */}
 
                     <div className="dropdown">
                         <button
@@ -262,21 +269,28 @@ function CadAvaliacao() {
                             <input value={`${calcularIdade(aluno?.data_nascimento_aluno)} - Anos / ${aluno?.nome_aluno}`} disabled className="form-control" />
                         </div>
 
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Protocolo *</label>
-                            <select {...register('cod_protocolo', { required: 'Protocolo necessário!' })} className="form-control" onChange={e => setProtocolo(Number(e.target.value))}>
-                                <option value="">Selecione um protocolo</option>
-                                {Object.keys(protocolos).map(categoria => (
-                                    <optgroup key={categoria} label={categoria}>
-                                        {protocolos[categoria].map(protocolo => (
-                                            <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
-                                                {protocolo.nome_protocolo}
-                                            </option>
-                                        ))}
-                                    </optgroup>
-                                ))}
-                            </select>
-                        </div>
+                        {isLoading ? (
+                            <div className="col-md-3">
+                                <label className="form-label fw-bold">Protocolo *</label>
+                                <label className="form-control">Carregando...</label>
+                            </div>
+                        ) : (
+                            <div className="col-md-3">
+                                <label className="form-label fw-bold">Protocolo *</label>
+                                <select id="select-protocol" {...register('cod_protocolo', { required: 'Protocolo necessário!' })} className="form-control">
+                                    <option value="">Selecione um protocolo</option>
+                                    {Object.keys(protocolos).map(categoria => (
+                                        <optgroup key={categoria} label={categoria}>
+                                            {protocolos[categoria].map(protocolo => (
+                                                <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
+                                                    {protocolo.nome_protocolo}
+                                                </option>
+                                            ))}
+                                        </optgroup>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Tipo *
@@ -284,7 +298,8 @@ function CadAvaliacao() {
                                     <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: 'pointer' }}></i>
                                 </OverlayTrigger>
                             </label>
-                            <select disabled={!protocolo} {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} value={tipoAvaliacao} onChange={e => setTipoAvaliacao(e.target.value)} className="form-control">
+                            <select id="select-type" disabled={!protocolo} {...register('tipo_avaliacao', { required: 'Tipo da avaliação necessário!' })} className="form-control">
+                                <option value=''>Selecione um tipo</option>
                                 <option value='simples'>Simples</option>
                                 <option value='complexo'>Complexo</option>
                             </select>
@@ -292,7 +307,7 @@ function CadAvaliacao() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Data da Avaliação *</label>
-                            <input {...register("data_avaliacao", { required: "A data é obrigatória" })}
+                            <input id="date" {...register("data_avaliacao", { required: "A data é obrigatória" })}
                                 type="date"
                                 className="form-control"
                                 defaultValue={new Date().toISOString().split('T')[0]}
@@ -301,7 +316,7 @@ function CadAvaliacao() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Peso (kg) *</label>
-                            <input {...register("peso", { required: "O peso é obrigatório" })}
+                            <input id="weight" {...register("peso", { required: "O peso é obrigatório" })}
                                 type="number"
                                 step="0.01"
                                 className="form-control"
@@ -310,7 +325,7 @@ function CadAvaliacao() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Altura (m) *</label>
-                            <input {...register("altura", { required: "A altura é obrigatória" })}
+                            <input id="height" {...register("altura", { required: "A altura é obrigatória" })}
                                 type="number"
                                 step="0.01"
                                 className="form-control"
@@ -338,7 +353,7 @@ function CadAvaliacao() {
                         onSelect={(tab) => setActiveTab(tab)}
                         className="mb-3"
                     >
-                        <Tab eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
+                        <Tab key='diametros' eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
                             <Diametros
                                 ocultarCampos={ocultarCampos}
                                 register={register}
@@ -377,17 +392,17 @@ function CadAvaliacao() {
                                 isEditingEnabled={isEditingEnabled}
                                 metodoPerimetro={metodoPerimetro}
                                 ocultarCampos={ocultarCampos}
-                                perimetros={perimetros}
-                                perimetrosDireito={perimetrosDireito}
-                                perimetrosEsquerdo={perimetrosEsquerdo}
+                                // perimetros={perimetros}
+                                // perimetrosDireito={perimetrosDireito}
+                                // perimetrosEsquerdo={perimetrosEsquerdo}
                                 register={register}
                                 setMetodoPerimetro={setMetodoPerimetro}
                                 setValue={setValue}
                                 startSpeechRecognition={startSpeechRecognition}
                                 tipoAvaliacao={tipoAvaliacao}
-                                setPerimetros={setPerimetros}
-                                setPerimetrosEsquerdo={setPerimetrosEsquerdo}
-                                setPerimetrosDireito={setPerimetrosDireito}
+                                // setPerimetros={setPerimetros}
+                                // setPerimetrosEsquerdo={setPerimetrosEsquerdo}
+                                // setPerimetrosDireito={setPerimetrosDireito}
                                 watch={watch}
                             />
                         </Tab>
@@ -409,7 +424,7 @@ function CadAvaliacao() {
                             <i className={`bi bi-exclamation-octagon ms-2 text-danger ${Object.keys(errors).length > 0 ? '' : 'd-none'}`} style={{ cursor: 'pointer' }}></i>
                         </OverlayTrigger>
                         
-                        <button disabled={isSubmitting} type="submit" className="btn btn-success">
+                        <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success">
                             <i className="bi bi-check me-2"></i>
                             Confirmar
                         </button>
@@ -419,33 +434,6 @@ function CadAvaliacao() {
         </div>
     );
 }
-
-const perimetroFields = [
-    { name: 'pescoco', label: 'Pescoço (cm)', icon: 'bi bi-body' },
-    { name: 'ombro', label: 'Ombro (cm)', icon: 'bi bi-rulers' },
-    { name: 'torax_expirado', label: 'Tórax expirado (cm)', icon: 'bi bi-body' },
-    { name: 'torax_inspirado', label: 'Tórax inspirado (cm)', icon: 'bi bi-body' },
-    // { name: 'punho', label: 'Punho (cm)', icon: 'bi bi-shoe-prints' },
-    { name: 'cintura', label: 'Cintura (cm)', icon: 'bi bi-body' },
-    { name: 'abdomen', label: 'Abdômen (cm)', icon: 'bi bi-body' },
-    { name: 'quadril', label: 'Quadril (cm)', icon: 'bi bi-body' },
-];
-
-const perimetroDireitoFields = [
-    { name: 'braco_relaxado_direito', label: 'Braço relaxado direito (cm)', icon: 'bi bi-body' },
-    { name: 'braco_contraido_direito', label: 'Braço contraído direito (cm)', icon: 'bi bi-body' },
-    { name: 'antebraco_direito', label: 'Antebraço direito (cm)', icon: 'bi bi-rulers' },
-    { name: 'coxa_direita', label: 'Coxa direita (cm)', icon: 'bi bi-shoe-prints' },
-    { name: 'panturrilha_direita', label: 'Panturrilha direita (cm)', icon: 'bi bi-shoe-prints' },
-];
-
-const perimetroEsquerdoFields = [
-    { name: 'braco_relaxado_esquerdo', label: 'Braço relaxado esquerdo (cm)', icon: 'bi bi-body' },
-    { name: 'braco_contraido_esquerdo', label: 'Braço contraído esquerdo (cm)', icon: 'bi bi-body' },
-    { name: 'antebraco_esquerdo', label: 'Antebraço esquerdo (cm)', icon: 'bi bi-rulers' },
-    { name: 'coxa_esquerda', label: 'Coxa esquerda (cm)', icon: 'bi bi-shoe-prints' },
-    { name: 'panturrilha_esquerda', label: 'Panturrilha esquerda (cm)', icon: 'bi bi-shoe-prints' },
-];
 
 const tooltip = (
     <Tooltip id="tooltip">
