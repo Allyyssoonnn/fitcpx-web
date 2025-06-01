@@ -206,7 +206,7 @@ function Metas({ aluno, avaliacao, avaliacoes }) {
                 </div>
                 <div className="row g-3">
                     <div className="col-md-4 table-responsive">
-                        <table id="basic-datatables" className={`table table-sm table-striped table-hover ${meta === 'Personalizado' ? 'd-none' : ''}`}>
+                        <table id="basic-datatables" className='table table-sm table-striped table-hover'>
                             <thead>
                                 <tr>
                                     <th>Medidas básicas</th>
@@ -224,8 +224,8 @@ function Metas({ aluno, avaliacao, avaliacoes }) {
                                 <tr>
                                     <th>Peso</th>
                                     <th>{avaliacao.peso}</th>
-                                    <th>{getPesoIMCMeta(aluno, avaliacao, meta)}</th>
-                                    <th className="text-muted">-{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta)).toFixed(1)}</th>
+                                    <th>{getPesoIMCMeta(aluno, avaliacao, meta, imc)}</th>
+                                    <th className="text-muted">-{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta, imc)).toFixed(1)}</th>
                                 </tr>
                             </tbody>
                         </table>
