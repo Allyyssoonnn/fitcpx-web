@@ -241,7 +241,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                         <div className="ms-3">
                             <h6>{t('clientsOverview')}</h6>
                             <div className="d-flex align-items-center gap-2">
-                                <h3 className="mb-0">{alunos.length}</h3>
+                                <h3 className="mb-0">{(alunos.filter((client) => client.status_aluno == 'A')).length}</h3>
                                 {/* <span className="badge bg-primary-subtle text-primary fw-semibold rounded-pill">+8.5</span> */}
                             </div>
                         </div>
