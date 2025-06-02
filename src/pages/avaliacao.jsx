@@ -662,36 +662,36 @@ function Perimetro({ avaliacao }) {
                     <div className="card col-md-4">
                         <h6>Geral</h6>
                         <ul>
-                            <li><strong>Pescoço:</strong> {avaliacao.pescoco || 'Não informado'}</li>
-                            <li><strong>Ombro:</strong> {avaliacao.ombro || 'Não informado'}</li>
-                            <li><strong>Tórax Inspirado:</strong> {avaliacao.torax_inspirado || 'Não informado'}</li>
-                            <li><strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || 'Não informado'}</li>
-                            <li><strong>Punho:</strong> {avaliacao.punho || 'Não informado'}</li>
-                            <li><strong>Cintura:</strong> {avaliacao.cintura || 'Não informado'}</li>
-                            <li><strong>Abdômen:</strong> {avaliacao.abdomen || 'Não informado'}</li>
-                            <li><strong>Quadril:</strong> {avaliacao.quadril || 'Não informado'}</li>
+                            <li><strong>Pescoço:</strong> {avaliacao.pescoco || '-'}</li>
+                            <li><strong>Ombro:</strong> {avaliacao.ombro || '-'}</li>
+                            <li><strong>Tórax Inspirado:</strong> {avaliacao.torax_inspirado || '-'}</li>
+                            <li><strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || '-'}</li>
+                            <li><strong>Punho:</strong> {avaliacao.punho || '-'}</li>
+                            <li><strong>Cintura:</strong> {avaliacao.cintura || '-'}</li>
+                            <li><strong>Abdômen:</strong> {avaliacao.abdomen || '-'}</li>
+                            <li><strong>Quadril:</strong> {avaliacao.quadril || '-'}</li>
                         </ul>
                     </div>
 
                     <div className="card col-md-4">
                         <h6>Lado direito</h6>
                         <ul>
-                            <li><strong>Braço Relaxado Direito:</strong> {avaliacao.braco_relaxado_direito || 'Não informado'}</li>
-                            <li><strong>Braço Contraído Direito:</strong> {avaliacao.braco_contraido_direito || 'Não informado'}</li>
-                            <li><strong>Antebraço Direito:</strong> {avaliacao.antebraco_direito || 'Não informado'}</li>
-                            <li><strong>Coxa Direita:</strong> {avaliacao.coxa_direita || 'Não informado'}</li>
-                            <li><strong>Panturrilha Direita:</strong> {avaliacao.panturrilha_direita || 'Não informado'}</li>
+                            <li><strong>Braço Relaxado Direito:</strong> {avaliacao.braco_relaxado_direito || '-'}</li>
+                            <li><strong>Braço Contraído Direito:</strong> {avaliacao.braco_contraido_direito || '-'}</li>
+                            <li><strong>Antebraço Direito:</strong> {avaliacao.antebraco_direito || '-'}</li>
+                            <li><strong>Coxa Direita:</strong> {avaliacao.coxa_direita || '-'}</li>
+                            <li><strong>Panturrilha Direita:</strong> {avaliacao.panturrilha_direita || '-'}</li>
                         </ul>
                     </div>
 
                     <div className="card col-md-4">
                         <h6>Lado esquerdo</h6>
                         <ul>
-                            <li><strong>Braço Relaxado Esquerdo:</strong> {avaliacao.braco_relaxado_esquerdo || 'Não informado'}</li>
-                            <li><strong>Braço Contraído Esquerdo:</strong> {avaliacao.braco_contraido_esquerdo || 'Não informado'}</li>
-                            <li><strong>Antebraço Esquerdo:</strong> {avaliacao.antebraco_esquerdo || 'Não informado'}</li>
-                            <li><strong>Coxa Esquerda:</strong> {avaliacao.coxa_esquerda || 'Não informado'}</li>
-                            <li><strong>Panturrilha Esquerda:</strong> {avaliacao.panturrilha_esquerda || 'Não informado'}</li>
+                            <li><strong>Braço Relaxado Esquerdo:</strong> {avaliacao.braco_relaxado_esquerdo || '-'}</li>
+                            <li><strong>Braço Contraído Esquerdo:</strong> {avaliacao.braco_contraido_esquerdo || '-'}</li>
+                            <li><strong>Antebraço Esquerdo:</strong> {avaliacao.antebraco_esquerdo || '-'}</li>
+                            <li><strong>Coxa Esquerda:</strong> {avaliacao.coxa_esquerda || '-'}</li>
+                            <li><strong>Panturrilha Esquerda:</strong> {avaliacao.panturrilha_esquerda || '-'}</li>
                         </ul>
                     </div>
                 </div>
@@ -728,16 +728,16 @@ function Dobras({ avaliacao }) {
             <div className="card-body">
                 <row className="row g-3">
                     <ul className="mt-3 col-md-3">
-                        <li><strong>Peitoral:</strong> {avaliacao.peitoral || 'Não informado'}</li>
-                        <li><strong>Bíceps:</strong> {avaliacao.biciptal || 'Não informado'}</li>
-                        <li><strong>Tríceps:</strong> {avaliacao.triciptal || 'Não informado'}</li>
-                        <li><strong>Subescapular:</strong> {avaliacao.subescapular || 'Não informado'}</li>
-                        <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || 'Não informado'}</li>
-                        <li><strong>Abdominal:</strong> {avaliacao.abdominal || 'Não informado'}</li>
-                        <li><strong>Coxa:</strong> {avaliacao.coxa || 'Não informado'}</li>
-                        <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || 'Não informado'}</li>
-                        <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || 'Não informado'}</li>
-                        <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || 'Não informado'}</li>
+                        <li><strong>Peitoral:</strong> {avaliacao.peitoral || '-'}</li>
+                        <li><strong>Bíceps:</strong> {avaliacao.biciptal || '-'}</li>
+                        <li><strong>Tríceps:</strong> {avaliacao.triciptal || '-'}</li>
+                        <li><strong>Subescapular:</strong> {avaliacao.subescapular || '-'}</li>
+                        <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || '-'}</li>
+                        <li><strong>Abdominal:</strong> {avaliacao.abdominal || '-'}</li>
+                        <li><strong>Coxa:</strong> {avaliacao.coxa || '-'}</li>
+                        <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || '-'}</li>
+                        <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || '-'}</li>
+                        <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || '-'}</li>
                     </ul>
 
                     <div className="mt-3 col-md-3">
