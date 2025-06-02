@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { dataURLToBlob, formatarMoeda } from "../../utils";
 import { changeEmpresaIMG, changeUsuarioIMG, setEmpresa, setUsuario } from "../../api/usuario";
 import { useForm } from "react-hook-form";
+import { useNotificacao } from "../../states/states";
 
 function Account({ usuario, setusuario }) {
+    const { nSuccess } = useNotificacao();
     const { register, setValue, handleSubmit } = useForm();
     const [showModal, setShowModal] = useState(false);
     const [image, setImage] = useState(null);
@@ -60,6 +62,7 @@ function Account({ usuario, setusuario }) {
     async function HandleConfirm(data) {
         const usuario = await setUsuario(data);
         setusuario(usuario);
+        nSuccess('Alteração confirmada');
     }
 
     return (
