@@ -173,7 +173,7 @@ function CadExercicio() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Padrão movimento</label>
-                            <select disabled={base_exercicio === 'S'} {...register('cod_indicacao')} className="form-control">
+                            <select disabled={base_exercicio === 'S'} {...register('cod_padrao_movimento')} className="form-control">
                                 <option value=''>Selecione o padrão de movimento</option>
                                 {padraoes_movimentos.map((pm, i) => (
                                     <option value={pm.cod_padrao_movimento} key={i}>{pm.nome_padrao_movimento}</option>

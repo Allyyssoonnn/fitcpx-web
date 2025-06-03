@@ -257,7 +257,7 @@ function Aluno() {
 
                                 {avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
                                 .map((avaliacao, index) => (
-                                    <CardAvaliacao key={index} avaliacao={avaliacao} aluno={aluno} refetch={refetchAvalicao} />
+                                    <CardAvaliacao index={index} key={index} avaliacao={avaliacao} aluno={aluno} refetch={refetchAvalicao} />
                                 ))}
                             </div>
                         </Tab>
@@ -540,7 +540,7 @@ function CardTreino({ treino, aluno, refetch }) {
     )
 }
 
-function CardAvaliacao({ avaliacao, aluno, refetch }) {
+function CardAvaliacao({ avaliacao, aluno, refetch, index }) {
     const navigate = useNavigate();
     
     async function clickDelete() {
@@ -593,12 +593,14 @@ function CardAvaliacao({ avaliacao, aluno, refetch }) {
 
             <div className="card-footer bg-light d-flex justify-content-around py-3">
                 <button
+                    id={`edit-${index}`}
                     className="btn btn-primary d-flex align-items-center"
                     onClick={() => navigate('/cadavaliacao', { state: { avaliacao, aluno } })}
                 >
                     <i className="bi bi-pencil me-2"></i> Editar
                 </button>
                 <button
+                    id={`result-${index}`}
                     className="btn btn-warning d-flex align-items-center"
                     onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}
                 >

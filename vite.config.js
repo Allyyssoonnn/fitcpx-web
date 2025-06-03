@@ -3,8 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 import compression from 'vite-plugin-compression';
-import fs from 'fs';
-import crypto from 'crypto';
+import { version } from './package.json';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,13 +13,12 @@ export default defineConfig({
       threshold: 1024, // Só comprime arquivos maiores que 1KB
     }),
     react(),
-    metaPlugin(),
     VitePWA({
-      registerType: "prompt",
+      registerType: "autoUpdate",
       manifest: {
         name: "Fit Complex",
         short_name: "FitCpx",
-        description: "Um app de Lab Complex Dev",
+        description: "Um app de Lab Complex Dev LTDA",
         theme_color: "#ffffff",
         icons: [
           {
@@ -40,6 +38,9 @@ export default defineConfig({
       }
     })
   ],
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   build: {
     // minify: 'esbuild',
     minify: 'terser',
@@ -49,38 +50,5 @@ export default defineConfig({
       },
     },
     outDir: 'dist',
-    rollupOptions: {
-      input: path.resolve(__dirname, "index.html"),
-    },
   },
 })
-
-function metaPlugin() {
-  return {
-    name: 'vite-meta-hash',
-    closeBundle() {
-      const distPath = path.resolve(__dirname, 'dist');
-      const files = fs.readdirSync(distPath).filter(f => f.endsWith('.js'));
-
-      let combined = '';
-      files.forEach((file) => {
-        const content = fs.readFileSync(path.join(distPath, file), 'utf-8');
-        combined += `/** ${file} **/\n${content}\n`;
-      });
-
-      const hash = crypto.createHash('sha256').update(combined).digest('hex').slice(0, 10);
-
-      const output = {
-        hash,
-        timestamp: Date.now(),
-      };
-
-      fs.writeFileSync(
-        path.join(distPath, 'meta.json'),
-        JSON.stringify(output)
-      );
-
-      console.log('✅ meta.json gerado com hash:', hash);
-    },
-  };
-}

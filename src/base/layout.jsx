@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useEffect } from 'react';
 import { stateEmpresa, stateUsuario, useToggleSidebar } from '../states/states';
 import Header from './header';
@@ -16,6 +17,14 @@ function Layout() {
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
     const { openedSidebar, toggleSidebar } = useToggleSidebar();
+
+    useEffect(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
+            });
+        }
+    }, []);
 
     useEffect(() => {
         //Function to update info data
@@ -81,6 +90,11 @@ function Layout() {
 
                     <div className="py-6 px-6 text-center">
                         <p className="mb-0 fs-4">{t('footerText')}</p>
+                        {import.meta.env.MODE == 'production' ? (
+                            <p className="mb-0 fs-4">Version: {__APP_VERSION__}</p>
+                        ) : (
+                            <p className="mb-0 fs-4">Version: DEV MODE</p>
+                        )}
                     {/* <p class="mb-0 fs-4">Desenvolvido por <a href="https://adminmart.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Alyson H.</a>Distribuido por <a href="https://themewagon.com/" target="_blank"
                         class="pe-1 text-primary text-decoration-underline">Milton G.</a></p> */}
