@@ -22,11 +22,11 @@ jobs:
 
       - name: Incrementar versão patch e commitar
         run: |
-          npm version patch --no-git-tag-version
+          npm version patch --no-git-tag-version -m "chore: bump version [skip ci]"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add package.json
-          git commit -m "chore: bump version" || echo "No changes to commit"
+          git commit -m "chore: bump version [skip ci]" || echo "No changes to commit"
           git push
 
       - name: Deploy no servidor via SSH
