@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import CurrencyInput from "../components/currencyInput";
+import FitInputCurrency from "../components/baseComponents/FitInputCurrency";
 import { useRecoilState } from "recoil";
 import { stateUsuario, useNotificacao } from "../states/states";
 import { useEffect, useRef, useState } from "react";
@@ -64,7 +64,7 @@ function CadContrato() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Valor adesão</label>
-                            <CurrencyInput control={control} name='valor_adesao' />
+                            <FitInputCurrency control={control} name='valor_adesao' />
                         </div>
                     </div>
                 </div>

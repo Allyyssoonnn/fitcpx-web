@@ -4,7 +4,6 @@ import { getModalidades, setModalidade, setPlano } from "../api/plano";
 import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario, useNotificacao } from "../states/states";
 import { useEffect, useState } from "react";
-import CurrencyInput from "../components/currencyInput";
 import { Modal } from "react-bootstrap";
 import { formatarMoeda } from "../utils";
 import CardIconFitCpxPay from "../components/baseComponents/CardIconFitCpxPay";
@@ -13,6 +12,7 @@ import { getUsuarios } from "../api/usuario";
 import { useQuery } from "react-query";
 import FitSelectForm from "../components/baseComponents/FitSelectForm";
 import { PRODUCAO } from "../api/api";
+import FitInputCurrency from "../components/baseComponents/FitInputCurrency";
 
 function CadModalidade() {
     const { nSuccess } = useNotificacao();
@@ -39,7 +39,7 @@ function CadModalidade() {
         }
     }, [location, setValue, usuario]);
 
-    async function confirma(data) {
+    async function confirma(data) {        
         const jsonComisao = comissao?.cod_usuario ? JSON.stringify(comissao) : null;
         await setModalidade({ ...data, comissao_modalidade: jsonComisao, variacoes, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
         nSuccess();
@@ -120,7 +120,7 @@ function CadModalidade() {
 
                             <div className="col-md-3">
                                 <label className="form-label fw-bold">Valor sessão</label>
-                                <CurrencyInput id='value' control={control} name='valor_modalidade' />
+                                <FitInputCurrency id='value' name="valor_modalidade" control={control} />
                             </div>
                         </div>
 
@@ -290,7 +290,7 @@ function ModalVariacao({ show, setShow, newVariacao }) {
 
                     <div className="mt-3">
                         <label className="form-label">Valor</label>
-                        <CurrencyInput id='valueVarService' control={control} name='valor_modalidade_variacao' />
+                        <FitInputCurrency id='valueVarService' name="valor_modalidade_variacao" control={control} />
                     </div>
                 </div>
 
@@ -337,7 +337,7 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
 
                     <div className="mt-3">
                         <label className="form-label">Valor</label>
-                        <CurrencyInput control={control} name='valor_modalidade_variacao_valor' />
+                        <FitInputCurrency name="valor_modalidade_variacao_valor" control={control} />
                     </div>
                 </div>
 

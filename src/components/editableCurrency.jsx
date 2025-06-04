@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { formatarMoeda } from "../utils";
-import CurrencyInput from "./currencyInput";
+import FitInputCurrency from "./baseComponents/FitInputCurrency";
 
 const EditableCurrency = ({ value, onUpdate }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -13,7 +13,7 @@ const EditableCurrency = ({ value, onUpdate }) => {
     };
 
     if (isEditing) return (
-        <CurrencyInput
+        <FitInputCurrency
             className="form-control d-inline-block"
             style={{ width: "auto" }}
             onBlur={handleBlur}
