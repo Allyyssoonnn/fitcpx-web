@@ -3,6 +3,7 @@ import { NumericFormat } from "react-number-format";
 import { Control, Controller, FieldValues } from "react-hook-form";
 
 type FitInputCurrencyProps<T extends FieldValues = any> = {
+  id?: string;
   name?: string;
   control?: Control<T>;
   placeholder?: string;
@@ -17,6 +18,7 @@ type FitInputCurrencyProps<T extends FieldValues = any> = {
 };
 
 function FitInputCurrency<T extends FieldValues>({
+  id = "",
   name = "",
   control,
   placeholder = "R$ 0,00",
@@ -44,6 +46,7 @@ function FitInputCurrency<T extends FieldValues>({
         render={({ field, fieldState }) => (
           <>
             <NumericFormat
+              id={id}
               placeholder={placeholder}
               className={className + (fieldState.error ? " is-invalid" : "")}
               thousandSeparator="."

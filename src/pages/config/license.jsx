@@ -1,16 +1,12 @@
 import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario, useNotificacao } from "../../states/states";
-import { useEffect, useState } from "react";
 import { dataURLToBlob, formatarMoeda } from "../../utils";
 import { buyLicenca, cancelLicenca, getLicenca, getLicencas } from "../../api/licenca";
-import Pagamento from "../../components/payment/pagamento";
 import { useQuery } from "react-query";
 
 function License() {
     const { nLoading, nConfirm, endLoading } = useNotificacao();
     const [empresa] = useRecoilState(stateEmpresa);
-    const [pagando, setPagando] = useState(false);
-    const [codLicencaPay, setcodLicencaPay] = useState(-1);
     
     const { data: licencas } = useQuery({
         queryKey: ['licencas'],
@@ -34,31 +30,13 @@ function License() {
 
     async function onBuy(licenca) {
         nConfirm(`${formatarMoeda(licenca?.valor_licenca)}/Mês`, `Confirma contratação do plano ${licenca?.nome_licenca}?`, async () => {
-            setPagando(true);
-            setcodLicencaPay(licenca.cod_licenca);
+            await buyLicenca(empresa.cod_empresa, licenca.cod_licenca);
             refetch();
         })
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId) {
-        await buyLicenca(empresa.cod_empresa, codLicencaPay, formaPagamento, paymentMethodId);
-        setPagando(false);
-        setcodLicencaPay(-1);
-        closeLoading();
-        refetch();
-    }
-
     return (
         <div className="row">
-            <Pagamento
-                show={pagando}
-                close={() => setPagando(false)}
-                onPay={onPay}
-                callback={() => {}}
-                client={empresa}
-                licenca={true}
-            />
-
             <div className="col-md-6">
                 <div className="card border shadow-none">
                     <div className="card-body p-4">

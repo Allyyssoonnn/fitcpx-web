@@ -5,13 +5,12 @@ import Pagamento from "../../components/payment/pagamento";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { stateEmpresa } from "../../states/states";
-import { getIntentPayment } from "../../api/pagamento";
 
 function Payments({ cod_empresa }) {
     const [empresa] = useRecoilState(stateEmpresa);
 
     const [pagando, setPagando] = useState(false);
-    const [payment, setPayment] = useState(null);
+    const [asaas_id, setAsaas_id] = useState(null);
 
     const { data: licenses } = useQuery({
         queryKey: ['payments'],
@@ -20,29 +19,23 @@ function Payments({ cod_empresa }) {
         enabled: !!cod_empresa
     });
 
-    async function pay(payment) {
-        const resp = await getIntentPayment(empresa.cod_empresa, null, payment.cod_empresa_licenca_pagamento);
-        setPayment(resp);
+    function pay(id) {
+        setAsaas_id(id);
         setPagando(true);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId, geraContrato) {
+    function onPay() {
         //
-    }
-
-    async function refund() {
-
     }
 
     return (
         <div className="container-fluid px-0">
             <Pagamento
-                payment={payment}
+                asaas_id={asaas_id}
                 show={pagando}
                 close={() => setPagando(false)}
                 onPay={onPay}
                 callback={() => {}}
-                client={empresa}
                 licenca={true}
             />
 
@@ -103,30 +96,18 @@ function Payments({ cod_empresa }) {
                                                     <span className="text-muted">{formatarMoeda(payment.valor_empresa_licenca_pagamento)}</span>
                                                 </td>
                                                 <td>
-                                                    {payment.forma_empresa_licenca_pagamento === 'PIX' && (
-                                                        <span className="badge bg-warning-subtle text-dark">PIX</span>
-                                                    )}
-                                                    {payment.forma_empresa_licenca_pagamento === 'CREDIT_CARD' && (
-                                                        <span className="badge bg-primary-subtle text-dark">Cartão</span>
-                                                    )}
+                                                    <span className="badge bg-warning-subtle text-dark">{payment.forma_empresa_licenca_pagamento}</span>
                                                 </td>
                                                 <td className="text-end">
-                                                    {payment.status_empresa_licenca_pagamento === 'requires_payment_method' && (
+                                                    {(payment.status_empresa_licenca_pagamento !== 'succeeded' &&
+                                                        payment.status_empresa_licenca_pagamento !== 'confirmed'
+                                                    ) && (
                                                         <button
-                                                            onClick={() => pay(payment)}
+                                                            onClick={() => pay(payment.asaas_id)}
                                                             className="btn btn-sm btn-outline-success"
                                                         >
                                                             <i className="bi bi-credit-card me-1" />
                                                             Pagar
-                                                        </button>
-                                                    )}
-                                                    {payment.status_empresa_licenca_pagamento === 'succeeded' && (
-                                                        <button
-                                                            onClick={() => refund(payment)}
-                                                            className="btn btn-sm btn-outline-danger"
-                                                        >
-                                                            <i className="bi bi-arrow-counterclockwise me-1" />
-                                                            Reembolsar
                                                         </button>
                                                     )}
                                                 </td>

@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import html2pdf from 'html2pdf.js';
 import { PRODUCAO } from "../api/api";
 import Pagamento from "../components/payment/pagamento";
-import { doRefundPayment, getIntentPayment } from "../api/pagamento";
 
 function Contrato() {
     const { nConfirm, nLoading, endLoading } = useNotificacao();
@@ -18,7 +17,7 @@ function Contrato() {
     const location = useLocation();
 
     const [pagando, setPagando] = useState(false);
-    const [payment, setPayment] = useState(null);
+    const [asaas_id, setAsaas_id] = useState(null);
 
     const cod_aluno = location.state?.cod_aluno;
     const cod_aluno_contrato = location.state?.cod_aluno_contrato;
@@ -68,14 +67,13 @@ function Contrato() {
     }
 
     async function pay(pagamento) {
-        const resp = await getIntentPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
-        setPayment(resp);
+        setAsaas_id(pagamento?.asaas_id);
         setPagando(true);
     }
 
     async function refund(pagamento) {
         nConfirm(null, 'Confirma reembolso?', async () => {
-            const resp = await doRefundPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
+            // const resp = await doRefundPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
             refetch();
         })
     }
@@ -83,7 +81,8 @@ function Contrato() {
     return (
         <div className="container-fluid">
             <Pagamento
-                payment={payment}
+                asaas_id={asaas_id}
+                typePayment={alunoContrato?.tipopagamento_aluno_contrato}
                 show={pagando}
                 close={() => setPagando(false)}
                 onPay={() => {}}
@@ -112,6 +111,7 @@ function Contrato() {
                             <p><strong>Valor total:</strong> {formatarMoeda(alunoContrato?.total_aluno_contrato)}</p>
                             <p><strong>Expiração:</strong> {formatarData(alunoContrato?.expiracao_aluno_contrato)}</p>
                             <p><strong>Forma de cobrança: </strong> {alunoContrato?.formapagamento_aluno_contrato}</p>
+                            <p><strong>Forma de pagamento: </strong> {alunoContrato?.tipopagamento_aluno_contrato}</p>
                             <p><strong>Status: </strong>
                                 <label className="badge bg-info">{alunoContrato?.status_aluno_contrato}</label>
                             </p>
@@ -191,7 +191,7 @@ function Contrato() {
                                         <th>Status</th>
                                         <th>Expiração</th>
                                         <th>Valor</th>
-                                        <th>Forma</th>
+                                        <th>Identificação</th>
                                         <th className="text-end">Ações</th>
                                     </tr>
                                 </thead>
@@ -225,15 +225,12 @@ function Contrato() {
                                                 {formatarMoeda(pagamento?.valor_aluno_contrato_pagamento)}
                                             </td>
                                             <td>
-                                                {pagamento.forma_aluno_contrato_pagamento === 'PIX' && (
-                                                    <span className="badge bg-warning-subtle text-dark">PIX</span>
-                                                )}
-                                                {pagamento.forma_aluno_contrato_pagamento === 'CREDIT_CARD' && (
-                                                    <span className="badge bg-primary-subtle text-dark">Cartão</span>
-                                                )}
+                                                <span className="badge bg-warning-subtle text-dark">
+                                                    {pagamento.stripe_payment_id || pagamento.asaas_id}
+                                                </span>
                                             </td>
                                             <td className="text-end">
-                                                {(pagamento.status_aluno_contrato_pagamento === 'requires_payment_method' && !pagamento.asaas_id) && (
+                                                {(pagamento.status_aluno_contrato_pagamento !== 'confirmed' && pagamento.asaas_id) && (
                                                     <button
                                                         onClick={() => pay(pagamento)}
                                                         className="btn btn-sm btn-outline-success"

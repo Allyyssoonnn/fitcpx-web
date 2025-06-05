@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
-import { stateEmpresa, useNotificacao } from "../../states/states";
-import { PRODUCAO } from "../../api/api";
-import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js";
-import { getCards, getSetupIntent, getSetupIntentCard, updateMethodPayment, updatePaymentIntentStatus } from "../../api/pagamento";
+import { stateEmpresa, useNotificacao } from "../../../states/states";
+import { PRODUCAO } from "../../../api/api";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
-import CardIconFitCpxPay from "../baseComponents/CardIconFitCpxPay";
+import CardIconFitCpxPay from "../../baseComponents/CardIconFitCpxPay";
 
-function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) {
+function NewPayment({ close, onPay, callback, atSigth }) {
     const [empresa] = useRecoilState(stateEmpresa);
     const { nLoading, endLoading, nConfirm } = useNotificacao();
     const [typePayment, setTypePayment] = useState('BOLETO');
     const [formaPagamento, setFormaPagamento] = useState('RECORRENTE'); //MENSAL - RECORRENTE - UNICA
-    const [savedCards, setSavedCards] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(null);
     const [formCard, setFormCard] = useState({
         number: PRODUCAO ? '' : '4111111111111111',
@@ -25,64 +22,34 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
 
     const updateFormCard = (field, value) => setFormCard((prev) => ({ ...prev, [field]: value }));
 
-    const stripe = useStripe();
-    const elements = useElements();
+    // const stripe = useStripe();
+    // const elements = useElements();
 
-    async function clickPayCard() {
+    async function clickPay() {
         nConfirm(null, 'Confirma a finalização da contratação?', async () => {
-            nLoading(null, 'Enviando contrato...');
+            nLoading(null, 'Gerando contratação...');
 
-            if (formaPagamento == 'PARCELADO') {
+            if (typePayment == 'CREDIT') {
                 await onPay(formaPagamento, endLoading, null, formCard, typePayment);
                 if (callback) callback();
                 endLoading();
                 return;
             }
-    
-            var errorPayment = null;
-            var paymentMethodId;
-            if (paymentMethod) paymentMethodId = paymentMethod.id;
-    
-            if (formaPagamento === 'RECORRENTE' && !paymentMethod) {
-                const clientSecret = await getSetupIntentCard(empresa.cod_empresa, client.cod_aluno, licenca);
-            
-                const { error, setupIntent } = await stripe.confirmCardSetup(clientSecret, {
-                    payment_method: {
-                        card: elements.getElement(CardElement),
-                    },
-                });
-                if (setupIntent?.payment_method) paymentMethodId = setupIntent?.payment_method;
-                if (error) {
-                    endLoading();
-                    toast.error(error?.message);
-                    errorPayment = error;
-                    console.log(error);
-                }
-            }
 
-            if (!errorPayment) {
-                await onPay(formaPagamento, endLoading, paymentMethodId, null, typePayment);
-                if (callback) callback();
-                endLoading();
-            }
+            await onPay(formaPagamento, endLoading, null, null, typePayment);
+            if (callback) callback();
+            endLoading();
         })
-    }
-
-    function onSelectCard(card) {
-        setSavedCards(false);
-        setPaymentMethod(card);
     }
 
     async function onClose() {
         close();
     }
 
-    if (savedCards) return <Cartoes client={client} onConfirm={onSelectCard} licenca={licenca} />
-
     return (
         <div className="card" style={{ height: formaPagamento != 'MANUAL' ? '90vh' : '' }}>
-            <div className="card-body m-0">
-                <h5 className="text-center">Pagamento</h5>
+            <div className="card-body m-0 overflow-scroll">
+                <h5 className="text-center">Novo pagamento</h5>
 
                 <div className="border border-bottom-3 border-gray m-1"></div>
 
@@ -94,7 +61,6 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                         <label className="form-check-label" htmlFor="flexSwitchCheckDefault">[FitCpx Pay] - Receber pagamento pelo app?</label>
                     </CardIconFitCpxPay>
                 </div>
-                
 
                 {formaPagamento != 'MANUAL' && (
                     <>
@@ -103,7 +69,6 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                         <FormaPagamento
                             formaPagamento={formaPagamento}
                             setFormaPagamento={setFormaPagamento}
-                            licenca={licenca}
                             atSigth={atSigth}
                             typePayment={typePayment}
                             setTypePayment={setTypePayment}
@@ -149,7 +114,7 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                     </>
                 )}
 
-                {formaPagamento === 'RECORRENTE' && (
+                {/* {((formaPagamento === 'RECORRENTE' || formaPagamento === 'UNICA') && typePayment === 'CREDIT') && (
                     <div className="d-flex col-6">
                         <button className="btn btn-sm btn-outline-info mt-2"
                             onClick={() => setSavedCards(true)}
@@ -157,9 +122,9 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                             Cartões salvos
                         </button>
                     </div>
-                )}
+                )} */}
 
-                {(formaPagamento == 'RECORRENTE' && !paymentMethod) && (
+                {/* {((formaPagamento != 'PARCELADO' && !paymentMethod) && typePayment == 'CREDIT') && (
                     <>
                         <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
                             <p>Preencher dados do cartão</p>
@@ -169,9 +134,9 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
                         </div>
                         <p className="text-danger text-center mb-0">Dados de cartão não passam por nossos servidores.</p>
                     </>
-                )}
+                )} */}
 
-                {formaPagamento == 'PARCELADO' && (
+                {typePayment == 'CREDIT' && (
                     <>
                         <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
                             <p className="mb-0">Preencher dados do cartão</p>
@@ -215,107 +180,9 @@ function PagamentoInterno({ client, close, onPay, callback, licenca, atSigth }) 
             <div className="card-footer d-flex p-3 align-items-center justify-content-between">
                 <button className='btn btn-danger rounded' onClick={onClose}>Fechar</button>
                 
-                <button className="btn btn-success rounded" onClick={clickPayCard}>
+                <button className="btn btn-success rounded" onClick={clickPay}>
                     <i className="bi bi-cart me-2" />
                     Finalizar
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function Cartoes({ client, onConfirm, licenca }) {
-    const [empresa] = useRecoilState(stateEmpresa);
-    const [cards, setCards] = useState([]);
-    const [selectedCardId, setSelectedCardId] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const loadCards = async () => {
-            try {
-                setIsLoading(true);
-                const data = await getCards(empresa.cod_empresa, client.cod_aluno, licenca);
-                setCards(data || []);
-                
-                // Seleciona o primeiro cartão por padrão, se existir
-                if (data && data.length > 0) {
-                    setSelectedCardId(data[0].id);
-                }
-                } catch (error) {
-                console.error('Erro ao carregar cartões:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-  
-        loadCards();
-    }, [empresa.cod_empresa, client]);
-  
-    const handleCardSelection = (cardId) => {
-        setSelectedCardId(cardId);
-    };
-  
-    // Formatação simples do nome da bandeira
-    const formatCardBrand = (brand) => {
-        if (!brand) return 'Cartão';
-        return brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
-    };
-  
-    if (isLoading) {
-        return <div className="text-center py-3">Carregando cartões...</div>;
-    }
-
-    function confirm() {
-        const card = cards.find((card) => card.id === selectedCardId);
-        onConfirm(card);
-    }
-
-    return (
-        <div className="card d-flex flex-column w-100">
-            <div className="card-body d-flex flex-column w-100">
-                {cards.map((card, index) => (
-                    <div 
-                        key={card.id || index} 
-                        className={`card mb-2 ${selectedCardId === card.id ? 'border-primary' : ''}`}
-                        onClick={() => handleCardSelection(card.id)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <div className="card-body d-flex align-items-center">
-                            <div className="form-check me-3">
-                                <input 
-                                    type="radio" 
-                                    className="form-check-input" 
-                                    id={`card-${card.id}`}
-                                    name="paymentCard"
-                                    checked={selectedCardId === card.id}
-                                    onChange={() => {}} // Handled by parent div onClick
-                                    readOnly
-                                />
-                            </div>
-                            
-                            <div>
-                                <div className="d-flex align-items-center">
-                                    <strong className="me-2">{formatCardBrand(card?.card?.brand)}</strong>
-                                    <span className="text-muted">**** {card?.card?.last4}</span>
-                                </div>
-                                <small className="text-muted">
-                                    Validade: {card?.card?.exp_month}/{card?.card?.exp_year}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-
-                {cards.length === 0 && <div className="text-center py-3">Nenhum cartão cadastrado.</div>}
-            </div>
-
-            <div className="card-footer d-flex justify-content-between">
-                <button  className="btn btn-danger rounded" onClick={() => onConfirm(null)}>
-                    Fechar
-                </button>
-
-                <button  className="btn btn-success rounded" disabled={!selectedCardId} onClick={confirm}>
-                    Confirmar
                 </button>
             </div>
         </div>
@@ -337,9 +204,8 @@ function FormaPagamento({ typePayment, setTypePayment }) {
                 </motion.button>
 
                 <motion.button
-                    className='btn btn-outline-gray rounded d-flex flex-column justify-content-center align-items-center'
+                    className='btn btn-outline-success rounded d-flex flex-column justify-content-center align-items-center'
                     onClick={() => setTypePayment('PIX')}
-                    disabled
                 >
                     <iconify-icon icon='bi-clipboard-check' width='50' height='50'/>
                     PIX
@@ -359,4 +225,4 @@ function FormaPagamento({ typePayment, setTypePayment }) {
     );
 }
 
-export default PagamentoInterno;
+export default NewPayment;

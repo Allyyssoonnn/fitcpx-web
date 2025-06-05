@@ -25,8 +25,8 @@ export const cancelLicenca = async (cod_empresa_licenca) => {
     throw new Error("Erro ao carregar agenda");
 };
 
-export const buyLicenca = async (cod_empresa, cod_licenca, formaPagamento, paymentMethodId) => {
-    const resp = await post('/licenca/buyLicenca', { cod_empresa, cod_licenca, formaPagamento, paymentMethodId });
+export const buyLicenca = async (cod_empresa, cod_licenca) => {
+    const resp = await post('/licenca/buyLicenca', { cod_empresa, cod_licenca });
     if (resp.status) {
         return resp.licenca;
     } else toast.error(resp.message);

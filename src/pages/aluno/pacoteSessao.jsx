@@ -6,9 +6,6 @@ import JoditEditor from "jodit-react";
 import { useRecoilState } from "recoil";
 import { stateEmpresa, useNotificacao } from "../../states/states";
 import { useEffect, useState } from "react";
-import html2pdf from 'html2pdf.js';
-import Pagamento from "../../components/payment/pagamento";
-import { doRefundPayment, getIntentPayment } from "../../api/pagamento";
 import { getAlunoSessaoPacote } from "../../api/sessao";
 
 function PacoteSessao() {
@@ -38,34 +35,17 @@ function PacoteSessao() {
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
-
-    async function pay(pagamento) {
-        const resp = await getIntentPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
-        setPayment(resp);
-        setPagando(true);
-    }
-
-    async function onPay(formaPagamento, closeLoading, paymentMethodId, geraContrato) {
-        //
-    }
-
-    async function refund(pagamento) {
-        nConfirm(null, 'Confirma reembolso?', async () => {
-            const resp = await doRefundPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
-            refetch();
-        })
-    }
             
     return (
         <div className="container-fluid">
-            <Pagamento
+            {/* <Pagamento
                 payment={payment}
                 show={pagando}
                 close={() => setPagando(false)}
                 onPay={onPay}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
                 client={aluno}
-            />
+            /> */}
 
             <div className="row">
                 <div className="col-md-8">

@@ -28,17 +28,14 @@ import CadPlano from "../pages/cadPlano";
 import Planos from "../pages/planos";
 import Modalidades from "../pages/modalidades";
 import CadModalidade from "../pages/cadModalidade";
-import ResumoFinanceiro from "../pages/resumoFinanceiro";
 import ContratacaoPlano from "../pages/contratacaoPlano";
 import ModContratos from "../pages/modContratos";
 import CadContrato from "../pages/cadContrato";
 import Configuracao from "../pages/configuracao";
 import Contrato from "../pages/contrato";
 import Contratos from "../pages/contratos";
-import FitCpxPay from "../pages/fitCpxPay/fitCpxPay";
 import ContratacaoSessao from "../pages/contratacaoSessao";
 import PacoteSessao from "../pages/aluno/pacoteSessao";
-import FitCpxPayUsuario from "../pages/fitCpxPay/fitCpxPayUsuario";
 
 const routes = [
     //Base
@@ -83,13 +80,10 @@ const routes = [
     { path: '/agenda', name: 'Agenda', element: Agenda },
     { path: '/planilha', name: 'Licença', element: Planilha },
     { path: '/relatorios', name: 'Licença', element: Relatorios },
-    { path: '/resumofinanceiro', name: 'Licença', element: ResumoFinanceiro },
     { path: '/configuracao', name: 'Licença', element: Configuracao },
     { path: '/contrato', name: 'Licença', element: Contrato },
     { path: '/pacoteSessao', name: 'Licença', element: PacoteSessao },
     { path: '/contratos', name: 'Licença', element: Contratos },
-    { path: '/cadfitcpxpay', name: 'Licença', element: FitCpxPay },
-    { path: '/cadfitcpxpayusuario', name: 'Licença', element: FitCpxPayUsuario },
 ]
   
 export default routes;  
