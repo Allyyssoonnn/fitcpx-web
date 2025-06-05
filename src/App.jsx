@@ -10,13 +10,11 @@ import Recovery from './pages/recovery';
 import RecuperacaoSenha from './pages/recuperacaoSenha';
 
 import ErrorBoundaryWrapper from './base/errorBoundary';
-import { useAppVersionChecker } from './hooks/useAppVersionChecker';
 import { parseCookies } from 'nookies';
 import routes from './routes/routes';
 import PrivateRoute from './routes/PrivateRoute';
 
 function App() {
-    useAppVersionChecker();
     const cookies = parseCookies(null);
     
     return (
