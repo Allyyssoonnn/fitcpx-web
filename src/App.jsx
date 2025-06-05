@@ -16,7 +16,7 @@ import PrivateRoute from './routes/PrivateRoute';
 
 function App() {
     const cookies = parseCookies(null);
-    
+
     return (
         <BrowserRouter>
             <Suspense
