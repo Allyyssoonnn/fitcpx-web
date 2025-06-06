@@ -342,38 +342,20 @@ export function getPesoIMCMeta(aluno, avaliacao, meta, imcPersonalizado) {
 export function getReferenciaIMCMetas(aluno, avaliacao, meta) {
     const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
     var result;
-    if (aluno.sexo_aluno == 'M') {
-        if (idade < 60) {
-            if (meta == 'Saúde -1') result = 19.5;
-            if (meta == 'Saúde 0') result = 21.65;
-            if (meta == 'Saúde +1') result = 23.85;
-            if (meta == 'Magro') result = 22.7;
-            if (meta == 'Atlético') result = 24.9;
-            if (meta == 'Musculoso') result = 26.5;
-        } else {
-            if (meta == 'Saúde -1') result = 22.7;
-            if (meta == 'Saúde 0') result = 24.25;
-            if (meta == 'Saúde +1') result = 26.05;
-            if (meta == 'Magro') result = 22.7;
-            if (meta == 'Atlético') result = 24.9;
-            if (meta == 'Musculoso') result = 26.5;
-        }
+    if (idade < 60) {
+        if (meta == 'Saúde -1') result = 21.5;
+        if (meta == 'Saúde 0') result = 21.7;
+        if (meta == 'Saúde +1') result = 25.5;
+        if (meta == 'Magro') result = 22;
+        if (meta == 'Atlético') result = 25;
+        if (meta == 'Musculoso') result = 27;
     } else {
-        if (idade < 60) {
-            if (meta == 'Saúde -1') result = 18.5;
-            if (meta == 'Saúde 0') result = 20.6;
-            if (meta == 'Saúde +1') result = 22.8;
-            if (meta == 'Magro') result = 21.65;
-            if (meta == 'Atlético') result = 23.85;
-            if (meta == 'Musculoso') result = 25.75;
-        } else {
-            if (meta == 'Saúde -1') result = 24.25;
-            if (meta == 'Saúde 0') result = 26.05;
-            if (meta == 'Saúde +1') result = 27.8;
-            if (meta == 'Magro') result = 21.65;
-            if (meta == 'Atlético') result = 23.85;
-            if (meta == 'Musculoso') result = 25.75;
-        }
+        if (meta == 'Saúde -1') result = 24.5;
+        if (meta == 'Saúde 0') result = 25;
+        if (meta == 'Saúde +1') result = 25.8;
+        if (meta == 'Magro') result = 23.5;
+        if (meta == 'Atlético') result = 24.5;
+        if (meta == 'Musculoso') result = 26.5;
     }
     return result;
 }
@@ -383,78 +365,36 @@ export function getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraP
     const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
     var result;
     if (aluno.sexo_aluno == 'M') {
-        if (idade >= 18 && idade <= 25) {
-            if (meta == 'Saúde -1') result = 9;
-            if (meta == 'Saúde 0') result = 12.5;
-            if (meta == 'Saúde +1') result = 15;
-            if (meta == 'Magro') result = 5;
-            if (meta == 'Atlético') result = 9;
-            if (meta == 'Musculoso') result = 12.5;
-        } else if (idade >= 26 && idade <= 35) {
-            if (meta == 'Saúde -1') result = 13.5;
-            if (meta == 'Saúde 0') result = 17;
-            if (meta == 'Saúde +1') result = 19;
-            if (meta == 'Magro') result = 5;
-            if (meta == 'Atlético') result = 9;
-            if (meta == 'Musculoso') result = 12.5;
-        } else if (idade >= 36 && idade <= 45) {
-            if (meta == 'Saúde -1') result = 17;
-            if (meta == 'Saúde 0') result = 20;
-            if (meta == 'Saúde +1') result = 22;
+        if (idade < 60) {
+            if (meta == 'Saúde -1') result = 12.5;
+            if (meta == 'Saúde 0') result = 14.5;
+            if (meta == 'Saúde +1') result = 17.5;
             if (meta == 'Magro') result = 9.5;
-            if (meta == 'Atlético') result = 13.5;
-            if (meta == 'Musculoso') result = 17;
-        } else if (idade >= 46 && idade <= 55) {
-            if (meta == 'Saúde -1') result = 19;
-            if (meta == 'Saúde 0') result = 22;
-            if (meta == 'Saúde +1') result = 24.5;
-            if (meta == 'Magro') result = 9.5;
-            if (meta == 'Atlético') result = 13.5;
-            if (meta == 'Musculoso') result = 17;
-        } else if (idade >= 56) {
-            if (meta == 'Saúde -1') result = 20.5;
-            if (meta == 'Saúde 0') result = 22.5;
-            if (meta == 'Saúde +1') result = 24.5;
-            if (meta == 'Magro') result = 12;
-            if (meta == 'Atlético') result = 17;
-            if (meta == 'Musculoso') result = 20;
+            if (meta == 'Atlético') result = 12;
+            if (meta == 'Musculoso') result = 14;
+        } else {
+            if (meta == 'Saúde -1') result = 17.5;
+            if (meta == 'Saúde 0') result = 19.5;
+            if (meta == 'Saúde +1') result = 22.5;
+            if (meta == 'Magro') result = 12.5;
+            if (meta == 'Atlético') result = 15.5;
+            if (meta == 'Musculoso') result = 18;
         }
     } else {
-        if (idade >= 18 && idade <= 25) {
-            if (meta == 'Saúde -1') result = 18;
-            if (meta == 'Saúde 0') result = 21;
-            if (meta == 'Saúde +1') result = 24;
-            if (meta == 'Magro') result = 14.5;
-            if (meta == 'Atlético') result = 18;
-            if (meta == 'Musculoso') result = 21;
-        } else if (idade >= 26 && idade <= 35) {
-            if (meta == 'Saúde -1') result = 19;
-            if (meta == 'Saúde 0') result = 22;
-            if (meta == 'Saúde +1') result = 24.5;
-            if (meta == 'Magro') result = 14.5;
-            if (meta == 'Atlético') result = 18;
-            if (meta == 'Musculoso') result = 21;
-        } else if (idade >= 36 && idade <= 45) {
-            if (meta == 'Saúde -1') result = 21.5;
-            if (meta == 'Saúde 0') result = 25;
-            if (meta == 'Saúde +1') result = 28;
-            if (meta == 'Magro') result = 15;
-            if (meta == 'Atlético') result = 19;
-            if (meta == 'Musculoso') result = 22;
-        } else if (idade >= 46 && idade <= 55) {
-            if (meta == 'Saúde -1') result = 24;
-            if (meta == 'Saúde 0') result = 27;
-            if (meta == 'Saúde +1') result = 30;
-            if (meta == 'Magro') result = 15;
-            if (meta == 'Atlético') result = 19;
-            if (meta == 'Musculoso') result = 22;
-        } else if (idade >= 56) {
+        if (idade < 60) {
+            if (meta == 'Saúde -1') result = 20.5;
+            if (meta == 'Saúde 0') result = 22.5;
+            if (meta == 'Saúde +1') result = 25.5;
+            if (meta == 'Magro') result = 16;
+            if (meta == 'Atlético') result = 19.5;
+            if (meta == 'Musculoso') result = 22.5;
+        } else {
             if (meta == 'Saúde -1') result = 25;
             if (meta == 'Saúde 0') result = 28;
-            if (meta == 'Saúde +1') result = 31;
-            if (meta == 'Magro') result = 17.5;
-            if (meta == 'Atlético') result = 21.5;
-            if (meta == 'Musculoso') result = 25;
+            if (meta == 'Saúde +1') result = 30.5;
+            if (meta == 'Magro') result = 19.5;
+            if (meta == 'Atlético') result = 22.5;
+            if (meta == 'Musculoso') result = 24.5;
         }
     }
     return result;
