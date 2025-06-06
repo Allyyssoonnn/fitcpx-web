@@ -309,9 +309,9 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
 
     function confirmar(data) {
         newDescont({
-            nome_subvariacao: data.nome_subvariacao ?? `SubVariação ${String(data.duracao_subvariacao)}`,
-            duracao_subvariacao: Number(data.duracao_subvariacao ?? 1),
-            valor_subvariacao: data.valor_subvariacao,
+            nome_modalidade_variacao_valor: data.nome_modalidade_variacao_valor ?? `SubVariação ${String(data.quantidade_modalidade_variacao_valor)}`,
+            quantidade_modalidade_variacao_valor: Number(data.quantidade_modalidade_variacao_valor ?? 1),
+            valor_modalidade_variacao_valor: data.valor_modalidade_variacao_valor,
         });
         setShow(false);
         reset();
