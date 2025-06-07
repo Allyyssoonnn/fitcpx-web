@@ -67,6 +67,7 @@ function CadAluno() {
 
     const watched = watch();
     useEffect(() => {
+        if (watched?.cod_aluno) return;
         setAlunoForm(watched);
     }, [JSON.stringify(watched)]);
 

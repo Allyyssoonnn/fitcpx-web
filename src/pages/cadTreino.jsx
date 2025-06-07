@@ -54,6 +54,7 @@ function CadTreino() {
 
     const watched = watch();
     useEffect(() => {
+        if (watched?.cod_treino) return;
         setTreinoForm(watched);
     }, [JSON.stringify(watched)]);
 

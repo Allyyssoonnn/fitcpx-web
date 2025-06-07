@@ -111,6 +111,7 @@ function CadAvaliacao() {
 
     const watched = watch();
     useEffect(() => {
+        if (watched?.cod_avaliacao) return;
         setAvaliacaoForm(watched);
     }, [JSON.stringify(watched)]);
     
