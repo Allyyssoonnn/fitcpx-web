@@ -631,7 +631,11 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
         stroke: { curve: "smooth", width: 2 },
         grid: { borderColor: "var(--bs-border-color)", strokeDashArray: 4, yaxis: { lines: { show: true } } },
         markers: { size: 4 },
-        xaxis: { categories: ordenaAvalicaoData(avaliacoes).reduce((arr, av, i) => [...arr, av.data_avaliacao], []), labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
+        xaxis: { categories: ordenaAvalicaoData(avaliacoes).reduce((arr, av, i) =>
+            [...arr,
+                // new Date(av.data_avaliacao).toLocaleDateString()
+                new Date(...av.data_avaliacao.split('-').map((v, i) => i === 1 ? +v - 1 : +v)).toLocaleDateString('pt-BR')
+            ], []), labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
         yaxis: { max: getMaxValue() + 10, min: 0, tickAmount: 4, labels: { style: { fontSize: "12px", colors: "#a1aab2" } } },
         tooltip: { theme: "dark", shared: true, intersect: false },
         colors: data.map((serie) => serie.color), // Cores fixas
