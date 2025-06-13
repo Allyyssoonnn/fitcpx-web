@@ -1,21 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMCMMeta, calculaKGMusculo, calculaKGMusculoMeta, calculaKGOsseo, calculaKGOsseoMeta, calculaKGResidual, calculaKGResidualMeta, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMCMMeta, calculaPorcentagemMusculo, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseo, calculaPorcentagemOsseoMeta, calculaPorcentagemResidual, calculaPorcentagemResidualMeta, calcularIdade, formatarData, getAreaMagraGorda, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura, ordenaAvalicaoData, verificaCamposProtocolo } from "../utils";
-import { useRecoilState } from "recoil";
-import { stateUsuario } from "../states/states";
+import { calcularIdade, formatarData, ordenaAvalicaoData } from "../utils";
 import { getAvaliacoes } from "../api/aluno";
 import { useQuery } from "react-query";
 import ReactApexChart from "react-apexcharts";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-
 function CompareAvaliacao() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [usuario] = useRecoilState(stateUsuario);
 
-    const [avaliacao, setAvaliacao] = useState({});
-    const [avaliacoesComparacao, setAvaliacoesComparacao] = useState([{}]);
+    const [physical1, setPhysical1] = useState({});
+    const [physical2, setPhysical2] = useState({});
+    const [physical3, setPhysical3] = useState({});
     const [aluno, setAluno] = useState({});
 
     const { data: avaliacoes, refetch } = useQuery({
@@ -27,18 +24,9 @@ function CompareAvaliacao() {
 
     useEffect(() => {
         if (!avaliacoes) return;
-        const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
-        avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) :  navigate('/alunos');
         alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
-
-        const indexAv = avaliacoes.findIndex((av) => av == avaliacaoRecebida);
-        setAvaliacoesComparacao([{ ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }, { ...avaliacaoRecebida, index: indexAv }]);
     }, [avaliacoes]);
-
-    function selecionaAvaliacao(indexAv, indexComparacao) {
-        setAvaliacoesComparacao(prev => prev.map((av, i) => i == indexComparacao ? avaliacoes[indexAv] : av));
-    }
 
     if (!aluno) return <div>Carregando...</div>;
 
@@ -50,26 +38,46 @@ function CompareAvaliacao() {
                         <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
                             <i className="bi bi-arrow-left-circle me-2"></i> Voltar
                         </button>
-                        
-                        {/* <button onClick={imprimirResultados} className="btn btn-primary mb-3">
-                            <i className="bi bi-printer me-2"></i> Imprimir
-                        </button> */}
                     </div>
                 </div>
 
                 <div className="card-body px-0 px-sm-4">
                     <div className="row g-3 mb-5 justify-content-center align-items-center">
-                        {avaliacoesComparacao.map((avComp, i) => (
-                            <div className="col-md-3" key={i}>
-                                <label className="form-label">Avaliação {i + 1}</label>
-                                <select className="form-control" value={avComp?.index} onChange={e => selecionaAvaliacao(e.target.value, i)}>
-                                    <option value={null}>Selecione uma avaliação</option>
-                                    {avaliacoes.map((av, index) => (
-                                        <option key={index} value={index}>{formatarData(av.data_avaliacao)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        ))}
+                        <div className="col-md-3">
+                            <label className="form-label">Avaliação 1</label>
+                            <select className="form-control" value={physical1?.cod_avaliacao}
+                                onChange={e => setPhysical1(avaliacoes.find((v) => v.cod_avaliacao == e.target.value))}
+                            >
+                                <option value={null}>Selecione uma avaliação</option>
+                                {avaliacoes.map((av, index) => (
+                                    <option key={av.cod_avaliacao} value={av.cod_avaliacao}>{formatarData(av.data_avaliacao)}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="col-md-3">
+                            <label className="form-label">Avaliação 2</label>
+                            <select className="form-control" value={physical2?.cod_avaliacao}
+                                onChange={e => setPhysical2(avaliacoes.find((v) => v.cod_avaliacao == e.target.value))}
+                            >
+                                <option value={null}>Selecione uma avaliação</option>
+                                {avaliacoes.map((av, index) => (
+                                    <option key={av.cod_avaliacao} value={av.cod_avaliacao}>{formatarData(av.data_avaliacao)}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="col-md-3">
+                            <label className="form-label">Avaliação 3</label>
+                            <select className="form-control" value={physical3?.cod_avaliacao}
+                                onChange={e => setPhysical3(avaliacoes.find((v) => v.cod_avaliacao == e.target.value))}
+                            >
+                                <option value={null}>Selecione uma avaliação</option>
+                                {avaliacoes.map((av, index) => (
+                                    <option key={av.cod_avaliacao} value={av.cod_avaliacao}>{formatarData(av.data_avaliacao)}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <h4 className="mb-4 text-center">Comparação de Avaliações</h4>
@@ -96,40 +104,47 @@ function CompareAvaliacao() {
                                     <thead>
                                         <tr>
                                             <th>Parâmetro</th>
-                                            <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                            <th>{physical1?.data_avaliacao ? formatarData(physical1.data_avaliacao) : 'Selecione'}</th>
                                             <th></th>
-                                            <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                            <th>{physical2?.data_avaliacao ? formatarData(physical2.data_avaliacao) : 'Selecione'}</th>
                                             <th></th>
-                                            <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                                            <th>{physical3?.data_avaliacao ? formatarData(physical3.data_avaliacao) : 'Selecione'}</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         {[
-                                            { label: 'Peso (kg)', key: 'peso' },
-                                            { label: 'Músculo (%)', key: 'peso', func: calculaPorcentagemMusculo },
-                                            { label: 'Músculo (kg)', key: 'peso', func: calculaKGMusculo },
-                                            { label: 'Gordura (%)', key: 'peso', func: calculaPorcentagemGordura },
-                                            { label: 'Gordura (kg)', key: 'peso', func: calculaKGGordura },
-                                            { label: 'Massa Magra (%)', key: 'peso', func: calculaPorcentagemMassaMagra },
-                                            { label: 'Massa Magra (kg)', key: 'peso', func: calculaKGMassaMagra },
-                                        ].map(({ label, key, func }) => {
-                                            const val1 = func && avaliacoes[0]?.cod_protocolo > 0 ? func(aluno, avaliacoes[0]) : (avaliacoes[0]?.[key] || 0);
-                                            const val2 = func && avaliacoes[1]?.cod_protocolo > 0 ? func(aluno, avaliacoes[1]) : (avaliacoes[1]?.[key] || 0);
-                                            const val3 = func && avaliacoes[2]?.cod_protocolo > 0 ? func(aluno, avaliacoes[2]) : (avaliacoes[2]?.[key] || 0);
+                                            { label: 'Peso (kg)', value: 'peso' },
+                                            { label: 'Músculo (%)', value: 'result.compositionPercentage.massa_muscular' },
+                                            { label: 'Músculo (kg)', value: 'result.compositionWeight.massa_muscular' },
+                                            { label: 'Gordura (%)', value: 'result.compositionPercentage.gordura' },
+                                            { label: 'Gordura (kg)', value: 'result.compositionWeight.gordura' },
+                                            { label: 'Massa Magra (%)', value: 'result.compositionPercentage.massa_magra' },
+                                            { label: 'Massa Magra (kg)', value: 'result.compositionWeight.massa_magra' },
+                                        ].map(({ label, key, value }) => {
+                                            const getValue = (data) => {
+                                                if (!value) return 'Não informado';
+                                                const raw = value.split('.').reduce((acc, key) => acc?.[key], data);
+                                                return raw;
+                                            };
+
+                                            const val1 = getValue(physical1);
+                                            const val2 = getValue(physical2);
+                                            const val3 = getValue(physical3);
 
                                             return (
-                                            <tr key={key}>
-                                                <td><strong>{label}</strong></td>
-                                                <td>{val1 || 'Não informado'}</td>
-                                                <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
-                                                    {val2 ? (val2 - val1).toFixed(2) : '-'}
-                                                </th>
-                                                <td>{val2 || 'Não informado'}</td>
-                                                <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
-                                                    {val3 ? (val3 - val2).toFixed(2) : '-'}
-                                                </th>
-                                                <td>{val3 || 'Não informado'}</td>
-                                            </tr>
+                                                <tr key={key}>
+                                                    <td><strong>{label}</strong></td>
+                                                    <td>{val1 || 'Não informado'}</td>
+                                                    <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                        {val2 ? (val2 - val1).toFixed(2) : '-'}
+                                                    </th>
+                                                    <td>{val2 || 'Não informado'}</td>
+                                                    <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                        {val3 ? (val3 - val2).toFixed(2) : '-'}
+                                                    </th>
+                                                    <td>{val3 || 'Não informado'}</td>
+                                                </tr>
                                             );
                                         })}
                                     </tbody>
@@ -138,18 +153,18 @@ function CompareAvaliacao() {
                         </div>
                     </div>
                     
-                    <AreaMagraGorda avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
-                    <SimetriaMembro avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
-                    <Dobras avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
-                    <Diametro avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
-                    <Imagens avaliacao={avaliacao} avaliacoes={avaliacoesComparacao} />
+                    <AreaMagraGorda avaliacoes={[physical1, physical2, physical3]} />
+                    <SimetriaMembro avaliacoes={[physical1, physical2, physical3]} />
+                    <Dobras avaliacoes={[physical1, physical2, physical3]} />
+                    <Diametro avaliacoes={[physical1, physical2, physical3]} />
+                    <Imagens avaliacoes={[physical1, physical2, physical3]} />
                 </div>
             </div>
         </div>
     );
 }
 
-function Imagens({ avaliacao, avaliacoes }) {
+function Imagens({ avaliacoes }) {
     const [tipoColagem, setTipoColagem] = useState(2);
 
     const [indexImg, setIndexImg] = useState([0, 0, 0]);
@@ -263,14 +278,14 @@ function Imagens({ avaliacao, avaliacoes }) {
     )
 }
 
-function AreaMagraGorda({ avaliacao, avaliacoes }) {
+function AreaMagraGorda({ avaliacoes }) {
     const [resultados, setResultados] = useState({ braco: [], coxa: [], panturrilha: [] });
 
     useEffect(() => {
         const arrayResultados = [];
 
         //Cria um array com os resultados de todas avaliações
-        {avaliacoes.map((av) => arrayResultados.push(getAreaMagraGorda(av)))}
+        {avaliacoes.map((av) => arrayResultados.push(av?.result?.leanAndFatArea))}
 
         // Criar estrutura com arrays vazios para cada segmento
         const groupedResults = {
@@ -386,7 +401,7 @@ function AreaMagraGorda({ avaliacao, avaliacoes }) {
     )
 }
 
-function SimetriaMembro({ avaliacao, avaliacoes }) {
+function SimetriaMembro({ avaliacoes }) {
     const tooltipAssimetria = (
         <Tooltip id="tooltip">
             <div>O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.</div>
@@ -458,7 +473,7 @@ function SimetriaMembro({ avaliacao, avaliacoes }) {
     )
 }
 
-function Dobras({ avaliacao, avaliacoes }) {
+function Dobras({ avaliacoes }) {
 
     return (
         <div className="card no-print">
@@ -498,18 +513,18 @@ function Dobras({ avaliacao, avaliacoes }) {
                                     const val3 = avaliacoes[2]?.[key] || 0;
 
                                     return (
-                                    <tr key={key}>
-                                        <td><strong>{label}</strong></td>
-                                        <td>{val1 || 'Não informado'}</td>
-                                        <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
-                                            {val2 ? (val2 - val1).toFixed(2) : '-'}
-                                        </th>
-                                        <td>{val2 || 'Não informado'}</td>
-                                        <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
-                                            {val3 ? (val3 - val2).toFixed(2) : '-'}
-                                        </th>
-                                        <td>{val3 || 'Não informado'}</td>
-                                    </tr>
+                                        <tr key={key}>
+                                            <td><strong>{label}</strong></td>
+                                            <td>{val1 || 'Não informado'}</td>
+                                            <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                {val2 ? (val2 - val1).toFixed(2) : '-'}
+                                            </th>
+                                            <td>{val2 || 'Não informado'}</td>
+                                            <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                {val3 ? (val3 - val2).toFixed(2) : '-'}
+                                            </th>
+                                            <td>{val3 || 'Não informado'}</td>
+                                        </tr>
                                     );
                                 })}
                             </tbody>
@@ -521,7 +536,7 @@ function Dobras({ avaliacao, avaliacoes }) {
     )
 }
 
-function Diametro({ avaliacao, avaliacoes }) {
+function Diametro({ avaliacoes }) {
     return (
         <div className="card no-print">
             <div className="card-header">
@@ -587,13 +602,15 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
             { name: "Gordura", data: [], color: "var(--bs-danger)" },
             { name: "Osséo", data: [], color: "var(--bs-secondary)" },
             { name: "Residual", data: [], color: "var(--bs-warning)" },
+            { name: "Peso", data: [], color: "var(--bs-info)" },
         ];
         for (const av of ordenaAvalicaoData(avaliacoes)) {
-            temp[0].data.push(Number(calculaKGMusculo(aluno, av)));
-            temp[1].data.push(Number(calculaKGMassaMagra(aluno, av)));
-            temp[2].data.push(Number(calculaKGGordura(aluno, av)));
-            temp[3].data.push(Number(calculaKGOsseo(av)));
-            temp[4].data.push(Number(calculaKGResidual(aluno, av)));
+            temp[0].data.push(Number(av.result.compositionWeight.massa_muscular));
+            temp[1].data.push(Number(av.result.compositionWeight.massa_magra));
+            temp[2].data.push(Number(av.result.compositionWeight.gordura));
+            temp[3].data.push(Number(av.result.compositionWeight.massa_ossea));
+            temp[4].data.push(Number(av.result.compositionWeight.massa_residual));
+            temp[5].data.push(Number(av.peso));
         }
         setData(temp);
         setSeriesVisible(temp.reduce((acc, serie) => ({ ...acc, [serie.name]: true }), {}));

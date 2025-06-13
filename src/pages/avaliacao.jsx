@@ -1,29 +1,30 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaDensidade, calculaKGGordura, calculaKGMassaMagra, calculaKGMCM, calculaKGMCMMeta, calculaKGMusculo, calculaKGMusculoMeta, calculaKGOsseo, calculaKGOsseoMeta, calculaKGResidual, calculaKGResidualMeta, calculaPorcentagemGordura, calculaPorcentagemMassaMagra, calculaPorcentagemMCM, calculaPorcentagemMCMMeta, calculaPorcentagemMusculo, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseo, calculaPorcentagemOsseoMeta, calculaPorcentagemResidual, calculaPorcentagemResidualMeta, formatarData, getAreaMagraGorda, getBasal, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura, verificaCamposProtocolo } from "../utils";
+import { calculaKGMCMMeta, calculaKGMusculoMeta, calculaKGOsseoMeta, calculaKGResidualMeta, calculaPorcentagemMCMMeta, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseoMeta, calculaPorcentagemResidualMeta, formatarData, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura } from "../utils";
 import { useQuery } from "react-query";
-import { getProtocolos } from "../api/usuario";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
 import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveBar } from "@nivo/bar";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { getAluno } from "../api/aluno";
+import { getResultPhysicalAssesment } from "../api/avaliacao";
 
 function Avaliacao() {
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
 
-    const { data: protocolos } = useQuery({
-        queryKey: ['protocolo'],
-        queryFn: () => getProtocolos(usuario.cod_usuario),
-        initialData: [],
-    });
-
     const [avaliacao, setAvaliacao] = useState({});
-    const [aluno, setAluno] = useState({});    
+    const [aluno, setAluno] = useState({});
+
+    const { data: result } = useQuery({
+        queryKey: ['protocolo'],
+        queryFn: () => getResultPhysicalAssesment(avaliacao),
+        initialData: {},
+        enabled: !!avaliacao.cod_avaliacao,
+    });
 
     useEffect(() => {
         (async function load() {
@@ -75,12 +76,6 @@ function Avaliacao() {
         return result.toFixed(2);
     }
 
-    const tooltip = (
-        <Tooltip id="tooltip">
-            <div>Somente estará disponível os protocolos cujo os campos obrigatórios estiverem preenchidos na avaliação.</div>
-        </Tooltip>
-    );
-
     return (
         <div className="container-fluid">
             <div className="card">
@@ -111,36 +106,6 @@ function Avaliacao() {
                         </div>
 
                         <div className="card-body">
-                            <div className="col-md-5 no-print mb-3">
-                                <label className="form-label">Protocolo</label>
-
-                                <div className="d-flex align-items-center">
-                                    <select onChange={e => setAvaliacao(prev => ({ ...prev, cod_protocolo: Number(e.target.value) }))} value={avaliacao.cod_protocolo} className="form-control">
-                                        <option value="">Selecione um protocolo</option>
-                                        {Object.keys(protocolos).map(categoria => (
-                                            <optgroup key={categoria} label={categoria}>
-                                                {protocolos[categoria].map(protocolo => (
-                                                    <option disabled={!verificaCamposProtocolo(avaliacao, protocolo.cod_protocolo)}
-                                                        className={`${verificaCamposProtocolo(avaliacao, protocolo.cod_protocolo) ? '' : 'bg-light'}`}
-                                                        key={protocolo.cod_protocolo}
-                                                        value={protocolo.cod_protocolo}
-                                                    >
-                                                        {protocolo.nome_protocolo}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-                                        ))}
-                                    </select>
-
-                                    <OverlayTrigger placement="bottom" overlay={tooltip}>
-                                        <i 
-                                            className="bi bi-info-circle ms-2 text-primary"
-                                            style={{ cursor: 'pointer' }}
-                                        ></i>
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-
                             {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
                             <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
                             <p><strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}</p>
@@ -149,18 +114,15 @@ function Avaliacao() {
                             <p><strong>Altura:</strong> {avaliacao.altura} cm</p>
                             <p><strong>Sexo:</strong> {aluno.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
                             <p><strong>Total dobras:</strong> {getTotalDobras()} cm</p>
-                            <p><strong>Metabolismo basal:</strong> {getBasal(aluno, avaliacao)}</p>
+                            <p><strong>Metabolismo basal:</strong> {result?.basal}</p>
                             <p><strong>IMC:</strong> {getIMC(avaliacao)}</p>
                             <p><strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}</p>
-                            {/* <p className={`${avaliacao.cod_protocolo === 2 || avaliacao.cod_protocolo === 4 ? '' : 'd-none'}`}>
-                                <strong>Densidade corporal:</strong> {calculaDensidade(aluno, avaliacao)}
-                            </p> */}
                         </div>
                     </div>
 
                     <div className="row g-3">
                         <div className="col-md-6">
-                            <ComposicaoCorporal avaliacao={avaliacao} aluno={aluno} />
+                            <ComposicaoCorporal avaliacao={avaliacao} result={result} />
                         </div>
 
                         <div className="col-md-6">
@@ -168,8 +130,8 @@ function Avaliacao() {
                         </div>
                     </div>
 
-                    <Metas aluno={aluno} avaliacao={avaliacao} />
-                    <AreaMagraGorda avaliacao={avaliacao} />
+                    <Metas aluno={aluno} avaliacao={avaliacao} result={result} />
+                    <AreaMagraGorda result={result} />
                     <Perimetro avaliacao={avaliacao} />
                     <Dobras avaliacao={avaliacao} />
                     <Diametro avaliacao={avaliacao} />
@@ -180,7 +142,7 @@ function Avaliacao() {
     );
 }
 
-function Metas({ aluno, avaliacao, avaliacoes }) {
+function Metas({ aluno, avaliacao, result }) {
     const [meta, setMeta] = useState('Magro');
     const [gordura, setGordura] = useState(5);
     const [imc, setImc] = useState(10);
@@ -257,42 +219,42 @@ function Metas({ aluno, avaliacao, avaliacoes }) {
                             <tbody>
                                 <tr>
                                     <th>Gordura</th>
-                                    <th>{calculaKGGordura(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemGordura(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.gordura} KG</th>
+                                    <th>{result?.compositionPercentage?.gordura} %</th>
                                     <th><i className="bi bi-arrow-right text-success"></i></th>
                                     <th>{getReferenciaKGGordura(aluno, avaliacao, meta, gordura)} KG</th>
                                     <th>{getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gordura)} %</th>
-                                    <th className="text-muted">{(getReferenciaKGGordura(aluno, avaliacao, meta, gordura) - calculaKGGordura(aluno, avaliacao)).toFixed(1)}</th>
+                                    <th className="text-muted">{(getReferenciaKGGordura(aluno, avaliacao, meta, gordura) - result?.compositionWeight?.gordura).toFixed(1)}</th>
                                 </tr>
                                 <tr>
                                     <th>Musc.</th>
-                                    <th>{calculaKGMusculo(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemMusculo(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.massa_muscular} KG</th>
+                                    <th>{result?.compositionPercentage?.massa_muscular} %</th>
                                     <th><i className="bi bi-arrow-right text-success"></i></th>
                                     <th>{calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
                                     <th>{calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                                    <th className="text-muted">{(calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) - calculaKGMusculo(aluno, avaliacao)).toFixed(1)}</th>
+                                    <th className="text-muted">{(calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) - result?.compositionWeight?.massa_muscular).toFixed(1)}</th>
                                 </tr>
                                 <tr>
                                     <th>Osséa</th>
-                                    <th>{calculaKGOsseo(avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemOsseo(avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.massa_ossea} KG</th>
+                                    <th>{result?.compositionPercentage?.massa_ossea} %</th>
                                     <th><i className="bi bi-arrow-right text-success"></i></th>
                                     <th>{calculaKGOsseoMeta(aluno, avaliacao, meta, imc)} KG</th>
                                     <th>{calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc)} %</th>
                                 </tr>
                                 <tr>
                                     <th>Resi.</th>
-                                    <th>{calculaKGResidual(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemResidual(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.massa_residual} KG</th>
+                                    <th>{result?.compositionPercentage?.massa_residual} %</th>
                                     <th><i className="bi bi-arrow-right text-success"></i></th>
                                     <th>{calculaKGResidualMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
                                     <th>{calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
                                 </tr>
                                 <tr>
                                     <th>MCM</th>
-                                    <th>{calculaKGMCM(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemMCM(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.mcm} KG</th>
+                                    <th>{result?.compositionPercentage?.mcm} %</th>
                                     <th><i className="bi bi-arrow-right text-success"></i></th>
                                     <th>{calculaKGMCMMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
                                     <th>{calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc)} %</th>
@@ -332,14 +294,7 @@ function Imagens({ avaliacao }) {
     )
 }
 
-function AreaMagraGorda({ avaliacao }) {
-    const [resultados, setResultados] = useState({ braco: [], coxa: [], panturrilha: [] });
-
-    useEffect(() => {
-        const resp = getAreaMagraGorda(avaliacao);
-        setResultados(resp);
-    }, [avaliacao]);
-
+function AreaMagraGorda({ result }) {
     return (
         <div className="card">
             <div className="card-header">
@@ -356,7 +311,7 @@ function AreaMagraGorda({ avaliacao }) {
                         </thead>
 
                         <tbody>
-                            {resultados?.braco?.map((campo, id) => (
+                            {result?.leanAndFatArea?.braco?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
                                     <th>{campo.valor} {campo.prefix}</th>
@@ -375,7 +330,7 @@ function AreaMagraGorda({ avaliacao }) {
                         </thead>
 
                         <tbody>
-                            {resultados?.coxa?.map((campo, id) => (
+                            {result?.leanAndFatArea?.coxa?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
                                     <th>{campo.valor} {campo.prefix}</th>
@@ -394,7 +349,7 @@ function AreaMagraGorda({ avaliacao }) {
                         </thead>
 
                         <tbody>
-                            {resultados?.panturrilha?.map((campo, id) => (
+                            {result?.leanAndFatArea?.panturrilha?.map((campo, id) => (
                                 <tr key={id}>
                                     <th>{campo.nome}</th>
                                     <th>{campo.valor} {campo.prefix}</th>
@@ -408,7 +363,7 @@ function AreaMagraGorda({ avaliacao }) {
     )
 }
 
-function ComposicaoCorporal({ avaliacao, aluno }) {
+function ComposicaoCorporal({ avaliacao, result }) {
 
     return (
         <div className="card table-responsive">
@@ -421,13 +376,13 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
                     <ResponsivePie
                         enableArcLinkLabels={window.innerWidth < 900 ? false : true}
                         data={avaliacao.tipo_avaliacao === 'complexo' ? [
-                            { id: 'Gordura', label: 'Gordura', value: calculaPorcentagemGordura(aluno, avaliacao), color: '#FF9999' },
-                            { id: 'Músculo', label: 'Músculo', value: calculaPorcentagemMusculo(aluno, avaliacao), color: '#99FF99' },
-                            { id: 'Osso', label: 'Osso', value: calculaPorcentagemOsseo(avaliacao), color: '#CCCCCC' },
-                            { id: 'Residual', label: 'Residual', value: calculaPorcentagemResidual(aluno, avaliacao), color: '#99CCFF' },
+                            { id: 'Gordura', label: 'Gordura', value: result?.compositionPercentage?.gordura, color: '#FF9999' },
+                            { id: 'Músculo', label: 'Músculo', value: result?.compositionPercentage?.massa_muscular, color: '#99FF99' },
+                            { id: 'Osso', label: 'Osso', value: result?.compositionPercentage?.massa_ossea, color: '#CCCCCC' },
+                            { id: 'Residual', label: 'Residual', value: result?.compositionPercentage?.massa_residual, color: '#99CCFF' },
                         ] : [
-                            { id: 'Gordura', label: 'Gordura', value: calculaPorcentagemGordura(aluno, avaliacao), color: '#FF9999' },
-                            { id: 'Massa magra', label: 'Massa magra', value: calculaPorcentagemMassaMagra(aluno, avaliacao), color: '#99FF99' },
+                            { id: 'Gordura', label: 'Gordura', value: result?.compositionPercentage?.gordura, color: '#FF9999' },
+                            { id: 'Massa magra', label: 'Massa magra', value: result?.compositionPercentage?.massa_magra, color: '#99FF99' },
                         ]}
                         margin={window.innerWidth > 900 ? { top: 40, right: 80, bottom: 80, left: 80 } : {}}
                         innerRadius={0.5}
@@ -471,37 +426,37 @@ function ComposicaoCorporal({ avaliacao, aluno }) {
                     <tbody>
                         <tr>
                             <th>Gordura</th>
-                            <th>{calculaKGGordura(aluno, avaliacao)} KG</th>
-                            <th>{calculaPorcentagemGordura(aluno, avaliacao)} %</th>
+                            <th>{result?.compositionWeight?.gordura} KG</th>
+                            <th>{result?.compositionPercentage?.gordura} %</th>
                         </tr>
                         {avaliacao.tipo_avaliacao === 'complexo' ? (
                             <>
                                 <tr>
                                     <th>Musc.</th>
-                                    <th>{calculaKGMusculo(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemMusculo(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.massa_muscular} KG</th>
+                                    <th>{result?.compositionPercentage?.massa_muscular} %</th>
                                 </tr>
                                 <tr>
                                     <th>Óssea.</th>
-                                    <th>{calculaKGOsseo(avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemOsseo(avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.massa_ossea} KG</th>
+                                    <th>{result?.compositionPercentage?.massa_ossea} %</th>
                                 </tr>
                                 <tr>
                                     <th>Resi.</th>
-                                    <th>{calculaKGResidual(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemResidual(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.massa_residual} KG</th>
+                                    <th>{result?.compositionPercentage?.massa_residual} %</th>
                                 </tr>
                                 <tr>
                                     <th>MCM</th>
-                                    <th>{calculaKGMCM(aluno, avaliacao)} KG</th>
-                                    <th>{calculaPorcentagemMCM(aluno, avaliacao)} %</th>
+                                    <th>{result?.compositionWeight?.mcm} KG</th>
+                                    <th>{result?.compositionPercentage?.mcm} %</th>
                                 </tr>
                             </>
                         ) : (
                             <tr>
                                 <th>Massa Magra</th>
-                                <th>{calculaKGMassaMagra(aluno, avaliacao)} KG</th>
-                                <th>{calculaPorcentagemMassaMagra(aluno, avaliacao)} %</th>
+                                <th>{result?.compositionWeight?.massa_magra} KG</th>
+                                <th>{result?.compositionPercentage?.massa_magra} %</th>
                             </tr>
                         )}
                     </tbody>
