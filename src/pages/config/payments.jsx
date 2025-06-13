@@ -80,7 +80,7 @@ function Payments({ cod_empresa }) {
                                                         <span className="badge bg-success-subtle text-success">Pago</span>
                                                     )}
                                                     {(payment.status_empresa_licenca_pagamento === 'Pendente' ||
-                                                        payment.status_empresa_licenca_pagamento === 'requires_payment_method') && (
+                                                        payment.status_empresa_licenca_pagamento === 'Pending') && (
                                                         <span className="badge bg-warning-subtle text-warning">Pendente</span>
                                                     )}
                                                     {payment.status_empresa_licenca_pagamento === 'refund' && (
