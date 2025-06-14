@@ -5,6 +5,7 @@ import { getAvaliacoes } from "../api/aluno";
 import { useQuery } from "react-query";
 import ReactApexChart from "react-apexcharts";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useNotificacao } from "../states/states";
 
 function CompareAvaliacao() {
     const navigate = useNavigate();
@@ -165,8 +166,8 @@ function CompareAvaliacao() {
 }
 
 function Imagens({ avaliacoes }) {
+    const { nLoading, endLoading } = useNotificacao();
     const [tipoColagem, setTipoColagem] = useState(2);
-
     const [indexImg, setIndexImg] = useState([0, 0, 0]);
 
     function changeIndex(value, index) {
@@ -177,6 +178,7 @@ function Imagens({ avaliacoes }) {
     
     const handleSalvarColagem = async () => {
         try {
+            nLoading();
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
     
@@ -226,8 +228,9 @@ function Imagens({ avaliacoes }) {
             link.href = dataURL;
             link.download = 'colagem.png';
             link.click();
-    
+            endLoading();
         } catch (error) {
+            endLoading();
             console.error('Erro ao salvar a colagem:', error);
             alert('Ocorreu um erro ao salvar a colagem. Verifique as imagens e tente novamente.');
         }
@@ -266,6 +269,7 @@ function Imagens({ avaliacoes }) {
                                     <img
                                         src={av?.imagem[indexImg[index]]?.url_imagem || ''}
                                         style={{ width: '100%', border: '1px solid black' }}
+                                        crossOrigin="anonymous"
                                     />
                                 )}
                                 <h4 className="mt-2">{av?.descricao_imagem}</h4>

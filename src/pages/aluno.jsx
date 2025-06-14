@@ -586,7 +586,7 @@ function CardAvaliacao({ avaliacao, aluno, refetch, index }) {
                         <strong>Musc.:</strong> {((avaliacao.peso * avaliacao.massa_muscular) / 100).toFixed(1)} KG / {avaliacao.massa_muscular} %
                     </div>
                     <div className="col-md-4">
-                        <strong>MCM:</strong> {avaliacao.result.compositionWeight.mcm} KG / {avaliacao.result.compositionPercentage.mcm} %
+                        <strong>MCM:</strong> {avaliacao?.result?.compositionWeight?.mcm} KG / {avaliacao?.result?.compositionPercentage?.mcm} %
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
-import { stateUsuario } from "../states/states";
+import { stateUsuario, useNotificacao } from "../states/states";
 import { useRecoilState } from "recoil";
 import { sendAvaliacaoIMG, setAvaliacao } from "../api/aluno";
 import { useQuery } from "react-query";
@@ -18,6 +18,7 @@ import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
 import { useFormStore } from "../hooks/useFormStore";
 
 function CadAvaliacao() {
+    const { nLoading, endLoading } = useNotificacao();
     const { formData, setAvaliacaoForm } = useFormStore();
     const { handleSubmit, register, setValue, getValues, watch, reset, formState: { errors, isSubmitting } } = useForm();
     const navigate = useNavigate();
@@ -118,6 +119,7 @@ function CadAvaliacao() {
     if (isLoading) return <></>;
 
     async function confirma(data) {
+        nLoading();
         var cancel = false;
         //Verifica se todas as imagens tem descrição
         Object.entries(capturedImages).forEach(([key, imageData]) => {
@@ -129,10 +131,11 @@ function CadAvaliacao() {
         if (cancel) return;
 
         const av = await setAvaliacao(data);
-        enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
+        await enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
         reset();
         navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
         useFormStore.getState().clearForm();
+        endLoading();
     }
 
     const enviaImagens = async (cod_avaliacao) => {
@@ -282,7 +285,7 @@ function CadAvaliacao() {
                                     <option value="">Selecione um protocolo</option>
                                     {Object.keys(protocolos).map(categoria => (
                                         <optgroup key={categoria} label={categoria}>
-                                            {protocolos[categoria].map(protocolo => (
+                                            {Array.isArray(protocolos[categoria]) && protocolos[categoria]?.map(protocolo => (
                                                 <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
                                                     {protocolo.nome_protocolo}
                                                 </option>
