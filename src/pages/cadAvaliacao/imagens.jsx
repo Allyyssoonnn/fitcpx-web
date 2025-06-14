@@ -19,7 +19,7 @@ function Imagens({ capturedImages, setCapturedImages, imageDescriptions, setImag
             setOptions(Array.from({ length: Object.keys(capturedImages).length }, (_, i) => i + 1));
             setIniciouTela(true);
         }
-    }, []);
+    }, [capturedImages]);
 
     const handleEdit = (event, option) => {
         event.preventDefault();

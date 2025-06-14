@@ -1,7 +1,7 @@
 import { get, post } from "./api";
 
-export const getAgenda = async (cod_empresa) => {
-    const resp = await post('/agenda/getAgenda', { cod_empresa });
+export const getAgenda = async (cod_empresa, cod_aluno) => {
+    const resp = await post('/agenda/getAgenda', { cod_empresa, cod_aluno });
     if (resp.status) return resp.agenda;
     throw new Error("Erro ao carregar agenda");
 };

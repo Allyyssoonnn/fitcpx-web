@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { calculaKGGordura, calculaKGMCM, calculaKGMusculo, calculaPorcentagemGordura, calculaPorcentagemMCM, calculaPorcentagemMusculo, calcularIdade, dataURLToBlob, formatarData, formatarMoeda, getSexo } from "../utils";
+import { calcularIdade, dataURLToBlob, formatarData, formatarMoeda, getSexo } from "../utils";
 import { useQuery } from "react-query";
 import { changeAlunoIMG, deleteAvaliacao, getAluno, getAlunoContratos, getAvaliacao, getAvaliacoes, setAluno } from '../api/aluno';
 import { deleteTreino, getTreinos, setTreino } from '../api/treino';
@@ -580,13 +580,13 @@ function CardAvaliacao({ avaliacao, aluno, refetch, index }) {
                         <strong>Peso:</strong> {avaliacao.peso} kg
                     </div>
                     <div className="col-md-4">
-                        <strong>Gord.:</strong> {calculaKGGordura(aluno, avaliacao)} KG / {calculaPorcentagemGordura(aluno, avaliacao)} %
+                        <strong>Gord.:</strong> {((avaliacao.peso * avaliacao.gordura) / 100).toFixed(1)} KG / {avaliacao.gordura} %
                     </div>
                     <div className="col-md-4">
-                        <strong>Musc.:</strong> {calculaKGMusculo(aluno, avaliacao)} KG / {calculaPorcentagemMusculo(aluno, avaliacao)} %
+                        <strong>Musc.:</strong> {((avaliacao.peso * avaliacao.massa_muscular) / 100).toFixed(1)} KG / {avaliacao.massa_muscular} %
                     </div>
                     <div className="col-md-4">
-                        <strong>MCM:</strong> {calculaKGMCM(aluno, avaliacao)} KG / {calculaPorcentagemMCM(aluno, avaliacao)} %
+                        <strong>MCM:</strong> {avaliacao?.result?.compositionWeight?.mcm} KG / {avaliacao?.result?.compositionPercentage?.mcm} %
                     </div>
                 </div>
             </div>

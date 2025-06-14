@@ -65,7 +65,7 @@ function PacoteSessao() {
                             <p><strong>Forma de cobrança: </strong> {alunoSessao?.formapagamento_aluno_sessao_pacote}</p>
                             <p><strong>Status: </strong>
                                 <label className="badge bg-info">{alunoSessao?.status_aluno_sessao_pacote === 'succeeded' && 'Pago'}</label>
-                                <label className="badge bg-info">{alunoSessao?.status_aluno_sessao_pacote === 'requires_payment_method' && 'Pendente'}</label>
+                                <label className="badge bg-info">{alunoSessao?.status_aluno_sessao_pacote === 'Pending' && 'Pendente'}</label>
                             </p>
 
                             <div className="d-flex gap-3">

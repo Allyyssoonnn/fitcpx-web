@@ -14,6 +14,7 @@ import { getAlunos } from "../api/aluno";
 import { getGoogleConnect } from "../api/usuario";
 import FitSelectForm from "../components/baseComponents/FitSelectForm";
 import FitInputForm from "../components/baseComponents/FitInputForm";
+import { getModalidades } from "../api/plano";
 
 function Agenda() {
     const [empresa] = useRecoilState(stateEmpresa);
@@ -102,6 +103,12 @@ function Calendario() {
         enabled: !!usuario.cod_empresa
     });
 
+    const { data: modalidades, refetch } = useQuery({
+        queryKey: ['modalidades', usuario.cod_empresa],
+        queryFn: () => getModalidades(usuario.cod_empresa),
+        initialData: [],
+    });
+
     const { data: agenda } = useQuery({
         queryKey: ['agenda', usuario.cod_usuario],
         queryFn: async () => {
@@ -137,8 +144,10 @@ function Calendario() {
             const event = info.event;
     
             // Preenche os campos do formulário com os dados do evento
+            setValue('cod_agenda', event.id);
             setValue('nome_evento', event.title);
-            setValue('cod_aluno', event.cod_aluno);
+            setValue('cod_modalidade', event.extendedProps.cod_modalidade);
+            setValue('cod_aluno', event.extendedProps.cod_aluno);
             setValue('tipo_evento', event.extendedProps.calendar);
             setValue('data_inicio', event.start.toISOString().slice(0, 16));  // Formato de data para datetime-local
             setValue('data_fim', event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));  // Caso tenha um horário de término
@@ -196,6 +205,8 @@ function Calendario() {
         const event = info.event;
 
         // Preenche os campos do formulário com os dados do evento
+        if (event.cod_evento) setValue('cod_evento', event.cod_evento);
+        setValue('cod_empresa', empresa.cod_empresa);
         setValue('nome_evento', event.title);
         setValue('descricao_evento', event.extendedProps.descricao_evento);
         setValue('cod_aluno', event.extendedProps.cod_aluno);
@@ -289,7 +300,7 @@ function Calendario() {
                                     classNameContainer="col-md-12 mt-6"
                                     nameField="Descrição do evento"
                                     errors={errors}
-                                    { ...register('descricao_evento', { required: true }) }
+                                    { ...register('descricao_evento') }
                                 />
 
                                 <FitInputForm
@@ -299,6 +310,18 @@ function Calendario() {
                                     errors={errors}
                                     { ...register('cor_evento') }
                                 />
+
+                                <FitSelectForm
+                                    classNameContainer="col-md-12 mt-6"
+                                    nameField="Modalidade (opcional)"
+                                    errors={errors}
+                                    { ...register('cod_modalidade') }
+                                >
+                                    <option value={null}></option>
+                                    {modalidades.map((modalidade, index) => (
+                                        <option key={index} value={modalidade.cod_modalidade}>{modalidade.nome_modalidade}</option>
+                                    ))}
+                                </FitSelectForm>
 
                                 <FitSelectForm
                                     classNameContainer="col-md-12 mt-6"

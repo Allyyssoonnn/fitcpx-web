@@ -209,7 +209,7 @@ function Contrato() {
                                                     <span className="badge bg-success-subtle text-success mt-1">Pago</span>
                                                 )}
                                                 {(pagamento.status_aluno_contrato_pagamento === 'Pendente' ||
-                                                    pagamento.status_aluno_contrato_pagamento === 'requires_payment_method') && (
+                                                    pagamento.status_aluno_contrato_pagamento === 'Pending') && (
                                                     <span className="badge bg-warning-subtle text-warning mt-1">Pendente</span>
                                                 )}
                                                 {pagamento.status_aluno_contrato_pagamento === 'refund' && (
