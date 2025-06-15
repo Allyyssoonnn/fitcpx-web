@@ -87,7 +87,7 @@ function Contrato() {
                 close={() => setPagando(false)}
                 onPay={() => {}}
                 callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
-                client={aluno}
+                clientId={aluno?.cod_aluno}
             />
 
             <div className="row">

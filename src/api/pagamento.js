@@ -14,3 +14,10 @@ export const buscarCobrancaAluno = async (id) => {
         return resp.cobranca;
     } toast.error(resp.message);
 };
+
+export const pagarCobranca = async (asaasId, cod_aluno_cartao) => {
+    const resp = await post('/pagamento/pagarCobranca', { asaasId, cod_aluno_cartao });
+    if (resp.status) {
+        return resp.cobranca;
+    } toast.error(resp.message);
+};
