@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculaKGMCMMeta, calculaKGMusculoMeta, calculaKGOsseoMeta, calculaKGResidualMeta, calculaPorcentagemMCMMeta, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseoMeta, calculaPorcentagemResidualMeta, formatarData, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura } from "../utils";
+import { calculaKGMCMMeta, calculaKGMusculoMeta, calculaKGOsseoMeta, calculaKGResidualMeta, calculaPorcentagemMCMMeta, calculaPorcentagemMusculoMeta, calculaPorcentagemOsseoMeta, calculaPorcentagemResidualMeta, calcularIdade, formatarData, getIMC, getPesoIMCMeta, getReferenciaIMC, getReferenciaIMCMetas, getReferenciaKGGordura, getReferenciaPorcentagemGordura } from "../utils";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../states/states";
@@ -108,6 +108,7 @@ function Avaliacao() {
                         <div className="card-body">
                             {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
                             <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
+                            <p><strong>Idade:</strong> {calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
                             <p><strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}</p>
                             <p><strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}</p>
                             <p><strong>Peso:</strong> {avaliacao.peso} kg</p>
