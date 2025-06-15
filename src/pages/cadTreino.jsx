@@ -174,6 +174,7 @@ function CadTreino() {
             <div className="card">
                 <div className="card-header d-flex justify-content-between flex-wrap">
                     <h5 className="card-title fw-semibold m-3">Prescrição</h5>
+                    <label>{sessoes?.length}/15</label>
                 </div>
 
                 <div className="card-body p-1">
