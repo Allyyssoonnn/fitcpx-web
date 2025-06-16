@@ -24,7 +24,7 @@ const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = ()
             // setFilteredSuggestions(filtered);
             setShowSuggestions(true);
         } else {
-            setShowSuggestions(false);
+            // setShowSuggestions(false);
         }
     };
 
@@ -53,7 +53,7 @@ const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = ()
     const filteredSuggestions = useMemo(() => {
         if (inputValue.trim()) {
             const searchTerms = inputValue.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ").filter(Boolean);
-
+            
             return sugestoes.filter((suggestion) =>
                 searchTerms.every(term =>
                     suggestion[chavePesquisa]
@@ -64,8 +64,8 @@ const AutoComplete = ({ sugestoes, chave, valueChave, chavePesquisa, onBlur = ()
                 )
             );
         }
-        return [];
-    }, [inputValue, sugestoes]);
+        return sugestoes;
+    }, [inputValue, sugestoes, showSuggestions]);
 
     return (
         (<div className={`position-relative ${className}`}>
