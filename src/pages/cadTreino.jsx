@@ -22,7 +22,7 @@ function CadTreino() {
     const [itensRemovidos, setItensRemovidos] = useState([]);
     const [nome_aluno, setNome_aluno] = useState('');
     const [codAluno, setCodAluno] = useState(0);
-    const [sexo_aluno, setSexo_aluno] = useState('');
+    const [sexo_aluno, setSexo_aluno] = useState(null);
 
     useEffect(() => {
         const treinoRecebido = location.state?.treino;
@@ -87,15 +87,14 @@ function CadTreino() {
 
         const cod_usuario = usuario.cod_usuario;
         const respTreino = await setTreino({ ...data, sexo_treino: sexo_aluno ?? data?.sexo_treino, cod_usuario, cod_empresa: usuario.cod_empresa });
-        if (respTreino.cod_treino)
-            if (respTreino.cod_treino) {
+        if (respTreino.cod_treino) {
             await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos, itensRemovidos);
             reset();
             nSuccess();
             navigate("/aluno", { state: { cod_aluno: codAluno } });
         } else toast.error('Erro ao salvar treino');
     }
-
+    
     return (
         <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid">
             <div className="card">
@@ -146,6 +145,7 @@ function CadTreino() {
                         <div className={`col-md-3 ${sexo_aluno ? 'd-none' : ''}`}>
                             <label className="form-label fw-bold">Sexo *</label>
                             <select id="gender" {...register('sexo_treino', { required: 'O sexo é obrigatório' })} className="form-control">
+                                <option value=''>Selecione o sexo</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Feminino</option>
                             </select>

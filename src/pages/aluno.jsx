@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { calcularIdade, dataURLToBlob, formatarData, formatarMoeda, getSexo } from "../utils";
@@ -269,7 +269,7 @@ function Aluno() {
                             </>
                         }>
                             <div className='text-center'>
-                                <AddTreino show={modalAddTreino} close={() => setModalAddTreino(false)} aluno={aluno} />
+                                <AddTreino treinosAluno={treinos} show={modalAddTreino} close={() => setModalAddTreino(false)} aluno={aluno} />
                                 <button id='addWorkout' className='btn btn-success w-100 rounded-2' onClick={() => setModalAddTreino(true)}>
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Treino
@@ -342,14 +342,15 @@ function Aluno() {
     );
 }
 
-function AddTreino({ show, close, aluno }) {
-    const [usuario] = useRecoilState(stateUsuario); 
+function AddTreino({ show, close, aluno, treinosAluno }) {
+    const [usuario] = useRecoilState(stateUsuario);
     const navigate = useNavigate();
 
     const [importando, setImportando] = useState(false);
     const [reajuste, setReajuste] = useState(false);
+    const [treinoSelecionado, setTreinoSelecionado] = useState(null);
 
-    const { data: treinos, refetch } = useQuery({
+    const { data: treinos } = useQuery({
         queryKey: ['alunos', usuario.cod_empresa],
         queryFn: () => getTreinos({ cod_empresa: usuario.cod_empresa }),
         initialData: [],
@@ -357,65 +358,126 @@ function AddTreino({ show, close, aluno }) {
 
     const tooltip = (
         <Tooltip id="tooltip">
-            <div>
-                <strong>Novo:</strong> Crie um treino personalizado do zero.
-            </div>
-            <p></p>
-            <p></p>
-            <div>
-                <strong>Importar:</strong> Escolha um treino de base do sistema.
-            </div>
-            <p></p>
-            <div>
-                <strong>Reajuste:</strong> Utilize o último treino ativo para ajustes.
-            </div>
+            <div><strong>Novo:</strong> Crie um treino personalizado do zero.</div>
+            <div className="my-2"><strong>Importar:</strong> Escolha um treino de base do sistema.</div>
+            <div><strong>Reajuste:</strong> Utilize o último treino ativo para ajustes.</div>
         </Tooltip>
     );
 
+    function selectTreino(cod_treino) {
+        if (!cod_treino) return setTreinoSelecionado(null);
+
+        const lista = reajuste ? treinosAluno : treinos;
+        const treino = lista.find(v => String(v.cod_treino) === String(cod_treino));
+
+        if (treino) setTreinoSelecionado(treino);
+    }
+
+    function abreTreino() {
+        const { cod_treino, ...treinoSemCod } = treinoSelecionado;
+        treinoSemCod.sessoes = treinoSemCod.sessoes.map((s) => {
+            const { cod_sessao, cod_treino, ...session } = s;
+            return session;
+        })
+        navigate('/cadtreino', { state: { aluno, treino: treinoSemCod } });
+    }
+
+    function changeMode(mode) {
+        setImportando(mode === 'importar');
+        setReajuste(mode === 'reajuste');
+        setTreinoSelecionado(null);
+    }
+
+    const listTreinos = useMemo(() => (
+        reajuste ? treinosAluno : treinos
+    ), [treinos, treinosAluno, reajuste]);
+
     return (
         <Modal show={show} className="modal-fade">
-            <div className="modal-dialog-scrollable modal-lg">
-                <div className='modal-content'>
-                    <div className='modal-header d-flex flex-row justify-content-between align-items-start'>
+            <div className="modal-dialog modal-dialog-scrollable modal-lg">
+                <div className="modal-content">
+
+                    {/* Header */}
+                    <div className="modal-header d-flex justify-content-between align-items-start">
                         <div>
-                            <h4>Adicionar treino</h4>
-                            <h6>{aluno?.nome_aluno}</h6>
+                            <h4 className="mb-1">Adicionar Treino</h4>
+                            <h6 className="text-muted">{aluno?.nome_aluno}</h6>
                         </div>
 
                         <OverlayTrigger placement="bottom" overlay={tooltip}>
-                            <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: 'pointer' }}></i>
+                            <i className="bi bi-info-circle fs-4 text-primary" style={{ cursor: 'pointer' }}></i>
                         </OverlayTrigger>
                     </div>
 
-                    <div className="d-flex flex-row justify-content-around p-3">
-                        <button id='newWorkoutMethod' className='btn btn-outline-success rounded-1 w-30' onClick={() => navigate('/cadtreino', { state: { aluno } })}>
+                    {/* Buttons */}
+                    <div className="d-flex flex-wrap gap-3 justify-content-center p-3">
+                        <button
+                            className="btn btn-outline-success rounded-2 flex-fill"
+                            style={{ minWidth: '150px' }}
+                            onClick={() => navigate('/cadtreino', { state: { aluno } })}
+                        >
+                            <i className="bi bi-file-earmark-plus fs-5 me-1"></i>
                             Novo treino
-                            <br></br>
-                            <i className="bi bi-file-earmark-plus"></i>
                         </button>
 
-                        <button disabled className='btn btn-outline-info rounded-1 w-30' onClick={() => setImportando(true)}>
+                        <button
+                            className={`btn ${importando ? 'btn-info' : 'btn-outline-info'} rounded-2 flex-fill`}
+                            style={{ minWidth: '150px' }}
+                            onClick={() => changeMode('importar')}
+                        >
+                            <i className="bi bi-upload fs-5 me-1"></i>
                             Importar base
-                            <br></br>
-                            <i className="bi bi-upload"></i>
                         </button>
 
-                        <button disabled className='btn btn-outline-info rounded-1 w-30' onClick={() => setReajuste(true)}>
+                        <button
+                            className={`btn ${reajuste ? 'btn-info' : 'btn-outline-info'} rounded-2 flex-fill`}
+                            style={{ minWidth: '150px' }}
+                            onClick={() => changeMode('reajuste')}
+                        >
+                            <i className="bi bi-gear fs-5 me-1"></i>
                             Reajuste
-                            <br></br>
-                            <i className="bi bi-gear"></i>
                         </button>
                     </div>
-                </div>
 
-                <div className='modal-footer'>
-                    <button className='btn btn-danger' onClick={close}>
-                        Fechar
-                    </button>
+                    {/* Select treino */}
+                    {(importando || reajuste) && (
+                        <div className="p-3">
+                            <label className="form-label fw-semibold">Selecione o treino</label>
+                            <select
+                                className="form-select"
+                                value={treinoSelecionado?.cod_treino || ''}
+                                onChange={e => selectTreino(e.target.value)}
+                            >
+                                <option value="">Selecione</option>
+                                {listTreinos.map((treino, i) => (
+                                    <option key={i} value={treino.cod_treino}>
+                                        {treino.nome_treino} - {new Date(treino.createdAt).toLocaleDateString()}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    {/* Footer */}
+                    <div className="modal-footer">
+                        <button className="btn btn-danger" onClick={close}>
+                            Fechar
+                        </button>
+
+                        {(importando || reajuste) && (
+                            <button
+                                className="btn btn-info"
+                                disabled={!treinoSelecionado?.cod_treino}
+                                onClick={abreTreino}
+                            >
+                                Selecionar
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </Modal>
-    )
+    );
 }
 
 function CardCardapio({ cardapio, aluno, refetch }) {
