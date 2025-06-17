@@ -35,7 +35,8 @@ function CadAvaliacao() {
     const [imageDescriptions, setImageDescriptions] = useState({});
     const [deletedImages, setDeletedImages] = useState([]);
     const [aluno, setAluno] = useState();
-    const [activeTab, setActiveTab] = useState("perimetros");
+    const [ultimaAvaliacao, setUltimaAvaliacao] = useState();
+    const [activeTab, setActiveTab] = useState("bioimpedancia");
     const [metodoDobras, setMetodoDobras] = useState('normal');
     const [metodoPerimetro, setMetodoPerimetro] = useState('normal');
     const [tipoAvaliacao, setTipoAvaliacao] = useState('');
@@ -54,10 +55,12 @@ function CadAvaliacao() {
     }, [tipo_avaliacao]);
 
     useEffect(() => {
+        const ultimaAvaliacaoRecebida = location.state?.ultimaAvaliacao;
         const avaliacaoRecebida = location.state?.avaliacao;
         const alunoRecebido = location.state?.aluno;
         setValue("cod_usuario", usuario?.cod_usuario);
         setValue("cod_aluno", alunoRecebido?.cod_aluno);
+        if (ultimaAvaliacaoRecebida) setUltimaAvaliacao(ultimaAvaliacaoRecebida);
         if (alunoRecebido) setAluno(alunoRecebido);
         if (avaliacaoRecebida) {
             Object.keys(avaliacaoRecebida).forEach((key) => {
@@ -82,7 +85,7 @@ function CadAvaliacao() {
                 });
             }
         }
-    }, [location, setValue, usuario]);
+    }, [location, setValue, usuario, protocolos]);
     
     useEffect(() => {
         const avaliacaoRecebida = location.state?.avaliacao;
@@ -119,23 +122,28 @@ function CadAvaliacao() {
     if (isLoading) return <></>;
 
     async function confirma(data) {
-        nLoading();
-        var cancel = false;
-        //Verifica se todas as imagens tem descrição
-        Object.entries(capturedImages).forEach(([key, imageData]) => {
-            if (!imageDescriptions[key]) {
-                toast.error(`Adicionar descrição na imagem ${key}`);
-                cancel = true;
-            }
-        });
-        if (cancel) return;
+        try {
+            var cancel = false;
+            //Verifica se todas as imagens tem descrição
+            Object.entries(capturedImages).forEach(([key, imageData]) => {
+                if (!imageDescriptions[key]) {
+                    toast.error(`Adicionar descrição na imagem ${key}`);
+                    cancel = true;
+                }
+            });
+            if (cancel) return;
+            nLoading();
 
-        const av = await setAvaliacao(data);
-        await enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
-        reset();
-        navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
-        useFormStore.getState().clearForm();
-        endLoading();
+            const av = await setAvaliacao(data);
+            await enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
+            reset();
+            navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
+            useFormStore.getState().clearForm();
+            endLoading();
+        } catch (error) {
+            console.log(error);
+            endLoading();
+        }
     }
 
     const enviaImagens = async (cod_avaliacao) => {
@@ -209,6 +217,12 @@ function CadAvaliacao() {
         reset();
         useFormStore.getState().clearForm();
         localStorage.removeItem('avaliacaoCache');
+    }
+
+    function bringLast(e, field) {
+        e.preventDefault();
+        const value = ultimaAvaliacao[field];
+        setValue(field, value);
     }
 
     return (
@@ -329,11 +343,20 @@ function CadAvaliacao() {
 
                         <div className="col-md-3">
                             <label className="form-label fw-bold">Altura (m) *</label>
-                            <input id="height" {...register("altura", { required: "A altura é obrigatória" })}
-                                type="number"
-                                step="0.01"
-                                className="form-control"
-                            />
+                            <div className="input-group">
+                                <input id="height" {...register("altura", { required: "A altura é obrigatória" })}
+                                    type="number"
+                                    step="0.01"
+                                    className="form-control"
+                                />
+                                {!!ultimaAvaliacao && (
+                                    <button className="btn btn-outline-dark"
+                                        onClick={e => bringLast(e, 'altura')}
+                                    >
+                                        <i className="bi bi-arrow-counterclockwise" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -357,8 +380,8 @@ function CadAvaliacao() {
                         onSelect={(tab) => setActiveTab(tab)}
                         className="mb-3"
                     >
-                        <Tab key='diametros' eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
-                            <Diametros
+                        <Tab eventKey="bioimpedancia" title={<><i className="bi bi-activity me-2"></i>Bioimpedância</>}>
+                            <Bioimpedancia
                                 ocultarCampos={ocultarCampos}
                                 register={register}
                                 startSpeechRecognition={startSpeechRecognition}
@@ -366,12 +389,14 @@ function CadAvaliacao() {
                             />
                         </Tab>
 
-                        <Tab eventKey="bioimpedancia" title={<><i className="bi bi-activity me-2"></i>Bioimpedância</>}>
-                            <Bioimpedancia
+                        <Tab key='diametros' eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
+                            <Diametros
                                 ocultarCampos={ocultarCampos}
                                 register={register}
                                 startSpeechRecognition={startSpeechRecognition}
                                 tipoAvaliacao={tipoAvaliacao}
+                                bringLast={bringLast}
+                                showBringLast={!!ultimaAvaliacao}
                             />
                         </Tab>
 

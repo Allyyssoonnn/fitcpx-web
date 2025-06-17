@@ -25,6 +25,11 @@ function CompareAvaliacao() {
 
     useEffect(() => {
         if (!avaliacoes) return;
+
+        if (avaliacoes[0]) setPhysical1(avaliacoes[0]);
+        if (avaliacoes[avaliacoes.length - 2]) setPhysical2(avaliacoes[avaliacoes.length - 2]);
+        if (avaliacoes[avaliacoes.length - 1]) setPhysical3(avaliacoes[avaliacoes.length - 1]);
+
         const alunoRecebido = location.state?.aluno;
         alunoRecebido ? setAluno(alunoRecebido) : navigate('/alunos');
     }, [avaliacoes]);
@@ -269,7 +274,6 @@ function Imagens({ avaliacoes }) {
                                     <img
                                         src={av?.imagem[indexImg[index]]?.url_imagem || ''}
                                         style={{ width: '100%', border: '1px solid black' }}
-                                        crossOrigin="anonymous"
                                     />
                                 )}
                                 <h4 className="mt-2">{av?.descricao_imagem}</h4>
@@ -325,30 +329,51 @@ function AreaMagraGorda({ avaliacoes }) {
     }, [avaliacoes]);
 
     return (
-        <div className="card table-responsive">
-            <div className="card-header">
-                <h4>Área Magra/Gorda</h4>
+        <div className="card table-responsive accordion">
+            <div className="card-header accordion-header">
+                <div className="accordion-button" data-bs-target="#avLeanAndFatArea" data-bs-toggle="collapse" aria-controls="avLeanAndFatArea">
+                    <h4>Área Magra/Gorda</h4>
+                </div>
             </div>
 
-            <div className="card-body">
-                <row className="row g-3 justify-content-around">
-                    <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <tbody>
-                            <tr>
-                                <th></th>
-                                <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
-                                <th></th>
-                                <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
-                                <th></th>
-                                <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
-                            </tr>
-                            <tr>
-                                <h6>Braço</h6>
-                            </tr>
-                            {resultados?.braco?.map((campo, id) => {
-                                // if (!campo.cod_avaliacao1) return <tr key={id}><th>Selecione a avaliação 1</th></tr>
+            <div id="avLeanAndFatArea" className="accordion-collapse collapse">
+                <div className="card-body accordion-body">
+                    <row className="row g-3 justify-content-around">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                    <th></th>
+                                    <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                    <th></th>
+                                    <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                                </tr>
+                                <tr>
+                                    <h6>Braço</h6>
+                                </tr>
+                                {resultados?.braco?.map((campo, id) => {
+                                    // if (!campo.cod_avaliacao1) return <tr key={id}><th>Selecione a avaliação 1</th></tr>
 
-                                return (
+                                    return (
+                                        <tr key={id}>
+                                            <th>{campo.nome}</th>
+                                            {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
+                                            <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                {(campo.valor2 - campo.valor1).toFixed(2)}
+                                            </th>
+                                            {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
+                                            <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                {(campo.valor3 - campo.valor2).toFixed(2)}
+                                            </th>
+                                            <td>{campo.valor3} {campo.prefix}</td>
+                                        </tr>
+                                    )
+                                })}
+                                <tr>
+                                    <h6>Coxa</h6>
+                                </tr>
+                                {resultados?.coxa?.map((campo, id) => (
                                     <tr key={id}>
                                         <th>{campo.nome}</th>
                                         {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
@@ -361,45 +386,28 @@ function AreaMagraGorda({ avaliacoes }) {
                                         </th>
                                         <td>{campo.valor3} {campo.prefix}</td>
                                     </tr>
-                                )
-                            })}
-                            <tr>
-                                <h6>Coxa</h6>
-                            </tr>
-                            {resultados?.coxa?.map((campo, id) => (
-                                <tr key={id}>
-                                    <th>{campo.nome}</th>
-                                    {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
-                                    <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
-                                        {(campo.valor2 - campo.valor1).toFixed(2)}
-                                    </th>
-                                    {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
-                                    <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
-                                        {(campo.valor3 - campo.valor2).toFixed(2)}
-                                    </th>
-                                    <td>{campo.valor3} {campo.prefix}</td>
+                                ))}
+                                <tr>
+                                    <h6>Panturrilha</h6>
                                 </tr>
-                            ))}
-                            <tr>
-                                <h6>Panturrilha</h6>
-                            </tr>
-                            {resultados?.panturrilha?.map((campo, id) => (
-                                <tr key={id}>
-                                    <th>{campo.nome}</th>
-                                    {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
-                                    <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
-                                        {(campo.valor2 - campo.valor1).toFixed(2)}
-                                    </th>
-                                    {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
-                                    <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
-                                        {(campo.valor3 - campo.valor2).toFixed(2)}
-                                    </th>
-                                    <td>{campo.valor3} {campo.prefix}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </row>
+                                {resultados?.panturrilha?.map((campo, id) => (
+                                    <tr key={id}>
+                                        <th>{campo.nome}</th>
+                                        {campo.cod_avaliacao1 ? <td>{campo.valor1} {campo.prefix}</td> : <td>-</td>}
+                                        <th className={`${campo.valor2 - campo.valor1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {(campo.valor2 - campo.valor1).toFixed(2)}
+                                        </th>
+                                        {campo.cod_avaliacao2 ? <td>{campo.valor2} {campo.prefix}</td> : <td>-</td>}
+                                        <th className={`${campo.valor3 - campo.valor2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                            {(campo.valor3 - campo.valor2).toFixed(2)}
+                                        </th>
+                                        <td>{campo.valor3} {campo.prefix}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </row>
+                </div>
             </div>
         </div>
     )
@@ -413,110 +421,178 @@ function SimetriaMembro({ avaliacoes }) {
     );
 
     return (
-        <div className="card table-responsive">
-            <div className="card-header d-flex justify-between">
-                <h4>Simetria dos membros (cm)</h4>
-                <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
-                    <i className='bi bi-question-circle text-danger ms-2'></i>
-                </OverlayTrigger>
+        <div className="card table-responsive accordion">
+            <div className="card-header accordion-header">
+                <button className="accordion-button" data-bs-target="#avAssymmetry" data-bs-toggle="collapse" aria-controls="avAssymmetry">
+                    <div className="d-flex justify-between items-center w-100">
+                        <h4>Simetria dos membros (cm)</h4>
+                        <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
+                            <i className='bi bi-question-circle text-danger ms-2 me-5'></i>
+                        </OverlayTrigger>
+                    </div>
+                </button>
             </div>
-            <div className="card-body">
-                <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Membro</th>
-                            <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
-                            <th></th>
-                            <th></th>
-                            <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
-                            <th></th>
-                            <th></th>
-                            <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            {avaliacoes.map((_, index) => (
-                                <>
-                                    <th key={`dir-${index}`}>Direito</th>
-                                    <th key={`dif-${index}`}>Diferença</th>
-                                    <th key={`esq-${index}`}>Esquerdo</th>
-                                </>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {['Braço', 'Braço contraído', 'Antebraço', 'Coxa'].map((membro, idx) => {
-                            const keys = [
-                                ['braco_relaxado_direito', 'braco_relaxado_esquerdo'],
-                                ['braco_contraido_direito', 'braco_contraido_esquerdo'],
-                                ['antebraco_direito', 'antebraco_esquerdo'],
-                                ['coxa_direita', 'coxa_esquerda']
-                            ];
-                            return (
-                                <tr key={idx}>
-                                    <th>{membro}</th>
-                                    {avaliacoes.map((av, index) => {
-                                        const direito = av?.[keys[idx][0]] || '-';
-                                        const esquerdo = av?.[keys[idx][1]] || '-';
-                                        const diferenca = (direito && esquerdo && !isNaN(direito - esquerdo)) ? (direito - esquerdo).toFixed(2) : '-';
-                                        return (
-                                            <>
-                                                <td key={`dir-${index}`}>{direito}</td>
-                                                <td key={`dif-${index}`} className={`${diferenca >= 1 || diferenca <= -1 ? 'text-danger' : 'text-success'}`}>{diferenca}</td>
-                                                <td key={`esq-${index}`}>{esquerdo}</td>
-                                            </>
-                                        );
-                                    })}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+
+            <div id="avAssymmetry" className="accordion-collapse collapse">
+                <div className="card-body accordion-body">
+                    <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Membro</th>
+                                <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                <th></th>
+                                <th></th>
+                                <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                <th></th>
+                                <th></th>
+                                <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                {avaliacoes.map((_, index) => (
+                                    <>
+                                        <th key={`dir-${index}`}>Direito</th>
+                                        <th key={`dif-${index}`}>Diferença</th>
+                                        <th key={`esq-${index}`}>Esquerdo</th>
+                                    </>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {['Braço', 'Braço contraído', 'Antebraço', 'Coxa'].map((membro, idx) => {
+                                const keys = [
+                                    ['braco_relaxado_direito', 'braco_relaxado_esquerdo'],
+                                    ['braco_contraido_direito', 'braco_contraido_esquerdo'],
+                                    ['antebraco_direito', 'antebraco_esquerdo'],
+                                    ['coxa_direita', 'coxa_esquerda']
+                                ];
+                                return (
+                                    <tr key={idx}>
+                                        <th>{membro}</th>
+                                        {avaliacoes.map((av, index) => {
+                                            const direito = av?.[keys[idx][0]] || '-';
+                                            const esquerdo = av?.[keys[idx][1]] || '-';
+                                            const diferenca = (direito && esquerdo && !isNaN(direito - esquerdo)) ? (direito - esquerdo).toFixed(2) : '-';
+                                            return (
+                                                <>
+                                                    <td key={`dir-${index}`}>{direito}</td>
+                                                    <td key={`dif-${index}`} className={`${diferenca >= 1 || diferenca <= -1 ? 'text-danger' : 'text-success'}`}>{diferenca}</td>
+                                                    <td key={`esq-${index}`}>{esquerdo}</td>
+                                                </>
+                                            );
+                                        })}
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )
 }
 
 function Dobras({ avaliacoes }) {
-
     return (
-        <div className="card no-print">
-            <div className="card-header">
-                <h4>Dobras Cutâneas (cm)</h4>
+        <div className="card no-print accordion">
+            <div className="card-header accordion-header">
+                <div className="accordion-button" data-bs-toggle="collapse" data-bs-target="#avCurves" aria-controls="avCurves">
+                    <h4>Dobras Cutâneas (cm)</h4>
+                </div>
             </div>
             
-            <div className="card-body">
-                <row className="row g-3 justify-content-around">
-                    <div className="table-responsive">
-                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Parâmetro</th>
-                                    <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
-                                    <th></th>
-                                    <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
-                                    <th></th>
-                                    <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    { label: 'Peitoral', key: 'peitoral' },
-                                    { label: 'Bíceps', key: 'biciptal' },
-                                    { label: 'Tríceps', key: 'triciptal' },
-                                    { label: 'Subescapular', key: 'subescapular' },
-                                    { label: 'Axilar Média', key: 'axilar_media' },
-                                    { label: 'Abdominal', key: 'abdominal' },
-                                    { label: 'Coxa', key: 'coxa' },
-                                    { label: 'Supra Ilíaca', key: 'supra_iliaca' },
-                                    { label: 'Supra Espinhal', key: 'supra_espinhal' },
-                                    { label: 'Panturrilha', key: 'panturrilha' }
-                                ].map(({ label, key }) => {
-                                    const val1 = avaliacoes[0]?.[key] || 0;
-                                    const val2 = avaliacoes[1]?.[key] || 0;
-                                    const val3 = avaliacoes[2]?.[key] || 0;
+            <div id="avCurves" className="accordion-collapse collapse">
+                <div className="card-body accordion-body">
+                    <row className="row g-3 justify-content-around">
+                        <div className="table-responsive">
+                            <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Parâmetro</th>
+                                        <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                        <th></th>
+                                        <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                        <th></th>
+                                        <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { label: 'Peitoral', key: 'peitoral' },
+                                        { label: 'Bíceps', key: 'biciptal' },
+                                        { label: 'Tríceps', key: 'triciptal' },
+                                        { label: 'Subescapular', key: 'subescapular' },
+                                        { label: 'Axilar Média', key: 'axilar_media' },
+                                        { label: 'Abdominal', key: 'abdominal' },
+                                        { label: 'Coxa', key: 'coxa' },
+                                        { label: 'Supra Ilíaca', key: 'supra_iliaca' },
+                                        { label: 'Supra Espinhal', key: 'supra_espinhal' },
+                                        { label: 'Panturrilha', key: 'panturrilha' }
+                                    ].map(({ label, key }) => {
+                                        const val1 = avaliacoes[0]?.[key] || 0;
+                                        const val2 = avaliacoes[1]?.[key] || 0;
+                                        const val3 = avaliacoes[2]?.[key] || 0;
 
-                                    return (
+                                        return (
+                                            <tr key={key}>
+                                                <td><strong>{label}</strong></td>
+                                                <td>{val1 || 'Não informado'}</td>
+                                                <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                    {val2 ? (val2 - val1).toFixed(2) : '-'}
+                                                </th>
+                                                <td>{val2 || 'Não informado'}</td>
+                                                <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
+                                                    {val3 ? (val3 - val2).toFixed(2) : '-'}
+                                                </th>
+                                                <td>{val3 || 'Não informado'}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </row>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function Diametro({ avaliacoes }) {
+    return (
+        <div className="card no-print accordion">
+            <div className="card-header accordion-header">
+                <div className="accordion-button" data-bs-toggle="collapse" data-bs-target="#avDiameters" aria-controls="avDiameters">
+                    <h4>Diamêtros Osséos</h4>
+                </div>
+            </div>
+
+            <div id="avDiameters" className="carddion-collapse collapse">
+                <div className="card-body accordion-bogy">
+                    <div className="row">
+                        <div className="table-responsive">
+                            <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Parâmetro</th>
+                                        <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
+                                        <th></th>
+                                        <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
+                                        <th></th>
+                                        <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { label: 'Biestilóide punho', key: 'biestiloide_punho' },
+                                        { label: 'Biepicôndilo Umeral', key: 'biepicondilo_umeral' },
+                                        { label: 'Biepicôndilo femoral', key: 'biepicondilo_femoral' },
+                                    ].map(({ label, key }) => {
+                                        const val1 = avaliacoes[0]?.[key] || 0;
+                                        const val2 = avaliacoes[1]?.[key] || 0;
+                                        const val3 = avaliacoes[2]?.[key] || 0;
+
+                                        return (
                                         <tr key={key}>
                                             <td><strong>{label}</strong></td>
                                             <td>{val1 || 'Não informado'}</td>
@@ -529,65 +605,11 @@ function Dobras({ avaliacoes }) {
                                             </th>
                                             <td>{val3 || 'Não informado'}</td>
                                         </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </row>
-            </div>
-        </div>
-    )
-}
-
-function Diametro({ avaliacoes }) {
-    return (
-        <div className="card no-print">
-            <div className="card-header">
-                <h4>Diamêtros Osséos</h4>
-            </div>
-
-            <div className="card-body">
-                <div className="row">
-                    <div className="table-responsive">
-                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Parâmetro</th>
-                                    <th>{avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : 'Selecione'}</th>
-                                    <th></th>
-                                    <th>{avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : 'Selecione'}</th>
-                                    <th></th>
-                                    <th>{avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : 'Selecione'}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    { label: 'Biestilóide punho', key: 'biestiloide_punho' },
-                                    { label: 'Biepicôndilo Umeral', key: 'biepicondilo_umeral' },
-                                    { label: 'Biepicôndilo femoral', key: 'biepicondilo_femoral' },
-                                ].map(({ label, key }) => {
-                                    const val1 = avaliacoes[0]?.[key] || 0;
-                                    const val2 = avaliacoes[1]?.[key] || 0;
-                                    const val3 = avaliacoes[2]?.[key] || 0;
-
-                                    return (
-                                    <tr key={key}>
-                                        <td><strong>{label}</strong></td>
-                                        <td>{val1 || 'Não informado'}</td>
-                                        <th className={`${val2 - val1 > 0 ? 'text-success' : 'text-danger'}`}>
-                                            {val2 ? (val2 - val1).toFixed(2) : '-'}
-                                        </th>
-                                        <td>{val2 || 'Não informado'}</td>
-                                        <th className={`${val3 - val2 > 0 ? 'text-success' : 'text-danger'}`}>
-                                            {val3 ? (val3 - val2).toFixed(2) : '-'}
-                                        </th>
-                                        <td>{val3 || 'Não informado'}</td>
-                                    </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

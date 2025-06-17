@@ -250,7 +250,9 @@ function Aluno() {
                             </>
                         } >
                             <div className='text-center'>
-                                <button id='addPhysicalAssessment' className='btn btn-success w-100 rounded-2' onClick={() => navigate('/cadavaliacao', { state: { aluno } })}>
+                                <button id='addPhysicalAssessment' className='btn btn-success w-100 rounded-2'
+                                    onClick={() => navigate('/cadavaliacao', { state: { aluno, ultimaAvaliacao: avaliacoes[avaliacoes.length - 1] } })}
+                                >
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar Avaliação
                                 </button>

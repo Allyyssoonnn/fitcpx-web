@@ -13627,7 +13627,7 @@ textarea.form-control-lg{
     font-size:.875rem;
     color:var(--bs-accordion-btn-color);
     text-align:left;
-    background-color:var(--bs-accordion-btn-bg);
+    /* background-color:var(--bs-accordion-btn-bg); */
     border:0;
     border-radius:0;
     overflow-anchor:none;

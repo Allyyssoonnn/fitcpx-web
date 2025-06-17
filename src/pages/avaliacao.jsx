@@ -105,19 +105,24 @@ function Avaliacao() {
                             <h5>Resultado da Avaliação</h5>
                         </div>
 
-                        <div className="card-body">
+                        <div className="card-body row">
                             {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
-                            <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
-                            <p><strong>Idade:</strong> {calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
-                            <p><strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}</p>
-                            <p><strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}</p>
-                            <p><strong>Peso:</strong> {avaliacao.peso} kg</p>
-                            <p><strong>Altura:</strong> {avaliacao.altura} cm</p>
-                            <p><strong>Sexo:</strong> {aluno.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
-                            <p><strong>Total dobras:</strong> {getTotalDobras()} cm</p>
-                            <p><strong>Metabolismo basal:</strong> {result?.basal}</p>
-                            <p><strong>IMC:</strong> {getIMC(avaliacao)}</p>
-                            <p><strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}</p>
+                            <div className="col-6">
+                                <p><strong>Aluno:</strong> {aluno?.nome_aluno}</p>
+                                <p><strong>Idade:</strong> {calcularIdade(aluno?.data_nascimento_aluno)} Anos</p>
+                                <p><strong>Sexo:</strong> {aluno.sexo_aluno === 'M' ? 'Masculino' : 'Feminino'}</p>
+                                <p><strong>Peso:</strong> {avaliacao.peso} kg</p>
+                                <p><strong>Total dobras:</strong> {getTotalDobras()} cm</p>
+                                <p><strong>IMC:</strong> {getIMC(avaliacao)}</p>
+                            </div>
+
+                            <div className="col-6">
+                                <p><strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}</p>
+                                <p><strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}</p>
+                                <p><strong>Altura:</strong> {avaliacao.altura} cm</p>
+                                <p><strong>Metabolismo basal:</strong> {result?.basal}</p>
+                                <p><strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -145,123 +150,127 @@ function Avaliacao() {
 
 function Metas({ aluno, avaliacao, result }) {
     const [meta, setMeta] = useState('Magro');
-    const [gordura, setGordura] = useState(5);
-    const [imc, setImc] = useState(10);
+    const [gordura, setGordura] = useState(15);
+    const [imc, setImc] = useState(24);
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <h4>Metas</h4>
+        <div className="card accordion">
+            <div className="card-header accordion-header">
+                <button className="accordion-button" data-bs-toggle="collapse" data-bs-target="#avMetas" aria-controls="avMetas">
+                    <h4>Metas</h4>
+                </button>
             </div>
 
-            <div className="card-body">
-                <div className="col-md-3">
-                    <label className="form-label">Meta</label>
-                    <select className="form-control" value={meta} onChange={e => setMeta(e.target.value)}>
-                        <option value='Saúde -1'>Saúde -1</option>
-                        <option value='Saúde 0'>Saúde 0</option>
-                        <option value='Saúde +1'>Saúde +1</option>
-                        <option value='Magro'>Magro</option>
-                        <option value='Atlético'>Atlético</option>
-                        <option value='Musculoso'>Musculoso</option>
-                        <option value='Personalizado'>Personalizado</option>
-                    </select>
-                </div>
-                <div className="row g-3">
-                    <div className="col-md-4 table-responsive">
-                        <table id="basic-datatables" className='table table-sm table-striped table-hover'>
-                            <thead>
-                                <tr>
-                                    <th>Medidas básicas</th>
-                                    <th>Atual</th>
-                                    <th>Meta</th>
-                                </tr>
-                            </thead>
+            <div id="avMetas" className="accordion-collapse collapse">
+                <div className="card-body accordion-body">
+                    <div className="col-md-3">
+                        <label className="form-label">Meta</label>
+                        <select className="form-control" value={meta} onChange={e => setMeta(e.target.value)}>
+                            <option value='Saúde -1'>Saúde -1</option>
+                            <option value='Saúde 0'>Saúde 0</option>
+                            <option value='Saúde +1'>Saúde +1</option>
+                            <option value='Magro'>Magro</option>
+                            <option value='Atlético'>Atlético</option>
+                            <option value='Musculoso'>Musculoso</option>
+                            <option value='Personalizado'>Personalizado</option>
+                        </select>
+                    </div>
+                    <div className="row g-3">
+                        <div className="col-md-4 table-responsive">
+                            <table id="basic-datatables" className='table table-sm table-striped table-hover'>
+                                <thead>
+                                    <tr>
+                                        <th>Medidas básicas</th>
+                                        <th>Atual</th>
+                                        <th>Meta</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
-                                <tr>
-                                    <th>IMC</th>
-                                    <th>{getIMC(avaliacao)}</th>
-                                    <th>{getReferenciaIMCMetas(aluno, avaliacao, meta)}</th>
-                                </tr>
-                                <tr>
-                                    <th>Peso</th>
-                                    <th>{avaliacao.peso}</th>
-                                    <th>{getPesoIMCMeta(aluno, avaliacao, meta, imc)}</th>
-                                    <th className="text-muted">-{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta, imc)).toFixed(1)}</th>
-                                </tr>
-                            </tbody>
-                        </table>
+                                <tbody>
+                                    <tr>
+                                        <th>IMC</th>
+                                        <th>{getIMC(avaliacao)}</th>
+                                        <th>{getReferenciaIMCMetas(aluno, avaliacao, meta)}</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Peso</th>
+                                        <th>{avaliacao.peso}</th>
+                                        <th>{getPesoIMCMeta(aluno, avaliacao, meta, imc)}</th>
+                                        <th className="text-muted">-{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta, imc)).toFixed(1)}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                        <div className={`${meta === 'Personalizado' ? '' : 'd-none'} mt-3`}>
-                            <div>
-                                <label className="form-label">% Gordura</label>
-                                <input className="form-control" value={gordura} onChange={e => setGordura(e.target.value)} />
-                            </div>
-                            <div>
-                                <label className="form-label">IMC</label>
-                                <input className="form-control" value={imc} onChange={e => setImc(e.target.value)} />
+                            <div className={`${meta === 'Personalizado' ? '' : 'd-none'} mt-3`}>
+                                <div>
+                                    <label className="form-label">% Gordura</label>
+                                    <input className="form-control" value={gordura} onChange={e => setGordura(e.target.value)} />
+                                </div>
+                                <div>
+                                    <label className="form-label">IMC</label>
+                                    <input className="form-control" value={imc} onChange={e => setImc(e.target.value)} />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="col-md-7 table-responsive">
-                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Composição - Metas</th>
-                                    <th>Atual</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>Meta</th>
-                                </tr>
-                            </thead>
+                        <div className="col-md-7 table-responsive">
+                            <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Composição - Metas</th>
+                                        <th>Atual</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>Meta</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
-                                <tr>
-                                    <th>Gordura</th>
-                                    <th>{result?.compositionWeight?.gordura} KG</th>
-                                    <th>{result?.compositionPercentage?.gordura} %</th>
-                                    <th><i className="bi bi-arrow-right text-success"></i></th>
-                                    <th>{getReferenciaKGGordura(aluno, avaliacao, meta, gordura)} KG</th>
-                                    <th>{getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gordura)} %</th>
-                                    <th className="text-muted">{(getReferenciaKGGordura(aluno, avaliacao, meta, gordura) - result?.compositionWeight?.gordura).toFixed(1)}</th>
-                                </tr>
-                                <tr>
-                                    <th>Musc.</th>
-                                    <th>{result?.compositionWeight?.massa_muscular} KG</th>
-                                    <th>{result?.compositionPercentage?.massa_muscular} %</th>
-                                    <th><i className="bi bi-arrow-right text-success"></i></th>
-                                    <th>{calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                                    <th>{calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                                    <th className="text-muted">{(calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) - result?.compositionWeight?.massa_muscular).toFixed(1)}</th>
-                                </tr>
-                                <tr>
-                                    <th>Osséa</th>
-                                    <th>{result?.compositionWeight?.massa_ossea} KG</th>
-                                    <th>{result?.compositionPercentage?.massa_ossea} %</th>
-                                    <th><i className="bi bi-arrow-right text-success"></i></th>
-                                    <th>{calculaKGOsseoMeta(aluno, avaliacao, meta, imc)} KG</th>
-                                    <th>{calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc)} %</th>
-                                </tr>
-                                <tr>
-                                    <th>Resi.</th>
-                                    <th>{result?.compositionWeight?.massa_residual} KG</th>
-                                    <th>{result?.compositionPercentage?.massa_residual} %</th>
-                                    <th><i className="bi bi-arrow-right text-success"></i></th>
-                                    <th>{calculaKGResidualMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                                    <th>{calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                                </tr>
-                                <tr>
-                                    <th>MCM</th>
-                                    <th>{result?.compositionWeight?.mcm} KG</th>
-                                    <th>{result?.compositionPercentage?.mcm} %</th>
-                                    <th><i className="bi bi-arrow-right text-success"></i></th>
-                                    <th>{calculaKGMCMMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                                    <th>{calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc)} %</th>
-                                </tr>
-                            </tbody>
-                        </table>
+                                <tbody>
+                                    <tr>
+                                        <th>Gordura</th>
+                                        <th>{result?.compositionWeight?.gordura} KG</th>
+                                        <th>{result?.compositionPercentage?.gordura} %</th>
+                                        <th><i className="bi bi-arrow-right text-success"></i></th>
+                                        <th>{getReferenciaKGGordura(aluno, avaliacao, meta, gordura)} KG</th>
+                                        <th>{getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gordura)} %</th>
+                                        <th className="text-muted">{(getReferenciaKGGordura(aluno, avaliacao, meta, gordura) - result?.compositionWeight?.gordura).toFixed(1)}</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Musc.</th>
+                                        <th>{result?.compositionWeight?.massa_muscular} KG</th>
+                                        <th>{result?.compositionPercentage?.massa_muscular} %</th>
+                                        <th><i className="bi bi-arrow-right text-success"></i></th>
+                                        <th>{calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
+                                        <th>{calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
+                                        <th className="text-muted">{(calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) - result?.compositionWeight?.massa_muscular).toFixed(1)}</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Osséa</th>
+                                        <th>{result?.compositionWeight?.massa_ossea} KG</th>
+                                        <th>{result?.compositionPercentage?.massa_ossea} %</th>
+                                        <th><i className="bi bi-arrow-right text-success"></i></th>
+                                        <th>{calculaKGOsseoMeta(aluno, avaliacao, meta, imc)} KG</th>
+                                        <th>{calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc)} %</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Resi.</th>
+                                        <th>{result?.compositionWeight?.massa_residual} KG</th>
+                                        <th>{result?.compositionPercentage?.massa_residual} %</th>
+                                        <th><i className="bi bi-arrow-right text-success"></i></th>
+                                        <th>{calculaKGResidualMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
+                                        <th>{calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
+                                    </tr>
+                                    <tr>
+                                        <th>MCM</th>
+                                        <th>{result?.compositionWeight?.mcm} KG</th>
+                                        <th>{result?.compositionPercentage?.mcm} %</th>
+                                        <th><i className="bi bi-arrow-right text-success"></i></th>
+                                        <th>{calculaKGMCMMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
+                                        <th>{calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc)} %</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -297,67 +306,71 @@ function Imagens({ avaliacao }) {
 
 function AreaMagraGorda({ result }) {
     return (
-        <div className="card">
-            <div className="card-header">
-                <h4>Área Magra/Gorda</h4>
+        <div className="card accordion">
+            <div className="card-header accordion-header">
+                <div className="accordion-button" data-bs-toggle="collapse" data-bs-target="#avLeanAndFatArea" aria-controls="avLeanAndFatArea">
+                    <h4>Área Magra/Gorda</h4>
+                </div>
             </div>
 
-            <div className="card-body row justify-content-around">
-                <div className="col-md-4 table-responsive">
-                    <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Braço</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {result?.leanAndFatArea?.braco?.map((campo, id) => (
-                                <tr key={id}>
-                                    <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th>
+            <div id="avLeanAndFatArea" className="accordion-collapse collapse">
+                <div className="card-body row justify-content-around accordion-body">
+                    <div className="col-md-4 table-responsive">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Braço</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
 
-                <div className="col-md-4 table-responsive">
-                    <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Coxa</th>
-                            </tr>
-                        </thead>
+                            <tbody>
+                                {result?.leanAndFatArea?.braco?.map((campo, id) => (
+                                    <tr key={id}>
+                                        <th>{campo.nome}</th>
+                                        <th>{campo.valor} {campo.prefix}</th>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <tbody>
-                            {result?.leanAndFatArea?.coxa?.map((campo, id) => (
-                                <tr key={id}>
-                                    <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th>
+                    <div className="col-md-4 table-responsive">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Coxa</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
 
-                <div className="col-md-4 table-responsive">
-                    <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Panturrilha</th>
-                            </tr>
-                        </thead>
+                            <tbody>
+                                {result?.leanAndFatArea?.coxa?.map((campo, id) => (
+                                    <tr key={id}>
+                                        <th>{campo.nome}</th>
+                                        <th>{campo.valor} {campo.prefix}</th>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <tbody>
-                            {result?.leanAndFatArea?.panturrilha?.map((campo, id) => (
-                                <tr key={id}>
-                                    <th>{campo.nome}</th>
-                                    <th>{campo.valor} {campo.prefix}</th>
+                    <div className="col-md-4 table-responsive">
+                        <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Panturrilha</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                {result?.leanAndFatArea?.panturrilha?.map((campo, id) => (
+                                    <tr key={id}>
+                                        <th>{campo.nome}</th>
+                                        <th>{campo.valor} {campo.prefix}</th>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -426,38 +439,43 @@ function ComposicaoCorporal({ avaliacao, result }) {
 
                     <tbody>
                         <tr>
+                            <th>Peso</th>
+                            <th>-</th>
+                            <th>{avaliacao.peso} KG</th>
+                        </tr>
+                        <tr>
                             <th>Gordura</th>
-                            <th>{result?.compositionWeight?.gordura} KG</th>
                             <th>{result?.compositionPercentage?.gordura} %</th>
+                            <th>{result?.compositionWeight?.gordura} KG</th>
                         </tr>
                         {avaliacao.tipo_avaliacao === 'complexo' ? (
                             <>
                                 <tr>
                                     <th>Musc.</th>
-                                    <th>{result?.compositionWeight?.massa_muscular} KG</th>
                                     <th>{result?.compositionPercentage?.massa_muscular} %</th>
+                                    <th>{result?.compositionWeight?.massa_muscular} KG</th>
                                 </tr>
                                 <tr>
                                     <th>Óssea.</th>
-                                    <th>{result?.compositionWeight?.massa_ossea} KG</th>
                                     <th>{result?.compositionPercentage?.massa_ossea} %</th>
+                                    <th>{result?.compositionWeight?.massa_ossea} KG</th>
                                 </tr>
                                 <tr>
                                     <th>Resi.</th>
-                                    <th>{result?.compositionWeight?.massa_residual} KG</th>
                                     <th>{result?.compositionPercentage?.massa_residual} %</th>
+                                    <th>{result?.compositionWeight?.massa_residual} KG</th>
                                 </tr>
                                 <tr>
                                     <th>MCM</th>
-                                    <th>{result?.compositionWeight?.mcm} KG</th>
                                     <th>{result?.compositionPercentage?.mcm} %</th>
+                                    <th>{result?.compositionWeight?.mcm} KG</th>
                                 </tr>
                             </>
                         ) : (
                             <tr>
                                 <th>Massa Magra</th>
-                                <th>{result?.compositionWeight?.massa_magra} KG</th>
                                 <th>{result?.compositionPercentage?.massa_magra} %</th>
+                                <th>{result?.compositionWeight?.massa_magra} KG</th>
                             </tr>
                         )}
                     </tbody>
@@ -608,47 +626,51 @@ function SimetriaMembro({ avaliacao }) {
 
 function Perimetro({ avaliacao }) {
     return (
-        <div className="card no-print">
-            <div className="card-header">
-                <h4>Perimetria (cm)</h4>
+        <div className="card no-print accordion">
+            <div className="card-header accordion-header">
+                <button className="accordion-button" data-bs-toggle="collapse" data-bs-target="#avGirth" aria-controls="avGirth">
+                    <h4>Perimetria (cm)</h4>
+                </button>
             </div>
 
-            <div className="card-body">
-                <div className="row g-3 mt-3">
-                    <div className="card col-md-4">
-                        <h6>Geral</h6>
-                        <ul>
-                            <li><strong>Pescoço:</strong> {avaliacao.pescoco || '-'}</li>
-                            <li><strong>Ombro:</strong> {avaliacao.ombro || '-'}</li>
-                            <li><strong>Tórax Inspirado:</strong> {avaliacao.torax_inspirado || '-'}</li>
-                            <li><strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || '-'}</li>
-                            <li><strong>Punho:</strong> {avaliacao.punho || '-'}</li>
-                            <li><strong>Cintura:</strong> {avaliacao.cintura || '-'}</li>
-                            <li><strong>Abdômen:</strong> {avaliacao.abdomen || '-'}</li>
-                            <li><strong>Quadril:</strong> {avaliacao.quadril || '-'}</li>
-                        </ul>
-                    </div>
+            <div id="avGirth" className="card-body accordion-collapse collapse">
+                <div className="card-body accordion-body">
+                    <div className="row g-3 mt-3">
+                        <div className="card col-md-4">
+                            <h6>Geral</h6>
+                            <ul>
+                                <li><strong>Pescoço:</strong> {avaliacao.pescoco || '-'}</li>
+                                <li><strong>Ombro:</strong> {avaliacao.ombro || '-'}</li>
+                                <li><strong>Tórax Inspirado:</strong> {avaliacao.torax_inspirado || '-'}</li>
+                                <li><strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || '-'}</li>
+                                {/* <li><strong>Punho:</strong> {avaliacao.punho || '-'}</li> */}
+                                <li><strong>Cintura:</strong> {avaliacao.cintura || '-'}</li>
+                                <li><strong>Abdômen:</strong> {avaliacao.abdomen || '-'}</li>
+                                <li><strong>Quadril:</strong> {avaliacao.quadril || '-'}</li>
+                            </ul>
+                        </div>
 
-                    <div className="card col-md-4">
-                        <h6>Lado direito</h6>
-                        <ul>
-                            <li><strong>Braço Relaxado Direito:</strong> {avaliacao.braco_relaxado_direito || '-'}</li>
-                            <li><strong>Braço Contraído Direito:</strong> {avaliacao.braco_contraido_direito || '-'}</li>
-                            <li><strong>Antebraço Direito:</strong> {avaliacao.antebraco_direito || '-'}</li>
-                            <li><strong>Coxa Direita:</strong> {avaliacao.coxa_direita || '-'}</li>
-                            <li><strong>Panturrilha Direita:</strong> {avaliacao.panturrilha_direita || '-'}</li>
-                        </ul>
-                    </div>
+                        <div className="card col-md-4">
+                            <h6>Lado direito</h6>
+                            <ul>
+                                <li><strong>Braço Relaxado Direito:</strong> {avaliacao.braco_relaxado_direito || '-'}</li>
+                                <li><strong>Braço Contraído Direito:</strong> {avaliacao.braco_contraido_direito || '-'}</li>
+                                <li><strong>Antebraço Direito:</strong> {avaliacao.antebraco_direito || '-'}</li>
+                                <li><strong>Coxa Direita:</strong> {avaliacao.coxa_direita || '-'}</li>
+                                <li><strong>Panturrilha Direita:</strong> {avaliacao.panturrilha_direita || '-'}</li>
+                            </ul>
+                        </div>
 
-                    <div className="card col-md-4">
-                        <h6>Lado esquerdo</h6>
-                        <ul>
-                            <li><strong>Braço Relaxado Esquerdo:</strong> {avaliacao.braco_relaxado_esquerdo || '-'}</li>
-                            <li><strong>Braço Contraído Esquerdo:</strong> {avaliacao.braco_contraido_esquerdo || '-'}</li>
-                            <li><strong>Antebraço Esquerdo:</strong> {avaliacao.antebraco_esquerdo || '-'}</li>
-                            <li><strong>Coxa Esquerda:</strong> {avaliacao.coxa_esquerda || '-'}</li>
-                            <li><strong>Panturrilha Esquerda:</strong> {avaliacao.panturrilha_esquerda || '-'}</li>
-                        </ul>
+                        <div className="card col-md-4">
+                            <h6>Lado esquerdo</h6>
+                            <ul>
+                                <li><strong>Braço Relaxado Esquerdo:</strong> {avaliacao.braco_relaxado_esquerdo || '-'}</li>
+                                <li><strong>Braço Contraído Esquerdo:</strong> {avaliacao.braco_contraido_esquerdo || '-'}</li>
+                                <li><strong>Antebraço Esquerdo:</strong> {avaliacao.antebraco_esquerdo || '-'}</li>
+                                <li><strong>Coxa Esquerda:</strong> {avaliacao.coxa_esquerda || '-'}</li>
+                                <li><strong>Panturrilha Esquerda:</strong> {avaliacao.panturrilha_esquerda || '-'}</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -658,17 +680,21 @@ function Perimetro({ avaliacao }) {
 
 function Diametro({ avaliacao }) {
     return (
-        <div className="card no-print">
-            <div className="card-header">
-                <h4>Diamêtros Osséos</h4>
+        <div className="card no-print accordion">
+            <div className="card-header accordion-header">
+                <button className="accordion-button" data-bs-target="#avDiameters" data-bs-toggle="collapse" aria-controls="avDiameters">
+                    <h4>Diamêtros Osséos</h4>
+                </button>
             </div>
 
-            <div className="card-body">
-                <ul className="mt-3">
-                    <li><strong>Biestilóide punho:</strong> {avaliacao.biestiloide_punho || '-'} cm</li>
-                    <li><strong>Biepicôndilo Umeral:</strong> {avaliacao.biepicondilo_umeral || '-'} cm</li>
-                    <li><strong>Biepicôndilo femoral:</strong> {avaliacao.biepicondilo_femoral || '-'} cm</li>
-                </ul>
+            <div id="avDiameters" className="accordion-collapse collapse">
+                <div className="card-body">
+                    <ul className="mt-3">
+                        <li><strong>Biestilóide punho:</strong> {avaliacao.biestiloide_punho || '-'} cm</li>
+                        <li><strong>Biepicôndilo Umeral:</strong> {avaliacao.biepicondilo_umeral || '-'} cm</li>
+                        <li><strong>Biepicôndilo femoral:</strong> {avaliacao.biepicondilo_femoral || '-'} cm</li>
+                    </ul>
+                </div>
             </div>
         </div>
     )
@@ -676,30 +702,34 @@ function Diametro({ avaliacao }) {
 
 function Dobras({ avaliacao }) {
     return (
-        <div className="card no-print">
-            <div className="card-header">
-                <h4>Dobras Cutâneas (cm)</h4>
+        <div className="card no-print accordion">
+            <div className="card-header accordion-header">
+                <div className="accordion-button" data-bs-target="#avCurves" data-bs-toggle="collapse" aria-controls="avCurves">
+                    <h4>Dobras Cutâneas (cm)</h4>
+                </div>
             </div>
             
-            <div className="card-body">
-                <row className="row g-3">
-                    <ul className="mt-3 col-md-3">
-                        <li><strong>Peitoral:</strong> {avaliacao.peitoral || '-'}</li>
-                        <li><strong>Bíceps:</strong> {avaliacao.biciptal || '-'}</li>
-                        <li><strong>Tríceps:</strong> {avaliacao.triciptal || '-'}</li>
-                        <li><strong>Subescapular:</strong> {avaliacao.subescapular || '-'}</li>
-                        <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || '-'}</li>
-                        <li><strong>Abdominal:</strong> {avaliacao.abdominal || '-'}</li>
-                        <li><strong>Coxa:</strong> {avaliacao.coxa || '-'}</li>
-                        <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || '-'}</li>
-                        <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || '-'}</li>
-                        <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || '-'}</li>
-                    </ul>
+            <div id="avCurves" className="accordion-collapse collapse">
+                <div className="card-body accordion-body">
+                    <row className="row g-3">
+                        <ul className="mt-3 col-md-3">
+                            <li><strong>Peitoral:</strong> {avaliacao.peitoral || '-'}</li>
+                            <li><strong>Bíceps:</strong> {avaliacao.biciptal || '-'}</li>
+                            <li><strong>Tríceps:</strong> {avaliacao.triciptal || '-'}</li>
+                            <li><strong>Subescapular:</strong> {avaliacao.subescapular || '-'}</li>
+                            <li><strong>Axilar Media:</strong> {avaliacao.axilar_media || '-'}</li>
+                            <li><strong>Abdominal:</strong> {avaliacao.abdominal || '-'}</li>
+                            <li><strong>Coxa:</strong> {avaliacao.coxa || '-'}</li>
+                            <li><strong>Supra Ilíaca:</strong> {avaliacao.supra_iliaca || '-'}</li>
+                            <li><strong>Supra espinhal:</strong> {avaliacao.supra_espinhal || '-'}</li>
+                            <li><strong>Panturrilha:</strong> {avaliacao.panturrilha || '-'}</li>
+                        </ul>
 
-                    <div className="mt-3 col-md-3">
-                        {/* <img className="img-fluid" src="/assets/images/app/dobras.png" /> */}
-                    </div>
-                </row>
+                        <div className="mt-3 col-md-3">
+                            {/* <img className="img-fluid" src="/assets/images/app/dobras.png" /> */}
+                        </div>
+                    </row>
+                </div>
             </div>
         </div>
     )
