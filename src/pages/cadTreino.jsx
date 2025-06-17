@@ -13,7 +13,7 @@ import { useFormStore } from "../hooks/useFormStore";
 function CadTreino() {
     const { formData, setTreinoForm } = useFormStore();
     const { nSuccess } = useNotificacao();
-    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { isDirty, isSubmitting } } = useForm();
+    const { handleSubmit, register, setValue, getFieldState, getValues, watch, reset, formState: { isDirty, isSubmitting, errors } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [usuario] = useRecoilState(stateUsuario);
@@ -33,6 +33,10 @@ function CadTreino() {
             setNome_aluno(alunoRecebido.nome_aluno);
             setCodAluno(alunoRecebido.cod_aluno);
             setSexo_aluno(alunoRecebido.sexo_aluno);
+            setValue("sexo_aluno", alunoRecebido.sexo_aluno);
+        } else {
+            setSexo_aluno("M");
+            setValue("sexo_aluno", "M");
         }
         if (treinoRecebido) {
             Object.keys(treinoRecebido).forEach((key) => {
@@ -79,10 +83,11 @@ function CadTreino() {
             for (const exercicio of sessao.exercicios) {
                 if (!exercicio?.cod_exercicio) {
                     podeConfirmar = false;
-                    toast.error(`Exercicicío vazio na sessão ${sessao.nome_sessao}`);
+                    toast.error(`Exercício vazio na sessão ${sessao.nome_sessao}`);
                 }
             }
         }
+        
         if (!podeConfirmar) return;
 
         const cod_usuario = usuario.cod_usuario;
@@ -145,7 +150,6 @@ function CadTreino() {
                         <div className={`col-md-3 ${sexo_aluno ? 'd-none' : ''}`}>
                             <label className="form-label fw-bold">Sexo *</label>
                             <select id="gender" {...register('sexo_treino', { required: 'O sexo é obrigatório' })} className="form-control">
-                                <option value=''>Selecione o sexo</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Feminino</option>
                             </select>
