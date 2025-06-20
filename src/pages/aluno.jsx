@@ -166,10 +166,11 @@ function Aluno() {
                                         className="img-fluid rounded-circle shadow-lg border border-4 border-white" 
                                         style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                                     />
-                                    <label className='btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle shadow' 
-                                           htmlFor='img_aluno'
-                                           style={{ width: '40px', height: '40px', padding: '0' }}>
-                                        <i className="bi bi-camera"></i>
+                                    <label className='btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle shadow d-flex align-items-center justify-content-center' 
+                                        htmlFor='img_aluno'
+                                        style={{ width: '40px', height: '40px', padding: '0' }}
+                                    >
+                                        <i className="bi bi-camera fs-5"></i>
                                     </label>
                                     <input id='img_aluno' className='d-none' type="file" onChange={handleFileChange} />
                                 </div>
@@ -591,7 +592,7 @@ function CardTreino({ treino, aluno, refetch }) {
                     </div>
                 </div>
 
-                <div className="p-4">
+                <div className="px-4 py-2">
                     <div className='row g-3'>
                         <div className='col-md-3'>
                             <div className="text-center p-3 bg-light rounded-3">
@@ -682,7 +683,7 @@ function CardAvaliacao({ avaliacao, aluno, refetch, index }) {
                     </div>
                 </div>
 
-                <div className="p-4">
+                <div className="px-4 py-2">
                     <div className='row g-3'>
                         <div className='col-md-4'>
                             <div className="text-center p-3 bg-light rounded-3">
@@ -761,7 +762,7 @@ function CardContrato({ alunoContrato, aluno, refetch }) {
                     </p>
                 </div>
 
-                <div className="p-4">
+                <div className="px-4 py-2">
                     <div className='row g-3'>
                         <div className='col-md-4'>
                             <div className="text-center p-3 bg-light rounded-3">
@@ -815,7 +816,7 @@ function CardSessao({ alunoSessao, aluno, refetch }) {
                     </p>
                 </div>
 
-                <div className="p-4">
+                <div className="px-4 py-2">
                     <div className='row g-3'>
                         <div className='col-md-3'>
                             <div className="text-center p-3 bg-light rounded-3">

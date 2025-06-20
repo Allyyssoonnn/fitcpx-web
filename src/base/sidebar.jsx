@@ -176,7 +176,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-collection fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-collection fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('muscles')}</span>
                                     </motion.a>
                                 </li>
@@ -189,7 +189,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-activity fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-activity fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('exercises')}</span>
                                     </motion.a>
                                 </li>
@@ -202,7 +202,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-card-checklist fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-card-checklist fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('workout')}</span>
                                     </motion.a>
                                 </li>
@@ -239,7 +239,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-clipboard-data fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-clipboard-data fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('contracts')}</span>
                                     </motion.a>
                                 </li>
@@ -254,7 +254,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-easel fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-easel fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('services')}</span>
                                     </motion.a>
                                 </li>
@@ -268,7 +268,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-paperclip fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-paperclip fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('contractTemplates')}</span>
                                     </motion.a>
                                 </li>
@@ -282,7 +282,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-basket fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-basket fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('plans')}</span>
                                     </motion.a>
                                 </li>
@@ -320,7 +320,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(255, 193, 7, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-person-lines-fill fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-person-lines-fill fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('users')}</span>
                                     </motion.a>
                                 </li>
@@ -334,7 +334,7 @@ function Sidebar() {
                                         whileHover={{ backgroundColor: 'rgba(255, 193, 7, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
-                                        <i className="bi bi-bar-chart fs-6 me-3 text-secondary"></i>
+                                        <i className="bi bi-bar-chart fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('reports')}</span>
                                     </motion.a>
                                 </li>
@@ -344,7 +344,7 @@ function Sidebar() {
                 </nav>
 
                 {/* Footer */}
-                <div className="p-3 border-top">
+                {/* <div className="p-3 border-top">
                     <div className="d-flex align-items-center">
                         <div className="flex-shrink-0">
                             <div className="bg-success rounded-circle" style={{ width: '8px', height: '8px' }}></div>
@@ -353,7 +353,7 @@ function Sidebar() {
                             <small className="text-muted">Sistema Online</small>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </motion.aside>
     );
