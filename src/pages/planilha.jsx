@@ -46,8 +46,7 @@ function Planilha() {
             imagem_aluno: aluno.imagem_aluno,
             indexTreino: 0,
             openTab: false,
-        }))
-        console.log(alunosFiltrado);
+        }));
         for (const aluno of alunosFiltrado) {
             const treinos = await getTreinos({ cod_aluno: aluno.cod_aluno });
             aluno.treinos = treinos;
@@ -58,7 +57,7 @@ function Planilha() {
 
     return (
         <div className="container-fluid">
-            <div className="card">
+            <div className="card shadow-lg rounded-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <div className="d-flex align-items-center">
                         <button className="btn btn-info" disabled={!selecionados.length} onClick={abrirPlanilha}>

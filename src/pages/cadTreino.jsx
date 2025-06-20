@@ -147,7 +147,7 @@ function CadTreino() {
                             </select>
                         </div>
 
-                        <div className={`col-md-3 ${sexo_aluno ? 'd-none' : ''}`}>
+                        <div className="col-md-3">
                             <label className="form-label fw-bold">Sexo *</label>
                             <select id="gender" {...register('sexo_treino', { required: 'O sexo é obrigatório' })} className="form-control">
                                 <option value="M">Masculino</option>

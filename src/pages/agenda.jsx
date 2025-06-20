@@ -57,7 +57,7 @@ function Agenda() {
     
     return (
         <div className="container-fluid">
-            <div className="card">
+            <div className="card shadow-lg rounded-4">
                 <div className="card-header d-flex justify-between">
                     <div className="col-3 mb-2 mb-sm-0">
                         <button

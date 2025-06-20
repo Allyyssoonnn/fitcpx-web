@@ -53,7 +53,7 @@ function Alunos() {
         <div className="container-fluid">
             <div className="row">
                 <div className="col-md-12">
-                    <div className="card">
+                    <div className="card shadow-lg rounded-4">
                         <div className="card-header">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>

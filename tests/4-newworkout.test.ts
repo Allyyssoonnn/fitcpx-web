@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test('New Workout', async ({ page }) => {
     await page.goto('http://localhost:5173/alunos');
+
+    await page.waitForTimeout(3000);
     
     await page.click('a[id="sidebarCollapse"]');
     await page.click('tr[id="aluno-0"]');

@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 test('Create Service', async ({ page }) => {
     await page.goto('http://localhost:5173/');
 
+    await page.waitForTimeout(3000);
+    
     await page.click('a[id="finance"]');
     await page.click('a[id="services"]');
     await page.click('a[id="sidebarCollapse"]');

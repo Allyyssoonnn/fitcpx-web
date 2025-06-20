@@ -78,27 +78,29 @@ function Avaliacao() {
 
     return (
         <div className="container-fluid">
-            <div className="card">
-                <div className="card-header">
-                    <div className="d-flex justify-content-between align-items-center">
-                        <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
-                            <i className="bi bi-arrow-left-circle me-2"></i> Voltar
+            <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
+                <div className="d-flex justify-content-between align-items-center">
+                    <button onClick={() => navigate(-1)} className="btn btn-danger me-3">
+                        <i className="bi bi-arrow-left-circle me-2"></i> Voltar
+                    </button>
+
+                    <div className="d-flex gap-2 items-center">
+                        <button onClick={() => navigate('/compareavaliacao', { state: { avaliacao, aluno } })}
+                            className="btn btn-outline-danger rounded-pill px-4"
+                        >
+                            <i className="bi bi-graph-up-arrow"></i>
+                            <span className="d-none d-md-inline-block ms-2">Comparar</span>
                         </button>
 
-                        <div className="d-flex gap-2">
-                            <button onClick={() => navigate('/compareavaliacao', { state: { avaliacao, aluno } })} className="btn btn-warning mb-3">
-                                <i className="bi bi-graph-up-arrow"></i>
-                                <span className="d-none d-md-inline-block ms-2">Comparar</span>
-                            </button>
-
-                            <button onClick={imprimirResultados} className="btn btn-primary mb-3">
-                                <i className="bi bi-printer"></i>
-                                <span className="d-none d-md-inline-block ms-2">Imprimir</span>
-                            </button>
-                        </div>
+                        <button onClick={imprimirResultados} className="btn btn-primary">
+                            <i className="bi bi-printer"></i>
+                            <span className="d-none d-md-inline-block ms-2">Imprimir</span>
+                        </button>
                     </div>
                 </div>
+            </div>
 
+            <div className="card shadow-lg rounded-4">
                 <div className="card-body px-0 px-sm-4" id="printable-area">
                     <div className="card">
                         <div className="card-header">

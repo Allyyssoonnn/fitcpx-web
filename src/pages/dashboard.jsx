@@ -45,7 +45,7 @@ function Dashboard() {
                 </div>
 
                 <div className="col-lg-8">
-                    <UltimosContratos contratos={contratos} />
+                    {/* <UltimosContratos contratos={contratos} /> */}
                     <UltimasAvaliacoes alunos={alunos} avaliacoes={avaliacoes} />
                 </div>
 
@@ -110,7 +110,7 @@ function UltimosContratos({ contratos }) {
     const { t } = useTranslation('dashboard');
 
     return (
-        <div className="card">
+        <div className="card shadow-lg rounded-4">
             <div className="card-body">
                 <h5 className="card-title">{t('recentContracts')}</h5>
 
@@ -165,7 +165,7 @@ function InfoTotais({ alunos, avaliacoes }) {
     });
 
     return (
-        <div className="card">
+        <div className="card shadow-lg rounded-4">
             <div className="card-body">
                 <div className="d-flex flex-column">
                     <h6 className="card-title">{t('overview')}</h6>
@@ -235,7 +235,7 @@ function UltimasAvaliacoes({ alunos, avaliacoes }) {
     const { t } = useTranslation('dashboard');
 
     return (
-        <div className="card">
+        <div className="card shadow-lg rounded-4">
             <div className="card-body">
                 <h5 className="card-title">{t('recentPhysicalAssessament')}</h5>
 

@@ -30,21 +30,26 @@ function Layout() {
         //Function to update info data
         (async function load() {
             if (!usuario?.cod_usuario || !empresa?.cod_empresa) {
-                const cookies = parseCookies();
+                try {
+                    const cookies = parseCookies();
 
-                console.log('[Layout] - Verify refreshToken');
-                
-                const refreshResponse = await axios.post(baseURL + `/usuario/refreshToken`, {
-                    refreshToken: cookies.refreshToken,
-                });
+                    console.log('[Layout] - Verify refreshToken');
+                    
+                    const refreshResponse = await axios.post(baseURL + `/usuario/refreshToken`, {
+                        refreshToken: cookies.refreshToken,
+                    });
 
-                if (refreshResponse.data.status) {
-                    setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
-                    setusuario(refreshResponse.data.usuario);
-                    setempresa(refreshResponse.data.empresa);
-                    console.log('[Layout] - Success Verify refreshToken');
-                } else {
-                    console.log('[Layout] - Failed Verify refreshToken');
+                    if (refreshResponse.data.status) {
+                        setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
+                        setusuario(refreshResponse.data.usuario);
+                        setempresa(refreshResponse.data.empresa);
+                        console.log('[Layout] - Success Verify refreshToken');
+                    } else {
+                        console.log('[Layout] - Failed Verify refreshToken');
+                        navigate('/entrar');
+                    }
+                } catch (error) {
+                    console.log('[Layout] - Error Verify refreshToken', error);
                     navigate('/entrar');
                 }
             }

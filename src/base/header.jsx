@@ -75,8 +75,8 @@ function Header() {
     };
 
     return (
-        (<header className="app-header">
-            <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100">
+        (<header className="app-header mb-3">
+            <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm bg-gradient-primary rounded-4">
                 <ul className="navbar-nav d-flex flex-row flex-grow-1 w-40 ms-md-3">
                     <li onClick={openedSidebar ? closeSidebar : openSidebar} className="nav-item d-block d-xl-none">
                         <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse">
@@ -84,8 +84,8 @@ function Header() {
                         </a>
                     </li>
 
-                    <li className="nav-item nav-icon-hover-bg rounded-circle d-none d-md-flex">
-                        <button className="nav-link" onClick={openedSidebar ? closeSidebar : openSidebar}>
+                    <li className="nav-item nav-icon-hover-bg rounded-circle d-none d-md-flex shadow-lg rounded-circle bg-white">
+                        <button className="nav-link btn btn-outline-white rounded-pill" onClick={openedSidebar ? closeSidebar : openSidebar}>
                             {/* <iconify-icon icon="solar:list-bold-duotone" className="fs-6"></iconify-icon> */}
                             <i className={`bi ${openedSidebar ? 'bi-arrow-bar-left' : 'bi-arrow-bar-right'} fs-4`} />
                         </button>

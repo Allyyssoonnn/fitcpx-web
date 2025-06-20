@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
 import { PRODUCAO } from "../api/api";
 import { useTranslation } from "react-i18next";
+import PropTypes from 'prop-types';
 
 function Sidebar() {
     const { t } = useTranslation('sidebar');
@@ -15,7 +16,6 @@ function Sidebar() {
     const [dropTreino, setDropTreino] = useState(false);
     const [dropAdmin, setDropAdmin] = useState(false);
     const [dropFinanceiro, setdropFinanceiro] = useState(false);
-    const [dropCardapio, setdropCardapio] = useState(false);
 
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
@@ -26,223 +26,338 @@ function Sidebar() {
         // toggleSidebar();
         setDropTreino(false);
         setDropAdmin(false);
-        setdropCardapio(false);
         navigate(route);
     }
 
     return (
-        <aside className="left-sidebar with-vertical" style={{ borderLeft: `0.30rem solid ${PRODUCAO ? '#85D446' : '#FF0000'}`, overflowY: 'auto', overflowX: 'hidden', zIndex: '999', width: openedSidebar ? '' : '0px' }}>
-            <div>
-                <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm">
-
+        <motion.aside 
+            className="left-sidebar with-vertical" 
+            style={{ 
+                borderLeft: `0.30rem solid ${PRODUCAO ? '#85D446' : '#FF0000'}`, 
+                overflowY: 'auto', 
+                overflowX: 'hidden', 
+                zIndex: '999', 
+                width: openedSidebar ? '' : '0px' 
+            }}
+            initial={{ x: -300 }}
+            animate={{ x: openedSidebar ? 0 : -300 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+            <div className="h-100 d-flex flex-column">
+                {/* Header */}
+                <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm bg-gradient-primary p-3">
                     <div className="d-flex align-items-center w-100 justify-content-center me-3">
-                        <img src="../assets/images/logos/logo.png" alt="" width='45' />
+                        <div className="position-relative">
+                            <img 
+                                src="../assets/images/logos/logo.png" 
+                                alt="Logo" 
+                                width='45' 
+                                className="rounded-circle"
+                            />
+                        </div>
                         <Typewriter texts={[t('welcome'), 'Fit Complex', 'Fit Cpx']} />
                     </div>
 
-                    <a onClick={openedSidebar ? closeSidebar : openSidebar} className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-                        <i className="bi bi-x fs-8"></i>
-                    </a>
+                    <button 
+                        onClick={openedSidebar ? closeSidebar : openSidebar} 
+                        className="btn btn-outline btn-sm rounded-circle d-xl-none d-block sidebartoggler" 
+                        id="sidebarCollapse"
+                        style={{ width: '32px', height: '32px', padding: '0' }}
+                    >
+                        <i className="bi bi-x"></i>
+                    </button>
                 </div>
 
-                <nav className="sidebar-nav scroll-sidebar" data-simplebar="">
-                    <ul id="sidebarnav">
-                        {/* <li className="nav-small-cap">
-                            <i className="ti ti-dots nav-small-cap-icon fs-6"></i>
-                            <span className="hide-menu">Acesso rápido</span>
-                        </li> */}
-
+                {/* Navigation */}
+                <nav className="sidebar-nav scroll-sidebar flex-grow-1" data-simplebar="">
+                    <ul id="sidebarnav" className="p-0">
                         <li className="nav-small-cap">
-                            <i className="ti ti-dots nav-small-cap-icon fs-6"></i>
-                            <span className="hide-menu ps-1">Menu</span>
+                            <i className="bi bi-list nav-small-cap-icon fs-6"></i>
+                            <span className="hide-menu ps-1 fw-bold text-muted">Menu</span>
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/')} aria-expanded="false">
-                                <i className="bi bi-graph-up fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('dashboard')}</span>
-                            </a>
+                            <motion.a 
+                                href="#" 
+                                className="sidebar-link p-3 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                onClick={() => go('/')} 
+                                aria-expanded="false"
+                                whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-graph-up fs-6 me-3 text-primary"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('dashboard')}</span>
+                            </motion.a>
                         </li>
 
                         <li className="sidebar-item">
-                            <a id="clients" href="#" className="sidebar-link p-3" onClick={() => go('/alunos')} aria-expanded="false">
-                                <i className="bi bi-person-rolodex fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('students')}</span>
-                            </a>
+                            <motion.a 
+                                id="clients" 
+                                href="#" 
+                                className="sidebar-link p-3 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                onClick={() => go('/alunos')} 
+                                aria-expanded="false"
+                                whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-person-rolodex fs-6 me-3 text-success"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('students')}</span>
+                            </motion.a>
                         </li>
                         
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/agenda')} aria-expanded="false">
-                                <i className="bi bi-calendar-check fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('calendar')}</span>
-                            </a>
+                            <motion.a 
+                                href="#" 
+                                className="sidebar-link p-3 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                onClick={() => go('/agenda')} 
+                                aria-expanded="false"
+                                whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-calendar-check fs-6 me-3 text-warning"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('calendar')}</span>
+                            </motion.a>
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/planilha')} aria-expanded="false">
-                                <i className="bi bi-journal-bookmark-fill fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('coach')}</span>
-                            </a>
+                            <motion.a 
+                                href="#" 
+                                className="sidebar-link p-3 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                onClick={() => go('/planilha')} 
+                                aria-expanded="false"
+                                whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-journal-bookmark-fill fs-6 me-3 text-info"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('coach')}</span>
+                            </motion.a>
                         </li>
 
                         <li className="sidebar-item">
-                            <a href="#" className="sidebar-link p-3" onClick={() => go('/avaliacoes')} aria-expanded="false">
-                                <i className="bi bi-activity fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('assessment')}</span>
-                            </a>
+                            <motion.a 
+                                href="#" 
+                                className="sidebar-link p-3 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                onClick={() => go('/avaliacoes')} 
+                                aria-expanded="false"
+                                whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-activity fs-6 me-3 text-danger"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('assessment')}</span>
+                            </motion.a>
                         </li>
 
-                        <li className="sidebar-item d-none">
-                            <a className={`sidebar-link p-3 has-arrow ${dropCardapio ? 'active' : ''}`} href="#" onClick={() => setdropCardapio(!dropCardapio)}>
-                                <i className="bi bi-book fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('nutrition')}</span>
-                            </a>
-
-                            <ul className={`collapse first-level ${dropCardapio ? 'in' : ''}`}>
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/grupoalimentos')} aria-expanded="false">
-                                        <i className="bi bi-collection fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">{t('foodGroups')}</span>
-                                    </a>
-                                </li>
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/alimentos')} aria-expanded="false">
-                                        <i className="bi bi-collection fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">{t('foods')}</span>
-                                    </a>
-                                </li>
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/cardapios')} aria-expanded="false">
-                                        <i className="bi bi-book fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">{t('nutrition')}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
+                        {/* Workout Section */}
                         <li className="sidebar-item">
-                            <a className={`sidebar-link p-3 has-arrow ${dropTreino ? 'active' : ''}`} href="#" onClick={() => setDropTreino(!dropTreino)}>
-                                <i className="bi bi-card-checklist fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('workout')}</span>
-                            </a>
+                            <motion.a 
+                                className={`sidebar-link p-3 has-arrow d-flex align-items-center rounded-3 mx-2 mb-1 ${dropTreino ? 'active bg-primary text-white' : ''}`} 
+                                href="#" 
+                                onClick={() => setDropTreino(!dropTreino)}
+                                whileHover={{ backgroundColor: dropTreino ? 'rgba(13, 110, 253, 0.9)' : 'rgba(13, 110, 253, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-card-checklist fs-6 me-3"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('workout')}</span>
+                                <i className={`bi bi-chevron-down ms-auto transition-all ${dropTreino ? 'rotate-180' : ''}`}></i>
+                            </motion.a>
 
-                            <ul className={`collapse first-level ${dropTreino ? 'in' : ''}`}>
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/grupoexercicios')} aria-expanded="false">
-                                        <i className="bi bi-collection fs-6 me-1"></i>
+                            <motion.ul 
+                                className={`collapse first-level ${dropTreino ? 'in' : ''}`}
+                                initial={false}
+                                animate={{ height: dropTreino ? 'auto' : 0, opacity: dropTreino ? 1 : 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/grupoexercicios')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-collection fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('muscles')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/exercicios')} aria-expanded="false">
-                                        <i className="bi bi-activity fs-6 me-1"></i>
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/exercicios')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-activity fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('exercises')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
-                                {/* <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/sessoes')} aria-expanded="false">
-                                        <i className="bi bi-alphabet-uppercase fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Sessões</span>
-                                    </a>
-                                </li> */}
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/treinos')} aria-expanded="false">
-                                        <i className="bi bi-card-checklist fs-6 me-1"></i>
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/treinos')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(13, 110, 253, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-card-checklist fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('workout')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
-                            </ul>
+                            </motion.ul>
                         </li>
 
+                        {/* Finance Section */}
                         <li className="sidebar-item">
-                            <a id="finance" className={`sidebar-link p-3 has-arrow ${dropFinanceiro ? 'active' : ''}`} href="#" onClick={() => setdropFinanceiro(!dropFinanceiro)}>
-                                <i className="bi bi-bank fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">{t('finance')}</span>
-                            </a>
+                            <motion.a 
+                                id="finance" 
+                                className={`sidebar-link p-3 has-arrow d-flex align-items-center rounded-3 mx-2 mb-1 ${dropFinanceiro ? 'active bg-success text-white' : ''}`} 
+                                href="#" 
+                                onClick={() => setdropFinanceiro(!dropFinanceiro)}
+                                whileHover={{ backgroundColor: dropFinanceiro ? 'rgba(25, 135, 84, 0.9)' : 'rgba(25, 135, 84, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-bank fs-6 me-3"></i>
+                                <span className="hide-menu ps-1 fw-semibold">{t('finance')}</span>
+                                <i className={`bi bi-chevron-down ms-auto transition-all ${dropFinanceiro ? 'rotate-180' : ''}`}></i>
+                            </motion.a>
 
-                            <ul className={`collapse first-level ${dropFinanceiro ? 'in' : ''}`}>
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/contratos')} aria-expanded="false">
-                                        <i className="bi bi-clipboard-data fs-6 me-1"></i>
+                            <motion.ul 
+                                className={`collapse first-level ${dropFinanceiro ? 'in' : ''}`}
+                                initial={false}
+                                animate={{ height: dropFinanceiro ? 'auto' : 0, opacity: dropFinanceiro ? 1 : 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/contratos')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-clipboard-data fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('contracts')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
 
-                                <li className="sidebar-item ms-5">
-                                    <a id="services" href="#" className="sidebar-link p-1" onClick={() => go('/modalidades')} aria-expanded="false">
-                                        <i className="bi bi-easel fs-6 me-1"></i>
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        id="services" 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/modalidades')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-easel fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('services')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
 
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/modcontratos')} aria-expanded="false">
-                                        <i className="bi bi-paperclip fs-6 me-1"></i>
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/modcontratos')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-paperclip fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('contractTemplates')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
 
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/planos')} aria-expanded="false">
-                                        <i className="bi bi-basket fs-6 me-1"></i>
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/planos')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-basket fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('plans')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
-                            </ul>
+                            </motion.ul>
                         </li>
 
+                        {/* Admin Section */}
                         <li className="sidebar-item">
-                            <a id="admin" className={`sidebar-link p-3 has-arrow ${dropAdmin ? 'active' : ''}`} href="#" onClick={() => setDropAdmin(!dropAdmin)}>
-                                <i className="bi bi-person-vcard fs-6 me-1"></i>
-                                <span className="hide-menu ps-1">ADMIN</span>
-                            </a>
+                            <motion.a 
+                                id="admin" 
+                                className={`sidebar-link p-3 has-arrow d-flex align-items-center rounded-3 mx-2 mb-1 ${dropAdmin ? 'active bg-warning text-dark' : ''}`} 
+                                href="#" 
+                                onClick={() => setDropAdmin(!dropAdmin)}
+                                whileHover={{ backgroundColor: dropAdmin ? 'rgba(255, 193, 7, 0.9)' : 'rgba(255, 193, 7, 0.1)' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <i className="bi bi-person-vcard fs-6 me-3"></i>
+                                <span className="hide-menu ps-1 fw-semibold">ADMIN</span>
+                                <i className={`bi bi-chevron-down ms-auto transition-all ${dropAdmin ? 'rotate-180' : ''}`}></i>
+                            </motion.a>
 
-                            <ul className={`collapse first-level ${dropAdmin ? 'in' : ''}`}>
-                                {/* <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/licencapagamentos')} aria-expanded="false">
-                                        <i className="bi bi-cash fs-6 me-1"></i>
-                                        <span className="hide-menu ps-1">Licença pagamentos</span>
-                                    </a>
-                                </li> */}
-
-                                <li className="sidebar-item ms-5">
-                                    <a id="users" href="#" className="sidebar-link p-1" onClick={() => go('/usuarios')} aria-expanded="false">
-                                        <i className="bi bi-person-lines-fill fs-6 me-1"></i>
+                            <motion.ul 
+                                className={`collapse first-level ${dropAdmin ? 'in' : ''}`}
+                                initial={false}
+                                animate={{ height: dropAdmin ? 'auto' : 0, opacity: dropAdmin ? 1 : 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        id="users" 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/usuarios')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(255, 193, 7, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-person-lines-fill fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('users')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
 
-                                <li className="sidebar-item ms-5">
-                                    <a href="#" className="sidebar-link p-1" onClick={() => go('/relatorios')} aria-expanded="false">
-                                        <i className="bi bi-bar-chart fs-6 me-1"></i>
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/relatorios')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(255, 193, 7, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-bar-chart fs-6 me-3 text-secondary"></i>
                                         <span className="hide-menu ps-1">{t('reports')}</span>
-                                    </a>
+                                    </motion.a>
                                 </li>
-                            </ul>
+                            </motion.ul>
                         </li>
                     </ul>
-
-                    {/* bg-light-subtle */}
-                    {/* <div className="hide-menu bg-light position-relative mt-7 rounded-3">
-                        <div className="d-flex p-2 justify-content-between">
-                            <div className="mt-2">
-                                <h4 className="mb-6">{t('plan')}</h4>
-                                <h6 className="fw-semibold fs-3 mb-6 text-dark">Uso gratuito para profissionais com até 3 alunos e 1 usuário</h6>
-                                <button onClick={() => navigate('/licenca')} className="btn btn-success fs-2 fw-semibold lh-sm">{t('subscribe')}</button>
-                            </div>
-                            
-                            <div>
-                                <img height={50} width={50} src="../assets/images/app/gratis.png" alt="" className="img-fluid" />
-                            </div>
-                        </div>
-                    </div> */}
-                    
                 </nav>
+
+                {/* Footer */}
+                <div className="p-3 border-top">
+                    <div className="d-flex align-items-center">
+                        <div className="flex-shrink-0">
+                            <div className="bg-success rounded-circle" style={{ width: '8px', height: '8px' }}></div>
+                        </div>
+                        <div className="flex-grow-1 ms-2">
+                            <small className="text-muted">Sistema Online</small>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </aside>
+        </motion.aside>
     );
 }
-
 
 const Typewriter = ({ texts, speed = 100, delay = 2000, maxCycles = 2 }) => {
     const [displayText, setDisplayText] = useState("");
@@ -297,6 +412,14 @@ const Typewriter = ({ texts, speed = 100, delay = 2000, maxCycles = 2 }) => {
             {displayText}
         </motion.h3>
     );
+};
+
+// PropTypes validation
+Typewriter.propTypes = {
+    texts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    speed: PropTypes.number,
+    delay: PropTypes.number,
+    maxCycles: PropTypes.number
 };
 
 export default Sidebar;

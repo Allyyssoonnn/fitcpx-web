@@ -161,6 +161,7 @@ export function filtrarExerciciosFunc(exerciciosFiltrados, filtrosAtuais) {
 }
 
 export const arrayBorders = ['border-success', 'border-info', 'border-danger', 'border-primary', 'border-secondary'];
+export const arrayBackgrounds = ['bg-success-subtle', 'bg-info-subtle', 'bg-danger-subtle', 'bg-primary-subtle', 'bg-secondary-subtle'];
 
 export const protocolosCampos = {
     1: [],
