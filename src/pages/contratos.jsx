@@ -18,7 +18,7 @@ function Contratos() {
 
     return (
         <div className="container-fluid">
-            <div className="card">
+            <div className="card shadow-lg rounded-4">
                 <div className="card-body">
                     <h5 className="card-title">Contratos</h5>
 

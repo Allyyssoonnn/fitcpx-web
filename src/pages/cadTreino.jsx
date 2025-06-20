@@ -102,14 +102,20 @@ function CadTreino() {
     
     return (
         <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid">
-            <div className="card">
-                <div className="card-header">
-                    <button onClick={e => { e.preventDefault(); navigate('/aluno', { state: { cod_aluno: codAluno } }); }} className="btn btn-danger mb-3 me-3">
-                        <i className="bi bi-backspace me-2"></i>
+            {/* Header Section */}
+            <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
+                <div className="d-flex justify-content-between align-items-center">
+                    <button 
+                        onClick={e => { e.preventDefault(); navigate('/aluno', { state: { cod_aluno: codAluno } }); }}
+                        className="btn btn-outline-danger rounded-pill px-4"
+                    >
+                        <i className="bi bi-arrow-left me-2"></i>
                         Voltar
                     </button>
                 </div>
+            </div>
 
+            <div className="card shadow-lg rounded-4">
                 <div className="card-body">
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
                     
@@ -175,7 +181,7 @@ function CadTreino() {
                 </div>
             </div>
 
-            <div className="card">
+            <div className="card shadow-lg rounded-4">
                 <div className="card-header d-flex justify-content-between flex-wrap">
                     <h5 className="card-title fw-semibold m-3">Prescrição</h5>
                     <label>{sessoes?.length}/15</label>

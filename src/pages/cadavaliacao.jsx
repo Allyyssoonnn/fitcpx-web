@@ -227,13 +227,26 @@ function CadAvaliacao() {
 
     return (
         <div className="container-fluid">
-            <div className="card">
-                <div className="card-header d-flex justify-content-between align-items-center">
-                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
-                        <i className="bi bi-backspace me-2"></i>
+            {/* Header Section */}
+            <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
+                <div className="d-flex justify-content-between align-items-center">
+                    <button 
+                        onClick={() => navigate(-1)} 
+                        className="btn btn-outline-danger rounded-pill px-4"
+                    >
+                        <i className="bi bi-arrow-left me-2"></i>
                         Voltar
                     </button>
-
+                    
+                    <button className="btn btn-outline-danger rounded-pill px-4" onClick={clear}>
+                        <i className="bi bi-trash me-2"></i>
+                        Limpar
+                    </button>
+                </div>
+            </div>
+            
+            <div className="card">
+                {/* <div className="card-header d-flex justify-content-between align-items-center"> */}
                     {/* {activeTab === 'perimetros' && (
                         <button
                             type="button"
@@ -255,30 +268,9 @@ function CadAvaliacao() {
                             Resetar ordenação
                         </button>
                     )} */}
+                {/* </div> */}
 
-                    <div className="dropdown">
-                        <button
-                            className="btn btn-light dropdown-toggle"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            <i className="bi bi-three-dots"></i>
-                        </button>
-
-                        <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <button className="dropdown-item" onClick={clear}>
-                                    <i className="bi bi-trash me-3"></i>
-                                    Limpar
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <form onKeyDown={preventForm} className="card-body" onSubmit={handleSubmit(confirma)}>
+                <form onKeyDown={preventForm} className="card-body shadow-lg rounded-4" onSubmit={handleSubmit(confirma)}>
                     <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
                     
                     <div className="row g-3">

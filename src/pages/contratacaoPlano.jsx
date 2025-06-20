@@ -222,6 +222,19 @@ function ContratacaoPlano() {
 
     return (
         <div className="container-fluid">
+            {/* Header Section */}
+            <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
+                <div className="d-flex justify-content-between align-items-center">
+                    <button 
+                        onClick={() => navigate(-1)} 
+                        className="btn btn-outline-danger rounded-pill px-4"
+                    >
+                        <i className="bi bi-arrow-left me-2"></i>
+                        Voltar
+                    </button>
+                </div>
+            </div>
+
             <Pagamento
                 show={pagando}
                 close={() => setPagando(false)}
@@ -231,14 +244,7 @@ function ContratacaoPlano() {
             />
             <SelectPlano planos={planos} show={modalPlanos} setShow={setModalPlanos} setPlano={setPlano} />
 
-            <div className="card">
-                <div className="card-header">
-                    <button onClick={() => navigate(-1)} className="btn btn-danger mb-3">
-                        <i className="bi bi-backspace me-2"></i>
-                        Voltar
-                    </button>
-                </div>
-
+            <div className="card shadow-lg rounded-4">
                 <div className="card-body row">
                     <h5 className="card-title mb-3">Contratação de plano</h5>
 
@@ -292,7 +298,7 @@ function ContratacaoPlano() {
 
             <div className="row">
                 <div className="col-md-6">
-                    <div className="card">
+                    <div className="card shadow-lg rounded-4">
                         <div className="card-body row">
                             <div className="text-center d-flex flex-column mb-3">
                                 <div className="btn-group" role="group">
@@ -351,11 +357,17 @@ function ContratacaoPlano() {
                                 <label className="form-check-label" htmlFor="flexSwitchCheckDefault">[Jurídico] - Gerar e enviar contrato para assinatura?</label>
                             </div>
                         </div>
+
+                        {!geraContrato && (
+                            <div className="card-footer">
+                                <button className="btn btn-success" onClick={confirmar}>Confirmar</button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="col-md-6">
-                    <div className="card">
+                    <div className="card shadow-lg rounded-4">
                         <div className="card-body row">
                             <div className="border border-warning bg-warning-subtle fs-3 p-3 rounded mt-3 shadow-md">
                                 <p className="text-center mb-0"><strong>Resumo</strong></p>
@@ -373,58 +385,60 @@ function ContratacaoPlano() {
                 </div>
             </div>
 
-            <div className="card">
-                <div className="card-body">
-                    <h5 className="card-title">Revisão do contrato</h5>
+            {geraContrato && (
+                <div className="card shadow-lg rounded-4">
+                    <div className="card-body">
+                        <h5 className="card-title">Revisão do contrato</h5>
 
-                    <div className="row g-3">
-                        <div className="col-md-6">
-                            <Select
-                                options={contratos}
-                                fieldName='nome_contrato'
-                                fieldValue='cod_contrato'
-                                value={selectContrato?.cod_contrato}
-                                onChange={(value) => setSelectContrato(value)}
-                                className="mb-3"
-                                label='Selecione o contrato'
-                            />
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <Select
+                                    options={contratos}
+                                    fieldName='nome_contrato'
+                                    fieldValue='cod_contrato'
+                                    value={selectContrato?.cod_contrato}
+                                    onChange={(value) => setSelectContrato(value)}
+                                    className="mb-3"
+                                    label='Selecione o contrato'
+                                />
+                            </div>
+
+                            <div className="col-md-6">
+                                <MultiSelect
+                                    options={['Treinamento físico', 'Consultoria nutricional', 'Fisioterapia', 'Acesso a academia']}
+                                    state={descricao}
+                                    setState={setDescricao}
+                                    className="mb-3"
+                                    label='Selecione a descrição do serviço'
+                                    hideLabel={true}
+                                />
+                            </div>
                         </div>
 
-                        <div className="col-md-6">
-                            <MultiSelect
-                                options={['Treinamento físico', 'Consultoria nutricional', 'Fisioterapia', 'Acesso a academia']}
-                                state={descricao}
-                                setState={setDescricao}
-                                className="mb-3"
-                                label='Selecione a descrição do serviço'
-                                hideLabel={true}
+                        {contratoPreenchido && (
+                            <JoditEditor
+                                value={contratoPreenchido}
+                                onBlur={(newContent) => setContratoPreenchido(newContent)}
+                                config={{
+                                    readonly: false, // ou true, se for só para visualização
+                                    toolbar: false, // esconde a barra de ferramentas
+                                    toolbarInline: false,
+                                    showXPathInStatusbar: false,
+                                    showCharsCounter: false,
+                                    showWordsCounter: false,
+                                    showStatusbar: false,
+                                    buttons: [], // garante que nenhum botão será carregado
+                                    removeButtons: "*", // remove todos os botões mesmo se algo vier do default
+                                }}
                             />
-                        </div>
+                        )}
                     </div>
 
-                    {contratoPreenchido && (
-                        <JoditEditor
-                            value={contratoPreenchido}
-                            onBlur={(newContent) => setContratoPreenchido(newContent)}
-                            config={{
-                                readonly: false, // ou true, se for só para visualização
-                                toolbar: false, // esconde a barra de ferramentas
-                                toolbarInline: false,
-                                showXPathInStatusbar: false,
-                                showCharsCounter: false,
-                                showWordsCounter: false,
-                                showStatusbar: false,
-                                buttons: [], // garante que nenhum botão será carregado
-                                removeButtons: "*", // remove todos os botões mesmo se algo vier do default
-                            }}
-                        />
-                    )}
+                    <div className="card-footer">
+                        <button disabled={errors.length > 0} className="btn btn-success" onClick={confirmar}>Confirmar</button>
+                    </div>
                 </div>
-
-                <div className="card-footer">
-                    <button disabled={errors.length > 0} className="btn btn-success" onClick={confirmar}>Confirmar</button>
-                </div>
-            </div>
+            )}
         </div>
     );
 }

@@ -35,7 +35,7 @@ function Configuracao() {
     
     return (
         <div className="container-fluid">
-            <div className="card">
+            <div className="card shadow-lg rounded-4">
                 <ul className="nav nav-pills user-profile-tab" id="pills-tab" role="tablist">
                     {tabs.map((tab) => (
                         <li key={tab.id} className="nav-item" role="presentation">
