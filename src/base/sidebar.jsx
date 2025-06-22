@@ -36,7 +36,8 @@ function Sidebar() {
                 borderLeft: `0.30rem solid ${PRODUCAO ? '#85D446' : '#FF0000'}`, 
                 overflowY: 'auto', 
                 overflowX: 'hidden', 
-                zIndex: '999', 
+                // zIndex: '999',
+                zIndex: '4',
                 width: openedSidebar ? '' : '0px' 
             }}
             initial={{ x: -300 }}
@@ -45,7 +46,7 @@ function Sidebar() {
         >
             <div className="h-100 d-flex flex-column">
                 {/* Header */}
-                <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm bg-gradient-primary p-3">
+                <div className="brand-logo d-flex align-items-center justify-content-between border-bottom shadow-sm bg-gradient-primary">
                     <div className="d-flex align-items-center w-100 justify-content-center me-3">
                         <div className="position-relative">
                             <img 

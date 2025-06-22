@@ -1,13 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from "path";
+import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import compression from 'vite-plugin-compression';
 import { version } from './package.json';
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   plugins: [
+    tailwindcss(),
     compression({
       algorithm: 'brotliCompress', // Usa Brotli (mais eficiente que Gzip)
       threshold: 1024, // Só comprime arquivos maiores que 1KB
@@ -39,7 +46,7 @@ export default defineConfig({
         skipWaiting: true,     // ⬅️ força o SW a ativar sem esperar o usuário fechar
         clientsClaim: true,    // ⬅️ força a controlar todas as abas imediatamente
       }
-    })
+    }),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(version),

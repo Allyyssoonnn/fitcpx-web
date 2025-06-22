@@ -76,7 +76,7 @@ function Header() {
 
     return (
         (<header className="app-header mb-3">
-            <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm bg-gradient-primary rounded-4">
+            <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm bg-white">
                 <ul className="navbar-nav d-flex flex-row flex-grow-1 w-40 ms-md-3">
                     <li onClick={openedSidebar ? closeSidebar : openSidebar} className="nav-item d-block d-xl-none">
                         <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse">

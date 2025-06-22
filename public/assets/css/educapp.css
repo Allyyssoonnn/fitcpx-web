@@ -102,3 +102,7 @@ aside::-webkit-scrollbar-thumb:hover {
 *::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
 }
+
+button {
+  cursor: pointer;
+}

@@ -1,4 +1,17 @@
-import Alunos from "../pages/alunos";
+//PAGES SIDEBAR
+import Alunos from "../pages/sidebarPages/alunos";
+import Avaliacoes from "../pages/sidebarPages/avaliacoes";
+import GrupoExercicios from "../pages/sidebarPages/grupoExercicios";
+import Exercicios from "../pages/sidebarPages/exercicios";
+import Treinos from "../pages/sidebarPages/treinos";
+import Modalidades from "../pages/sidebarPages/modalidades";
+import ModContratos from "../pages/sidebarPages/modContratos";
+import Contratos from "../pages/sidebarPages/contratos";
+import Planos from "../pages/sidebarPages/planos";
+import Usuarios from "../pages/sidebarPages/usuarios";
+
+// ===============================================
+
 import CadAluno from "../pages/cadAluno";
 import Dashboard from "../pages/dashboard";
 import Aluno from "../pages/aluno";
@@ -7,14 +20,10 @@ import Avaliacao from "../pages/avaliacao";
 import Agenda from "../pages/agenda";
 import CompareAvaliacao from "../pages/compareAvaliacao";
 import CadTreino from "../pages/cadTreino";
-import Treinos from "../pages/treinos";
-import Exercicios from "../pages/exercicios";
-import GrupoExercicios from "../pages/grupoExercicios";
 import CadGrupoExercicio from "../pages/cadGrupoExercicio";
 import CadExercicio from "../pages/cadExercicio";
 import CadSessao from "../pages/cadSessao";
 import Planilha from "../pages/planilha";
-import Usuarios from "../pages/usuarios";
 import CadUsuario from "../pages/cadusuario";
 import Relatorios from "../pages/relatorios";
 import Cardapios from "../pages/cardapios";
@@ -23,17 +32,12 @@ import Alimentos from "../pages/alimentos";
 import GrupoAlimentos from "../pages/grupoAlimentos";
 import CadGrupoAlimento from "../pages/cadGrupoAlimento";
 import CadAlimento from "../pages/cadAlimento";
-import Avaliacoes from "../pages/avaliacoes";
 import CadPlano from "../pages/cadPlano";
-import Planos from "../pages/planos";
-import Modalidades from "../pages/modalidades";
 import CadModalidade from "../pages/cadModalidade";
 import ContratacaoPlano from "../pages/contratacaoPlano";
-import ModContratos from "../pages/modContratos";
 import CadContrato from "../pages/cadContrato";
 import Configuracao from "../pages/configuracao";
 import Contrato from "../pages/contrato";
-import Contratos from "../pages/contratos";
 import ContratacaoSessao from "../pages/contratacaoSessao";
 import PacoteSessao from "../pages/aluno/pacoteSessao";
 
