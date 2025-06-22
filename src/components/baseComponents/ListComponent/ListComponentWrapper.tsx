@@ -54,7 +54,7 @@ export default function ListComponentWrapper({ list, title, description, buttonT
         <div className="card shadow-lg rounded-4">
             <div className="card-header">
                 <div className="row d-flex justify-content-between">
-                    <div className="col-md-3 col-8 d-flex align-items-center gap-2">
+                    <div className="col-md-3 col-7 d-flex align-items-center gap-2">
                         <input
                             type="text"
                             className="form-control"
@@ -66,7 +66,7 @@ export default function ListComponentWrapper({ list, title, description, buttonT
                         {childrenFilters}
                     </div>
 
-                    <div className="col-md-3 col-8 d-flex flex-column items-end">
+                    <div className="col-md-3 col-5 d-flex flex-column items-end">
                         <h4>{title}</h4>
                         <p>{description}</p>
                     </div>

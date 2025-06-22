@@ -13,7 +13,7 @@ export default function ListComponentFilters({ children }: ListComponentFiltersP
                 </button>
             </DialogTrigger>
 
-            <DialogContent className="w-25">
+            <DialogContent className="col-md-3 col-12">
                 <DialogHeader>
                     <DialogTitle className="text-start">Filtros</DialogTitle>
                 </DialogHeader>

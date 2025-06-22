@@ -37,7 +37,7 @@ function Sidebar() {
                 overflowY: 'auto', 
                 overflowX: 'hidden', 
                 // zIndex: '999',
-                zIndex: '4',
+                zIndex: 4,
                 width: openedSidebar ? '' : '0px' 
             }}
             initial={{ x: -300 }}
