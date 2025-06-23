@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import ListComponentItems from "./ListComponentItems";
 import ListComponentFilters from "./ListComponentFilters";
 
 type ListComponentProps = {
@@ -21,14 +22,14 @@ export default function ListComponentWrapper({ list, title, description, buttonT
             // && (fieldStatus ? item[fieldStatus] === statusFilter : true)
         )
     }, [list, searchTerm]);
-
+    
     const childrenList = useMemo(() => {
-        if (React.isValidElement(children) && children?.type?.name === 'ListComponentItems') {
+        if (React.isValidElement(children) && children?.type === ListComponentItems) {
             return React.cloneElement(children, { list: filteredList });
         }
         if (Array.isArray(children)) {
             const childList = children.find(
-                (child) => React.isValidElement(child) && child?.type?.name === 'ListComponentItems'
+                (child) => React.isValidElement(child) && child?.type === ListComponentItems
             );
             if (childList) {
                 return React.cloneElement(childList, { list: filteredList });
@@ -38,12 +39,12 @@ export default function ListComponentWrapper({ list, title, description, buttonT
     }, [children, filteredList]);
 
     const childrenFilters = useMemo(() => {
-        if (React.isValidElement(children) && children?.type?.name === 'ListComponentFilters') {
+        if (React.isValidElement(children) && children?.type === ListComponentFilters) {
             return children;
         }
         if (Array.isArray(children)) {
             const childFilters = children.find(
-                (child) => React.isValidElement(child) && child?.type?.name === 'ListComponentFilters'
+                (child) => React.isValidElement(child) && child?.type === ListComponentFilters
             );
             if (childFilters) return childFilters;
         }

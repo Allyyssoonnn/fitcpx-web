@@ -1,5 +1,3 @@
-import ListComponentItemOptions from "./ListComponentItemOptions";
-
 type ListComponentItemProps = {
     index: number;
     urlImage?: string;
