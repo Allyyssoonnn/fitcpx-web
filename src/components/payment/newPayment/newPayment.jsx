@@ -1,22 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from 'framer-motion';
-import { stateAluno, stateEmpresa, useNotificacao } from "../../../states/states";
+import { useNotificacao } from "../../../states/states";
 import { PRODUCAO } from "../../../api/api";
-import { useRecoilState } from "recoil";
-import { toast } from "react-toastify";
 import CardIconFitCpxPay from "../../baseComponents/CardIconFitCpxPay";
-import { useQuery } from "react-query";
-import { getCards } from "../../../api/aluno";
-import SavedCards from "../savedCards";
 
-function NewPayment({ close, onPay, callback, atSigth, clientId }) {
-    const [empresa] = useRecoilState(stateEmpresa);
+function NewPayment({ close, onPay, callback, atSigth }) {
     const { nLoading, endLoading, nConfirm } = useNotificacao();
-    const [savedCards, setSavedCards] = useState(false);
     const [typePayment, setTypePayment] = useState('BOLETO');
     const [formaPagamento, setFormaPagamento] = useState('RECORRENTE'); //MENSAL - RECORRENTE - UNICA
     const [paymentMethod, setPaymentMethod] = useState(null);
-    const [cardSelected, setCardSelected] = useState();
     const [formCard, setFormCard] = useState({
         number: PRODUCAO ? '' : '4111111111111111',
         month: PRODUCAO ? '' : '11',
@@ -30,11 +22,9 @@ function NewPayment({ close, onPay, callback, atSigth, clientId }) {
     async function clickPay() {
         nConfirm(null, 'Confirma a finalização da contratação?', async () => {
             nLoading(null, 'Gerando contratação...');
-
-            const card = { ...formCard, cod_aluno_cartao: cardSelected?.cod_aluno_cartao };
             
             if (typePayment == 'CREDIT') {
-                await onPay(formaPagamento, endLoading, null, card, typePayment);
+                await onPay(formaPagamento, endLoading, null, formCard, typePayment);
                 if (callback) callback();
                 endLoading();
                 return;
@@ -49,14 +39,6 @@ function NewPayment({ close, onPay, callback, atSigth, clientId }) {
     async function onClose() {
         close();
     }
-
-    if (savedCards) return (
-        <SavedCards
-            select={(card) => setCardSelected(card)}
-            close={() => setSavedCards(false)}
-            clientId={clientId}
-        />
-    )
 
     return (
         <div className="card" style={{ height: formaPagamento != 'MANUAL' ? '90vh' : '' }}>
@@ -126,44 +108,14 @@ function NewPayment({ close, onPay, callback, atSigth, clientId }) {
                     </>
                 )}
 
-                {(typePayment == 'CREDIT' && !cardSelected) && (
-                    <>
-                        <div className="d-flex col-6">
-                            <button className="btn btn-sm btn-outline-info mt-2"
-                                onClick={() => setSavedCards(true)}
-                            >
-                                Cartões salvos
-                            </button>
-                        </div>
-
-                        <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
-                            <p className="mb-0">Preencher dados do cartão</p>
-
-                            <label className="col-5 fs-2" placeholder="Número do cartão">Número</label>
-                            <label className="col-1 fs-2" placeholder="Mes">Mês</label>
-                            <label className="col-2 fs-2" placeholder="Ano">Ano</label>
-                            <label className="col-2 fs-2" placeholder="CCV">CCV</label>
-                            <label className="col-2 fs-2" placeholder="Parcelas">Parcelas</label>
-
-                            <input value={formCard.number} onChange={e => updateFormCard('number', e.target.value)} className="col-5" placeholder="Número do cartão" />
-                            <input value={formCard.month} onChange={e => updateFormCard('month', e.target.value)} className="col-1" placeholder="Mes" />
-                            <input value={formCard.year} onChange={e => updateFormCard('year', e.target.value)} className="col-2" placeholder="Ano" />
-                            <input value={formCard.code} onChange={e => updateFormCard('code', e.target.value)} className="col-2" placeholder="CCV" />
-                            <input type="number" max={12} min={1} value={formCard.installments} onChange={e => updateFormCard('installments', e.target.value)}  className="col-2" placeholder="Parcelas" />
-                        </div>
-                    </>
-                )}
-
-                {cardSelected && (
-                    <div className="card">
-                        <div className="card-body d-flex flex-col">
-                            <h5>Cartão selecionado</h5>
-                            <label>**** *** {cardSelected.final_aluno_cartao}</label>
-                            <label>{cardSelected.expiracao_aluno_cartao}</label>
-                            <button className="btn btn-sm btn-danger mt-3"
-                                onClick={() => setCardSelected()}
-                            >Remover</button>
-                        </div>
+                {typePayment == 'CREDIT' && formaPagamento == 'PARCELADO' && (
+                    <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
+                        <label className="form-label">Parcelas</label>
+                        <input type="number" max={12} min={1}
+                            value={formCard.installments} onChange={e => updateFormCard('installments', e.target.value)}
+                            placeholder="Parcelas"
+                            className="form-control"
+                        />
                     </div>
                 )}
 
