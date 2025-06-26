@@ -3,15 +3,16 @@ import { useState } from "react";
 
 type ListComponentItemOptionsProps = {
     children: React.ReactNode;
+    id?: string;
 }
 
-export default function ListComponentItemOptions({ children }: ListComponentItemOptionsProps) {
+export default function ListComponentItemOptions({ children, id }: ListComponentItemOptionsProps) {
     const [open, setOpen] = useState(false);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger>
-                <button onClick={e => { e.stopPropagation(); setOpen(!open) }} className="btn btn-sm btn-outline-info">
+                <button id={id} onClick={e => { e.stopPropagation(); setOpen(!open) }} className="btn btn-sm btn-outline-info">
                     <i className="bi bi-three-dots-vertical"></i>
                 </button>
             </PopoverTrigger>

@@ -1,4 +1,5 @@
 type ListComponentItemProps = {
+    id?: string;
     index: number;
     urlImage?: string;
     title: string;
@@ -8,13 +9,14 @@ type ListComponentItemProps = {
     children?: React.ReactNode;
 }
 
-export default function ListComponentItem({ index, urlImage = undefined, title, description, badge, onClickItem, children }: ListComponentItemProps) {
+export default function ListComponentItem({ id, index, urlImage = undefined, title, description, badge, onClickItem, children }: ListComponentItemProps) {
     return (
         <div
             className={`d-flex cursor-pointer hover:bg-gray-300 justify-content-between
                 align-items-center p-2 py-3 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}
             `}
             onClick={onClickItem}
+            id={id}
         >
             <div className="d-flex align-items-center gap-2">
                 {urlImage !== undefined && (

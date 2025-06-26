@@ -5,8 +5,8 @@ test('New Workout', async ({ page }) => {
 
     await page.waitForTimeout(3000);
     
-    await page.click('a[id="sidebarCollapse"]');
-    await page.click('tr[id="aluno-0"]');
+    await page.click('button[id="sidebarCollapse"]');
+    await page.click('div[id="aluno-0"]');
     await page.click('button[id="aluno-tabs-tab-treino"]');
     await page.click('button[id="addWorkout"]');
     await page.click('button[id="newWorkoutMethod"]');

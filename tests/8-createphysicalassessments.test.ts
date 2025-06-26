@@ -4,7 +4,7 @@ test('Create Physical Assessments', async ({ page }) => {
     await page.goto('http://localhost:5173/');
 
     await page.click('a[id="clients"]');
-    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="sidebarCollapse"]');
     await page.click('tr[id="aluno-0"]');
     await page.click('button[id="aluno-tabs-tab-avaliacaoFisica"]');
     await page.click('button[id="addPhysicalAssessment"]');

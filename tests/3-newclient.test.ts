@@ -20,7 +20,7 @@ test('New Client', async ({ page }) => {
     await page.fill('input[id="neighborhood"]', 'CENTRO');
     await page.fill('input[id="address2"]', '123');
     
-    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="sidebarCollapse"]');
     await page.click('button[id="submit"]');
 
     await expect(page).toHaveURL(/.*\/aluno/);

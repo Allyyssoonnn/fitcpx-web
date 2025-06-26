@@ -21,6 +21,6 @@ test('Register', async ({ page }) => {
     await expect(page).toHaveURL(/.*\//);
 
     await page.fill('input[id="email-code"]', '1234');
-    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="sidebarCollapse"]');
     await page.click('button[id="confirm-email"]');
 });

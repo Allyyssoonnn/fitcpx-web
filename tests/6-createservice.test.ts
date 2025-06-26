@@ -7,7 +7,7 @@ test('Create Service', async ({ page }) => {
     
     await page.click('a[id="finance"]');
     await page.click('a[id="services"]');
-    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="sidebarCollapse"]');
     await page.click('button[id="newService"]');
     
     await page.fill('input[id="name"]', 'Person');

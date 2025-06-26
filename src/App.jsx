@@ -1,13 +1,13 @@
-import React, { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from './base/layout';
-import Login from './pages/login';
-import Register from './pages/register';
+import Login from './pages/Auth/login';
+import Register from './pages/Auth/register';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import PlanilhaTreino from './pages/planilhaTreino';
-import Recovery from './pages/recovery';
-import RecuperacaoSenha from './pages/recuperacaoSenha';
+import PlanilhaTreino from './pages/Infos/planilhaTreino';
+import Recovery from './pages/Auth/recovery';
+import RecuperacaoSenha from './pages/Auth/recuperacaoSenha';
 
 import ErrorBoundaryWrapper from './base/errorBoundary';
 import { parseCookies } from 'nookies';

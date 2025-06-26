@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('Fill Business Info', async ({ page }) => {
     await page.goto('http://localhost:5173/');
 
-    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="sidebarCollapse"]');
 
     await page.click('a[id="imgMenu"]');
     await page.click('a[id="imgMenu-config"]');

@@ -9,10 +9,11 @@ type ListComponentProps = {
     buttonText?: string;
     fieldSearch: string;
     buttonOnClick?: () => void;
+    buttonId?: string;
     children: (filteredList: any[]) => React.ReactNode;
 }
 
-export default function ListComponentWrapper({ list, title, description, buttonText, fieldSearch, buttonOnClick, children }: ListComponentProps) {
+export default function ListComponentWrapper({ list, title, description, buttonText, fieldSearch, buttonOnClick, buttonId, children }: ListComponentProps) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredList = useMemo(() => {
@@ -75,7 +76,7 @@ export default function ListComponentWrapper({ list, title, description, buttonT
 
                 <div className="d-flex justify-content-end align-items-center">
                     {buttonOnClick && (
-                        <button className="btn btn-outline-success" onClick={buttonOnClick}>
+                        <button id={buttonId} className="btn btn-outline-success" onClick={buttonOnClick}>
                             <i className="bi bi-plus-circle me-2"></i>
                             {buttonText ?? "Novo"}
                         </button>

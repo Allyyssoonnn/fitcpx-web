@@ -5,9 +5,9 @@ test('Fill User Info', async ({ page }) => {
 
     await page.click('a[id="admin"]');
     await page.click('a[id="users"]');
-    await page.click('a[id="sidebarCollapse"]');
+    await page.click('button[id="sidebarCollapse"]');
     await page.click('button[id="option-user-0"]');
-    await page.click('a[id="edit-user-0"]');
+    await page.click('button[id="edit-user-0"]');
     
     await page.fill('input[id="idnumber"]', '10940113988');
     await page.fill('input[id="phone"]', '44988084028');
