@@ -373,7 +373,7 @@ function Aluno() {
                                 </div>
                             </Tab>
 
-                            <Tab eventKey="sessoes" title={
+                            {/* <Tab eventKey="sessoes" title={
                                 <span className="d-flex align-items-center">
                                     <i className="bi bi-calendar2-check me-2"></i>
                                     <span className="d-none d-md-inline">Sessões</span>
@@ -397,7 +397,7 @@ function Aluno() {
                                         ))}
                                     </div>
                                 </div>
-                            </Tab>
+                            </Tab> */}
                         </Tabs>
                     </div>
                 </div>
@@ -573,7 +573,7 @@ function CardTreino({ treino, aluno, refetch }) {
     return (
         <div className='card border-0 shadow-sm rounded-4 overflow-hidden'>
             <div className='card-body p-0'>
-                <div className="bg-gradient-success text-white p-4">
+                <div className="bg-gradient-success p-4">
                     <div className="d-flex justify-content-between align-items-start">
                         <div>
                             <h5 className="card-title mb-1 fw-bold">{treino.nome_treino}</h5>
@@ -670,7 +670,7 @@ function CardAvaliacao({ avaliacao, aluno, refetch, index }) {
     return (
         <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div className='card-body p-0'>
-                <div className="bg-gradient-info text-white p-4">
+                <div className="bg-gradient-info p-4">
                     <div className="d-flex justify-content-between align-items-start">
                         <div>
                             <h5 className="card-title mb-1 fw-bold">Avaliação Física</h5>
@@ -754,7 +754,7 @@ function CardContrato({ alunoContrato, aluno, refetch }) {
     return (
         <div className='card border-0 shadow-sm rounded-4 overflow-hidden'>
             <div className='card-body p-0'>
-                <div className="bg-gradient-warning text-white p-4">
+                <div className="bg-gradient-warning p-4">
                     <h5 className="card-title mb-1 fw-bold">{alunoContrato.nome_aluno_contrato}</h5>
                     <p className="mb-0 opacity-75">
                         <i className="bi bi-calendar-range me-1"></i>
