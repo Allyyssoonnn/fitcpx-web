@@ -6,7 +6,7 @@ import { useRecoilState } from "recoil";
 import { stateUsuario } from "../../states/states";
 import { useState } from "react";
 
-function FiltroTreinoInteligente({ show, close, confirma }) {
+function FiltroTreinoInteligente({ show, close, confirma, exercicio }) {
     const [usuario] = useRecoilState(stateUsuario);
 
     const [exerciciosFiltrado, setExerciciosFiltrado] = useState([]);
@@ -29,7 +29,7 @@ function FiltroTreinoInteligente({ show, close, confirma }) {
             </div>
 
             <div className="modal-body">
-                <FiltroExercicio exercicios={exercicios} setExerciciosFiltrados={setExerciciosFiltrado} painel={true} />
+                <FiltroExercicio exercicios={exercicios} setExerciciosFiltrados={setExerciciosFiltrado} painel={true} exercicio={exercicio} />
             </div>
 
             <div className="modal-bottom p-2 d-flex justify-content-center gap-2">

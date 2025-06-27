@@ -5,17 +5,17 @@ import { stateUsuario } from "../states/states";
 import { useEffect, useState } from "react";
 import { camposFiltrosExercicios, filtrarExerciciosFunc } from "../utils";
 
-function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false }) {
+function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false, exercicio = null }) {
     const [usuario] = useRecoilState(stateUsuario);
 
-    const [grupoPrincipal, setGrupoPrincipal] = useState(() => Number(sessionStorage.getItem("grupoPrincipal")) || 0);
-    const [grupoSecundario, setGrupoSecundario] = useState(() => Number(sessionStorage.getItem("grupoSecundario")) || 0);
-    const [equipamento, setEquipamento] = useState(() => Number(sessionStorage.getItem("equipamento")) || 0);
-    const [articulacao, setArticulacao] = useState(() => Number(sessionStorage.getItem("articulacao")) || 0);
-    const [tipoExercicio, setTipoExercicio] = useState(() => Number(sessionStorage.getItem("tipoExercicio")) || 0);
-    const [exercicioResistencia, setExercicioResistencia] = useState(() => Number(sessionStorage.getItem("exercicioResistencia")) || 0);
-    const [indicacao, setIndicacao] = useState(() => Number(sessionStorage.getItem("indicacao")) || 0);
-    const [padraoMovimento, setPadraoMovimento] = useState(() => Number(sessionStorage.getItem("padraoMovimento")) || 0);
+    const [grupoPrincipal, setGrupoPrincipal] = useState(() => exercicio?.cod_grupo_exercicio_1 || Number(sessionStorage.getItem("grupoPrincipal")) || 0);
+    const [grupoSecundario, setGrupoSecundario] = useState(() => exercicio?.cod_grupo_exercicio_5 || Number(sessionStorage.getItem("grupoSecundario")) || 0);
+    const [equipamento, setEquipamento] = useState(() => exercicio?.cod_equipamento_1 || Number(sessionStorage.getItem("equipamento")) || 0);
+    const [articulacao, setArticulacao] = useState(() => exercicio?.cod_articulacao_1 || Number(sessionStorage.getItem("articulacao")) || 0);
+    const [tipoExercicio, setTipoExercicio] = useState(() => exercicio?.cod_tipo_exercicio || Number(sessionStorage.getItem("tipoExercicio")) || 0);
+    const [exercicioResistencia, setExercicioResistencia] = useState(() => exercicio?.cod_exercicio_resistencia || Number(sessionStorage.getItem("exercicioResistencia")) || 0);
+    // const [indicacao, setIndicacao] = useState(() => exercicio?.cod_indicacao || Number(sessionStorage.getItem("indicacao")) || 0);
+    const [padraoMovimento, setPadraoMovimento] = useState(() => exercicio?.cod_padrao_movimento || Number(sessionStorage.getItem("padraoMovimento")) || 0);
 
     const [limparFiltro, setlimparFiltro] = useState();
 
@@ -26,7 +26,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
         sessionStorage.setItem("articulacao", articulacao);
         sessionStorage.setItem("tipoExercicio", tipoExercicio);
         sessionStorage.setItem("exercicioResistencia", exercicioResistencia);
-        sessionStorage.setItem("indicacao", indicacao);
+        // sessionStorage.setItem("indicacao", indicacao);
         sessionStorage.setItem("padraoMovimento", padraoMovimento);
 
         if (!grupoPrincipal
@@ -35,7 +35,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
             && !articulacao
             && !tipoExercicio
             && !exercicioResistencia
-            && !indicacao
+            // && !indicacao
             && !padraoMovimento
         ) {
             setlimparFiltro(false);
@@ -49,7 +49,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
                 articulacao,
                 tipoExercicio,
                 exercicioResistencia,
-                indicacao,
+                // indicacao,
                 padraoMovimento,
             };
 
@@ -67,7 +67,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
         };
     
         filtrarExercicios();
-    }, [exercicios, grupoPrincipal, grupoSecundario, equipamento, articulacao, tipoExercicio, exercicioResistencia, indicacao, padraoMovimento, limparFiltro]);
+    }, [exercicios, grupoPrincipal, grupoSecundario, equipamento, articulacao, tipoExercicio, exercicioResistencia, padraoMovimento, limparFiltro]);
 
     const { data: grupos } = useQuery({
         queryKey: ['grupos', usuario.cod_empresa],
@@ -99,11 +99,11 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
         initialData: [],
     });
 
-    const { data: indicacoes } = useQuery({
-        queryKey: ['indicacoes', usuario.cod_empresa],
-        queryFn: () => getIndicacoes(usuario.cod_empresa),
-        initialData: [],
-    });
+    // const { data: indicacoes } = useQuery({
+    //     queryKey: ['indicacoes', usuario.cod_empresa],
+    //     queryFn: () => getIndicacoes(usuario.cod_empresa),
+    //     initialData: [],
+    // });
 
     const { data: padraoes_movimentos } = useQuery({
         queryKey: ['padraoes_movimentos', usuario.cod_empresa],
@@ -119,7 +119,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
         setArticulacao(0);
         setTipoExercicio(0);
         setExercicioResistencia(0);
-        setIndicacao(0);
+        // setIndicacao(0);
         setPadraoMovimento(0);
         sessionStorage.setItem("grupoPrincipal", 0);
         sessionStorage.setItem("grupoSecundario", 0);
@@ -127,13 +127,13 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
         sessionStorage.setItem("articulacao", 0);
         sessionStorage.setItem("tipoExercicio", 0);
         sessionStorage.setItem("exercicioResistencia", 0);
-        sessionStorage.setItem("indicacao", 0);
+        // sessionStorage.setItem("indicacao", 0);
         sessionStorage.setItem("padraoMovimento", 0);
         setlimparFiltro(false);
     }
 
     return (
-        (<div className={`${painel ? '' : 'accordion'}`}>
+        <div className={`${painel ? '' : 'accordion'}`}>
             <div className="accordion-item">
                 <h2 className="accordion-header">
                     <button className="accordion-button" type="button" data-bs-toggle={`${painel ? '' : 'collapse'}`} data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
@@ -187,7 +187,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
                             </select>
                         </div>
 
-                        <div className="col-md-4">
+                        {/* <div className="col-md-4">
                             <label className="form-label fw-bold">Indicação</label>
                             <select className="form-control" value={indicacao} onChange={e => setIndicacao(e.target.value)}>
                                 <option value={0}>Selecione</option>
@@ -195,7 +195,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
                                     <option value={id.cod_indicacao} key={i}>{id.nome_indicacao}</option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Padrão movimento</label>
@@ -229,7 +229,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false })
                     </div>
                 </div>
             </div>
-        </div>)
+        </div>
     );
 }
 

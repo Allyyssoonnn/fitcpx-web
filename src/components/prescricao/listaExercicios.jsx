@@ -160,7 +160,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
                     onClick={(e) => openFiltroTreinoInteligente(e, index)}
                     className='btn rounded btn-info'
                 >
-                    <i className="bi bi-lightbulb" />
+                    <i className="bi bi-funnel" />
                 </button>
 
                 <button
@@ -197,7 +197,8 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
     }
 
     return (<>
-        <FiltroTreinoInteligente show={showModalFiltro} close={() => setShowModalFiltro(false)} confirma={confirmaTreinoInteligente} />
+        <FiltroTreinoInteligente exercicio={exercicios[indexExercicioFiltro]} show={showModalFiltro} close={() => setShowModalFiltro(false)} confirma={confirmaTreinoInteligente} />
+        
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="exercicioList">
                 {(provided) => (
