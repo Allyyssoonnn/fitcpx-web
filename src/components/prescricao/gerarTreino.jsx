@@ -133,7 +133,7 @@ function ModalGerarTreino({ show, close, adicionarSessaoGerada }) {
     return (
         <Modal show={show} className="modal-fade">
             <div className="modal-header d-flex justify-content-between">
-                <h5 className="modal-title">Precrição de Treino inteligente</h5>
+                <h5 className="modal-title">[Beta teste] - Precrição de Treino inteligente</h5>
                 
                 <OverlayTrigger placement="bottom" overlay={tooltip}>
                     <i 

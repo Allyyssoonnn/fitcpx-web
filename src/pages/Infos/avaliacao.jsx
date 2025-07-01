@@ -92,10 +92,10 @@ function Avaliacao() {
                             <span className="d-none d-md-inline-block ms-2">Comparar</span>
                         </button>
 
-                        <button onClick={imprimirResultados} className="btn btn-primary">
+                        {/* <button onClick={imprimirResultados} className="btn btn-primary">
                             <i className="bi bi-printer"></i>
                             <span className="d-none d-md-inline-block ms-2">Imprimir</span>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </div>

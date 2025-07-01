@@ -205,9 +205,9 @@ function LanguageSelect() {
                         <iconify-icon icon="cif:br" width="20"></iconify-icon> Português
                     </button>
 
-                    <button onClick={(e) => changeLanguage('en', e)} className="dropdown-item d-flex align-items-center gap-2">
+                    {/* <button onClick={(e) => changeLanguage('en', e)} className="dropdown-item d-flex align-items-center gap-2">
                         <iconify-icon icon="cif:us" width="20"></iconify-icon> English
-                    </button>
+                    </button> */}
                 </div>
             )}
       </div>

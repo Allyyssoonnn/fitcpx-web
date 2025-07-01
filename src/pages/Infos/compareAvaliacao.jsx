@@ -254,7 +254,7 @@ function Imagens({ avaliacoes }) {
                     <label className="btn btn-outline-primary" htmlFor="btnradio-3">3 Fotos</label>
                 </div>
 
-                <button className="btn btn-info" onClick={handleSalvarColagem}>Salvar</button>
+                {/* <button className="btn btn-info" onClick={handleSalvarColagem}>Salvar</button> */}
             </div>
             
             <div className="card-body">
