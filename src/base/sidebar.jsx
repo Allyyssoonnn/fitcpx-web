@@ -345,16 +345,16 @@ function Sidebar() {
                 </nav>
 
                 {/* Footer */}
-                {/* <div className="p-3 border-top">
-                    <div className="d-flex align-items-center">
-                        <div className="flex-shrink-0">
-                            <div className="bg-success rounded-circle" style={{ width: '8px', height: '8px' }}></div>
-                        </div>
-                        <div className="flex-grow-1 ms-2">
-                            <small className="text-muted">Sistema Online</small>
+                <div className="p-3 border-top">
+                    <div className="d-flex align-items-center justify-content-center">
+                        <div className="justify-center">
+                            <button className="btn btn-sm btn-outline-info" onClick={() => window.open('https://wa.me/5511999999999', '_blank')}>
+                                Enviar feedback
+                                <i className="bi bi-chat-right-text ms-2"></i>
+                            </button>
                         </div>
                     </div>
-                </div> */}
+                </div>
             </div>
         </motion.aside>
     );

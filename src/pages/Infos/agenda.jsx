@@ -60,7 +60,7 @@ function Agenda() {
             <div className="card shadow-lg rounded-4">
                 <div className="card-header d-flex justify-between">
                     <div className="col-3 mb-2 mb-sm-0">
-                        <button
+                        {/* <button
                             disabled
                             // disabled={usuario?.google?.email_google}
                             onClick={conect}
@@ -68,7 +68,7 @@ function Agenda() {
                         >
                             <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
                             <span className="flex-shrink-0">Conectar Google agenda</span>
-                        </button>
+                        </button> */}
 
                         <button className={`${!usuario?.google?.email_google && 'd-none'} btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`}>
                             <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />

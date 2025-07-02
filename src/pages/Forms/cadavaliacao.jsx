@@ -381,7 +381,7 @@ function CadAvaliacao() {
                             />
                         </Tab>
 
-                        <Tab key='diametros' eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diametros</>}>
+                        <Tab key='diametros' eventKey="diametros" title={<><i className="bi bi-arrows-angle-contract me-2"></i>Diâmetros</>}>
                             <Diametros
                                 ocultarCampos={ocultarCampos}
                                 register={register}

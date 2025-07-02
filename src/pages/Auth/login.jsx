@@ -85,14 +85,7 @@ function Login() {
                                             <input id="password" { ...register('senha') } type="password" className="form-control" />
                                         </div>
 
-                                        <div className="d-flex align-items-center justify-content-between mb-4">
-                                            <div className="form-check">
-                                                <input className="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked />
-                                                <label className="form-check-label text-dark" htmlFor="flexCheckChecked">
-                                                    Lembrar de mim
-                                                </label>
-                                            </div>
-
+                                        <div className="d-flex align-items-center justify-content-center mb-4">
                                             <a className="text-primary fw-bold" href="/recuperar">Esqueceu a senha?</a>
                                         </div>
 

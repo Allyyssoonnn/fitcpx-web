@@ -9,13 +9,13 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, painel = false, e
     const [usuario] = useRecoilState(stateUsuario);
 
     const [grupoPrincipal, setGrupoPrincipal] = useState(() => exercicio?.cod_grupo_exercicio_1 || Number(sessionStorage.getItem("grupoPrincipal")) || 0);
-    const [grupoSecundario, setGrupoSecundario] = useState(() => exercicio?.cod_grupo_exercicio_5 || Number(sessionStorage.getItem("grupoSecundario")) || 0);
-    const [equipamento, setEquipamento] = useState(() => exercicio?.cod_equipamento_1 || Number(sessionStorage.getItem("equipamento")) || 0);
-    const [articulacao, setArticulacao] = useState(() => exercicio?.cod_articulacao_1 || Number(sessionStorage.getItem("articulacao")) || 0);
+    const [grupoSecundario, setGrupoSecundario] = useState(() => !exercicio?.cod_exercicio ? (Number(sessionStorage.getItem("grupoSecundario")) || 0) : 0);
+    const [equipamento, setEquipamento] = useState(() => !exercicio?.cod_exercicio ? (Number(sessionStorage.getItem("equipamento")) || 0) : 0);
+    const [articulacao, setArticulacao] = useState(() => !exercicio?.cod_exercicio ? (Number(sessionStorage.getItem("articulacao")) || 0) : 0);
     const [tipoExercicio, setTipoExercicio] = useState(() => exercicio?.cod_tipo_exercicio || Number(sessionStorage.getItem("tipoExercicio")) || 0);
-    const [exercicioResistencia, setExercicioResistencia] = useState(() => exercicio?.cod_exercicio_resistencia || Number(sessionStorage.getItem("exercicioResistencia")) || 0);
+    const [exercicioResistencia, setExercicioResistencia] = useState(() => !exercicio?.cod_exercicio ? (Number(sessionStorage.getItem("exercicioResistencia")) || 0) : 0);
     // const [indicacao, setIndicacao] = useState(() => exercicio?.cod_indicacao || Number(sessionStorage.getItem("indicacao")) || 0);
-    const [padraoMovimento, setPadraoMovimento] = useState(() => exercicio?.cod_padrao_movimento || Number(sessionStorage.getItem("padraoMovimento")) || 0);
+    const [padraoMovimento, setPadraoMovimento] = useState(() => !exercicio?.cod_exercicio ? (Number(sessionStorage.getItem("padraoMovimento")) || 0) : 0);
 
     const [limparFiltro, setlimparFiltro] = useState();
 
