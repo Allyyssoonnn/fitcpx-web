@@ -201,6 +201,21 @@ function ContratacaoPlano() {
                 cod_empresa: usuario?.cod_empresa,
             });
 
+            const root = document.documentElement;
+            const allStyles = getComputedStyle(root);
+
+            const convertOklchVars = () => {
+                for (let i = 0; i < allStyles.length; i++) {
+                    const name = allStyles[i];
+                    const value = allStyles.getPropertyValue(name).trim();
+                    if (value.startsWith("oklch")) {
+                    // Substitui por cor segura para PDF (ex: cinza claro)
+                    root.style.setProperty(name, "#ccc");
+                    }
+                }
+            };
+
+            convertOklchVars();
             const pdfOptions = {
                 margin: 10,
                 filename: 'contrato.pdf',
@@ -212,6 +227,20 @@ function ContratacaoPlano() {
             const pdfBlob = contratoPreenchido ? await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob') : null;
 
             if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
+
+            const resetOklchVars = () => {
+                const root = document.documentElement;
+                const allStyles = getComputedStyle(root);
+              
+                for (let i = 0; i < allStyles.length; i++) {
+                  const name = allStyles[i];
+                  const value = allStyles.getPropertyValue(name).trim();
+                  if (value.startsWith("oklch") || root.style.getPropertyValue(name)) {
+                    root.style.removeProperty(name);
+                  }
+                }
+            };
+            resetOklchVars();
 
             await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId, formCard, typePayment);
             closeLoading();

@@ -41,6 +41,7 @@ import Configuracao from "../pages/Infos/configuracao";
 import Contrato from "../pages/Infos/contrato";
 import ContratacaoSessao from "../pages/Forms/contratacaoSessao";
 import PacoteSessao from "../pages/Infos/pacoteSessao";
+import FinanceOverview from "../pages/Infos/financeOverview";
 
 const routes = [
     //Base
@@ -90,6 +91,7 @@ const routes = [
     { path: '/configuracao', name: 'Licença', element: Configuracao },
     { path: '/contrato', name: 'Licença', element: Contrato },
     { path: '/pacoteSessao', name: 'Licença', element: PacoteSessao },
+    { path: '/financeOverview', name: 'Licença', element: FinanceOverview },
 ]
   
 export default routes;  

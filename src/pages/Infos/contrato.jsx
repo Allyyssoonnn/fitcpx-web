@@ -7,16 +7,12 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa, useNotificacao } from "../../states/states";
 import { useEffect, useState } from "react";
 import html2pdf from 'html2pdf.js';
-import Pagamento from "../../components/payment/pagamento";
 
 function Contrato() {
     const { nConfirm, nLoading, endLoading } = useNotificacao();
     const [empresa] = useRecoilState(stateEmpresa);
     const navigate = useNavigate();
     const location = useLocation();
-
-    const [pagando, setPagando] = useState(false);
-    const [asaas_id, setAsaas_id] = useState(null);
 
     const cod_aluno = location.state?.cod_aluno;
     const cod_aluno_contrato = location.state?.cod_aluno_contrato;
@@ -65,29 +61,8 @@ function Contrato() {
         await resendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
     }
 
-    async function pay(pagamento) {
-        setAsaas_id(pagamento?.asaas_id);
-        setPagando(true);
-    }
-
-    async function refund(pagamento) {
-        nConfirm(null, 'Confirma reembolso?', async () => {
-            // const resp = await doRefundPayment(empresa.cod_empresa, pagamento.cod_aluno_contrato_pagamento);
-            refetch();
-        })
-    }
-        
     return (
         <div className="container-fluid">
-            <Pagamento
-                asaas_id={asaas_id}
-                typePayment={alunoContrato?.tipopagamento_aluno_contrato}
-                show={pagando}
-                close={() => setPagando(false)}
-                onPay={() => {}}
-                callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
-            />
-            
             <div className="row">
                 <div className="col-md-8">
                     <div className="card">
@@ -125,22 +100,6 @@ function Contrato() {
                 </div>
 
                 <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-header">
-                            <h5 className="card-title">Resumo</h5>
-                        </div>
-
-                        <div className="card-body">
-                            <div className="d-flex flex-column bg-light p-3 rounded fs-3">
-                                {alunoContrato?.parcela_aluno_contrato && JSON.parse(alunoContrato?.parcela_aluno_contrato).map((parcela, index) => (
-                                    <label key={index} className={(alunoContrato?.pagamentos?.filter((p) => p.status_aluno_contrato_pagamento == 'Pago'))?.length >= index && 'text-decoration-line-through'}>
-                                        {index + 1} - {formatarMoeda(parcela)} - {adicionarMesData(alunoContrato.iniciopagamento_aluno_contrato, index)}
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="d-flex flex-column gap-3">
                         {(alunoContrato?.autentique_aluno_contrato != 'Contrato recusado.' && alunoContrato?.autentique_aluno_contrato) && (
                             <>
@@ -200,18 +159,24 @@ function Contrato() {
                                             <td>
                                                 <span className="d-block small text-muted">{pagamento.statustexto_aluno_contrato_pagamento}</span>
 
+                                                {pagamento.status_aluno_contrato_pagamento === 'overdue' && (
+                                                    <span className="badge bg-danger-subtle text-danger mt-1">Vencido</span>
+                                                )}
                                                 {pagamento.status_aluno_contrato_pagamento === 'confirmed' && (
                                                     <span className="badge bg-success-subtle text-success mt-1">Confirmado</span>
                                                 )}
                                                 {pagamento.status_aluno_contrato_pagamento === 'succeeded' && (
+                                                    <span className="badge bg-success-subtle text-success mt-1">Disponível</span>
+                                                )}
+                                                {pagamento.status_aluno_contrato_pagamento === 'paied' && (
                                                     <span className="badge bg-success-subtle text-success mt-1">Pago</span>
+                                                )}
+                                                {pagamento.status_aluno_contrato_pagamento === 'recievedCash' && (
+                                                    <span className="badge bg-success-subtle text-success mt-1">Recebido manual</span>
                                                 )}
                                                 {(pagamento.status_aluno_contrato_pagamento === 'Pendente' ||
                                                     pagamento.status_aluno_contrato_pagamento === 'Pending') && (
                                                     <span className="badge bg-warning-subtle text-warning mt-1">Pendente</span>
-                                                )}
-                                                {pagamento.status_aluno_contrato_pagamento === 'refund' && (
-                                                    <span className="badge bg-danger-subtle text-danger mt-1">Reembolsado</span>
                                                 )}
                                             </td>
                                             <td>
@@ -229,13 +194,15 @@ function Contrato() {
                                             </td>
                                             <td className="text-end">
                                                 {(pagamento.status_aluno_contrato_pagamento !== 'confirmed' && pagamento.asaas_id) && (
-                                                    <button
-                                                        onClick={() => pay(pagamento)}
+                                                    <a
                                                         className="btn btn-sm btn-outline-success"
+                                                        href={pagamento?.asaas_url}
+                                                        target="_blank" // Se quiser abrir em nova aba
+                                                        rel="noopener noreferrer" // Segurança ao usar target="_blank"
                                                     >
                                                         <i className="bi bi-credit-card me-1" />
                                                         Pagar
-                                                    </button>
+                                                    </a>
                                                 )}
                                                 
                                                 {(pagamento.status_aluno_contrato_pagamento === 'succeeded' && !pagamento.asaas_id) && (

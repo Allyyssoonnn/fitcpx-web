@@ -235,12 +235,26 @@ function Sidebar() {
                                     <motion.a 
                                         href="#" 
                                         className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
-                                        onClick={() => go('/contratos')} 
+                                        onClick={() => go('/financeOverview')} 
                                         aria-expanded="false"
                                         whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
                                         whileTap={{ scale: 0.98 }}
                                     >
                                         <i className="bi bi-clipboard-data fs-6 me-3"></i>
+                                        <span className="hide-menu ps-1">{t('financeOverview')}</span>
+                                    </motion.a>
+                                </li>
+
+                                <li className="sidebar-item ms-4">
+                                    <motion.a 
+                                        href="#" 
+                                        className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
+                                        onClick={() => go('/contratos')} 
+                                        aria-expanded="false"
+                                        whileHover={{ backgroundColor: 'rgba(25, 135, 84, 0.1)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        <i className="bi bi-archive fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('contracts')}</span>
                                     </motion.a>
                                 </li>
@@ -326,7 +340,7 @@ function Sidebar() {
                                     </motion.a>
                                 </li>
 
-                                <li className="sidebar-item ms-4">
+                                {/* <li className="sidebar-item ms-4">
                                     <motion.a 
                                         href="#" 
                                         className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1" 
@@ -338,7 +352,7 @@ function Sidebar() {
                                         <i className="bi bi-bar-chart fs-6 me-3"></i>
                                         <span className="hide-menu ps-1">{t('reports')}</span>
                                     </motion.a>
-                                </li>
+                                </li> */}
                             </motion.ul>
                         </li>
                     </ul>

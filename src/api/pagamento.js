@@ -15,8 +15,8 @@ export const buscarCobrancaAluno = async (id) => {
     } toast.error(resp.message);
 };
 
-export const pagarCobranca = async (asaasId, cod_aluno_cartao) => {
-    const resp = await post('/pagamento/pagarCobranca', { asaasId, cod_aluno_cartao });
+export const marcarCobrancaRecebida = async (asaasId) => {
+    const resp = await post('/pagamento/marcarCobrancaRecebida', { asaasId });
     if (resp.status) {
         return resp.cobranca;
     } toast.error(resp.message);

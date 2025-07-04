@@ -1,17 +1,8 @@
 import { useQuery } from "react-query";
 import { getPayments } from "../../api/licenca";
 import { formatarData, formatarMoeda } from "../../utils";
-import Pagamento from "../../components/payment/pagamento";
-import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { stateEmpresa } from "../../states/states";
 
 function Payments({ cod_empresa }) {
-    const [empresa] = useRecoilState(stateEmpresa);
-
-    const [pagando, setPagando] = useState(false);
-    const [asaas_id, setAsaas_id] = useState(null);
-
     const { data: licenses } = useQuery({
         queryKey: ['payments'],
         queryFn: () => getPayments(cod_empresa),
@@ -19,26 +10,8 @@ function Payments({ cod_empresa }) {
         enabled: !!cod_empresa
     });
 
-    function pay(id) {
-        setAsaas_id(id);
-        setPagando(true);
-    }
-
-    function onPay() {
-        //
-    }
-
     return (
         <div className="container-fluid px-0">
-            <Pagamento
-                asaas_id={asaas_id}
-                show={pagando}
-                close={() => setPagando(false)}
-                onPay={onPay}
-                callback={() => {}}
-                licenca={true}
-            />
-
             {licenses.map((license, i) => (
                 <div key={i} className="card mb-4 border-0 shadow-sm">
                     <div className="card-body">
@@ -103,7 +76,7 @@ function Payments({ cod_empresa }) {
                                                         payment.status_empresa_licenca_pagamento !== 'confirmed'
                                                     ) && (
                                                         <button
-                                                            onClick={() => pay(payment.asaas_id)}
+                                                            onClick={() => window.open(payment?.asaas_url, "_blank", "noopener,noreferrer")}
                                                             className="btn btn-sm btn-outline-success"
                                                         >
                                                             <i className="bi bi-credit-card me-1" />

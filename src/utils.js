@@ -113,6 +113,18 @@ export const formatarMoeda = (valor) => {
     return (typeof valor == 'number') ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor) : '-';
 }
 
+export const getFieldJSON = (json, field) => {
+    if (!json) return null;
+
+    try {
+        const formattedJSON = JSON.parse(json);
+        return formattedJSON?.[field] ?? null;
+    } catch (error) {
+        console.error("Erro ao fazer parse do JSON:", error);
+        return null;
+    }
+};
+
 export const formatarCPF = (cpf) => {
     if (!cpf) return '-';
     cpf = cpf.replace(/\D/g, ''); // Remove tudo que não for dígito
