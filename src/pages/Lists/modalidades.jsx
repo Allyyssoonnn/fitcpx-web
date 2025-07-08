@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteModalidade, getModalidades, recoveryModalidade } from "../../api/plano";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../../states/states";
 import { useQuery } from "react-query";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 
 function Modalidades() {
     const [usuario] = useRecoilState(stateUsuario);
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState("");
     const [deleted, setDeleted] = useState(false);
 
     const { data: modalidades, refetch } = useQuery({
@@ -32,52 +32,29 @@ function Modalidades() {
         refetch();
     }, [deleted]);
 
-    const filteredModalidades = useMemo(() => {
-        return modalidades.filter((modalidade) =>
-            searchTerm.toLowerCase().split(" ").filter(Boolean).every(word =>
-                modalidade.nome_modalidade?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(word)
-            )
-        );
-    }, [modalidades, searchTerm]);
-
     return (
         <div className="container-fluid">
             <div className="col-md-12">
-                <ListComponent.Root
-                    list={filteredModalidades}
+                <FitTable.Root
+                    list={modalidades}
                     title="Modalidades"
-                    description={`${filteredModalidades?.length} ${filteredModalidades?.length > 1 ? "Modalidades" : "Modalidade"}`}
+                    description={`${modalidades?.length} ${modalidades?.length > 1 ? "Modalidades" : "Modalidade"}`}
                     fieldSearch="nome_modalidade"
                     buttonOnClick={() => navigate('/cadmodalidade')}
                     buttonText="Nova modalidade"
                     buttonId="newService"
+                    columns={[
+                        { name: "nome_modalidade", header: "Nome", className: "fw-bold text-black" },
+                        { name: "valor_modalidade", type: "currency", header: "Valor", className: "fw-bold text-black" },
+                        { name: "Editar", header: "", type: "option", onClick: (row) => editarModalidade(row), Icon: Pencil },
+                        { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt, onClick: (row) => delModalidae(row.cod_modalidade), Icon: Trash },
+                        { name: "Recuperar", header: "", type: "option", visible: (row) => row?.deletedAt, onClick: (row) => recoveryModa(row.cod_modalidade), Icon: ArrowLeftCircle },
+                    ]}
                 >
-                    <ListComponent.Filters>
-                        <ListComponent.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
-                    </ListComponent.Filters>
-
-                    <ListComponent.Items>
-                        {(modalidades) => {
-                            return modalidades.map((modalidade, index) => (
-                                <ListComponent.Item key={index}
-                                    index={index}
-                                    title={modalidade.nome_modalidade}
-                                    badge={[`${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(modalidade?.valor_modalidade)}`, modalidade.duracao_modalidade, modalidade.tipo_duracao_modalidade]}
-                                    onClickItem={() => navigate('/cadmodalidade', { state: { modalidade } })}
-                                >
-                                    <ListComponent.Options>
-                                        <ListComponent.Option title="Editar" icon="bi bi-pencil" onClick={() => editarModalidade(modalidade)} />
-                                        {modalidade.deletedAt ? (
-                                            <ListComponent.Option title="Reverter" icon="bi bi-trash" onClick={() => recoveryModa(modalidade.cod_modalidade)} />
-                                        ) : (
-                                            <ListComponent.Option title="Excluir" icon="bi bi-trash" onClick={() => delModalidae(modalidade.cod_modalidade)} />
-                                        )}
-                                    </ListComponent.Options>
-                                </ListComponent.Item>
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    <FitTable.Filters>
+                        <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
+                    </FitTable.Filters>
+                </FitTable.Root>
             </div>
         </div>
     )

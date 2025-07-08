@@ -2,6 +2,8 @@ import axios from "axios";
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
 export const PRODUCAO = import.meta.env.MODE == 'production';
 
+export const imgProfile = 'https://media.fitcpx.com/Alyson.PNG';
+
 export const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
 
 const api = axios.create({

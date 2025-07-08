@@ -4,7 +4,8 @@ import { useRecoilState } from "recoil";
 import { stateUsuario } from "../../states/states";
 import { useNavigate } from "react-router-dom";
 import { deleteGrupoExercicio, getGrupoExercicios, recoveryGrupoExercicio } from "../../api/treino";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 
 function GrupoExercicios() {
     const [usuario] = useRecoilState(stateUsuario);  
@@ -35,44 +36,24 @@ function GrupoExercicios() {
     return (
         <div className="container-fluid">
             <div className="col-md-12">
-                <ListComponent.Root
+                <FitTable.Root
                     list={grupos}
                     title="Grupo de exercícios"
                     description={`${grupos?.length} ${grupos?.length > 1 ? "Grupos de exercícios" : "Grupo de exercícios"}`}
                     fieldSearch="nome_grupo_exercicio"
                     buttonOnClick={() => navigate('/cadgrupoexercicio')}
                     buttonText="Novo grupo"
+                    columns={[
+                        { name: "nome_grupo_exercicio", header: "Nome", className: "fw-bold text-black" },
+                        { name: "Editar", header: "", type: "option", visible: (row) => row.base_grupo_exercicio !== 'S', onClick: (row) => editarGrupo(row), Icon: Pencil },
+                        { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt && row.base_grupo_exercicio !== 'S', onClick: (row) => deleteGrupo(row.cod_grupo_exercicio), Icon: Trash },
+                        { name: "Recuperar", header: "", type: "option", visible: (row) => row?.deletedAt && row.base_grupo_exercicio !== 'S', onClick: (row) => recoveryGrupo(row.cod_grupo_exercicio), Icon: ArrowLeftCircle },
+                    ]}
                 >
-                    <ListComponent.Filters>
-                        <ListComponent.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deleteados" />
-                    </ListComponent.Filters>
-
-                    <ListComponent.Items>
-                        {(grupos) => {
-                            return grupos.map((grupo, index) => (
-                                <ListComponent.Item
-                                    key={index}
-                                    index={index}
-                                    title={grupo.nome_grupo_exercicio}
-                                    urlImage={grupo.imagem_grupo_exercicio}
-                                    description={grupo.descricao_grupo_exercicio}
-                                    onClickItem={() => navigate('/cadgrupoexercicio', { state: { grupo } })}
-                                >
-                                    {grupo.base_grupo_exercicio !== 'S' && (
-                                        <ListComponent.Options>
-                                            <ListComponent.Option title="Editar" icon="bi bi-pencil" onClick={() => editarGrupo(grupo)} />
-                                            {grupo.deletedAt ? (
-                                                <ListComponent.Option title="Reverter" icon="bi bi-trash" onClick={() => recoveryGrupo(grupo.cod_grupo_exercicio)} />
-                                            ) : (
-                                                <ListComponent.Option title="Excluir" icon="bi bi-trash" onClick={() => deleteGrupo(grupo.cod_grupo_exercicio)} />
-                                            )}
-                                        </ListComponent.Options>
-                                    )}
-                                </ListComponent.Item>
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    <FitTable.Filters>
+                        <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deleteados" />
+                    </FitTable.Filters>
+                </FitTable.Root>
             </div>
         </div>
     );

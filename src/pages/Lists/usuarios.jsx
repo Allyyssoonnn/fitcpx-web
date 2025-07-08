@@ -4,7 +4,8 @@ import { useRecoilState } from "recoil";
 import { stateUsuario } from '../../states/states';
 import { useEffect, useState } from "react";
 import { getUsuarios } from "../../api/usuario";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { Pencil } from "lucide-react";
 
 function Usuarios() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -30,37 +31,24 @@ function Usuarios() {
     return (
         <div className="container-fluid">
             <div className="col-md-12">
-                <ListComponent.Root
+                <FitTable.Root
                     list={usuarios}
                     title="Lista de usuários"
                     description={`${usuarios?.length} ${usuarios?.length > 1 ? "Usuários" : "Usuário"}`}
                     fieldSearch="nome_usuario"
                     buttonOnClick={() => navigate('/cadusuario')}
                     buttonText="Novo usuário"
+                    columns={[
+                        { name: "imagem_usuario", header: "", type: "image", className: "fw-bold text-black" },
+                        { name: "nome_usuario", header: "Nome", className: "fw-bold text-black" },
+                        { name: "email_usuario", header: "E-mail", className: "fw-bold text-black" },
+                        { name: "Editar", header: "", type: "option", onClick: (row) => editarUsuario(row), Icon: Pencil },
+                    ]}
                 >
-                    <ListComponent.Filters>
-                        <ListComponent.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
-                    </ListComponent.Filters>
-
-                    <ListComponent.Items>
-                        {(usuarios) => {
-                            return usuarios.map((usuario, index) => (
-                                <ListComponent.Item key={index}
-                                    id={`option-user-${index}`}
-                                    index={index}
-                                    title={usuario.nome_usuario}
-                                    badge={[usuario?.admin_usuario == 'S' && 'ADMIN', usuario.email_usuario]}
-                                    onClickItem={() => navigate('/cadusuario', { state: { usuario } })}
-                                    urlImage={usuario.imagem_usuario ? `${usuario.imagem_usuario}` : 'https://placehold.co/150x150?text=img'}
-                                >
-                                    <ListComponent.Options id={`option-user-${index}`}>
-                                        <ListComponent.Option id={`edit-user-${index}`} title="Editar" icon="bi bi-pencil" onClick={() => editarUsuario(usuario)} />
-                                    </ListComponent.Options>
-                                </ListComponent.Item>
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    {/* <FitTable.Filters>
+                        <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
+                    </FitTable.Filters> */}
+                </FitTable.Root>
             </div>
         </div>
     );

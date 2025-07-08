@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import Notificacoes from "../components/notificacoes";
 import { useTranslation } from "react-i18next";
+import { imgProfile, PRODUCAO } from "../api/api";
 
 function Header() {
     const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
@@ -120,7 +121,7 @@ function Header() {
                         <li className="nav-item dropdown me-2">
                             <a className="d-flex align-items-center nav-link nav-icon-hover" href="javascript:void(0)" id="imgMenu" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img
-                                    src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
+                                    src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : (!PRODUCAO ? imgProfile : 'https://placehold.co/150x150?text=img')}
                                     alt=""
                                     width="35" height="35"
                                     className={`rounded-circle ${usuario.admin_usuario == 'S' ? 'border border-danger' : ''}`}
@@ -132,7 +133,7 @@ function Header() {
                                 <div className="message-body">
                                     <div className="d-flex align-items-center mx-7 py-9 border-bottom">
                                         <img
-                                            src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : 'https://placehold.co/150x150?text=img'}
+                                            src={usuario.imagem_usuario ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}` : (!PRODUCAO ? imgProfile : 'https://placehold.co/150x150?text=img')}
                                             alt=""
                                             width="70" height="35"
                                             className={`rounded-circle ${usuario.admin_usuario == 'S' ? 'border border-danger' : ''}`}

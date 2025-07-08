@@ -4,8 +4,8 @@ import { useRecoilState } from "recoil";
 import { stateUsuario } from "../../states/states";
 import { useNavigate } from "react-router-dom";
 import { deleteTreino, getTreinos, recoveryTreino } from "../../api/treino";
-import { getSexo } from "../../utils";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 
 function Treinos() {
     const [usuario] = useRecoilState(stateUsuario);  
@@ -39,41 +39,26 @@ function Treinos() {
     return (
         <div className="container-fluid">
             <div className="col-md-12">
-                <ListComponent.Root
+                <FitTable.Root
                     list={treinos}
                     title="Treinos"
                     description={`${treinos?.length} ${treinos?.length > 1 ? "Treinos" : "Treino"}`}
                     fieldSearch="nome_treino"
                     buttonOnClick={() => navigate('/cadtreino')}
                     buttonText="Novo treino"
+                    columns={[
+                        { name: "nome_treino", header: "Nome", className: "fw-bold text-black" },
+                        { name: "nivel_treino", header: "Nível", className: "fw-bold text-black" },
+                        { name: "observacao_treino", header: "Observação", className: "fw-bold text-black" },
+                        { name: "Editar", header: "", type: "option", onClick: (row) => editarTreino(row), Icon: Pencil },
+                        { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt, onClick: (row) => delTreino(row.cod_treino), Icon: Trash },
+                        { name: "Recuperar", header: "", type: "option", visible: (row) => row?.deletedAt, onClick: (row) => recoTreino(row.cod_treino), Icon: ArrowLeftCircle },
+                    ]}
                 >
-                    <ListComponent.Filters>
-                        <ListComponent.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
-                    </ListComponent.Filters>
-
-                    <ListComponent.Items>
-                        {(treinos) => {
-                            return treinos.map((treino, index) => (
-                                <ListComponent.Item
-                                    key={index}
-                                    index={index}
-                                    title={treino.nome_treino}
-                                    description={treino.nome_usuario}
-                                    badge={[getSexo(treino.sexo_treino), treino.nivel_treino, treino.observacao_treino]}
-                                >
-                                    <ListComponent.Options>
-                                        <ListComponent.Option title="Editar" icon="bi bi-pencil" onClick={() => editarTreino(treino)} />
-                                        {treino.deletedAt ? (
-                                            <ListComponent.Option title="Reverter" icon="bi bi-trash" onClick={() => recoTreino(treino.cod_treino)} />
-                                        ) : (
-                                            <ListComponent.Option title="Excluir" icon="bi bi-trash" onClick={() => delTreino(treino.cod_treino)} />
-                                        )}
-                                    </ListComponent.Options>
-                                </ListComponent.Item>
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    <FitTable.Filters>
+                        <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
+                    </FitTable.Filters>
+                </FitTable.Root>
             </div>
         </div>
     );

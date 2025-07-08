@@ -1,4 +1,3 @@
-import FitInputCurrency from "@/components/baseComponents/FitInputCurrency";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
@@ -7,7 +6,7 @@ import { getAlunoContratos } from "@/api/aluno";
 import moment from 'moment';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowLeftToLine, ArrowRight, ArrowRightToLine, Check, Clipboard, Coins, HandCoins, LogIn, MessageCircleMore, MoreHorizontal, Paperclip } from "lucide-react";
+import { Check, Clipboard, Coins, HandCoins, LogIn, MessageCircleMore, MoreHorizontal, Paperclip } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatarMoeda, getFieldJSON } from "@/utils";
 import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel } from "@tanstack/react-table";

@@ -16,7 +16,7 @@ function Layout() {
     const navigate = useNavigate();
     const [usuario, setusuario] = useRecoilState(stateUsuario);
     const [empresa, setempresa] = useRecoilState(stateEmpresa);
-    const { openedSidebar, toggleSidebar } = useToggleSidebar();
+    const { openedSidebar, closeSidebar } = useToggleSidebar();
 
     useEffect(() => {
         if ('serviceWorker' in navigator) {
@@ -70,7 +70,7 @@ function Layout() {
             {openedSidebar && (
                 //Clicar fora da sidebar fecha ela
                 <div
-                    onClick={toggleSidebar}
+                    onClick={closeSidebar}
                     className='d-xl-none d-block'
                     style={{
                         position: "fixed",

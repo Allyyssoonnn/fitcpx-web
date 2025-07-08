@@ -4,7 +4,8 @@ import { deletePlano, getPlanos, recoveryPlano } from "../../api/plano";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../../states/states";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 
 function Planos() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -34,44 +35,25 @@ function Planos() {
     return (
         <div className="container-fluid">
             <div className="col-md-12">
-                <ListComponent.Root
+                <FitTable.Root
                     list={planos}
                     title="Planos"
                     description={`${planos?.length} ${planos?.length > 1 ? "Planos" : "Plano"}`}
                     fieldSearch="nome_plano"
                     buttonOnClick={() => navigate('/cadplano')}
                     buttonText="Novo plano"
+                    columns={[
+                        { name: "nome_plano", header: "Nome", className: "fw-bold text-black" },
+                        { name: "valor_plano", type: "currency", header: "Valor", className: "fw-bold text-black" },
+                        { name: "Editar", header: "", type: "option", onClick: (row) => editarPlano(row), Icon: Pencil },
+                        { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt, onClick: (row) => delPlano(row.cod_plano), Icon: Trash },
+                        { name: "Recuperar", header: "", type: "option", visible: (row) => row?.deletedAt, onClick: (row) => recoveryPlan(row.cod_plano), Icon: ArrowLeftCircle },
+                    ]}
                 >
-                    <ListComponent.Filters>
-                        <ListComponent.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
-                    </ListComponent.Filters>
-
-                    <ListComponent.Items>
-                        {(planos) => {
-                            return planos.map((plano, index) => (
-                                <ListComponent.Item key={index}
-                                    index={index}
-                                    title={plano.nome_plano}
-                                    badge={[
-                                        `${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plano?.valor_plano)}`,
-                                        `${plano.duracao_plano} Meses`,
-                                        ...(plano.modalidades.map((mod) => mod?.modalidade?.nome_modalidade)),
-                                    ]}
-                                    onClickItem={() => navigate('/cadplano', { state: { plano } })}
-                                >
-                                    <ListComponent.Options>
-                                        <ListComponent.Option title="Editar" icon="bi bi-pencil" onClick={() => editarPlano(plano)} />
-                                        {plano.deletedAt ? (
-                                            <ListComponent.Option title="Reverter" icon="bi bi-trash" onClick={() => recoveryPlan(plano.cod_plano)} />
-                                        ) : (
-                                            <ListComponent.Option title="Excluir" icon="bi bi-trash" onClick={() => delPlano(plano.cod_plano)} />
-                                        )}
-                                    </ListComponent.Options>
-                                </ListComponent.Item>
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    <FitTable.Filters>
+                        <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
+                    </FitTable.Filters>
+                </FitTable.Root>
             </div>
         </div>
     )

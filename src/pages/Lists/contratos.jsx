@@ -2,9 +2,8 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa } from "../../states/states";
 import { getAlunoContratos } from "../../api/aluno";
 import { useQuery } from "react-query";
-import { formatarData, formatarMoeda } from "../../utils";
 import { useNavigate } from "react-router-dom";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
 
 function Contratos() {
     const [empresa] = useRecoilState(stateEmpresa);
@@ -22,31 +21,20 @@ function Contratos() {
         <div className="container-fluid">
 
             <div className="col-md-12">
-                <ListComponent.Root
+                <FitTable.Root
                     list={contratos}
                     title="Contratos"
                     description={`${contratos?.length} ${contratos?.length > 1 ? "Contratos" : "Contrato"}`}
                     fieldSearch="nome_aluno_contrato"
-                >
-                    <ListComponent.Items>
-                        {(contratos) => {
-                            return contratos.map((contrato, index) => (
-                                <ListComponent.Item key={index}
-                                    index={index}
-                                    title={contrato.aluno.nome_aluno}
-                                    description={contrato.nome_aluno_contrato}
-                                    badge={[
-                                        formatarMoeda(contrato.total_aluno_contrato),
-                                        `${JSON.parse(contrato.parcela_aluno_contrato).length} Meses`,
-                                        formatarData(contrato.expiracao_aluno_contrato),
-                                        contrato.status_aluno_contrato == 'ACTIVE' ? 'Ativo' : 'Inativo'
-                                    ]}
-                                    onClickItem={() => navigate('/contrato', { state: { cod_aluno_contrato: contrato.cod_aluno_contrato, cod_aluno: contrato.cod_aluno } })}
-                                />
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    onClickItem={() => navigate('/contrato', { state: { cod_aluno_contrato: contrato.cod_aluno_contrato, cod_aluno: contrato.cod_aluno } })}
+                    columns={[
+                        { name: "aluno.nome_aluno", header: "Aluno", className: "fw-bold text-black" },
+                        { name: "nome_aluno_contrato", header: "Nome", className: "fw-bold text-black" },
+                        { name: "total_aluno_contrato", header: "Valor", type: "currency", className: "fw-bold text-black" },
+                        { name: "expiracao_aluno_contrato", header: "Expiração", type: "date", className: "fw-bold text-black" },
+                        { name: "status_aluno_contrato", header: "Status", className: "fw-bold text-black" },
+                    ]}
+                />
             </div>
         </div>
     )

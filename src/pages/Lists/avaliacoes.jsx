@@ -3,8 +3,7 @@ import { stateUsuario } from "../../states/states";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { getAvaliacoes } from "../../api/aluno";
-import { formatarData } from "../../utils";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
 
 function Avaliacoes() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -21,27 +20,17 @@ function Avaliacoes() {
     return (
         <div className="container-fluid">
             <div className="col-md-12">
-                <ListComponent.Root
-                    list={avaliacoes}
+                <FitTable.Root
+                    list={avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))}
                     title="Lista de avaliações"
                     description={`${avaliacoes?.length} ${avaliacoes?.length > 1 ? "Avaliações" : "Avaliação"}`}
                     fieldSearch="nome_aluno"
-                >
-                    <ListComponent.Items>
-                        {(filteredAvaliacoes) => {
-                            return filteredAvaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao)).map((avaliacao, index) => (
-                                <ListComponent.Item
-                                    key={index}
-                                    index={index}
-                                    title={avaliacao.nome_aluno}
-                                    description={formatarData(avaliacao.data_avaliacao)}
-                                    onClickItem={() => navigate('/avaliacao', { state: { avaliacao } })}
-                                    urlImage={avaliacao.imagem_aluno}
-                                />
-                            ))
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    onClickItem={(row) => navigate('/avaliacao', { state: { avaliacao: row } })}
+                    columns={[
+                        { name: "nome_aluno", header: "Nome", className: "fw-bold text-black" },
+                        { name: "data_avaliacao", header: "Data", type: "date", className: "fw-bold text-black" },
+                    ]}
+                />
             </div>
         </div>
     )

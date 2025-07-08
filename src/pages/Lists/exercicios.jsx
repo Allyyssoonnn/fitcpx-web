@@ -5,7 +5,8 @@ import { stateUsuario } from "../../states/states";
 import { useNavigate } from "react-router-dom";
 import { getExercicios, deleteExercicio, recoveryExercicio } from '../../api/treino';
 import FiltroExercicio from "../../components/filtroExercicio";
-import { ListComponent } from "../../components/baseComponents/ListComponent";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 
 function Exercicios() {
     const [usuario] = useRecoilState(stateUsuario);
@@ -47,51 +48,26 @@ function Exercicios() {
             </div>
 
             <div className="col-md-12">
-                <ListComponent.Root
+                <FitTable.Root
                     list={filteredExercicios}
                     title="Exercícios"
                     description={`${exercicios?.length} ${exercicios?.length > 1 ? "Exercícios" : "Exercício"}`}
                     fieldSearch="nome_exercicio"
+                    columns={[
+                        { name: "nome_exercicio", header: "Nome", className: "fw-bold text-black" },
+                        { name: "grupo_exercicio_1.nome_grupo_exercicio", header: "Grupo muscular", className: "fw-bold text-black" },
+                        { name: "grupo_exercicio_2.nome_grupo_exercicio", header: "Grupo muscular", className: "fw-bold text-black" },
+                        { name: "Editar", header: "", type: "option", onClick: (row) => editarExercicio(row), Icon: Pencil },
+                        { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt && row.base_exercicio !== 'S', onClick: (row) => delExercicio(row.cod_exercicio), Icon: Trash },
+                        { name: "Recuperar", header: "", type: "option", visible: (row) => row?.deletedAt && row.base_exercicio !== 'S', onClick: (row) => recoveryExec(row.cod_exercicio), Icon: ArrowLeftCircle },
+                    ]}
+                    buttonOnClick={() => navigate('/cadexercicio')}
+                    buttonText="Novo exercício"
                 >
-                    <ListComponent.Filters>
-                        <ListComponent.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
-                    </ListComponent.Filters>
-
-                    <ListComponent.Items>
-                        {(exercicios) => {
-                            return exercicios.map((exercicio, index) => {
-                                const grupo_exercicio_1 = exercicio?.grupo_exercicio_1?.nome_grupo_exercicio;
-                                const grupo_exercicio_2 = exercicio?.grupo_exercicio_2?.nome_grupo_exercicio;
-                                const grupo_exercicio_3 = exercicio?.grupo_exercicio_3?.nome_grupo_exercicio;
-                                const grupo_exercicio_4 = exercicio?.grupo_exercicio_4?.nome_grupo_exercicio;
-
-                                return (
-                                    <ListComponent.Item
-                                        key={index}
-                                        index={index}
-                                        title={exercicio.nome_exercicio}
-                                        description={exercicio.descricao_exercicio}
-                                        onClickItem={() => navigate('/cadexercicio', { state: { exercicio: exercicio } })}
-                                        badge={[grupo_exercicio_1, grupo_exercicio_2, grupo_exercicio_3, grupo_exercicio_4]}
-                                    >
-                                        <ListComponent.Options>
-                                            <ListComponent.Option title="Editar" icon="bi bi-pencil" onClick={() => editarExercicio(exercicio)} />
-                                            {exercicio.base_exercicio !== 'S' && (
-                                                <>
-                                                    {exercicio.deletedAt ? (
-                                                        <ListComponent.Option title="Reverter" icon="bi bi-trash" onClick={() => recoveryExec(exercicio.cod_exercicio)} />
-                                                    ) : (
-                                                        <ListComponent.Option title="Excluir" icon="bi bi-trash" onClick={() => delExercicio(exercicio.cod_exercicio)} />
-                                                    )}
-                                                </>
-                                            )}
-                                        </ListComponent.Options>
-                                    </ListComponent.Item>
-                                )
-                            })
-                        }}
-                    </ListComponent.Items>
-                </ListComponent.Root>
+                    <FitTable.Filters>
+                        <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />
+                    </FitTable.Filters>
+                </FitTable.Root>
             </div>
         </div>
     );

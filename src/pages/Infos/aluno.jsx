@@ -1,18 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { calcularIdade, dataURLToBlob, formatarData, formatarMoeda, getSexo } from "../../utils";
+import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
 import { useQuery } from "react-query";
 import { changeAlunoIMG, deleteAvaliacao, getAluno, getAlunoContratos, getAvaliacoes, setAluno } from '../../api/aluno';
 import { deleteTreino, getTreinos, setTreino } from '../../api/treino';
 import ImageCropModal from '../../components/cutImg';
-import PopConfirm from '../../components/popConfirm';
 import { useRecoilState } from 'recoil';
-import { stateUsuario } from '../../states/states';
+import { stateUsuario, useNotificacao } from '../../states/states';
 import Swal from 'sweetalert2';
 import { getAlunoSessoesPacote } from '../../api/sessao';
+import { imgProfile, PRODUCAO } from '../../api/api';
+import { FitTable } from "../../components/baseComponents/FitTable";
+import { ChartBar, Pencil, Rotate3D, Trash } from 'lucide-react';
 
 function Aluno() {
+    const { nConfirm } = useNotificacao();
     const location = useLocation();
     const navigate = useNavigate();
     const cod_aluno = location.state?.cod_aluno;
@@ -131,6 +134,25 @@ function Aluno() {
         );
     };
 
+    async function clickDeleteWorkout(treino) {
+        nConfirm(null, "Tem certeza que deseja remover o treino?", async () => {
+            await deleteTreino(treino.cod_treino);
+            refetchTreino();
+        });
+    }
+
+    async function clickDeletePhysicalAssessment(avaliacao) {
+        nConfirm(null, "Tem certeza que deseja remover a avaliação?", async () => {
+            await deleteAvaliacao(avaliacao.cod_avaliacao);
+            refetchAvalicao();
+        });
+    }
+
+    async function changeStatusTreino(treino) {
+        await setTreino({ ...treino, status_treino: treino.status_treino == 'A' ? 'I' : 'A' });
+        refetchTreino();
+    }
+
     return (
         <div className="container-fluid">
             <ImageCropModal
@@ -161,7 +183,7 @@ function Aluno() {
                             <div className='col-lg-3 col-md-4 text-center mb-4 mb-md-0'>
                                 <div className="position-relative d-inline-block">
                                     <img
-                                        src={aluno?.imagem_aluno ? `${aluno?.imagem_aluno}?&t=${new Date().getTime()}` : 'https://placehold.co/200x200?text=👤'}
+                                        src={aluno?.imagem_aluno ? `${aluno?.imagem_aluno}?&t=${new Date().getTime()}` : (!PRODUCAO ? imgProfile : 'https://placehold.co/150x150?text=img')}
                                         alt="Foto do Aluno" 
                                         className="img-fluid rounded-circle shadow-lg border border-4 border-white" 
                                         style={{ width: '200px', height: '200px', objectFit: 'cover' }}
@@ -262,7 +284,7 @@ function Aluno() {
                                     <div className="col-lg-6">
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-body">
-                                                <h5 className="card-title text-secondary mb-3">
+                                                <h5 className="card-title text-primary mb-3">
                                                     <i className="bi bi-geo-alt-fill me-2"></i>
                                                     Endereço
                                                 </h5>
@@ -300,7 +322,7 @@ function Aluno() {
                                 <div className="mt-4">
                                     <button 
                                         id='addPhysicalAssessment' 
-                                        className='btn btn-success w-100 rounded-pill shadow-sm mb-4'
+                                        className='btn btn-success shadow-sm mb-4'
                                         onClick={() => navigate('/cadavaliacao', { state: { aluno, ultimaAvaliacao: avaliacoes[avaliacoes.length - 1] } })}
                                     >
                                         <i className="bi bi-plus-circle me-2"></i>
@@ -308,12 +330,28 @@ function Aluno() {
                                     </button>
 
                                     <div className="row g-4">
-                                        {avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
-                                        .map((avaliacao, index) => (
-                                            <div key={index} className="col-12">
-                                                <CardAvaliacao index={index} avaliacao={avaliacao} aluno={aluno} refetch={refetchAvalicao} />
-                                            </div>
-                                        ))}
+                                        <FitTable.Root
+                                            list={avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))}
+                                            fieldSearch='data_avaliacao'
+                                            columns={[
+                                                { name: "data_avaliacao", type: "date", header: "Data", className: "fw-bold text-black" },
+                                                { name: "usuario.nome_usuario", header: "Reponsável", className: "fw-bold text-black" },
+                                                { name: "altura", header: "Altura", className: "fw-bold text-black" },
+                                                { name: "peso", header: "Peso", className: "fw-bold text-black" },
+                                                { name: "gordura", header: "Gordura", className: "fw-bold text-black",
+                                                    getValue: (row) => <div className="text-muted">{row?.result?.compositionWeight?.gordura} kg / {row?.result?.compositionPercentage?.gordura}%</div>
+                                                },
+                                                { name: "musculo", header: "M. Muscular", className: "fw-bold text-black",
+                                                    getValue: (row) => <div className="text-muted">{row?.result?.compositionWeight?.massa_muscular} kg / {row?.result?.compositionPercentage?.massa_muscular}%</div>
+                                                },
+                                                { name: "mcm", header: "MCM", className: "fw-bold text-black",
+                                                    getValue: (row) => <div className="text-muted">{row?.result?.compositionWeight?.mcm} kg / {row?.result?.compositionPercentage?.mcm}%</div>
+                                                },
+                                                { name: "Resultado", type: "option", Icon: ChartBar, onClick: (row) => navigate('/avaliacao', { state: { avaliacao: row, aluno } })},
+                                                { name: "Editar", type: "option", Icon: Pencil, onClick: (row) => navigate('/cadavaliacao', { state: { avaliacao: row, aluno } })},
+                                                { name: "Remover", type: "option", Icon: Trash, onClick: (row) => clickDeletePhysicalAssessment(row)},
+                                            ]}
+                                        />
                                     </div>
                                 </div>
                             </Tab>
@@ -329,7 +367,7 @@ function Aluno() {
                                     <AddTreino treinosAluno={treinos} show={modalAddTreino} close={() => setModalAddTreino(false)} aluno={aluno} />
                                     <button 
                                         id='addWorkout' 
-                                        className='btn btn-success w-100 rounded-pill shadow-sm mb-4' 
+                                        className='btn btn-success shadow-sm mb-4' 
                                         onClick={() => setModalAddTreino(true)}
                                     >
                                         <i className="bi bi-plus-circle me-2"></i>
@@ -337,12 +375,26 @@ function Aluno() {
                                     </button>
 
                                     <div className="row g-4">
-                                        {treinos.sort((a, b) => b.cod_treino - a.cod_treino)
-                                        .map((treino, index) => (
-                                            <div key={index} className="col-12">
-                                                <CardTreino treino={treino} aluno={aluno} refetch={refetchTreino} />
-                                            </div>
-                                        ))}
+                                        <FitTable.Root
+                                            list={treinos.sort((a, b) => b.cod_treino - a.cod_treino)}
+                                            fieldSearch='nome_treino'
+                                            columns={[
+                                                { name: "nome_treino", header: "Nome", className: "fw-bold text-black" },
+                                                { name: "usuario.nome_usuario", header: "Reponsável", className: "fw-bold text-black" },
+                                                { name: "nivel_treino", header: "Nível", className: "fw-bold text-black" },
+                                                { name: "sessoes", header: "Sessão(s)", className: "fw-bold text-black",
+                                                    getValue: (row) => row?.sessoes?.length
+                                                },
+                                                { name: "status_treino", header: "Status", className: "fw-bold text-black",
+                                                    getValue: (row) => row.status_treino == 'A'
+                                                    ? <div className='badge bg-success'>Ativo</div>
+                                                    : <div className='badge bg-danger'>Inativo</div>
+                                                },
+                                                { name: "Editar", type: "option", Icon: Pencil, onClick: (row) => navigate('/cadtreino', { state: { treino: row, aluno } })},
+                                                { name: "Remover", type: "option", Icon: Trash, onClick: (row) => clickDeleteWorkout(row)},
+                                                { name: "Mudar status", type: "option", Icon: Rotate3D, onClick: (row) => changeStatusTreino(row)},
+                                            ]}
+                                        />
                                     </div>
                                 </div>
                             </Tab>
@@ -356,7 +408,7 @@ function Aluno() {
                             }>
                                 <div className="mt-4">
                                     <button 
-                                        className='btn btn-success w-100 rounded-pill shadow-sm mb-4' 
+                                        className='btn btn-success shadow-sm mb-4' 
                                         onClick={() => navigate('/contratacaoplano', { state: { aluno } })}
                                     >
                                         <i className="bi bi-plus-circle me-2"></i>
@@ -364,40 +416,20 @@ function Aluno() {
                                     </button>
 
                                     <div className="row g-4">
-                                        {alunoContratos?.map((alunoContrato, index) => (
-                                            <div key={index} className="col-12">
-                                                <CardContrato alunoContrato={alunoContrato} aluno={aluno} refetch={refetchContrato} />
-                                            </div>
-                                        ))}
+                                        <FitTable.Root
+                                            list={alunoContratos}
+                                            fieldSearch='nome_aluno_contrato'
+                                            columns={[
+                                                { name: "nome_aluno_contrato", header: "Nome", className: "fw-bold text-black" },
+                                                { name: "expiracao_aluno_contrato", type: "date", header: "Expiração", className: "fw-bold text-black" },
+                                                { name: "total_aluno_contrato", type: "currency", header: "Expiração", className: "fw-bold text-black" },
+                                                { name: "status_aluno_contrato", header: "Status", className: "fw-bold text-black" },
+                                                { name: "Ver contrato", type: "option", Icon: Pencil, onClick: (row) => navigate('/contrato', { state: { cod_aluno_contrato: row.cod_aluno_contrato, cod_aluno: aluno.cod_aluno } })},
+                                            ]}
+                                        />
                                     </div>
                                 </div>
                             </Tab>
-
-                            {/* <Tab eventKey="sessoes" title={
-                                <span className="d-flex align-items-center">
-                                    <i className="bi bi-calendar2-check me-2"></i>
-                                    <span className="d-none d-md-inline">Sessões</span>
-                                    <span className="d-inline d-md-none">Sessões</span>
-                                </span>
-                            }>
-                                <div className="mt-4">
-                                    <button 
-                                        className='btn btn-success w-100 rounded-pill shadow-sm mb-4' 
-                                        onClick={() => navigate('/contratacaosessao', { state: { aluno } })}
-                                    >
-                                        <i className="bi bi-plus-circle me-2"></i>
-                                        Adicionar Sessão
-                                    </button>
-
-                                    <div className="row g-4">
-                                        {alunoSessoes?.map((alunoSessao, index) => (
-                                            <div key={index} className="col-12">
-                                                <CardSessao alunoSessao={alunoSessao} aluno={aluno} refetch={refetchContrato} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </Tab> */}
                         </Tabs>
                     </div>
                 </div>
@@ -543,315 +575,6 @@ function AddTreino({ show, close, aluno, treinosAluno }) {
             </div>
         </Modal>
     );
-}
-
-function CardTreino({ treino, aluno, refetch }) {
-    const navigate = useNavigate();
-
-    async function changeStatusTreino() {
-        await setTreino({ ...treino, status_treino: treino.status_treino == 'A' ? 'I' : 'A' });
-        refetch();
-    }
-
-    async function clickDelete() {
-        Swal.fire({
-            title: 'Tem certeza?',
-            text: `Tem certeza que deseja remover o treino?`,
-            icon: "warning",
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar',
-            confirmButtonText: "Confirmar",
-            reverseButtons: true,
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await deleteTreino(treino.cod_treino);
-                refetch();
-            }
-        })
-    }
-
-    return (
-        <div className='card border-0 shadow-sm rounded-4 overflow-hidden'>
-            <div className='card-body p-0'>
-                <div className="bg-gradient-success p-4">
-                    <div className="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 className="card-title mb-1 fw-bold">{treino.nome_treino}</h5>
-                            <p className="mb-0 opacity-75">
-                                <i className="bi bi-person me-1"></i>
-                                {treino.usuario?.nome_usuario}
-                            </p>
-                        </div>
-                        <button 
-                            className="btn btn-outline-light btn-sm rounded-circle" 
-                            onClick={clickDelete}
-                            style={{ width: '32px', height: '32px', padding: '0' }}
-                        >
-                            <i className="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div className="px-4 py-2">
-                    <div className='row g-3'>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-star-fill text-warning fs-4 mb-2"></i>
-                                <div className="fw-semibold">Nível</div>
-                                <div className="text-muted small">{treino.nivel_treino}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-gender-ambiguous text-info fs-4 mb-2"></i>
-                                <div className="fw-semibold">Sexo</div>
-                                <div className="text-muted small">{getSexo(treino.sexo_treino)}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-calendar-check text-success fs-4 mb-2"></i>
-                                <div className="fw-semibold">Sessões</div>
-                                <div className="text-muted small">{treino?.sessoes?.length} {treino?.sessoes?.length > 1 ? 'Sessões' : 'Sessão'}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-toggle-on text-primary fs-4 mb-2"></i>
-                                <div className="fw-semibold">Status</div>
-                                <div className="text-muted small">{treino.status_treino == 'A' ? 'Ativo' : 'Inativo'}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className='card-footer bg-light border-0 d-flex justify-content-around py-3'>
-                    <button
-                        className="btn btn-primary rounded-pill px-4"
-                        onClick={() => navigate('/cadtreino', { state: { treino, aluno } })}
-                    >
-                        <i className="bi bi-pencil me-2"></i>Editar
-                    </button>
-
-                    <button 
-                        className="btn btn-outline-secondary rounded-pill px-4" 
-                        onClick={changeStatusTreino}
-                    >
-                        <i className="bi bi-toggle-on me-2"></i>
-                        {treino.status_treino == 'A' ? 'Desativar' : 'Ativar'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function CardAvaliacao({ avaliacao, aluno, refetch, index }) {
-    const navigate = useNavigate();
-    
-    async function clickDelete() {
-        Swal.fire({
-            title: 'Tem certeza?',
-            text: `Tem certeza que deseja remover a avaliação?`,
-            icon: "warning",
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar',
-            confirmButtonText: "Confirmar",
-            reverseButtons: true,
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await deleteAvaliacao(avaliacao.cod_avaliacao);
-                refetch();
-            }
-        })
-        refetch();
-    }
-
-    return (
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div className='card-body p-0'>
-                <div className="bg-gradient-info p-4">
-                    <div className="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 className="card-title mb-1 fw-bold">Avaliação Física</h5>
-                            <p className="mb-0 opacity-75">
-                                <i className="bi bi-calendar me-1"></i>
-                                {formatarData(avaliacao.data_avaliacao)}
-                            </p>
-                        </div>
-                        <PopConfirm confirm={clickDelete} />
-                    </div>
-                </div>
-
-                <div className="px-4 py-2">
-                    <div className='row g-3'>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-rulers text-primary fs-4 mb-2"></i>
-                                <div className="fw-semibold">Altura</div>
-                                <div className="text-muted">{avaliacao.altura} m</div>
-                            </div>
-                        </div>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-speedometer2 text-success fs-4 mb-2"></i>
-                                <div className="fw-semibold">Peso</div>
-                                <div className="text-muted">{avaliacao.peso} kg</div>
-                            </div>
-                        </div>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-droplet-fill text-danger fs-4 mb-2"></i>
-                                <div className="fw-semibold">Gordura</div>
-                                <div className="text-muted">{((avaliacao.peso * avaliacao.gordura) / 100).toFixed(1)} kg / {avaliacao.gordura}%</div>
-                            </div>
-                        </div>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-lightning-fill text-warning fs-4 mb-2"></i>
-                                <div className="fw-semibold">Massa Muscular</div>
-                                <div className="text-muted">{((avaliacao.peso * avaliacao.massa_muscular) / 100).toFixed(1)} kg / {avaliacao.massa_muscular}%</div>
-                            </div>
-                        </div>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-activity text-info fs-4 mb-2"></i>
-                                <div className="fw-semibold">MCM</div>
-                                <div className="text-muted">{avaliacao?.result?.compositionWeight?.mcm} kg / {avaliacao?.result?.compositionPercentage?.mcm}%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card-footer bg-light border-0 d-flex justify-content-around py-3">
-                    <button
-                        id={`edit-${index}`}
-                        className="btn btn-primary rounded-pill px-4"
-                        onClick={() => navigate('/cadavaliacao', { state: { avaliacao, aluno } })}
-                    >
-                        <i className="bi bi-pencil me-2"></i> Editar
-                    </button>
-                    <button
-                        id={`result-${index}`}
-                        className="btn btn-outline-primary rounded-pill px-4"
-                        onClick={() => navigate('/avaliacao', { state: { avaliacao, aluno } })}
-                    >
-                        <i className="bi bi-printer me-2"></i> Ver resultado
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function CardContrato({ alunoContrato, aluno, refetch }) {
-    const navigate = useNavigate();
-
-    async function verContrato() {
-        navigate('/contrato', { state: { cod_aluno_contrato: alunoContrato.cod_aluno_contrato, cod_aluno: aluno.cod_aluno } });
-    }
-    
-    return (
-        <div className='card border-0 shadow-sm rounded-4 overflow-hidden'>
-            <div className='card-body p-0'>
-                <div className="bg-gradient-warning p-4">
-                    <h5 className="card-title mb-1 fw-bold">{alunoContrato.nome_aluno_contrato}</h5>
-                    <p className="mb-0 opacity-75">
-                        <i className="bi bi-calendar-range me-1"></i>
-                        {JSON.parse(alunoContrato.parcela_aluno_contrato).length} Meses
-                    </p>
-                </div>
-
-                <div className="px-4 py-2">
-                    <div className='row g-3'>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-currency-dollar text-success fs-4 mb-2"></i>
-                                <div className="fw-semibold">Valor</div>
-                                <div className="text-muted">{formatarMoeda(alunoContrato.total_aluno_contrato)}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-calendar-event text-info fs-4 mb-2"></i>
-                                <div className="fw-semibold">Expiração</div>
-                                <div className="text-muted">{formatarData(alunoContrato.expiracao_aluno_contrato)}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-4'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-check-circle text-primary fs-4 mb-2"></i>
-                                <div className="fw-semibold">Status</div>
-                                <div className="text-muted">{alunoContrato.status_aluno_contrato}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className='card-footer bg-light border-0 d-flex justify-content-center py-3'>
-                    <button className="btn btn-outline-primary rounded-pill px-4" onClick={verContrato}>
-                        <i className="bi bi-list me-2"></i> Ver Detalhes
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function CardSessao({ alunoSessao, aluno, refetch }) {
-    const navigate = useNavigate();
-
-    async function verSessao() {
-        navigate('/pacoteSessao', { state: { cod_aluno_sessao_pacote: alunoSessao.cod_aluno_sessao_pacote, cod_aluno: aluno.cod_aluno } });
-    }
-    
-    return (
-        <div className='card border-0 shadow-sm rounded-4 overflow-hidden'>
-            <div className='card-body p-0'>
-                <div className="bg-gradient-primary text-white p-4">
-                    <h5 className="card-title mb-1 fw-bold">Pacote: {alunoSessao.nome_aluno_sessao_pacote}</h5>
-                    <p className="mb-0 opacity-75">
-                        <i className="bi bi-calendar-check me-1"></i>
-                        {alunoSessao.data_aluno_sessao_pacote}
-                    </p>
-                </div>
-
-                <div className="px-4 py-2">
-                    <div className='row g-3'>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-calendar2-check text-primary fs-4 mb-2"></i>
-                                <div className="fw-semibold">Sessões</div>
-                                <div className="text-muted">{alunoSessao.sessoes?.length}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-calendar-event text-info fs-4 mb-2"></i>
-                                <div className="fw-semibold">Expiração</div>
-                                <div className="text-muted">{formatarData(alunoSessao.expiracao_aluno_sessao_pacote)}</div>
-                            </div>
-                        </div>
-                        <div className='col-md-3'>
-                            <div className="text-center p-3 bg-light rounded-3">
-                                <i className="bi bi-check-circle text-success fs-4 mb-2"></i>
-                                <div className="fw-semibold">Status</div>
-                                <div className="text-muted">
-                                    {alunoSessao.status_aluno_sessao_pacote === 'succeeded' ? 'Pago' : 'Pendente'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className='card-footer bg-light border-0 d-flex justify-content-center py-3'>
-                    <button className="btn btn-outline-primary rounded-pill px-4" onClick={verSessao}>
-                        <i className="bi bi-list me-2"></i> Ver Detalhes
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
 }
 
 export default Aluno;
