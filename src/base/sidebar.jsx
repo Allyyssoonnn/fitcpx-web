@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
-import { stateApp, useToggleSidebar } from "../states/states";
+import { stateApp, stateEmpresa, useNotificacao, useToggleSidebar } from "../states/states";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
 import { PRODUCAO } from "../api/api";
 import { useTranslation } from "react-i18next";
 import PropTypes from 'prop-types';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { useForm } from "react-hook-form";
+import { sendFeedback } from "../api/app";
 
 function Sidebar() {
+    const [empresa] = useRecoilState(stateEmpresa);
+    const { nSuccess } = useNotificacao();
+    const { handleSubmit, register, reset, watch, setValue } = useForm();
     const { t } = useTranslation('sidebar');
     const navigate = useNavigate();
     const { openSidebar, closeSidebar } = useToggleSidebar();
@@ -16,6 +23,8 @@ function Sidebar() {
     const [dropTreino, setDropTreino] = useState(false);
     const [dropAdmin, setDropAdmin] = useState(false);
     const [dropFinanceiro, setdropFinanceiro] = useState(false);
+
+    const feedbackType = watch("feedbackType");
 
     useEffect(() => {
         //Verifica se a tela é grande e aciona a SideBar caso o state esteja false
@@ -27,6 +36,13 @@ function Sidebar() {
         setDropTreino(false);
         setDropAdmin(false);
         navigate(route);
+    }
+
+    async function handleFeedbackSubmit(data) {
+        sendFeedback(empresa.cod_empresa, data.feedbackType, data.feedbackMessage);
+        console.log("Feedback submitted");
+        reset();
+        nSuccess("Feedback enviado com sucesso!", "Obrigado por nos ajudar a melhorar a sua experiencia!");
     }
 
     return (
@@ -361,11 +377,54 @@ function Sidebar() {
                 {/* Footer */}
                 <div className="p-3 border-top">
                     <div className="d-flex align-items-center justify-content-center">
-                        <div className="justify-center">
-                            <button className="btn btn-sm btn-outline-info" onClick={() => window.open('https://wa.me/5511999999999', '_blank')}>
-                                Enviar feedback
+                        <div className="d-flex items-center justify-around w-100">
+                            <button className="btn btn-sm btn-outline-warning" onClick={() => window.open('https://wa.me/55449991654044', '_blank')}>
+                                Suporte
                                 <i className="bi bi-chat-right-text ms-2"></i>
                             </button>
+                            <Dialog>
+                                <DialogTrigger>
+                                    <button className="btn btn-sm btn-outline-info">
+                                        Enviar feedback
+                                        <i className="bi bi-chat-right-text ms-2"></i>
+                                    </button>
+                                </DialogTrigger>
+
+                                <DialogContent>
+                                    <DialogTitle className="text-black fs-6">Enviar feedback</DialogTitle>
+
+                                    <form onSubmit={handleSubmit(handleFeedbackSubmit)}>
+                                        <div>
+                                            <Select value={feedbackType} onValueChange={(value) => setValue("feedbackType", value)}>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Selecione uma opção" />
+                                                </SelectTrigger>
+
+                                                <SelectContent>
+                                                    <SelectItem value="Reportar problema">Reportar problema</SelectItem>
+                                                    <SelectItem value="Sugestão de melhoria">Sugestão de melhoria</SelectItem>
+                                                    <SelectItem value="Alteração de exercício base">Alteração de exercício base</SelectItem>
+                                                    <SelectItem value="Outros">Outros</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+
+                                            <textarea
+                                                className="form-control mt-3"
+                                                rows="3"
+                                                placeholder="Escreva aqui..."
+                                                { ...register("feedbackMessage") }
+                                            />
+                                        </div>
+
+                                        <DialogFooter className="d-flex justify-content-end align-items-center mt-3">
+                                            <DialogClose className="d-flex justify-content-end gap-3">
+                                                <button type="button" className="btn btn-danger rounded">Fechar</button>
+                                                <button type="submit" className="btn btn-success rounded">Enviar</button>
+                                            </DialogClose>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
                 </div>
@@ -381,7 +440,7 @@ const Typewriter = ({ texts, speed = 100, delay = 2000, maxCycles = 2 }) => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [cycleCount, setCycleCount] = useState(0);
     const [isFinished, setIsFinished] = useState(false);
-  
+    
     useEffect(() => {
         if (isFinished) {
             setDisplayText(texts[texts.length - 1]);

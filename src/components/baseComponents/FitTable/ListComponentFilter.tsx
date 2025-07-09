@@ -19,13 +19,13 @@ export default function ListComponentFilter({ type, options, name, value, onChan
                 <Select value={value as string} onValueChange={onChange}>
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder={name} />
-                        </SelectTrigger>
+                    </SelectTrigger>
 
-                        <SelectContent>
-                            {options?.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                            ))}
-                        </SelectContent>
+                    <SelectContent>
+                        {options?.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        ))}
+                    </SelectContent>
                 </Select>
             </div>
         )
