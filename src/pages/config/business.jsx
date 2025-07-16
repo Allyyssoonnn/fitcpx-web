@@ -128,7 +128,7 @@ function Business({ empresa, setempresa, usuario }) {
                             <div className="row">
                                 <div className="col-lg-6">
                                     <div className="mb-3">
-                                        <label htmlFor="exampleInputtext" className="form-label">CNPJ</label>
+                                        <label htmlFor="exampleInputtext" className="form-label">CNPJ/CPF</label>
                                         <input id="cnpj" disabled={usuario.admin_usuario !== 'S'} className='form-control' {...register('doc_empresa')} />
                                     </div>
                                 </div>
