@@ -186,10 +186,11 @@ function Calendario() {
     const handleDateClick = (info) => {
         reset();
         const clickedDate = new Date(info.start);
+        const start = new Date(clickedDate);
+        const end = new Date(clickedDate.getTime() + 60 * 60 * 3000); // +1 hora
 
-        // Ajustar para o formato YYYY-MM-DDTHH:MM (sem segundos)
-        const start = clickedDate.toISOString().slice(0, 16); // Pegando até minutos
-        const end = new Date(clickedDate.getTime() + 60 * 60 * 1000).toISOString().slice(0, 16); // Pegando 1 hora após
+        setValue('data_inicio', formatDateToLocalInput(start));
+        setValue('data_fim', formatDateToLocalInput(end));
 
         // Verifica se a data formatada é válida
         if (isNaN(new Date(start).getTime()) || isNaN(new Date(end).getTime())) {
