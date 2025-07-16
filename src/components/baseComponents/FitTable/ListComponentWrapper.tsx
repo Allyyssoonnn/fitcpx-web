@@ -207,6 +207,8 @@ const getColumns = (columns: DataColumnsProp[]) => {
         getValue?: (row: any) => any,
         getCell?: (row: any) => any,
     ) {
+        if (getCell) return getCell(obj);
+        
         if (type === "image") return (
             <img src={obj[name] ? obj[name] : 'https://placehold.co/150x150?text=img'}
                 alt="Imagem"
@@ -214,8 +216,6 @@ const getColumns = (columns: DataColumnsProp[]) => {
                 width={50} height={50} loading="lazy"
             />
         );
-
-        if (getCell) return getCell(obj);
 
         if (type === "date") return formatarData(obj[name]);
 

@@ -58,7 +58,17 @@ function Alunos() {
                         onClickItem={(row) => navigate('/aluno', { state: { cod_aluno: row.cod_aluno } })}
                         buttonId="newClient"
                         columns={[
-                            { name: "imagem_aluno", header: "", type: "image",  width: 60 },
+                            { name: "imagem_aluno", header: "", type: "image",  width: 60, getCell: (row) => (
+                                <img src={row.imagem_aluno ? row.imagem_aluno : 'https://placehold.co/150x150?text=img'}
+                                    alt="Imagem"
+                                    className={`img-fluid rounded-circle shadow-md border-3
+                                        ${row.status_aluno === "A" && "border-success"}
+                                        ${row.status_aluno === "I" && "border-danger"}
+                                        ${row.status_aluno === "B" && "border-warning"}
+                                    `}
+                                    width={50} height={50} loading="lazy"
+                                />
+                            ) },
                             { name: "nome_aluno", header: "Nome", className: "fw-bold text-black" },
                             { name: "Editar", header: "", type: "option", onClick: (row) => editarAluno(row), Icon: Pencil },
                             { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt, onClick: (row) => delAlun(row.cod_aluno), Icon: Trash },
