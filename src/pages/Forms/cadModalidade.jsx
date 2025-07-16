@@ -133,7 +133,7 @@ function CadModalidade() {
                     </div>
                 </div>
 
-                <div className="card border border-success">
+                {/* <div className="card border border-success">
                     <div className="card-body">
                         <CardIconFitCpxPay>
                             <h5 className="card-title fw-semibold">Comissão</h5>
@@ -174,7 +174,7 @@ function CadModalidade() {
 
                         <p className="text-danger fs-2">[Atenção] - Mudanças em quem recebe afetarão contratos vigentes</p>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="row">
                     <div className="col-md-6">

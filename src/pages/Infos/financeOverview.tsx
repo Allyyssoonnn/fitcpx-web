@@ -340,6 +340,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                     </DropdownMenuItem>
                     
                     {(original.status_aluno_contrato_pagamento === "Pending"
+                        || original.status_aluno_contrato_pagamento === "overdue"
                         || original.status_aluno_contrato_pagamento === "Pendente"
                     ) && (<div>
                         <Dialog>

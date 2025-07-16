@@ -26,7 +26,7 @@ function Contratos() {
                     title="Contratos"
                     description={`${contratos?.length} ${contratos?.length > 1 ? "Contratos" : "Contrato"}`}
                     fieldSearch="nome_aluno_contrato"
-                    onClickItem={() => navigate('/contrato', { state: { cod_aluno_contrato: contrato.cod_aluno_contrato, cod_aluno: contrato.cod_aluno } })}
+                    onClickItem={(row) => navigate('/contrato', { state: { cod_aluno_contrato: row.cod_aluno_contrato, cod_aluno: row.cod_aluno } })}
                     columns={[
                         { name: "aluno.nome_aluno", header: "Aluno", className: "fw-bold text-black" },
                         { name: "nome_aluno_contrato", header: "Nome", className: "fw-bold text-black" },

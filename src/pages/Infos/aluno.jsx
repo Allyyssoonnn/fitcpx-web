@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 import { getAlunoSessoesPacote } from '../../api/sessao';
 import { imgProfile, PRODUCAO } from '../../api/api';
 import { FitTable } from "../../components/baseComponents/FitTable";
-import { ChartBar, Pencil, Rotate3D, Trash } from 'lucide-react';
+import { ChartBar, Clipboard, Pencil, Rotate3D, Trash } from 'lucide-react';
 
 function Aluno() {
     const { nConfirm } = useNotificacao();
@@ -331,6 +331,7 @@ function Aluno() {
 
                                     <div className="row g-4">
                                         <FitTable.Root
+                                            hideHeader
                                             list={avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))}
                                             fieldSearch='data_avaliacao'
                                             columns={[
@@ -376,6 +377,7 @@ function Aluno() {
 
                                     <div className="row g-4">
                                         <FitTable.Root
+                                            hideHeader
                                             list={treinos.sort((a, b) => b.cod_treino - a.cod_treino)}
                                             fieldSearch='nome_treino'
                                             columns={[
@@ -417,14 +419,20 @@ function Aluno() {
 
                                     <div className="row g-4">
                                         <FitTable.Root
+                                            hideHeader
                                             list={alunoContratos}
                                             fieldSearch='nome_aluno_contrato'
                                             columns={[
+                                                { name: "cod_aluno_contrato", header: "ID", className: "fw-bold text-black" },
                                                 { name: "nome_aluno_contrato", header: "Nome", className: "fw-bold text-black" },
                                                 { name: "expiracao_aluno_contrato", type: "date", header: "Expiração", className: "fw-bold text-black" },
                                                 { name: "total_aluno_contrato", type: "currency", header: "Expiração", className: "fw-bold text-black" },
-                                                { name: "status_aluno_contrato", header: "Status", className: "fw-bold text-black" },
-                                                { name: "Ver contrato", type: "option", Icon: Pencil, onClick: (row) => navigate('/contrato', { state: { cod_aluno_contrato: row.cod_aluno_contrato, cod_aluno: aluno.cod_aluno } })},
+                                                { name: "status_aluno_contrato", header: "Status", className: "fw-bold text-black",
+                                                    getValue: (row) => row.status_aluno_contrato == 'Ativo'
+                                                    ? <div className='badge bg-success'>Ativo</div>
+                                                    : <div className='badge bg-danger'>Inativo</div>
+                                                },
+                                                { name: "Ver contrato", type: "option", Icon: Clipboard, onClick: (row) => navigate('/contrato', { state: { cod_aluno_contrato: row.cod_aluno_contrato, cod_aluno: aluno.cod_aluno } })},
                                             ]}
                                         />
                                     </div>

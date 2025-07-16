@@ -61,11 +61,6 @@ function CadContrato() {
                                 className="form-control"
                             />
                         </div>
-
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Valor adesão</label>
-                            <FitInputCurrency control={control} name='valor_adesao' />
-                        </div>
                     </div>
                 </div>
             </div>

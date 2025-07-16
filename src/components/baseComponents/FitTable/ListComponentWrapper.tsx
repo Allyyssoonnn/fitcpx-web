@@ -14,6 +14,11 @@ type ListComponentProps = {
     description: string;
     buttonText?: string;
     fieldSearch: string;
+    className?: string;
+    rowCount?: number;
+    hideSearch?: boolean;
+    hideFooter?: boolean;
+    hideHeader?: boolean;
     columns: DataColumnsProp[];
     buttonOnClick?: () => void;
     onClickItem?: (row: any) => void;
@@ -22,6 +27,7 @@ type ListComponentProps = {
 }
 
 type DataColumnsProp = {
+    fieldId?: string;
     name: string;
     header: string;
     Icon: any;
@@ -30,10 +36,15 @@ type DataColumnsProp = {
     visible?: (row: any) => boolean;
     onClick?: (row: any) => void;
     getValue?: (row: any) => any;
+    getCell?: (row: any) => any;
+    onChange?: (row: any, value: any) => void;
+    inputProps?: any;
+    value?: any;
     type?: "date" | "currency" | "image" | "option";
 }
 
 export default function ListComponentWrapper({
+    fieldId,
     list,
     title,
     description,
@@ -43,9 +54,14 @@ export default function ListComponentWrapper({
     buttonId,
     children,
     columns,
-    onClickItem
+    onClickItem,
+    className,
+    rowCount = 10,
+    hideSearch = false,
+    hideHeader = false,
+    hideFooter = false,
 }: ListComponentProps) {
-    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
     const childrenFilters = useMemo(() => {
@@ -65,7 +81,7 @@ export default function ListComponentWrapper({
         return getColumns(columns);
     }, [columns])
 
-    const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: i })), [list]);
+    const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: (v[fieldId] || i) })), [list]);
     
     const table = useReactTable({
         data: dataList,
@@ -84,38 +100,42 @@ export default function ListComponentWrapper({
     });
 
     return (
-        <div className="card shadow-lg rounded-4">
-            <div className="card-header">
-                <div className="row d-flex justify-content-between">
-                    <div className="col-md-3 col-7 d-flex align-items-center gap-2">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Pesquisar"
-                            value={(table.getColumn(fieldSearch)?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
-                                table.getColumn(fieldSearch)?.setFilterValue(event.target.value)
-                            }
-                        />
+        <div className={`card shadow-lg rounded-4 ${className ?? ""}`}>
+            {!hideHeader && (
+                <div className="card-header">
+                    <div className="row d-flex justify-content-between">
+                        <div className="col-md-4 col-7 d-flex align-items-center gap-2">
+                            {!hideSearch && (
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Pesquisar"
+                                    value={(table.getColumn(fieldSearch)?.getFilterValue() as string) ?? ""}
+                                    onChange={(event) =>
+                                        table.getColumn(fieldSearch)?.setFilterValue(event.target.value)
+                                    }
+                                />
+                            )}
 
-                        {childrenFilters}
+                            {childrenFilters}
+                        </div>
+
+                        <div className="col-md-3 col-5 d-flex flex-column items-end">
+                            <h4>{title}</h4>
+                            <p>{description}</p>
+                        </div>
                     </div>
 
-                    <div className="col-md-3 col-5 d-flex flex-column items-end">
-                        <h4>{title}</h4>
-                        <p>{description}</p>
+                    <div className="d-flex justify-content-end align-items-center">
+                        {buttonOnClick && (
+                            <button id={buttonId} className="btn btn-outline-success" onClick={buttonOnClick}>
+                                <i className="bi bi-plus-circle me-2"></i>
+                                {buttonText ?? "Novo"}
+                            </button>
+                        )}
                     </div>
                 </div>
-
-                <div className="d-flex justify-content-end align-items-center">
-                    {buttonOnClick && (
-                        <button id={buttonId} className="btn btn-outline-success" onClick={buttonOnClick}>
-                            <i className="bi bi-plus-circle me-2"></i>
-                            {buttonText ?? "Novo"}
-                        </button>
-                    )}
-                </div>
-            </div>
+            )}
 
             <div className="card-body p-0 pb-5">
                 <Table>
@@ -160,26 +180,32 @@ export default function ListComponentWrapper({
                     </TableBody>
                 </Table>
 
-                <FitPagination table={table} />
+                {!hideFooter && (
+                    <FitPagination table={table} />
+                )}
             </div>
         </div>
     );
 }
 
-const getColumns = (columns: DataColumnsProp) => {
-    let cols: any[] = [];
-    let options: { name: string, Icon: any, onClick: (row: any) => void }[] = [];
+const getColumns = (columns: DataColumnsProp[]) => {
+    if (!columns) return [];
 
-    if (!columns) return;
+    let cols: any[] = [];
+    const options = columns
+        .filter(col => col.type === "option" && (!col.visible || col.visible({})))
+        .map(col => ({
+            name: col.name,
+            Icon: col.Icon,
+            onClick: col.onClick,
+        }));
 
     function getCell(
-        obj: string,
+        obj: any,
         name: string,
-        type: string,
-        onClick?: () => void,
-        Icon?: any,
-        visible?: () => boolean,
-        getValue?: () => any,
+        type?: string,
+        getValue?: (row: any) => any,
+        getCell?: (row: any) => any,
     ) {
         if (type === "image") return (
             <img src={obj[name] ? obj[name] : 'https://placehold.co/150x150?text=img'}
@@ -187,44 +213,56 @@ const getColumns = (columns: DataColumnsProp) => {
                 className="img-fluid rounded-circle shadow-md border-3 border-success"
                 width={50} height={50} loading="lazy"
             />
-        )
+        );
+
+        if (getCell) return getCell(obj);
 
         if (type === "date") return formatarData(obj[name]);
 
         if (type === "currency") return formatarMoeda(obj[name]);
-        
-        if (type === "option") {
-            // Evita duplicação de opções com mesmo nome
-            if (!options.find((opt) => opt.name === name)) {
-                if (visible && visible(obj) || !visible) {
-                    options.push({ name, onClick, Icon });
-                }
-            }
-            return ""; // não renderiza nada visível na célula da coluna
-        }
+
+        if (type === "option") return ""; // já tratado externamente
 
         if (getValue) return getValue(obj);
 
-        if (name.split(".")?.length > 1) {
-            return getNestedError(obj, name);    
-        }
+        if (name.includes(".")) return getNestedError(obj, name);
 
         return obj[name];
     }
 
-    columns?.forEach((v, i) => {
-        cols.push({
-            id: v.name,
-            header: v.header,
-            size: v.width,
-            className: v.className,
-            accessorKey: v.name,
-            cell: ({ row: { original } }) => getCell(original, v.name, v.type, v.onClick, v.Icon, v.visible, v.getValue),
-        })
-    })
+    columns.forEach((col) => {
+        if (col.type !== "option") {
+            cols.push({
+                id: col.name,
+                header: col.header,
+                size: col.width,
+                className: col.className,
+                accessorKey: col.name,
+                cell: ({ row: { original } }) =>
+                    getCell(original, col.name, col.type, col.getValue, col.getCell),
+            });
+        }
+    });
 
-    
-    if (options) {
+    if (options.length === 1) {
+        const option = options[0];
+        cols.push({
+            id: "option",
+            header: "",
+            cell: ({ row: { original } }) => (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        option.onClick(original);
+                    }}
+                >
+                    <option.Icon />
+                </Button>
+            ),
+        });
+    } else if (options.length > 1) {
         cols.push({
             id: "options",
             header: "",
@@ -239,9 +277,10 @@ const getColumns = (columns: DataColumnsProp) => {
                     <DropdownMenuContent>
                         {options.map((option, index) => (
                             <DropdownMenuItem
+                                key={index}
                                 className="cursor-pointer"
                                 onClick={(e) => {
-                                    e.stopPropagation(); // Impede o clique da linha
+                                    e.stopPropagation();
                                     option.onClick(original);
                                 }}
                             >
@@ -251,9 +290,9 @@ const getColumns = (columns: DataColumnsProp) => {
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-            )
-        })
+            ),
+        });
     }
 
     return cols;
-}
+};
