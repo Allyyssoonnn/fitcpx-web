@@ -96,7 +96,7 @@ function CadTreino() {
             await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos, itensRemovidos);
             reset();
             nSuccess();
-            navigate("/aluno", { state: { cod_aluno: codAluno } });
+            navigate(-1);
         } else toast.error('Erro ao salvar treino');
     }
     
@@ -106,7 +106,7 @@ function CadTreino() {
             <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
-                        onClick={e => { e.preventDefault(); navigate('/aluno', { state: { cod_aluno: codAluno } }); }}
+                        onClick={e => { e.preventDefault(); navigate(-1); }}
                         className="btn btn-outline-danger rounded-pill px-4"
                     >
                         <i className="bi bi-arrow-left me-2"></i>
