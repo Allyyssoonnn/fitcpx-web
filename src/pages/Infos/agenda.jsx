@@ -95,7 +95,7 @@ function Agenda() {
 function Calendario() {
     const [empresa] = useRecoilState(stateEmpresa);
     const [usuario] = useRecoilState(stateUsuario);
-    const { handleSubmit, register, setValue, formState: { errors }, reset } = useForm();
+    const { handleSubmit, register, setValue, formState: { errors }, reset, control } = useForm();
 
     const { data: alunos } = useQuery({
         queryKey: ['alunos', usuario.cod_usuario],
@@ -305,13 +305,7 @@ function Calendario() {
                                     { ...register('descricao_evento') }
                                 />
 
-                                <FitInputForm
-                                    type="color"
-                                    classNameContainer="col-md-12 mt-6"
-                                    nameField="Cor"
-                                    errors={errors}
-                                    { ...register('cor_evento') }
-                                />
+                                <CorEventoPreset register={register} control={control} errors={errors} />
 
                                 <FitSelectForm
                                     classNameContainer="col-md-12 mt-6"
@@ -365,5 +359,44 @@ function Calendario() {
         </div>
     );
 }
+
+import { useWatch } from "react-hook-form";
+
+const CorEventoPreset = ({ register, control, errors }) => {
+  const selectedColor = useWatch({ control, name: 'cor_evento' });
+
+  const cores = ['#28a745', '#007bff', '#ffc107', '#dc3545', '#6f42c1'];
+
+  return (
+    <div className="col-md-12 mt-6">
+      <label className="form-label">Cor</label>
+      <div className="d-flex gap-2 flex-wrap">
+        {cores.map((color) => (
+          <label key={color} style={{ cursor: 'pointer' }}>
+            <input
+              type="radio"
+              value={color}
+              {...register('cor_evento', { required: true })}
+              className="d-none"
+            />
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                backgroundColor: color,
+                border: selectedColor === color ? '3px solid black' : '2px solid #ccc',
+                transition: 'border 0.2s',
+              }}
+            />
+          </label>
+        ))}
+      </div>
+      {errors.cor_evento && (
+        <p className="text-danger mt-1">Selecione uma cor</p>
+      )}
+    </div>
+  );
+};
 
 export default Agenda;
