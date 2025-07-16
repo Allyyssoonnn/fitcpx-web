@@ -15,6 +15,7 @@ import { getGoogleConnect } from "../../api/usuario";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import { getModalidades } from "../../api/plano";
+import { formatDateToLocalInput } from "../../utils";
 
 function Agenda() {
     const [empresa] = useRecoilState(stateEmpresa);
@@ -149,8 +150,8 @@ function Calendario() {
             setValue('cod_modalidade', event.extendedProps.cod_modalidade);
             setValue('cod_aluno', event.extendedProps.cod_aluno);
             setValue('tipo_evento', event.extendedProps.calendar);
-            setValue('data_inicio', event.start.toISOString().slice(0, 16));  // Formato de data para datetime-local
-            setValue('data_fim', event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));  // Caso tenha um horário de término
+            setValue('data_inicio', formatDateToLocalInput(new Date(event.start)));  // Formato de data para datetime-local
+            setValue('data_fim', event.end ? formatDateToLocalInput(new Date(event.end)) : formatDateToLocalInput(new Date(event.start)));  // Caso tenha um horário de término
     
             // Abre o modal
             setShowModal(true);
