@@ -39,7 +39,7 @@ function Usuarios() {
                     buttonOnClick={() => navigate('/cadusuario')}
                     buttonText="Novo usuário"
                     columns={[
-                        { name: "imagem_usuario", header: "", type: "image", className: "fw-bold text-black" },
+                        { name: "imagem_usuario", header: "", type: "image", width: 60, className: "fw-bold text-black" },
                         { name: "nome_usuario", header: "Nome", className: "fw-bold text-black" },
                         { name: "email_usuario", header: "E-mail", className: "fw-bold text-black" },
                         { name: "Editar", header: "", type: "option", onClick: (row) => editarUsuario(row), Icon: Pencil },

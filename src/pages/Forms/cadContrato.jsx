@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
 import { useRecoilState } from "recoil";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { useEffect, useRef, useState } from "react";
@@ -69,7 +68,7 @@ function CadContrato() {
                 <div className="card-body">
                     <div className="card-header d-flex justify-content-between">
                         <h5 className="card-title fw-semibold mb-4">Contrato</h5>
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-2 align-items-center">
                             <button className="btn btn-sm btn-info rounded" onClick={(e) => setModeloContrato(e, contratoPresencial)}>Modelo presencial</button>
                             <button className="btn btn-sm btn-info rounded" onClick={(e) => setModeloContrato(e, contratoConsultoria)}>Modelo consultoria</button>
                         </div>
@@ -83,7 +82,74 @@ function CadContrato() {
                             readonly: false,
                             // height: 900,
                             // buttons: "bold,italic,underline,|,ul,ol,|,font,fontsize,brush,|,link,align,undo,redo",
-                            buttons: "source,|,bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,image,video,table,link,|,hr,undo,redo,copyformat,selectall,cut,copy,paste,|,print,fullsize",
+                            // buttons: "source,|,bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall,cut,copy,paste,|",
+                            buttons: "bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall,cut,copy,paste",
+                            extraButtons: [
+                                {
+                                    name: 'Nome do aluno',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;nome_aluno&gt;'),
+                                    tooltip: 'Inserir nome do aluno',
+                                },
+                                {
+                                    name: 'RG do aluno',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;rg_aluno&gt;'),
+                                    tooltip: 'Inserir RG do aluno',
+                                },
+                                {
+                                    name: 'CPF do aluno',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;cpf_aluno&gt;'),
+                                    tooltip: 'Inserir CPF do aluno',
+                                },
+                                {
+                                    name: 'Endereço do aluno',
+                                    icon: 'user',
+                                    exec: (editor) => {
+                                        editor.selection.insertHTML('&lt;endereco_aluno&gt;, nº &lt;numero_aluno&gt;, bairro &lt;bairro_aluno&gt;, CEP &lt;cep_aluno&gt;, na cidade &lt;cidade_aluno&gt;, estado &lt;estado_aluno&gt;');
+                                    },
+                                    tooltip: 'Inserir endereço do aluno',
+                                },
+                                {
+                                    name: 'Nome da empresa',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;nome_empresa&gt;'),
+                                    tooltip: 'Inserir nome do aluno',
+                                },
+                                {
+                                    name: 'Razão social da empresa',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;razao_social_empresa&gt;'),
+                                    tooltip: 'Inserir RG do aluno',
+                                },
+                                {
+                                    name: 'CNPJ/CPF da empresa',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;doc_empresa&gt;'),
+                                    tooltip: 'Inserir CPF do aluno',
+                                },
+                                {
+                                    name: 'Endereço da empresa',
+                                    icon: 'user',
+                                    exec: (editor) => {
+                                        editor.selection.insertHTML('&lt;endereco_empresa&gt;, nº &lt;numero_empresa&gt;, bairro &lt;bairro_empresa&gt;, CEP &lt;cep_empresa&gt;, na cidade &lt;cidade_empresa&gt;, estado &lt;estado_empresa&gt;');
+                                    },
+                                    tooltip: 'Inserir endereço do aluno',
+                                },
+                                {
+                                    name: 'R$ contrato',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;valor_total&gt;'),
+                                    tooltip: 'Inserir valor total do contrato',
+                                },
+                                {
+                                    name: 'R$ mensal',
+                                    icon: 'user',
+                                    exec: (editor) => editor.selection.insertHTML('&lt;valor_mensal&gt;'),
+                                    tooltip: 'Inserir valores mensais do contrato',
+                                },
+                            ]
                         }}
                     />
                 </div>

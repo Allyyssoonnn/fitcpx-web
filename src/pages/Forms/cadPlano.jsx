@@ -7,11 +7,12 @@ import { stateUsuario, useNotificacao } from "../../states/states";
 import { useEffect, useState } from "react";
 import { dividirParcelas, formatarMoeda } from "../../utils";
 import SelectModalidades from "../../components/selectModalidades";
+import FitInputForm from "../../components/baseComponents/FitInputForm";
 
 function CadPlano() {
     const { nSuccess } = useNotificacao();
     const [usuario] = useRecoilState(stateUsuario);
-    const { register, handleSubmit, control, setValue, watch, getValues } = useForm();
+    const { register, handleSubmit, control, setValue, watch, getValues, formState: { errors } } = useForm();
     const navigate = useNavigate();
     const location = useLocation();
     const [selectModalidades, setSelectModalidades] = useState([]);
@@ -124,28 +125,23 @@ function CadPlano() {
                     <h5 className="card-title fw-semibold mb-4">Informações</h5>
 
                     <div className="row g-3">
-                        <div className="col-md-5">
-                            <label className="form-label fw-bold">Nome *</label>
-                            <input {...register("nome_plano", { required: "O nome é obrigatório" })}
-                                className="form-control"
-                            />
-                        </div>
+                        <FitInputForm
+                            id='name'
+                            nameField='Nome *'
+                            classNameContainer='col-md-5'
+                            errors={errors}
+                            { ...register('nome_plano', { required: "O nome é obrigatório", minLength: 5 }) }
+                        />
                     </div>
 
                     <div className="row g-3 mt-3">
-                        <div className="col-md-2">
-                            <label className="form-label fw-bold">Duração plano</label>
-                            <input {...register("duracao_plano")} className="form-control" />
-                        </div>
-
-                        <div className="col-md-3">
-                            <label className="form-label fw-bold">Tipo Duração plano</label>
-                            <select disabled {...register('tipo_duracao_plano')} className="form-control">
-                                <option value='Meses'>Meses</option>
-                                <option value='Semanas'>Semanas</option>
-                                <option value='Dias'>Dias</option>
-                            </select>
-                        </div>
+                        <FitInputForm
+                            nameField='Duração plano (Meses) *'
+                            classNameContainer='col-md-3'
+                            errors={errors}
+                            type="number"
+                            { ...register('duracao_plano', { required: "A duração é obrigatório" }) }
+                        />
                     </div>
                 </div>
             </div>

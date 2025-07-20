@@ -479,7 +479,7 @@ function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInici
         return textarea.value;
     }
 
-    const parcelas = JSON.parse(plano.parcela_plano);
+    const parcelas = plano?.parcela_plano ? JSON.parse(plano?.parcela_plano) : [];
     // const descMensalidades = parcelas.map((parcela, i) => `<p>${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`);
     const descMensalidades = `${parcelas.map((parcela, i) => `<p style="margin-left: 20px;">${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`).join('')}`;
 
@@ -506,7 +506,7 @@ function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInici
     preenchido = preenchido.replace(/<descricao_empresa>/g, desc);
 
     // Substituições de variáveis de valores
-    preenchido = preenchido.replace(/<valor_total>/g, formatarMoeda(plano.valor_plano));
+    preenchido = preenchido.replace(/<valor_total>/g, formatarMoeda(plano?.valor_plano ?? 0));
     preenchido = preenchido.replace(/<valor_mensal>/g, descMensalidades);
 
     return preenchido;
@@ -523,10 +523,10 @@ function CardPlano({ plano, selectPlano }) {
             <div className="d-flex justify-content-between w-100 mb-3">
                 <label><strong>Nome: </strong>{plano?.nome_plano ?? '-'}</label>
 
-                <p className="mb-0"><strong>{formatarMoeda(plano?.modalidades?.reduce((valor, mod) => valor + mod.valor_modalidade, 0) + (plano?.valor_adesao ?? 0))}</strong></p>
+                <p className="mb-0"><strong>{formatarMoeda((plano?.modalidades?.reduce((valor, mod) => valor + mod.valor_modalidade, 0) + (plano?.valor_adesao ?? 0)) || '-')}</strong></p>
             </div>
 
-            <p className="mb-0"><strong>Valor adesão:</strong> {formatarMoeda(plano?.valor_adesao)}</p>
+            <p className="mb-0"><strong>Valor adesão:</strong> {formatarMoeda(plano?.valor_adesao ?? 0)}</p>
             <p className="mb-0"><strong>Duração:</strong> {plano?.duracao_plano} {plano?.tipo_duracao_plano}</p>
             
             <button className="btn btn-sm btn-outline-info mt-3" onClick={select}>Selecionar plano</button>

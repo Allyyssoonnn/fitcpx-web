@@ -31,7 +31,7 @@ function Alunos() {
     const editarAluno = (aluno) => navigate('/cadaluno', { state: { aluno } });
 
     const filteredAlunos = useMemo(() => {
-        return alunos.filter((aluno) => aluno.status_aluno === statusFilter)
+        return statusFilter ? alunos.filter((aluno) => aluno.status_aluno === statusFilter) : alunos;
     }, [alunos, statusFilter]);
 
     const delAlun = async (cod_aluno) => {
@@ -77,8 +77,8 @@ function Alunos() {
                     >
                         <FitTable.Filters>
                             <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deleteados" />
-                            <FitTable.Filter value={statusFilter} onChange={setStatusFilter} type="select" name="Status" options={[
-                                { label: "Ativo", value: "A" }, { label: "Inativo", value: "I" }, { label: "Bloqueado", value: "B" }]
+                            <FitTable.Filter value={statusFilter} onChange={setStatusFilter} type="select" name="Status" options={
+                                [{ label: "Todos", value: null }, { label: "Ativo", value: "A" }, { label: "Inativo", value: "I" }, { label: "Bloqueado", value: "B" }]
                             } />
                         </FitTable.Filters>
                     </FitTable.Root>

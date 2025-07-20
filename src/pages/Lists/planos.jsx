@@ -44,7 +44,7 @@ function Planos() {
                     buttonText="Novo plano"
                     columns={[
                         { name: "nome_plano", header: "Nome", className: "fw-bold text-black" },
-                        { name: "valor_plano", type: "currency", header: "Valor", className: "fw-bold text-black" },
+                        // { name: "valor_plano", type: "currency", header: "Valor", className: "fw-bold text-black" },
                         { name: "Editar", header: "", type: "option", onClick: (row) => editarPlano(row), Icon: Pencil },
                         { name: "Excluir", header: "", type: "option", visible: (row) => !row?.deletedAt, onClick: (row) => delPlano(row.cod_plano), Icon: Trash },
                         { name: "Recuperar", header: "", type: "option", visible: (row) => row?.deletedAt, onClick: (row) => recoveryPlan(row.cod_plano), Icon: ArrowLeftCircle },
