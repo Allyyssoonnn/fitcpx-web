@@ -103,46 +103,6 @@ function VerifyEmail() {
     )
 }
 
-function UltimosContratos({ contratos }) {
-    const { t } = useTranslation('dashboard');
-
-    return (
-        <div className="card shadow-lg rounded-4">
-            <div className="card-body">
-                <h5 className="card-title">{t('recentContracts')}</h5>
-
-                <div className="table-responsive">
-                    <table className="table text-nowrap align-middle mb-0">
-                        <thead>
-                            <tr className="border-2 border-bottom border-success border-0"> 
-                                <th scope="col" className="ps-0">{t('contract')}</th>
-                                <th scope="col" className="ps-0">{t('student')}</th>
-                                <th scope="col" >{t('dueDate')}</th>
-                                <th scope="col" className="text-center">{t('amount')}</th>
-                            </tr>
-                        </thead>
-
-                        <tbody className="table-group-divider">
-                            {contratos.sort((a, b) => new Date(b.iniciopagamento_aluno_contrato) - new Date(a.iniciopagamento_aluno_contrato))
-                            .slice(0, 5)
-                            .map((contrato) => (
-                                // eslint-disable-next-line react/jsx-key
-                                <tr>
-                                    <th scope="row" className="ps-0 fw-medium">{contrato?.nome_aluno_contrato}</th>
-                                    <th scope="row" className="ps-0 fw-medium">{contrato?.aluno?.nome_aluno}</th>
-                                    <th scope="row" className="ps-0 fw-medium">{formatarData(contrato?.expiracao_aluno_contrato)}</th>
-                                    {/* <td>{contrato?.altura} M</td> */}
-                                    <td className="text-center fw-medium">{formatarMoeda(contrato?.total_aluno_contrato)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 function InfoTotais({ alunos, avaliacoes }) {
     const { t } = useTranslation('dashboard');
     const [usuario] = useRecoilState(stateUsuario);
@@ -247,7 +207,15 @@ function UltimasAvaliacoes({ alunos, avaliacoes }) {
                             </tr>
                         </thead>
 
+                        
                         <tbody className="table-group-divider">
+                            {!avaliacoes.length && (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-5">
+                                        {t('noPhysicalAssessaments')}
+                                    </td>
+                                </tr>
+                            )}
                             {avaliacoes.sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
                             .slice(0, 6)
                             .map((avaliacao) => (

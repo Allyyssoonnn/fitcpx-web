@@ -115,7 +115,7 @@ export default function FinanceOverview() {
                         <div className="card-subtitle">Entrar em contato</div>
 
                         <div className="card-body p-3 d-flex justify-center">
-                            <button className="btn d-flex btn-outline-success rounded py-1"
+                            <button className="btn d-flex btn-outline-success rounded-3 py-1"
                                 onClick={() => window.open('https://wa.me/5544991654044', '_blank')}
                             >
                                 <MessageCircleMore size={20} className="me-2" />
