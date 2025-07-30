@@ -7,6 +7,7 @@
     "weight": "Peso",
     "clientsOverview": "Alunos ativos",
     "physicalAssessamentsOverview": "Avaliações físicas realizadas",
+    "noPhysicalAssessaments": "Sem avaliações realizadas",
     "workoutsOverview": "Treinos cadastrados",
     "usersOverview": "Usuários",
     "recentContracts": "Últimos contratos",

@@ -5,7 +5,13 @@ import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { getModContratos, getModalidades, getPlanos } from "../../api/plano";
 import Select from "../../components/baseComponents/select";
-import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
+import {
+    adicionarMesData,
+    dividirParcelas,
+    formatarCNPJ,
+    formatarCPF,
+    formatarMoeda,
+} from "../../utils";
 import JoditEditor from "jodit-react";
 import { Modal } from "react-bootstrap";
 import Pagamento from "../../components/payment/pagamento";
@@ -15,7 +21,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { sendAlunoContrato, setAlunoContrato } from "../../api/aluno";
 import { criarPagamentoAluno } from "../../api/pagamento";
-import html2pdf from 'html2pdf.js';
+import html2pdf from "html2pdf.js";
 import SelectModalidades from "../../components/selectModalidades";
 
 function ContratacaoPlano() {
@@ -38,40 +44,82 @@ function ContratacaoPlano() {
     const [errors, setErrors] = useState([]);
 
     const { data: planos, refetch } = useQuery({
-        queryKey: ['planos', usuario.cod_empresa],
+        queryKey: ["planos", usuario.cod_empresa],
         queryFn: () => getPlanos(usuario.cod_empresa),
         initialData: [],
     });
 
     useEffect(() => {
         let tempErrors = [];
-        if (!aluno?.cpf_aluno) tempErrors.push('[Cadastro do aluno incompleto] - CPF do aluno não informado.');
-        if (!aluno?.email_aluno) tempErrors.push('[Cadastro do aluno incompleto] - E-mail do aluno não informado.');
-        if (!aluno?.telefone_aluno) tempErrors.push('[Cadastro do aluno incompleto] - Telefone do aluno não informado.');
-        if (!aluno?.endereco_aluno) tempErrors.push('[Cadastro do aluno incompleto] - Endereço do aluno não informado.');
-        if (!aluno?.numero_aluno) tempErrors.push('[Cadastro do aluno incompleto] - Endereço (número) do aluno não informado.');
-        if (!aluno?.estado_aluno) tempErrors.push('[Cadastro do aluno incompleto] - UF do aluno não informado.');
-        if (!aluno?.cep_aluno) tempErrors.push('[Cadastro do aluno incompleto] - CEP do aluno não informado.');
+        if (!aluno?.cpf_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - CPF do aluno não informado."
+            );
+        if (!aluno?.email_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - E-mail do aluno não informado."
+            );
+        if (!aluno?.telefone_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - Telefone do aluno não informado."
+            );
+        if (!aluno?.endereco_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - Endereço do aluno não informado."
+            );
+        if (!aluno?.numero_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - Endereço (número) do aluno não informado."
+            );
+        if (!aluno?.estado_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - UF do aluno não informado."
+            );
+        if (!aluno?.cep_aluno)
+            tempErrors.push(
+                "[Cadastro do aluno incompleto] - CEP do aluno não informado."
+            );
 
-        if (!empresa?.doc_empresa) tempErrors.push('[Cadastro da empresa incompleto] - CNPJ da empresa não informado');
-        if (!empresa?.email_empresa) tempErrors.push('[Cadastro da empresa incompleto] - E-mail da empresa não informado');
-        if (!empresa?.telefone_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Telefone da empresa não informado');
-        if (!empresa?.nome_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Nome da empresa não informado');
-        if (!empresa?.endereco_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Endereço da empresa não informado');
-        if (!empresa?.numero_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Endereço (Número) da empresa não informado');
-        if (!empresa?.cidade_empresa) tempErrors.push('[Cadastro da empresa incompleto] - Cidade da empresa não informado');
+        if (!empresa?.doc_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - CNPJ da empresa não informado"
+            );
+        if (!empresa?.email_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - E-mail da empresa não informado"
+            );
+        if (!empresa?.telefone_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - Telefone da empresa não informado"
+            );
+        if (!empresa?.nome_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - Nome da empresa não informado"
+            );
+        if (!empresa?.endereco_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - Endereço da empresa não informado"
+            );
+        if (!empresa?.numero_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - Endereço (Número) da empresa não informado"
+            );
+        if (!empresa?.cidade_empresa)
+            tempErrors.push(
+                "[Cadastro da empresa incompleto] - Cidade da empresa não informado"
+            );
         setErrors(tempErrors);
     }, [aluno, empresa]);
 
     const { data: contratos } = useQuery({
-        queryKey: ['contratos', usuario.cod_empresa],
+        queryKey: ["contratos", usuario.cod_empresa],
         queryFn: () => getModContratos(usuario.cod_empresa),
         initialData: [],
     });
 
     useEffect(() => {
         const aluno = location.state?.aluno;
-        aluno ? setAluno(aluno) : navigate('/dashboard');
+        aluno ? setAluno(aluno) : navigate("/dashboard");
     }, []);
 
     useEffect(() => {
@@ -93,7 +141,7 @@ function ContratacaoPlano() {
             total += mod.valor_modalidade;
         });
         total = plano.duracao_plano * total;
-    
+
         const parcelas = dividirParcelas(plano.duracao_plano, total);
         if (plano.valor_adesao) parcelas[0] += plano.valor_adesao;
 
@@ -101,32 +149,38 @@ function ContratacaoPlano() {
             ...plano,
             valor_plano: total,
             parcela_plano: JSON.stringify(parcelas),
-        }
+        };
     }
 
     function atualizarModalidadesComSubvariacoes(planoAtual) {
         if (!planoAtual?.modalidades) return planoAtual;
-    
+
         const modalidadesAtualizadas = planoAtual.modalidades.map((mod) => {
             const novaModalidade = { ...mod };
 
             const subVariacoes = mod?.valores;
             if (!subVariacoes?.length) return novaModalidade;
-    
+
             const subVariacao = subVariacoes.filter(
-                (v) => planoAtual.duracao_plano >= v.quantidade_modalidade_variacao_valor
+                (v) =>
+                    planoAtual.duracao_plano >=
+                    v.quantidade_modalidade_variacao_valor
             );
-    
+
             if (!subVariacao.length) {
                 novaModalidade.valor_modalidade = mod.valor_modalidade_original;
                 novaModalidade.nome_modalidade = mod.nome_modalidade_original;
             } else {
                 const ultima = subVariacao[subVariacao.length - 1];
-                novaModalidade.cod_modalidade_variacao_valor = ultima.cod_modalidade_variacao_valor;
-                novaModalidade.valor_modalidade = ultima.valor_modalidade_variacao_valor;
-                novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(ultima.nome_modalidade_variacao_valor)}`;
+                novaModalidade.cod_modalidade_variacao_valor =
+                    ultima.cod_modalidade_variacao_valor;
+                novaModalidade.valor_modalidade =
+                    ultima.valor_modalidade_variacao_valor;
+                novaModalidade.nome_modalidade = `${
+                    mod.nome_modalidade_original
+                } - ${String(ultima.nome_modalidade_variacao_valor)}`;
             }
-    
+
             return novaModalidade;
         });
 
@@ -137,8 +191,17 @@ function ContratacaoPlano() {
     }
 
     useMemo(() => {
-        if (selectContrato?.contrato) {            
-            setContratoPreenchido(preencherContrato(selectContrato.contrato, aluno, empresa, descricao, plano, pagamentoInicial));
+        if (selectContrato?.contrato) {
+            setContratoPreenchido(
+                preencherContrato(
+                    selectContrato.contrato,
+                    aluno,
+                    empresa,
+                    descricao,
+                    plano,
+                    pagamentoInicial
+                )
+            );
         }
     }, [selectContrato, aluno, empresa, descricao]);
 
@@ -146,12 +209,12 @@ function ContratacaoPlano() {
         e.preventDefault();
 
         if (plano?.modalidades.length <= 0) {
-            toast.error('Nenhuma modalidade preenchida!');
+            toast.error("Nenhuma modalidade preenchida!");
             return;
         }
 
         if (!contratoPreenchido && geraContrato) {
-            toast.error('Nenhum contrato preenchido!');
+            toast.error("Nenhum contrato preenchido!");
             return;
         }
 
@@ -159,37 +222,53 @@ function ContratacaoPlano() {
     }
 
     function addModalidade(modalidade) {
-        const planoTemp = {...plano};
+        const planoTemp = { ...plano };
         const modalidades = [...(planoTemp?.modalidades || []), modalidade];
 
-        var planoAtualizado = atualizarModalidadesComSubvariacoes({ ...planoTemp, modalidades });
+        var planoAtualizado = atualizarModalidadesComSubvariacoes({
+            ...planoTemp,
+            modalidades,
+        });
         planoAtualizado = calculaValoresDoPlano(planoAtualizado);
         setPlano(planoAtualizado);
     }
 
     function removeModalidade(index) {
-        setPlano(prev => ({
+        setPlano((prev) => ({
             ...prev,
             modalidades: prev?.modalidades.filter((m, i) => index !== i),
         }));
     }
 
     function updatePlano(field, value) {
-        setPlano(prev => ({ ...prev, [field]: value }));
+        setPlano((prev) => ({ ...prev, [field]: value }));
     }
 
     function attValue(v, i) {
-        const planoTemp = {...plano};
-        const modalidades = planoTemp?.modalidades.map((m, index) => index == i ? {
-            ...m,
-            valor_modalidade: v,
-            valor_modalidade_alterado: v,
-        } : planoTemp);
-        var planoAtualizado = calculaValoresDoPlano({ ...planoTemp, modalidades });
+        const planoTemp = { ...plano };
+        const modalidades = planoTemp?.modalidades.map((m, index) =>
+            index == i
+                ? {
+                      ...m,
+                      valor_modalidade: v,
+                      valor_modalidade_alterado: v,
+                  }
+                : planoTemp
+        );
+        var planoAtualizado = calculaValoresDoPlano({
+            ...planoTemp,
+            modalidades,
+        });
         setPlano(planoAtualizado);
     }
 
-    async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard, typePayment) {
+    async function onPay(
+        formaPagamento,
+        closeLoading,
+        paymentMethodId,
+        formCard,
+        typePayment
+    ) {
         try {
             const alunoContrato = await setAlunoContrato({
                 ...plano,
@@ -201,48 +280,19 @@ function ContratacaoPlano() {
                 cod_empresa: usuario?.cod_empresa,
             });
 
-            const root = document.documentElement;
-            const allStyles = getComputedStyle(root);
+            if (geraContrato)
+                await sendAlunoContrato(alunoContrato.cod_aluno_contrato);
 
-            const convertOklchVars = () => {
-                for (let i = 0; i < allStyles.length; i++) {
-                    const name = allStyles[i];
-                    const value = allStyles.getPropertyValue(name).trim();
-                    if (value.startsWith("oklch")) {
-                    // Substitui por cor segura para PDF (ex: cinza claro)
-                    root.style.setProperty(name, "#ccc");
-                    }
-                }
-            };
-
-            convertOklchVars();
-            const pdfOptions = {
-                margin: 10,
-                filename: 'contrato.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            const pdfBlob = contratoPreenchido ? await html2pdf().from(contratoPreenchido).set(pdfOptions).outputPdf('blob') : null;
-
-            if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
-
-            const resetOklchVars = () => {
-                const root = document.documentElement;
-                const allStyles = getComputedStyle(root);
-              
-                for (let i = 0; i < allStyles.length; i++) {
-                  const name = allStyles[i];
-                  const value = allStyles.getPropertyValue(name).trim();
-                  if (value.startsWith("oklch") || root.style.getPropertyValue(name)) {
-                    root.style.removeProperty(name);
-                  }
-                }
-            };
-            resetOklchVars();
-
-            await criarPagamentoAluno(aluno.cod_aluno, formaPagamento, empresa.cod_empresa, usuario.cod_usuario, alunoContrato.cod_aluno_contrato, paymentMethodId, formCard, typePayment);
+            await criarPagamentoAluno(
+                aluno.cod_aluno,
+                formaPagamento,
+                empresa.cod_empresa,
+                usuario.cod_usuario,
+                alunoContrato.cod_aluno_contrato,
+                paymentMethodId,
+                formCard,
+                typePayment
+            );
             closeLoading();
         } catch (error) {
             console.log(error);
@@ -254,8 +304,8 @@ function ContratacaoPlano() {
             {/* Header Section */}
             <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
                 <div className="d-flex justify-content-between align-items-center">
-                    <button 
-                        onClick={() => navigate(-1)} 
+                    <button
+                        onClick={() => navigate(-1)}
                         className="btn btn-outline-danger rounded-pill px-4"
                     >
                         <i className="bi bi-arrow-left me-2"></i>
@@ -268,9 +318,18 @@ function ContratacaoPlano() {
                 show={pagando}
                 close={() => setPagando(false)}
                 onPay={onPay}
-                callback={() => navigate('/aluno', { state: { cod_aluno: aluno.cod_aluno } })}
+                callback={() =>
+                    navigate("/aluno", {
+                        state: { cod_aluno: aluno.cod_aluno },
+                    })
+                }
             />
-            <SelectPlano planos={planos} show={modalPlanos} setShow={setModalPlanos} setPlano={setPlano} />
+            <SelectPlano
+                planos={planos}
+                show={modalPlanos}
+                setShow={setModalPlanos}
+                setPlano={setPlano}
+            />
 
             <div className="card shadow-lg rounded-4">
                 <div className="card-body row">
@@ -280,45 +339,92 @@ function ContratacaoPlano() {
                         <div className="col-md-6 bg-light rounded p-3">
                             <h5 className="form-label">Aluno</h5>
 
-                            <label className="fs-4 mb-2">{aluno?.nome_aluno}</label>
+                            <label className="fs-4 mb-2">
+                                {aluno?.nome_aluno}
+                            </label>
 
-                            <p className="mb-1"><strong>CEP:</strong> {aluno?.cep_aluno}</p>
-                            <p className="mb-1"><strong>Endereço:</strong> {aluno?.endereco_aluno}, {aluno?.numero_aluno}</p>
-                            <p className="mb-1"><strong>Cidade:</strong> {aluno?.cidade_aluno} - {aluno?.estado_aluno}</p>
-                            <p className="mb-1"><strong>CPF:</strong> {formatarCPF(aluno?.cpf_aluno)}</p>
-                            <p className="mb-1"><strong>RG:</strong> {aluno?.rg_aluno ?? '-'}</p>
+                            <p className="mb-1">
+                                <strong>CEP:</strong> {aluno?.cep_aluno}
+                            </p>
+                            <p className="mb-1">
+                                <strong>Endereço:</strong>{" "}
+                                {aluno?.endereco_aluno}, {aluno?.numero_aluno}
+                            </p>
+                            <p className="mb-1">
+                                <strong>Cidade:</strong> {aluno?.cidade_aluno} -{" "}
+                                {aluno?.estado_aluno}
+                            </p>
+                            <p className="mb-1">
+                                <strong>CPF:</strong>{" "}
+                                {formatarCPF(aluno?.cpf_aluno)}
+                            </p>
+                            <p className="mb-1">
+                                <strong>RG:</strong> {aluno?.rg_aluno ?? "-"}
+                            </p>
                         </div>
 
                         <div className="col-md-6 bg-light rounded p-3">
                             <h5 className="form-label">Empresa</h5>
 
-                            <label className="fs-4 mb-2">{empresa?.nome_empresa}</label>
+                            <label className="fs-4 mb-2">
+                                {empresa?.nome_empresa}
+                            </label>
 
-                            <p className="mb-1"><strong>CEP:</strong> {empresa?.cep_empresa}</p>
-                            <p className="mb-1"><strong>Endereço:</strong> {empresa?.endereco_empresa}, {empresa?.numero_empresa}</p>
-                            <p className="mb-1"><strong>Cidade:</strong> {empresa?.cidade_empresa} - {empresa?.estado_empresa}</p>
-                            <p className="mb-1"><strong>CPF:</strong> {formatarCNPJ(empresa?.doc_empresa)}</p>
+                            <p className="mb-1">
+                                <strong>CEP:</strong> {empresa?.cep_empresa}
+                            </p>
+                            <p className="mb-1">
+                                <strong>Endereço:</strong>{" "}
+                                {empresa?.endereco_empresa},{" "}
+                                {empresa?.numero_empresa}
+                            </p>
+                            <p className="mb-1">
+                                <strong>Cidade:</strong>{" "}
+                                {empresa?.cidade_empresa} -{" "}
+                                {empresa?.estado_empresa}
+                            </p>
+                            <p className="mb-1">
+                                <strong>CPF:</strong>{" "}
+                                {formatarCNPJ(empresa?.doc_empresa)}
+                            </p>
                         </div>
                     </div>
 
                     {errors.length > 0 && (
                         <div className="d-flex justify-content-center">
-                                <div className="bg-danger-subtle rounded p-2 col-md-6 mt-3">
-                                    <label className="text-center w-100 mb-2">Alertas - (Solucionar pendências para avançar na contratação)</label>
-                                    {errors.map((error, index) => (
-                                        <p key={index} className="mb-0">{error}</p>
-                                    ))}
+                            <div className="bg-danger-subtle rounded p-2 col-md-6 mt-3">
+                                <label className="text-center w-100 mb-2">
+                                    Alertas - (Solucionar pendências para
+                                    avançar na contratação)
+                                </label>
+                                {errors.map((error, index) => (
+                                    <p key={index} className="mb-0">
+                                        {error}
+                                    </p>
+                                ))}
 
-                                    <div className="d-flex justify-content-center mt-3 gap-3">
-                                        <button className="btn btn-sm btn-outline-info" onClick={() => navigate('/configuracao')}>
-                                            Ir para configurações
-                                        </button>
+                                <div className="d-flex justify-content-center mt-3 gap-3">
+                                    <button
+                                        className="btn btn-sm btn-outline-info"
+                                        onClick={() =>
+                                            navigate("/configuracao")
+                                        }
+                                    >
+                                        Ir para configurações
+                                    </button>
 
-                                        <button className="btn btn-sm btn-outline-info" onClick={() => navigate('/cadaluno', { state: { aluno } })}>
-                                            Cadastro do aluno
-                                        </button>
-                                    </div>
+                                    <button
+                                        className="btn btn-sm btn-outline-info"
+                                        onClick={() =>
+                                            navigate("/cadaluno", {
+                                                state: { aluno },
+                                            })
+                                        }
+                                    >
+                                        Cadastro do aluno
+                                    </button>
                                 </div>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -331,20 +437,35 @@ function ContratacaoPlano() {
                             <div className="text-center d-flex flex-column mb-3">
                                 <div className="btn-group" role="group">
                                     <button
-                                        className={`btn ${!montandoPlano ? "btn-primary" : "btn-outline-primary"}`} 
+                                        className={`btn ${
+                                            !montandoPlano
+                                                ? "btn-primary"
+                                                : "btn-outline-primary"
+                                        }`}
                                         onClick={() => setMontandoPlano(false)}
-                                    >Selecionar plano
+                                    >
+                                        Selecionar plano
                                     </button>
 
                                     <button
-                                        className={`btn ${montandoPlano ? "btn-primary" : "btn-outline-primary"}`} 
+                                        className={`btn ${
+                                            montandoPlano
+                                                ? "btn-primary"
+                                                : "btn-outline-primary"
+                                        }`}
                                         onClick={() => setMontandoPlano(true)}
-                                    >Montar plano
+                                    >
+                                        Montar plano
                                     </button>
                                 </div>
                             </div>
 
-                            {!montandoPlano && <CardPlano plano={plano} selectPlano={() => setModalPlanos(true)} />}
+                            {!montandoPlano && (
+                                <CardPlano
+                                    plano={plano}
+                                    selectPlano={() => setModalPlanos(true)}
+                                />
+                            )}
 
                             {montandoPlano && (
                                 <div className="d-flex flex-column">
@@ -355,40 +476,70 @@ function ContratacaoPlano() {
                                         modalidadesPlano={plano?.modalidades}
                                     />
 
-                                    <h5 className="card-title fs-3 mt-3">Detalhes</h5>
+                                    <h5 className="card-title fs-3 mt-3">
+                                        Detalhes
+                                    </h5>
 
                                     <div className="col-md-6">
-                                        <label className="form-label fw-bold">Duração plano (Meses)</label>
+                                        <label className="form-label fw-bold">
+                                            Duração plano (Meses)
+                                        </label>
                                         <NumberInput
                                             min={1}
                                             value={plano?.duracao_plano}
-                                            onChange={value => updatePlano('duracao_plano', value)}
+                                            onChange={(value) =>
+                                                updatePlano(
+                                                    "duracao_plano",
+                                                    value
+                                                )
+                                            }
                                         />
                                     </div>
                                 </div>
                             )}
 
                             <div className="col-md-5 mt-3">
-                                <label className="form-label">Primeira cobrança</label>
+                                <label className="form-label">
+                                    Primeira cobrança
+                                </label>
                                 <input
                                     className="form-control"
                                     type="date"
                                     value={pagamentoInicial}
-                                    onChange={e => setPagamentoInicial(e.target.value)}
+                                    onChange={(e) =>
+                                        setPagamentoInicial(e.target.value)
+                                    }
                                 />
                             </div>
 
                             <div className="form-check form-switch mt-3 ms-3">
-                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
-                                    checked={geraContrato} onChange={() => setGeraContrato(!geraContrato)}
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="flexSwitchCheckDefault"
+                                    checked={geraContrato}
+                                    onChange={() =>
+                                        setGeraContrato(!geraContrato)
+                                    }
                                 />
-                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault">[Jurídico] - Gerar e enviar contrato para assinatura?</label>
+                                <label
+                                    className="form-check-label"
+                                    htmlFor="flexSwitchCheckDefault"
+                                >
+                                    [Jurídico] - Gerar e enviar contrato para
+                                    assinatura?
+                                </label>
                             </div>
                         </div>
 
                         {!geraContrato && (
                             <div className="card-footer">
-                                <button className="btn btn-success" onClick={confirmar}>Confirmar</button>
+                                <button
+                                    className="btn btn-success"
+                                    onClick={confirmar}
+                                >
+                                    Confirmar
+                                </button>
                             </div>
                         )}
                     </div>
@@ -398,15 +549,38 @@ function ContratacaoPlano() {
                     <div className="card shadow-lg rounded-4">
                         <div className="card-body row">
                             <div className="border border-warning bg-warning-subtle fs-3 p-3 rounded mt-3 shadow-md">
-                                <p className="text-center mb-0"><strong>Resumo</strong></p>
+                                <p className="text-center mb-0">
+                                    <strong>Resumo</strong>
+                                </p>
 
-                                <p className={`${montandoPlano && 'd-none'}`}>Adesão - <strong>{formatarMoeda(plano?.valor_adesao || 0)}</strong></p>
+                                <p className={`${montandoPlano && "d-none"}`}>
+                                    Adesão -{" "}
+                                    <strong>
+                                        {formatarMoeda(
+                                            plano?.valor_adesao || 0
+                                        )}
+                                    </strong>
+                                </p>
 
-                                {plano?.modalidades?.map((modalidade, index) => (
-                                    <p className="mb-0" key={index}>{modalidade.nome_modalidade} - <strong>{formatarMoeda(modalidade.valor_modalidade)}</strong></p>
-                                ))}
+                                {plano?.modalidades?.map(
+                                    (modalidade, index) => (
+                                        <p className="mb-0" key={index}>
+                                            {modalidade.nome_modalidade} -{" "}
+                                            <strong>
+                                                {formatarMoeda(
+                                                    modalidade.valor_modalidade
+                                                )}
+                                            </strong>
+                                        </p>
+                                    )
+                                )}
 
-                                <p className="mb-0 mt-3 text-end">Total - <strong>{formatarMoeda(plano?.valor_plano || 0)}</strong></p>
+                                <p className="mb-0 mt-3 text-end">
+                                    Total -{" "}
+                                    <strong>
+                                        {formatarMoeda(plano?.valor_plano || 0)}
+                                    </strong>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -422,22 +596,29 @@ function ContratacaoPlano() {
                             <div className="col-md-6">
                                 <Select
                                     options={contratos}
-                                    fieldName='nome_contrato'
-                                    fieldValue='cod_contrato'
+                                    fieldName="nome_contrato"
+                                    fieldValue="cod_contrato"
                                     value={selectContrato?.cod_contrato}
-                                    onChange={(value) => setSelectContrato(value)}
+                                    onChange={(value) =>
+                                        setSelectContrato(value)
+                                    }
                                     className="mb-3"
-                                    label='Selecione o contrato'
+                                    label="Selecione o contrato"
                                 />
                             </div>
 
                             <div className="col-md-6">
                                 <MultiSelect
-                                    options={['Treinamento físico', 'Consultoria nutricional', 'Fisioterapia', 'Acesso a academia']}
+                                    options={[
+                                        "Treinamento físico",
+                                        "Consultoria nutricional",
+                                        "Fisioterapia",
+                                        "Acesso a academia",
+                                    ]}
                                     state={descricao}
                                     setState={setDescricao}
                                     className="mb-3"
-                                    label='Selecione a descrição do serviço'
+                                    label="Selecione a descrição do serviço"
                                     hideLabel={true}
                                 />
                             </div>
@@ -446,7 +627,9 @@ function ContratacaoPlano() {
                         {contratoPreenchido && (
                             <JoditEditor
                                 value={contratoPreenchido}
-                                onBlur={(newContent) => setContratoPreenchido(newContent)}
+                                onBlur={(newContent) =>
+                                    setContratoPreenchido(newContent)
+                                }
                                 config={{
                                     readonly: false, // ou true, se for só para visualização
                                     toolbar: false, // esconde a barra de ferramentas
@@ -463,7 +646,13 @@ function ContratacaoPlano() {
                     </div>
 
                     <div className="card-footer">
-                        <button disabled={errors.length > 0} className="btn btn-success" onClick={confirmar}>Confirmar</button>
+                        <button
+                            disabled={errors.length > 0}
+                            className="btn btn-success"
+                            onClick={confirmar}
+                        >
+                            Confirmar
+                        </button>
                     </div>
                 </div>
             )}
@@ -471,7 +660,14 @@ function ContratacaoPlano() {
     );
 }
 
-function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInicio = new Date()) {
+function preencherContrato(
+    contrato,
+    aluno,
+    empresa,
+    descricao,
+    plano,
+    dataInicio = new Date()
+) {
     // Função para decodificar entidades HTML (como &lt; e &gt;)
     function decodeHtml(html) {
         const textarea = document.createElement("textarea");
@@ -479,34 +675,76 @@ function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInici
         return textarea.value;
     }
 
-    const parcelas = plano?.parcela_plano ? JSON.parse(plano?.parcela_plano) : [];
+    const parcelas = plano?.parcela_plano
+        ? JSON.parse(plano?.parcela_plano)
+        : [];
     // const descMensalidades = parcelas.map((parcela, i) => `<p>${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`);
-    const descMensalidades = `${parcelas.map((parcela, i) => `<p style="margin-left: 20px;">${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`).join('')}`;
+    const descMensalidades = `${parcelas
+        .map(
+            (parcela, i) =>
+                `<p style="margin-left: 20px;">${i + 1}. ${formatarMoeda(
+                    parcela
+                )} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`
+        )
+        .join("")}`;
 
-    const desc = descricao && descricao.length > 0 ? descricao.join(', ') : '';
+    const desc = descricao && descricao.length > 0 ? descricao.join(", ") : "";
     var preenchido = decodeHtml(contrato);
 
     // Substituições de variáveis do aluno
-    preenchido = preenchido.replace(/<nome_aluno>/g, aluno.nome_aluno || '');
-    preenchido = preenchido.replace(/<cpf_aluno>/g, aluno.cpf_aluno || '');
-    preenchido = preenchido.replace(/<rg_aluno>/g, aluno.rg_aluno || '');
-    preenchido = preenchido.replace(/<email_aluno>/g, aluno.email_aluno || '');
-    preenchido = preenchido.replace(/<endereco_aluno>/g, aluno.endereco_aluno || '');
-    preenchido = preenchido.replace(/<cidade_aluno>/g, aluno.cidade_aluno || '');
-    preenchido = preenchido.replace(/<estado_aluno>/g, aluno.estado_aluno || '');
-    preenchido = preenchido.replace(/<numero_aluno>/g, aluno.numero_aluno || '');
-    
+    preenchido = preenchido.replace(/<nome_aluno>/g, aluno.nome_aluno || "");
+    preenchido = preenchido.replace(/<cpf_aluno>/g, aluno.cpf_aluno || "");
+    preenchido = preenchido.replace(/<rg_aluno>/g, aluno.rg_aluno || "");
+    preenchido = preenchido.replace(/<email_aluno>/g, aluno.email_aluno || "");
+    preenchido = preenchido.replace(
+        /<endereco_aluno>/g,
+        aluno.endereco_aluno || ""
+    );
+    preenchido = preenchido.replace(
+        /<cidade_aluno>/g,
+        aluno.cidade_aluno || ""
+    );
+    preenchido = preenchido.replace(
+        /<estado_aluno>/g,
+        aluno.estado_aluno || ""
+    );
+    preenchido = preenchido.replace(
+        /<numero_aluno>/g,
+        aluno.numero_aluno || ""
+    );
+
     // Substituições de variáveis da empresa
-    preenchido = preenchido.replace(/<nome_empresa>/g, empresa.nome_empresa || '');
-    preenchido = preenchido.replace(/<cnpj_empresa>/g, empresa.doc_empresa || '');
-    preenchido = preenchido.replace(/<endereco_empresa>/g, empresa.endereco_empresa || '');
-    preenchido = preenchido.replace(/<cidade_empresa>/g, empresa.cidade_empresa || '');
-    preenchido = preenchido.replace(/<estado_empresa>/g, empresa.estado_empresa || '');
-    preenchido = preenchido.replace(/<numero_empresa>/g, empresa.numero_empresa || '');
+    preenchido = preenchido.replace(
+        /<nome_empresa>/g,
+        empresa.nome_empresa || ""
+    );
+    preenchido = preenchido.replace(
+        /<cnpj_empresa>/g,
+        empresa.doc_empresa || ""
+    );
+    preenchido = preenchido.replace(
+        /<endereco_empresa>/g,
+        empresa.endereco_empresa || ""
+    );
+    preenchido = preenchido.replace(
+        /<cidade_empresa>/g,
+        empresa.cidade_empresa || ""
+    );
+    preenchido = preenchido.replace(
+        /<estado_empresa>/g,
+        empresa.estado_empresa || ""
+    );
+    preenchido = preenchido.replace(
+        /<numero_empresa>/g,
+        empresa.numero_empresa || ""
+    );
     preenchido = preenchido.replace(/<descricao_empresa>/g, desc);
 
     // Substituições de variáveis de valores
-    preenchido = preenchido.replace(/<valor_total>/g, formatarMoeda(plano?.valor_plano ?? 0));
+    preenchido = preenchido.replace(
+        /<valor_total>/g,
+        formatarMoeda(plano?.valor_plano ?? 0)
+    );
     preenchido = preenchido.replace(/<valor_mensal>/g, descMensalidades);
 
     return preenchido;
@@ -521,17 +759,40 @@ function CardPlano({ plano, selectPlano }) {
     return (
         <div className="d-flex flex-column align-items-start border border-info bg-info-subtle rounded p-3 shadow-md">
             <div className="d-flex justify-content-between w-100 mb-3">
-                <label><strong>Nome: </strong>{plano?.nome_plano ?? '-'}</label>
+                <label>
+                    <strong>Nome: </strong>
+                    {plano?.nome_plano ?? "-"}
+                </label>
 
-                <p className="mb-0"><strong>{formatarMoeda((plano?.modalidades?.reduce((valor, mod) => valor + mod.valor_modalidade, 0) + (plano?.valor_adesao ?? 0)) || '-')}</strong></p>
+                <p className="mb-0">
+                    <strong>
+                        {formatarMoeda(
+                            plano?.modalidades?.reduce(
+                                (valor, mod) => valor + mod.valor_modalidade,
+                                0
+                            ) + (plano?.valor_adesao ?? 0) || "-"
+                        )}
+                    </strong>
+                </p>
             </div>
 
-            <p className="mb-0"><strong>Valor adesão:</strong> {formatarMoeda(plano?.valor_adesao ?? 0)}</p>
-            <p className="mb-0"><strong>Duração:</strong> {plano?.duracao_plano} {plano?.tipo_duracao_plano}</p>
-            
-            <button className="btn btn-sm btn-outline-info mt-3" onClick={select}>Selecionar plano</button>
+            <p className="mb-0">
+                <strong>Valor adesão:</strong>{" "}
+                {formatarMoeda(plano?.valor_adesao ?? 0)}
+            </p>
+            <p className="mb-0">
+                <strong>Duração:</strong> {plano?.duracao_plano}{" "}
+                {plano?.tipo_duracao_plano}
+            </p>
+
+            <button
+                className="btn btn-sm btn-outline-info mt-3"
+                onClick={select}
+            >
+                Selecionar plano
+            </button>
         </div>
-    )
+    );
 }
 
 function SelectPlano({ show, setShow, planos, setPlano }) {
@@ -574,21 +835,32 @@ function SelectPlano({ show, setShow, planos, setPlano }) {
                         className="btn btn-outline-info rounded me-2"
                         onClick={() => mudarPagina(paginaAtual - 1)}
                         disabled={paginaAtual === 1}
-                    >Anterior</button>
+                    >
+                        Anterior
+                    </button>
 
-                    <div className="text-muted">Página {paginaAtual} de {totalPaginas}</div>
+                    <div className="text-muted">
+                        Página {paginaAtual} de {totalPaginas}
+                    </div>
 
                     <button
                         className="btn btn-outline-info rounded ms-2"
                         onClick={() => mudarPagina(paginaAtual + 1)}
                         disabled={paginaAtual === totalPaginas}
-                    >Próxima</button>
+                    >
+                        Próxima
+                    </button>
                 </div>
 
-                <button className="btn btn-danger rounded" onClick={() => setShow(false)}>Fechar</button>
+                <button
+                    className="btn btn-danger rounded"
+                    onClick={() => setShow(false)}
+                >
+                    Fechar
+                </button>
             </div>
         </Modal>
-    )
+    );
 }
 
 export default ContratacaoPlano;

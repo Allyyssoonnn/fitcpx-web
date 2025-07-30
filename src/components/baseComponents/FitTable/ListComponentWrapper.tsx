@@ -128,7 +128,7 @@ export default function ListComponentWrapper({
 
                     <div className="d-flex justify-content-end align-items-center">
                         {buttonOnClick && (
-                            <button id={buttonId} className="btn btn-outline-success" onClick={buttonOnClick}>
+                            <button id={buttonId} className="btn rounded-3 btn-outline-success" onClick={buttonOnClick}>
                                 <i className="bi bi-plus-circle me-2"></i>
                                 {buttonText ?? "Novo"}
                             </button>
