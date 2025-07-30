@@ -1,43 +1,54 @@
 import axios from "axios";
-import { destroyCookie, parseCookies, setCookie } from 'nookies';
-export const PRODUCAO = import.meta.env.MODE == 'production';
+import { destroyCookie, parseCookies, setCookie } from "nookies";
+export const PRODUCAO = import.meta.env.MODE == "production";
 
-export const imgProfile = 'https://media.fitcpx.com/Alyson.PNG';
+export const imgProfile = "https://media.fitcpx.com/Alyson.PNG";
 
-export const baseURL = PRODUCAO ? 'https://api.fitcpx.com' : 'http://localhost:8070';
+export const baseURL = PRODUCAO
+    ? "https://api.fitcpx.com"
+    : "http://localhost:8070";
 
 const api = axios.create({
     baseURL: baseURL,
 });
 
-api.interceptors.response.use((response) => response, async (error) => {
-    const cookies = parseCookies();
-    const originalRequest = error.config;
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const cookies = parseCookies();
+        const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
+        if (error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-        try {
-            const refreshResponse = await axios.post(baseURL + `/usuario/refreshToken`, {
-                refreshToken: cookies.refreshToken,
-            });
-            
-            if (refreshResponse.data.status) {
-                setCookie(null, 'token', refreshResponse.data.token, { maxAge: 60 * 15 });
-                originalRequest.headers['Authorization'] = refreshResponse.data.token;
-                return api(originalRequest);
+            try {
+                const refreshResponse = await axios.post(
+                    baseURL + `/usuario/refreshToken`,
+                    {
+                        refreshToken: cookies.refreshToken,
+                    }
+                );
+
+                if (refreshResponse.data.status) {
+                    setCookie(null, "token", refreshResponse.data.token, {
+                        maxAge: 60 * 15,
+                    });
+                    originalRequest.headers["Authorization"] =
+                        refreshResponse.data.token;
+                    return api(originalRequest);
+                }
+            } catch (e) {
+                destroyCookie(null, "token");
+                localStorage.removeItem("recoil-persist");
+                window.location.replace("/entrar");
             }
-        } catch (e) {
-            destroyCookie(null, 'token');
-            localStorage.removeItem('recoil-persist');
-            window.location.replace('/entrar');
         }
+
+        return Promise.reject(error);
     }
+);
 
-    return Promise.reject(error);
-});
-
-async function postFile(url, data, fileBlob, fileName = 'arquivo.pdf') {
+async function postFile(url, data, fileBlob, fileName = "arquivo.pdf") {
     const cookies = parseCookies(null);
     const formData = new FormData();
 
@@ -45,16 +56,16 @@ async function postFile(url, data, fileBlob, fileName = 'arquivo.pdf') {
         formData.append(key, data[key]);
     }
 
-    formData.append('contratoPDF', fileBlob, fileName);
-    
+    formData.append("contratoPDF", fileBlob, fileName);
+
     try {
         const resp = await api({
             headers: {
                 Authorization: cookies.token,
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'multipart/form-data', // Importante para enviar arquivos
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "multipart/form-data", // Importante para enviar arquivos
             },
-            method: 'POST',
+            method: "POST",
             url,
             data: formData,
         });
@@ -67,10 +78,13 @@ async function postFile(url, data, fileBlob, fileName = 'arquivo.pdf') {
 async function post(url, data) {
     const cookies = parseCookies(null);
     const resp = await api({
-        headers: { Authorization: cookies.token, "Access-Control-Allow-Origin": '*' },
-        method: 'POST',
+        headers: {
+            Authorization: cookies.token,
+            "Access-Control-Allow-Origin": "*",
+        },
+        method: "POST",
         url,
-        data
+        data,
     });
 
     return resp.data;
@@ -80,8 +94,8 @@ async function get(url) {
     const cookies = parseCookies(null);
     const resp = await api({
         headers: { Authorization: cookies.token },
-        method: 'GET',
-        url
+        method: "GET",
+        url,
     });
 
     return resp.data;
@@ -91,18 +105,13 @@ async function postImage(url, img, data) {
     const cookies = parseCookies(null);
     const resp = await api.post(url, img, {
         headers: {
-            Authorization: cookies.token, "Access-Control-Allow-Origin": '*',
-            ...data
+            Authorization: cookies.token,
+            "Access-Control-Allow-Origin": "*",
+            ...data,
         },
     });
 
     return resp.data;
 }
 
-export {
-    api,
-    post,
-    postFile,
-    get,
-    postImage,
-};
+export { api, post, postFile, get, postImage };

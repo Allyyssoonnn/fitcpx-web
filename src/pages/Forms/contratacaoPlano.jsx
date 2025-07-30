@@ -280,9 +280,6 @@ function ContratacaoPlano() {
                 cod_empresa: usuario?.cod_empresa,
             });
 
-            if (geraContrato)
-                await sendAlunoContrato(alunoContrato.cod_aluno_contrato);
-
             await criarPagamentoAluno(
                 aluno.cod_aluno,
                 formaPagamento,
@@ -293,6 +290,9 @@ function ContratacaoPlano() {
                 formCard,
                 typePayment
             );
+
+            if (geraContrato)
+                await sendAlunoContrato(alunoContrato.cod_aluno_contrato);
             closeLoading();
         } catch (error) {
             console.log(error);
