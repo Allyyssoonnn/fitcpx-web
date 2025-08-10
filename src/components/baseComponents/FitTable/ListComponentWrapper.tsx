@@ -6,7 +6,7 @@ import FitPagination from "../TableComponent/FitPagination";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { formatarMoeda, formatarData, getNestedError } from "@/utils"
+import { formatarMoeda, formatarData, getNestedError } from "@/utils";
 
 type ListComponentProps = {
     list: any[];
@@ -24,9 +24,10 @@ type ListComponentProps = {
     onClickItem?: (row: any) => void;
     buttonId?: string;
     children: (filteredList: any[]) => React.ReactNode;
-}
+};
 
 type DataColumnsProp = {
+    rowId?: string;
     fieldId?: string;
     name: string;
     header: string;
@@ -41,9 +42,10 @@ type DataColumnsProp = {
     inputProps?: any;
     value?: any;
     type?: "date" | "currency" | "image" | "option";
-}
+};
 
 export default function ListComponentWrapper({
+    rowId,
     fieldId,
     list,
     title,
@@ -62,27 +64,25 @@ export default function ListComponentWrapper({
     hideFooter = false,
 }: ListComponentProps) {
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
     const childrenFilters = useMemo(() => {
         if (React.isValidElement(children) && children?.type === ListComponentFilters) {
             return children;
         }
         if (Array.isArray(children)) {
-            const childFilters = children.find(
-                (child) => React.isValidElement(child) && child?.type === ListComponentFilters
-            );
+            const childFilters = children.find((child) => React.isValidElement(child) && child?.type === ListComponentFilters);
             if (childFilters) return childFilters;
         }
         return null;
     }, [children]);
-    
+
     const dataColumns = useMemo(() => {
         return getColumns(columns);
-    }, [columns])
+    }, [columns]);
 
-    const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: (v[fieldId] || i) })), [list]);
-    
+    const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: v[fieldId] || i })), [list]);
+
     const table = useReactTable({
         data: dataList,
         columns: dataColumns ?? [],
@@ -111,9 +111,7 @@ export default function ListComponentWrapper({
                                     className="form-control"
                                     placeholder="Pesquisar"
                                     value={(table.getColumn(fieldSearch)?.getFilterValue() as string) ?? ""}
-                                    onChange={(event) =>
-                                        table.getColumn(fieldSearch)?.setFilterValue(event.target.value)
-                                    }
+                                    onChange={(event) => table.getColumn(fieldSearch)?.setFilterValue(event.target.value)}
                                 />
                             )}
 
@@ -153,18 +151,15 @@ export default function ListComponentWrapper({
 
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
+                            table.getRowModel().rows.map((row, index) => (
                                 <TableRow
+                                    id={`${rowId}${index}`}
                                     key={row.id}
                                     className="cursor-pointer odd:bg-muted/50"
                                     onClick={() => onClickItem !== undefined && onClickItem(row?.original)}
                                 >
-                                    {row.getVisibleCells().map(cell => (
-                                        <TableCell
-                                            key={cell.id}
-                                            className={cell.column.columnDef.className}
-                                            width={cell.column.columnDef.size}
-                                        >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id} className={cell.column.columnDef.className} width={cell.column.columnDef.size}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -180,9 +175,7 @@ export default function ListComponentWrapper({
                     </TableBody>
                 </Table>
 
-                {!hideFooter && (
-                    <FitPagination table={table} />
-                )}
+                {!hideFooter && <FitPagination table={table} />}
             </div>
         </div>
     );
@@ -193,29 +186,27 @@ const getColumns = (columns: DataColumnsProp[]) => {
 
     let cols: any[] = [];
     const options = columns
-        .filter(col => col.type === "option" && (!col.visible || col.visible({})))
-        .map(col => ({
+        .filter((col) => col.type === "option" && (!col.visible || col.visible({})))
+        .map((col) => ({
             name: col.name,
             Icon: col.Icon,
             onClick: col.onClick,
         }));
 
-    function getCell(
-        obj: any,
-        name: string,
-        type?: string,
-        getValue?: (row: any) => any,
-        getCell?: (row: any) => any,
-    ) {
+    function getCell(obj: any, name: string, type?: string, getValue?: (row: any) => any, getCell?: (row: any) => any) {
         if (getCell) return getCell(obj);
-        
-        if (type === "image") return (
-            <img src={obj[name] ? obj[name] : 'https://placehold.co/150x150?text=img'}
-                alt="Imagem"
-                className="img-fluid rounded-circle shadow-md border-3 border-success"
-                width={50} height={50} loading="lazy"
-            />
-        );
+
+        if (type === "image")
+            return (
+                <img
+                    src={obj[name] ? obj[name] : "https://placehold.co/150x150?text=img"}
+                    alt="Imagem"
+                    className="img-fluid rounded-circle shadow-md border-3 border-success"
+                    width={50}
+                    height={50}
+                    loading="lazy"
+                />
+            );
 
         if (type === "date") return formatarData(obj[name]);
 
@@ -238,8 +229,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
                 size: col.width,
                 className: col.className,
                 accessorKey: col.name,
-                cell: ({ row: { original } }) =>
-                    getCell(original, col.name, col.type, col.getValue, col.getCell),
+                cell: ({ row: { original } }) => getCell(original, col.name, col.type, col.getValue, col.getCell),
             });
         }
     });

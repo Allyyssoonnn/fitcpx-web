@@ -1,0 +1,355 @@
+Telas e descrições
+
+Funções únicas
+
+* Cabeçalho do app
+
+- Opção minimizar barra lateral e expandir a mesma
+- Opção tema (Claro, Escuro)
+- Opção notificações - Lista notificações importantes referente ao sistema, cobranças
+- Opção de idioma - Alternar entre idiomas disponíveis no sistema
+- Opção perfil - Como foto do usuário abre painel do perfil
+- [Opções do perfil]
+- Nome, E-mail de login e Admin caso o usuário seja admin da empresa
+- Opção [Configuração] que abre a tela de configuração
+- Opção [Acessar site] - redireciona para o site do aplicativo
+- Opção [Sair da conta] - Sai da conta e volta para tela de login do sistema
+
+* Barra lateral do app
+
+- Opção [Enviar feedback] - Opção para enviar feedback e sugestões para melhoria do sistema
+- [Novo feedback]
+- Selecionar assunto do feedback e preencher comentário abaixo
+
+* Tela de configuração
+
+- Aba [Conta]
+- * Opção para carregar ou atualiza imagem de perfil do usuário logado
+- * Campos para atualizar dados do usuário logado
+- Aba [Empresa]
+- * Opção para carregar ou atualiza imagem de perfil da empresa
+- * Campos para atualizar dados da empresa
+- Aba [Licença]
+- * Aqui é exibido os planos disponíveis para melhorar o uso do sistema também pode ser feito a contratação de um novo plano
+- Aba [Pagamentos]
+- * Aqui é exibido todos pagamentos referente a licença ativa no sistema
+
+
+Autenticação
+
+
+* Tela de login - Primeira tela conhecida pelo usuário para entrar no sistema
+
+- [REMOVER] Opção (Lembrar de mim) - ao marcar cliente permanecerá logado no sistema mesmo se fechar a página
+- Opção (Esqueceu a senha?) - Ao clicar o usuário é levado a tela de recuperação de senha
+- Opção (Conectar conta google) - Ao clicar o usuário é levado a selecionar uma conta google para realizar login utilizando a conta da google selecionada
+- Opção (Criar conta) - Caso o cliente não tenha se registrado anteriormente
+
+* [REVISAR] Tela de recuperação de senha - Destinada a ajudar o cliente recuperar sua senha de acesso
+
+- Digitar E-mail para envio do E-mail de recuperação
+
+
+* Tela de registro - Tela dedicada para o registro do usuário
+
+- Usuário precisa preencher [Nome, E-mail, Senha, Repetir Senha]
+- Aceitar os termos de uso do sistema para registrar, clicando em (Termos e condições) será exibido o texto
+
+- [E-MAIL] - É enviado um E-mail com código de confirmação do cadastro
+
+
+App
+
+* Tela Inicio - Primeira tela que o usuário vê no primeiro contato dentro do sistema
+
+- Bloco últimas avaliações - Exibe as últimas 7 avaliações realizadas dentro do sistema - [Aluno, Data, Altura, Peso]
+- Bloco resumo empresa - Exibe total de [Alunos ativos, Avaliações realizadas, Treinos prescritos, Usuários ativos]
+- Ao se cadastrar também é exibido card de confirmação de E-mail pelo código enviado ao se registrar [Código de 4 Dígitos]
+- Também é onde aparecerão avisos
+
+* Tela da Agenda - Destinado a calendário de eventos marcados e disponibilidade de horários
+
+- Opções de avançar e retroceder meses (Ícone de setas)
+- Opção (Novo evento) - Para cadastrar um novo evento ou disponibilidade de horário
+- A seguir opções de visualização (Mês, Semana e Dia)
+- Abaixo calendário com marcações dos eventos ou disponibilidades
+- [NOVO EVENTO]
+- Tipo do evento (Evento, disponibilidade)
+- Preenchendo os demais campos é possível cadastrar um novo item no calendário
+
+- [E-MAIL] - Um E-mail é enviado para o aluno com o novo evento
+
+* Telas avaliações - Lista de todas avaliações realizadas no sistema
+
+- Opção campo de busca, para filtrar por texto
+
+* Treinar o aluno - Destinada a acompanhar o treino em tempo real do aluno
+
+- Selecionar os alunos que irão treinar até 15 alunos
+- Opção abrir planilha vai levar para o treino em tempo real
+- Nessa tela é possível alternar entre alunos e editar o treino em tempo real enquanto realiza o treino
+
+ALUNO
+
+* Tela de Alunos - Lista de alunos cadastrados no sistema
+
+- Opção de pesquisa - Digitando nome ou parte do nome do aluno a lista será filtrada em tempo real
+- Opção de filtro ao lado da caixa de pesquisa - Abre um card de filtros disponíveis para essa lista selecionados o filtro já é realizado em tempo real
+- Opção (Novo aluno) - Essa opção leva a tela de cadastro de um novo aluno
+- Ao clicar no registro do aluno será levado para a (Visualização do aluno)
+- [FILTROS]
+- Deletados - Alunos deletados do sistema que podem ser recuperados
+- Status do aluno - [Ativo, Inativo, Bloqueado]
+- [OPÇÕES REGISTROS]
+- Em cada aluno da lista no final do registro (Mais opções [3 Pontos])
+- [EDITAR] - Essa opção leva para tela de edição do aluno e seus dados
+- [EXCLUIR] - Essa opção deleta o aluno tornando, não será listado a menos que filtre por alunos deletados
+- [RECUPERAR] - Essa opção recupera um aluno excluído
+
+* Cadastro de aluno - Tela destinada a colher os dados do novo aluno
+
+- Campos obrigatório estão marcados com um (*) na frente do nome
+- Ao preencher confirmar e o aluno estará cadastrados
+
+* Tela de visualização do aluno - Tela destinada a exibir informações básicas do aluno selecionado e acesso a seus registros
+
+- Opção de (FOTO) para carregar ou atualizar foto de perfil do aluno
+- Opção (Editar perfil) - Essa opção leva também para a edição dos dados do aluno
+- Opção (Desativar) e (Ativar) - Essa opção ativa ou desativa o aluno e isso corta o acesso do aluno ao app
+- [ABAS DE REGISTRO] - Todas as abas tem uma opção de cadastrar novo registro
+- [INFORMAÇÕES PESSOAIS] - Informações básicas do aluno (Contato e endereço)
+- [AVALIAÇÃO FÍSICA] - Lista de avaliações realizadas neste aluno - [Opção para editar a avaliação e ver resultado da avaliação física]
+- [TREINOS] - Lista de treinos prescritos para esse aluno - [Opção para editar treino e (Desativar ou Ativa) o treino - Treinos desativados não são exibidos no app do aluno]
+- [OPÇÃO NOVO TREINO] - Essa opção tem 3 possibilidades
+- * [NOVO TREINO] - Criar um treino totalmente do zero
+- * [IMPORTAR BASE] - Criar um treino baseado em algum treino já pré cadastrado anteriormente
+- * [REAJUSTE] - Criar um treino baseado em um dos treinos anteriores do aluno
+- [CONTRATOS] - Lista de contratos vinculados a esse aluno
+
+* Tela de visualização do resultado da avaliação física - Tela para visualização da avaliação física realizada
+
+- Opção voltar retorna para tela anterior
+- Opção (Comparar) leva para tela de comparação de avaliação física
+- Abaixo fica os blocos referentes a cada informação da avaliação física
+- Gráficos disponíveis
+
+* Tela de comparação resultado avaliação física - Tela de comparação para acompanhar evolução do aluno em 3 avaliações
+
+- Opção voltar retorna para tela anterior
+- Seleção da avaliações - Somente 3 avaliações são permitidas para visualização da comparação
+- Blocos para visualização dos dados e gráficos disponíveis
+- No último bloco é possível selecionar 2 ou 3 Fotos para comparação
+
+* Tela de cadastro de avaliação física - Tela para cadastro do registro de uma avaliação física
+
+- Opção voltar retorna para tela anterior
+- Opção (Limpar) zera todos os campos preenchidos
+- Primeira etapa para informações gerais sobre o aluno
+- Abaixo separado em abas cada etapa da avaliação física [Bioimpedância, Diâmetros, Dobras cutâneas, Perímetros, Imagens]
+- Alguns campos tem a opção de preencher o dado com a informação da avaliação anterior
+- Alguns campos tem a opção com microfone para dizer a medida para preenchimento automático
+
+* Tela de cadastro de treino
+
+- Opção voltar retorna para tela anterior
+- Primeira etapa para informações gerais sobre o treino
+- No segundo bloco está a prescrição do treino
+- Opção (Adicionar sessão) - Essa opção adiciona uma sessão de treino se limitando a 15 sessões por prescrição
+- [LISTA DE SESSÕES]
+- Na borda esquerda da sessão é possível arrastar o bloco todo para mudar a sequência da mesma
+- Opção (Ícone de Lâmpada) se trata da prescrição inteligente de toda sessão de treino
+- Opção (Ícone de lápis) se trata da edição do nome podendo ser editada para (Segunda, Terça) ou (Superior, Inferior) aberto para texto
+- Opção (Ícone de lixeira) - serve para excluir a sessão do seu treino
+- Opção (Adicionar exercício) - Adiciona um novo exercício a sua sessão
+- [PRESCRIÇÃO INTELIGENTE]
+- Ao abrir a prescrição inteligente você deverá selecionar todos os grupos musculares que farão parte desse treinamento
+- Seguido da informação do total de séries para o grupo selecionado
+- Na segunda etapa você vai selecionar o desenvolvimento do treino
+- Abaixo a seleção de dores relatadas pelo aluno caso houver
+- Abaixo a seleção de equipamentos não disponíveis
+- Por último o tempo total de treino pretendido
+- Opção [PRESETS] permite salvar as informações preenchidas para não precisar informar novamente
+- [LISTA DE EXERCÍCIOS]
+- Primeira opção de mover a sequência do exercício assim como na sessão
+- Opção (Ícone de funil) - se trata dos filtros para melhor seleção do exercício adequado, a confirmar o filtro a lista de exercícios disponíveis é filtrada
+- O Select a seguir serve para selecionar o exercício
+- [Opção (Ícone de 3 pontos)]
+- Opção (Bi-set, Tri-set ou Super-set) para adicionar um exercícios vinculado ao exercício pai formando sets de treino
+- Opção remover para eliminar o exercício da lista
+- Abaixo do bloco do exercício seguem as opções de quantidade (Séries, Execuções, Carga, Intervalo e Observação)
+
+- [E-MAIL] - Um E-mail com novo treino é enviado para o aluno
+
+* Tela de cadastro de contrato - Venda de plano
+
+- Opção voltar retorna para tela anterior
+- Primeiro bloco exibe dados do contratante e do contratado
+- No bloco de plano é possível alternar entre plano já cadastrado ou montar na hora
+- Ao lado o bloco de resumo da compra e valor total do contrato
+- Montando plano selecione a modalidade e sua variação de preço escalável caso tenha
+- Abaixo selecione a duração do plano
+- Abaixo selecione a data de inicio do contrato e vencimento da primeira cobrança - Ambos mesmo campo
+- Abaixo selecione se vai gerar o contrato para respaldo jurídico enviando assim para assinatura do aluno pelo e-mail
+- Caso exista selecione o modelo de contrato que já deve ter sido cadastrado anteriormente
+- Ao lado do modelo de contrato opção para selecionar os serviços prestados que serão listados no contrato
+- Após isso confirme o contrato se está tudo ok
+- [PAGAMENTO]
+- Opção (Receber pagamento pelo app?) - Caso marcada o sistema irá gerar a cobrança e controlar todos os recebimentos
+- Abaixo forma de pagamento (Boleto, PIX e cartão)
+- Abaixo modalidade de pagamento (Recorrente ou á vista) podendo ser parcelado
+- Caso parcelado selecione o número de parcelas
+
+- O contrato é enviado e gerenciado pelo AUTENTIQUE
+- As cobranças são enviadas e gerenciadas pelo ASAAS
+- [E-MAIL] - Um E-mail com contrato é enviado para o aluno
+- [E-MAIL] - Um E-mail com cobrança é enviado para o aluno
+
+* Tela de contratação de plano e serviços
+
+- Aqui você pode selecionar um plano previamente cadastro ou selecionar a opção de montar plano
+- Ao cadastrar você adiciona as modalidades e suas variações
+- Data de inicio que tambem sera o vencimento da primeira cobrança
+- Livre para editar o valor da modalidade de última hora caso necessário
+- E selecionar a duração do plano
+- Abaixo selecione o modelo de contrato e a descrição dos serviços prestados para montar o contrato para assinatura
+
+TREINO
+
+* Tela grupo exercícios - Listagem de todos grupos musculares
+
+- Opção campo de busca, para filtrar por texto
+- Opção (Novo grupo) - Essa opção envia para a tela de cadastro de um novo grupo
+- Ao clicar em um registro cadastrado leva para tela de edição do grupo
+
+* Tela cadastro grupo exercício
+
+- Opção voltar retorna para tela anterior
+- Campo para preencher o nome do novo grupo
+
+* Tela exercícios
+
+- Aba de filtros permite filtrar detalhadamente os exercícios listados
+- Opção campo de busca, para filtrar por texto
+- Opção de filtro ao lado da caixa de pesquisa - Abre um card de filtros disponíveis para essa lista selecionados o filtro já é realizado em tempo real
+- [FILTROS]
+- Deletados - Exercícios deletados do sistema que podem ser recuperados
+- [OPÇÕES REGISTROS]
+- Em cada exercício da lista no final do registro (Mais opções [3 Pontos])
+- [EDITAR] - Essa opção leva para tela de edição do exercício e seus dados - Só é possível editar o vídeo (URL youtube) de exercícios base
+- [EXCLUIR] - Essa opção deleta o aluno tornando, não será listado a menos que filtre por exercícios deletados
+- [RECUPERAR] - Essa opção recupera um exercício excluído
+
+- [Exercícios base do sistema não podem ser editado] - Salvo URL de vídeo
+
+* Tela cadastro exercício - Adicionar um novo exercício específico para prescrição
+
+- É possível adicionar exercícios que não constam na base de dados do sistema e adicionar vídeo
+- Informações obrigatórias tem (*) ao lado da label
+- Só o campos URL do vídeo estará liberado para edição caso o exercício seja da base do sistema
+
+* Tela treinos - Lista de treinos cadastrados no sistema
+
+- Opção campo de busca, para filtrar por texto
+- Opção (Novo treino) - Essa opção envia para a tela de cadastro de um novo treino
+- * TREINOS CADASTRADOS AQUI SOMENTE ESTARÃO DISPONíVEIS PARA IMPORTAR NO MOMENTO DA PRESCRIÇÃO
+- [FILTROS]
+- Deletados - Treinos deletados do sistema que podem ser recuperados
+- [OPÇÕES REGISTROS]
+- [EDITAR] - Essa opção leva para tela de edição do treino e seus dados
+- [EXCLUIR] - Essa opção deleta o treino, não será listado a menos que filtre por treinos deletados
+- [RECUPERAR] - Essa opção recupera um treino excluído
+
+* Tela cadastro de treino - Mesma tela já citada anteriormente na aba ALUNO
+
+
+FINANCEIRO
+
+* Tela resumo financeiro - Tela de visão geral de recebimento feitos pelo sistema
+
+- Filtro de mês e anos no inicio da tela seguidos de montantes totais recebidos e descontados para saque
+- Lista detalhada de recebimentos e seus status do mês selecionado
+- [OPÇÕES]
+- [Ver contrato] - Leva para tela de visualização do contrato
+- [Link de pagamento] - Leva para site da fatura junto a opções de pagamento disponíveis para aquela fatura
+- [Marcar como recebido] - Informa para o sistema que a fatura já foi recebida de outra forma
+
+* Tela visualização de contrato - Tela para visualização detalhada do contrato vigente
+
+- É possível solicitar o cancelamento do contrato
+- Baixar contrato sem assinatura - Quando jurídico estiver vinculado ao sistema
+- Baixar contrato com assinatura - Quando jurídico estiver vinculado ao sistema
+- Lista todos pagamentos e faturas daquele contrato para acesso de comprovante e link de pagamento
+
+* Tela contratos - Lista de todos contratos cadastrados no sistema
+
+- Opção campo de busca, para filtrar por texto
+- Ao clicar no registro é levado para tela de visualização do contrato
+
+* Tela modalidades - Essa tela lista todos as modalidades cadastradas no sistema para contratação
+
+- Opção campo de busca, para filtrar por texto
+- Opção (Nova modalidade) - Essa opção envia para a tela de cadastro de uma nova modalidade
+- [FILTROS]
+- Deletados - Exercícios deletados do sistema que podem ser recuperados
+- [OPÇÕES REGISTROS]
+- [EDITAR] - Essa opção leva para tela de edição da modalidade e seus dados
+- [EXCLUIR] - Essa opção deleta a modalidade, não será listado a menos que filtre por modalidades deletadas
+- [RECUPERAR] - Essa opção recupera uma modalidade excluída
+
+* Tela cadastro modalidade
+
+- Informações obrigatórias tem (*) ao lado da label
+- [VARIAÇÕES]
+- É possível adicionar variações de preços que serão selecionadas na contratação
+- Ex. (2x Semana - R$ **,**)
+- [VALORES ESCALONADOS - VARIAÇÃO]
+- Também é possível adicionar valores personalizados para cada variação que se alteram na contratação de acordo com tempo de contrato
+- Ex. (7 Meses - 2x Semana - R$ **,**)
+
+* Tela modelos de contratos - Lista de todos modelos de contratos cadastrados
+
+- Opção campo de busca, para filtrar por texto
+- Opção (Novo contrato) - Essa opção envia para a tela de cadastro de um novo contrato
+- [FILTROS]
+- Deletados - Contratos deletados do sistema que podem ser recuperados
+- [OPÇÕES REGISTROS]
+- [EDITAR] - Essa opção leva para tela de edição do contrato e seus dados
+- [EXCLUIR] - Essa opção deleta o contrato, não será listado a menos que filtre por contratos deletados
+- [RECUPERAR] - Essa opção recupera uma contrato excluído
+
+* Tela de cadastro de modelo de contrato - Cadastro modelo de contrato para controlar o jurídico pelo sistema
+
+- Informações obrigatórias tem (*) ao lado da label
+- Abaixo opção para digitar o contrato e suas clausulas, também é possível carregar um modelo base já disponível no sistema
+- Opção de variáveis para preencher com variáveis (Nome aluno, Nome empresa, etc…)
+
+* Tela planos - Lista de planos cadastros no sistema
+
+- Opção campo de busca, para filtrar por texto
+- Opção (Novo plano) - Essa opção envia para a tela de cadastro de um novo plano
+- [FILTROS]
+- Deletados - Planos deletados do sistema que podem ser recuperados
+- [OPÇÕES REGISTROS]
+- [EDITAR] - Essa opção leva para tela de edição do plano e seus dados
+- [EXCLUIR] - Essa opção deleta o plano, não será listado a menos que filtre por planos deletados
+- [RECUPERAR] - Essa opção recupera uma plano excluído
+
+* Cadastro de plano
+
+- Informações obrigatórias tem (*) ao lado da label
+- 1 ou mais modalidades são vinculadas ao plano assim como na contratação de um plano montado na hora
+- Na contratação do aluno apenas a seleção do plano é necessária
+
+
+ADMIN
+
+* Tela usuários - Essa tela lista todos os usuários cadastrados no sistema
+
+- Opção campo de busca, para filtrar por texto
+- Opção (Novo usuário) - Essa opção envia para a tela de cadastro de um novo usuário
+- [OPÇÕES REGISTROS]
+- [EDITAR] - Essa opção leva para tela de edição do usuário e seus dados
+
+* Tela cadastro usuário - Essa tela é o formulário de cadastro de usuário
+
+- Informações obrigatórias tem (*) ao lado da label
