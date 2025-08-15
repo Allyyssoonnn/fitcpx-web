@@ -54,8 +54,8 @@ jobs:
 
       # 6️⃣ Purge Cloudflare cache
       - name: Purge Cloudflare cache
-        uses: cloudflare/wrangler-action@1.3.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          zoneId: ${{ secrets.CF_ZONE_ID }}
-          command: "purge"
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
