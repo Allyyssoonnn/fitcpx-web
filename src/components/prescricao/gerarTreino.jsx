@@ -147,7 +147,7 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
   }
 
   return (
-    <form onSubmit={submitWorkout}>
+    <div>
       <div className="d-flex justify-content-between align-items-center">
         <label className="form-label">Grupos</label>
         <label>{gruposSelecionados?.length}/5</label>
@@ -245,11 +245,11 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
             Fechar
           </button>
         </DialogClose>
-        <button type="submit" className="btn btn-success">
+        <button onClick={submitWorkout} className="btn btn-success">
           Gerar Treino
         </button>
       </DialogFooter>
-    </form>
+    </div>
   );
 }
 
