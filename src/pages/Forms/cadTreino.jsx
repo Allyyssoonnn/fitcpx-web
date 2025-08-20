@@ -192,7 +192,14 @@ function CadTreino() {
         </div>
 
         <div className="card-body p-1">
-          <TreinoInteligente sessoes={sessoes} setSessoes={setSessoes} setRemovidos={setRemovidos} setItensRemovidos={setItensRemovidos} getRepeticao={getRepeticao} />
+          <TreinoInteligente
+            cod_aluno={codAluno}
+            sessoes={sessoes}
+            setSessoes={setSessoes}
+            setRemovidos={setRemovidos}
+            setItensRemovidos={setItensRemovidos}
+            getRepeticao={getRepeticao}
+          />
         </div>
 
         <div className="card-footer">
