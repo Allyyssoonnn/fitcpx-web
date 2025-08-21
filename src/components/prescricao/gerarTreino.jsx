@@ -12,14 +12,11 @@ import {
 import { useRecoilState } from "recoil";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { toast } from "react-toastify";
-import MultiSelect from "../ui/multiselect";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import MultipleSelector from "../ui/multiselect";
-import { Button } from "../ui/button";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
-function GerarTreino({ setSessoes, indexSessao, cod_aluno }) {
+function GerarTreino({ setSessoes, indexSessao, cod_aluno, volume_treino, nivel_treino, desenvolvimento_treino }) {
   const [open, setOpen] = useState(false);
 
   function adicionarSessaoGerada(sessao) {
@@ -29,9 +26,13 @@ function GerarTreino({ setSessoes, indexSessao, cod_aluno }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger disabled={!volume_treino || !nivel_treino || !desenvolvimento_treino}>
         {screen.width > 766 ? (
-          <button type="button" className="btn btn btn-info rounded mx-2">
+          <button
+            disabled={!volume_treino || !nivel_treino || !desenvolvimento_treino}
+            type="button"
+            className="btn btn btn-info rounded mx-2"
+          >
             <i className="bi bi-lightbulb" />
           </button>
         ) : (
@@ -41,9 +42,8 @@ function GerarTreino({ setSessoes, indexSessao, cod_aluno }) {
           </a>
         )}
       </DialogTrigger>
-      {/* <ModalGerarTreino show={show} close={() => setShow(false)} adicionarSessaoGerada={adicionarSessaoGerada} /> */}
 
-      <DialogContent className="!max-w-[800px] sm:!max-w-[50vw] w-full">
+      <DialogContent className="!max-w-[800px] sm:!max-w-[30vw] w-full">
         <DialogTitle className="fs-5 text-black">
           <span className="text-muted">[BETA TESTE]</span> - Prescrição inteligente
         </DialogTitle>
@@ -52,13 +52,37 @@ function GerarTreino({ setSessoes, indexSessao, cod_aluno }) {
           adicionarSessaoGerada={adicionarSessaoGerada}
           cod_aluno={cod_aluno}
           closeDialog={() => setOpen(false)}
+          volume_treino={volume_treino}
+          nivel_treino={nivel_treino}
+          desenvolvimento_treino={desenvolvimento_treino}
         />
+
+        <div className="border" />
+
+        <div className="d-flex align-items-start flex-column justify-around">
+          <label>
+            Nível: <strong>{nivel_treino}</strong>
+          </label>
+          <label>
+            Volume: <strong>{volume_treino}</strong>
+          </label>
+          <label>
+            Desenvolvimento: <strong>{desenvolvimento_treino}</strong>
+          </label>
+        </div>
       </DialogContent>
     </Dialog>
   );
 }
 
-function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
+function Filters({
+  adicionarSessaoGerada,
+  cod_aluno,
+  closeDialog,
+  volume_treino,
+  nivel_treino,
+  desenvolvimento_treino,
+}) {
   const { nLoading, endLoading } = useNotificacao();
   const [usuario] = useRecoilState(stateUsuario);
 
@@ -139,6 +163,9 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
       indicacoesSelecionadas,
       aquecimento,
       cod_aluno,
+      volume_treino,
+      nivel_treino,
+      desenvolvimento_treino,
     });
 
     if (sessao) adicionarSessaoGerada(sessao);
@@ -150,7 +177,7 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
     <div>
       <div className="d-flex justify-content-between align-items-center">
         <label className="form-label">Grupos</label>
-        <label>{gruposSelecionados?.length}/5</label>
+        <label>{gruposSelecionados?.length}/3</label>
       </div>
 
       <MultipleSelector
@@ -178,12 +205,12 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
         commandProps={{
           label: "Selecione grupos de exercícios",
         }}
-        maxSelected={5}
+        maxSelected={3}
         hidePlaceholderWhenSelected
-        onMaxSelected={() => toast.error("Máximo de 5 grupos selecionados")}
+        onMaxSelected={() => toast.error("Máximo de 3 grupos selecionados")}
       />
 
-      <div className="d-flex justify-content-between align-items-center mt-3">
+      {/* <div className="d-flex justify-content-between align-items-center mt-3">
         <label className="form-label">Indicações</label>
         <label>{indicacoesSelecionadas?.length}/3</label>
       </div>
@@ -200,7 +227,7 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
         maxSelected={5}
         hidePlaceholderWhenSelected
         onMaxSelected={() => toast.error("Máximo de 3 indicações selecionadas")}
-      />
+      /> */}
 
       <ToggleGroup
         type="single"
@@ -239,129 +266,11 @@ function Filters({ adicionarSessaoGerada, cod_aluno, closeDialog }) {
         />
       )}
 
-      <DialogFooter className="mt-3 justify-content-between d-flex">
-        <DialogClose>
-          <button type="button" className="btn btn-danger">
-            Fechar
-          </button>
-        </DialogClose>
+      <DialogFooter className="mt-3 justify-content-end d-flex">
         <button onClick={submitWorkout} className="btn btn-success">
           Gerar Treino
         </button>
       </DialogFooter>
-    </div>
-  );
-}
-
-function CardEditor({
-  gruposSelecionados,
-  updateGroup,
-  articulacoes,
-  padraoMovimentos,
-  resistencias,
-  tipo_exercicios,
-}) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const current = gruposSelecionados[currentIndex];
-
-  if (!current) return <p className="text-muted text-center mt-3">Nenhum grupo selecionado</p>;
-
-  const handleChange = (field) => (value) => updateGroup(current, field, value);
-
-  return (
-    <div className="mt-4 p-4 border rounded shadow-sm">
-      <div className="d-flex justify-content-between align-items-center mb-2">
-        <h5 className="fw-bold">{current.label}</h5>
-        <span className="text-muted">
-          {currentIndex + 1}/{gruposSelecionados.length}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-        <SelectInput
-          label="Volume"
-          value={current.volume}
-          onChange={handleChange("volume")}
-          options={Array.from({ length: 20 }, (_, i) => i + 1)}
-        />
-        <SelectInput
-          label="Qtd. Exercícios"
-          value={current.qtd_exercicios}
-          onChange={handleChange("qtd_exercicios")}
-          options={Array.from({ length: 20 }, (_, i) => i + 1)}
-        />
-        {articulacoes && (
-          <SelectInput
-            label="Articulação"
-            value={current.cod_articulacao}
-            onChange={handleChange("cod_articulacao")}
-            options={articulacoes.map((a) => ({ label: a.nome_articulacao, value: a.cod_articulacao }))}
-          />
-        )}
-        <SelectInput
-          label="Padrão de movimento"
-          value={current.cod_padrao_movimento}
-          onChange={handleChange("cod_padrao_movimento")}
-          options={padraoMovimentos.map((p) => ({ label: p.nome_padrao_movimento, value: p.cod_padrao_movimento }))}
-        />
-        <SelectInput
-          label="Resistência"
-          value={current.cod_exercicio_resistencia}
-          onChange={handleChange("cod_exercicio_resistencia")}
-          options={resistencias.map((r) => ({
-            label: r.nome_exercicio_resistencia,
-            value: r.cod_exercicio_resistencia,
-          }))}
-        />
-        <SelectInput
-          label="Tipo de Exercício"
-          value={current.cod_tipo_exercicio}
-          onChange={handleChange("cod_tipo_exercicio")}
-          options={tipo_exercicios.map((t) => ({ label: t.nome_tipo_exercicio, value: t.cod_tipo_exercicio }))}
-        />
-      </div>
-
-      {gruposSelecionados?.length > 1 && (
-        <div className="d-flex justify-content-between mt-4">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            disabled={currentIndex === 0}
-          >
-            ← Anterior
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={() => setCurrentIndex((i) => Math.min(gruposSelecionados.length - 1, i + 1))}
-            disabled={currentIndex === gruposSelecionados.length - 1}
-          >
-            Próximo →
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SelectInput({ label, value, onChange, options }) {
-  return (
-    <div>
-      <label className="form-label text-sm">{label}</label>
-
-      <Select value={String(value)} onValueChange={onChange}>
-        <SelectTrigger className="w-full h-8 text-sm">
-          <SelectValue placeholder="Selecione" />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((opt) => (
-            <SelectItem key={opt.value ?? opt} value={String(opt.value ?? opt)}>
-              {opt.label ?? opt}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </div>
   );
 }

@@ -6,16 +6,36 @@ import ListaExercicios from "./listaExercicios";
 import { arrayBorders } from "../../utils";
 import GerarTreino from "./gerarTreino";
 
-function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovidos, getRepeticao, cod_aluno }) {
+function TreinoInteligente({
+  sessoes,
+  setSessoes,
+  setRemovidos,
+  setItensRemovidos,
+  getRepeticao,
+  cod_aluno,
+  desenvolvimento_treino,
+  volume_treino,
+  nivel_treino,
+}) {
   const updateNomeSessao = (index, newName) => {
-    setSessoes((prevWorkouts) => prevWorkouts.map((workout, i) => (index === i ? { ...workout, nome_sessao: newName } : workout)));
+    setSessoes((prevWorkouts) =>
+      prevWorkouts.map((workout, i) => (index === i ? { ...workout, nome_sessao: newName } : workout))
+    );
   };
 
   async function adicionarSessao(e) {
     e.preventDefault();
     if (sessoes.length >= 15) return;
     const newKey = (sessoes.length + 1).toString();
-    setSessoes([...sessoes, { key: newKey, nome_sessao: `Sessão ${String.fromCharCode(65 + sessoes.length)}`, exercicios: [], sequencia_sessao: sessoes.length + 1 }]);
+    setSessoes([
+      ...sessoes,
+      {
+        key: newKey,
+        nome_sessao: `Sessão ${String.fromCharCode(65 + sessoes.length)}`,
+        exercicios: [],
+        sequencia_sessao: sessoes.length + 1,
+      },
+    ]);
   }
 
   async function adicionarExercicio(e, indexSessao) {
@@ -137,13 +157,26 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                     >
                       <div className="accordion-item">
                         <div className="card-header accordion-header d-flex justify-content-between align-items-center">
-                          <div {...provided.dragHandleProps} className="me-2 d-flex flex-column align-items-center" style={{ cursor: "grab" }}>
+                          <div
+                            {...provided.dragHandleProps}
+                            className="me-2 d-flex flex-column align-items-center"
+                            style={{ cursor: "grab" }}
+                          >
                             <i className="bi bi-arrow-bar-up fs-1"></i>
                             <i className="bi bi-grip-horizontal"></i>
                             <label className="fs-1">{sessao.sequencia_sessao}</label>
                           </div>
 
-                          {screen.width > 766 && <GerarTreino setSessoes={setSessoes} indexSessao={index} cod_aluno={cod_aluno} />}
+                          {screen.width > 766 && (
+                            <GerarTreino
+                              setSessoes={setSessoes}
+                              indexSessao={index}
+                              cod_aluno={cod_aluno}
+                              volume_treino={volume_treino}
+                              nivel_treino={nivel_treino}
+                              desenvolvimento_treino={desenvolvimento_treino}
+                            />
+                          )}
 
                           <button
                             id={`btnSession-${index}`}
@@ -154,23 +187,44 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                             aria-expanded="true"
                             aria-controls={`panelsStayOpen-collapse${index}`}
                           >
-                            <EditableText title={true} key={index} text={sessao.nome_sessao} onUpdate={(newName) => updateNomeSessao(index, newName)} />
+                            <EditableText
+                              title={true}
+                              key={index}
+                              text={sessao.nome_sessao}
+                              onUpdate={(newName) => updateNomeSessao(index, newName)}
+                            />
                           </button>
 
                           <div className={`${screen.width < 766 ? "d-none" : ""}`}>
-                            <a href="#" className="text-danger" onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}>
+                            <a
+                              href="#"
+                              className="text-danger"
+                              onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}
+                            >
                               <i className="bi bi-trash me-2"></i>
                             </a>
                           </div>
 
                           {screen.width < 766 && (
                             <div className="dropdown">
-                              <button onClick={(e) => e.stopPropagation()} className="btn btn-outline-primary rounded" data-bs-toggle="dropdown">
+                              <button
+                                onClick={(e) => e.stopPropagation()}
+                                className="btn btn-outline-primary rounded"
+                                data-bs-toggle="dropdown"
+                              >
                                 <i className="bi bi-three-dots-vertical"></i>
                               </button>
 
                               <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up rounded p-1 bg-white">
-                                <GerarTreino setSessoes={setSessoes} indexSessao={index} button={false} />
+                                <GerarTreino
+                                  setSessoes={setSessoes}
+                                  indexSessao={index}
+                                  button={false}
+                                  cod_aluno={cod_aluno}
+                                  volume_treino={volume_treino}
+                                  nivel_treino={nivel_treino}
+                                  desenvolvimento_treino={desenvolvimento_treino}
+                                />
                                 <a
                                   className="d-flex align-items-center gap-2 btn btn-sm btn-outline-danger rounded mb-1"
                                   onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}
@@ -195,7 +249,11 @@ function TreinoInteligente({ sessoes, setSessoes, setRemovidos, setItensRemovido
                             />
 
                             <div className="w-100 d-flex justify-content-end">
-                              <button id={`addExercise-${index}`} className="btn btn-outline-success rounded col-md-6 col-12 mt-3" onClick={(e) => adicionarExercicio(e, index)}>
+                              <button
+                                id={`addExercise-${index}`}
+                                className="btn btn-outline-success rounded col-md-6 col-12 mt-3"
+                                onClick={(e) => adicionarExercicio(e, index)}
+                              >
                                 <i className="bi bi-plus me-2" />
                                 Adicionar exercício
                               </button>

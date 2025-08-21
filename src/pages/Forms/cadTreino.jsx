@@ -17,7 +17,6 @@ function CadTreino() {
     handleSubmit,
     register,
     setValue,
-    getFieldState,
     getValues,
     watch,
     reset,
@@ -100,14 +99,28 @@ function CadTreino() {
     if (!podeConfirmar) return;
 
     const cod_usuario = usuario.cod_usuario;
-    const respTreino = await setTreino({ ...data, sexo_treino: sexo_aluno ?? data?.sexo_treino, cod_usuario, cod_empresa: usuario.cod_empresa });
+    const respTreino = await setTreino({
+      ...data,
+      sexo_treino: sexo_aluno ?? data?.sexo_treino,
+      cod_usuario,
+      cod_empresa: usuario.cod_empresa,
+    });
     if (respTreino.cod_treino) {
-      await setSessao(sessoes, respTreino.cod_treino, usuario.cod_usuario, usuario.cod_empresa, removidos, itensRemovidos);
+      await setSessao(
+        sessoes,
+        respTreino.cod_treino,
+        usuario.cod_usuario,
+        usuario.cod_empresa,
+        removidos,
+        itensRemovidos
+      );
       reset();
       nSuccess();
       navigate(-1);
     } else toast.error("Erro ao salvar treino");
   }
+
+  const { desenvolvimento_treino, volume_treino, nivel_treino } = watch();
 
   return (
     <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid">
@@ -141,29 +154,47 @@ function CadTreino() {
           <div className="row g-3">
             <div className="col-md-3">
               <label className="form-label fw-bold">Nome *</label>
-              <input id="name" {...register("nome_treino", { required: "O nome é obrigatório" })} className="form-control" />
+              <input
+                id="name"
+                {...register("nome_treino", { required: "O nome é obrigatório" })}
+                className="form-control"
+              />
             </div>
 
             <div className="col-md-3">
               <label className="form-label fw-bold">Frequência *</label>
-              <input id="periodicity" {...register("frequencia_treino", { required: "Frequência de treino é obrigatório" })} type="number" step="0.01" className="form-control" />
-            </div>
-
-            <div className="col-md-3">
-              <label className="form-label fw-bold">Nível *</label>
-              <select id="difficulty" {...register("nivel_treino", { required: "Nível de treino necessário!" })} className="form-control">
-                <option value="">Selecione o nível do treino</option>
-                <option value="Iniciante">Iniciante</option>
-                <option value="Intermediário">Intermediário</option>
-                <option value="Avançado">Avançado</option>
-              </select>
+              <input
+                id="periodicity"
+                {...register("frequencia_treino", { required: "Frequência de treino é obrigatório" })}
+                type="number"
+                step="0.01"
+                className="form-control"
+              />
             </div>
 
             <div className="col-md-3">
               <label className="form-label fw-bold">Sexo *</label>
-              <select id="gender" {...register("sexo_treino", { required: "O sexo é obrigatório" })} className="form-control">
+              <select
+                id="gender"
+                {...register("sexo_treino", { required: "O sexo é obrigatório" })}
+                className="form-control"
+              >
                 <option value="M">Masculino</option>
                 <option value="F">Feminino</option>
+              </select>
+            </div>
+
+            <div className="col-md-3">
+              <label className="form-label fw-bold">Nível *</label>
+              <select
+                id="difficulty"
+                {...register("nivel_treino", { required: "Nível de treino necessário!" })}
+                className="form-control"
+              >
+                <option value="">Selecione o nível do treino</option>
+                <option value="Iniciante">Iniciante</option>
+                <option value="Intermediário">Intermediário</option>
+                <option value="Avançado">Avançado</option>
               </select>
             </div>
 
@@ -174,11 +205,29 @@ function CadTreino() {
 
             <div className="col-md-3">
               <label className="form-label fw-bold">Desenvolvimento *</label>
-              <select id="development" {...register("desenvolvimento_treino", { required: "O desenvolvimento é obrigatório" })} className="form-control">
+              <select
+                id="development"
+                {...register("desenvolvimento_treino", { required: "O desenvolvimento é obrigatório" })}
+                className="form-control"
+              >
                 <option value="">Selecione o desenvolvimento</option>
                 <option value="Força">Força</option>
                 <option value="Hipertrofia">Hipertrofia</option>
                 <option value="Resistência">Resistência</option>
+              </select>
+            </div>
+
+            <div className="col-md-3">
+              <label className="form-label fw-bold">Volume de treino *</label>
+              <select
+                id="volume"
+                {...register("volume_treino", { required: "O volume de treino é obrigatório" })}
+                className="form-control"
+              >
+                <option value="">Selecione o volume de treino</option>
+                <option value="Baixo">Baixo</option>
+                <option value="Médio">Médio</option>
+                <option value="Alto">Alto</option>
               </select>
             </div>
           </div>
@@ -199,6 +248,9 @@ function CadTreino() {
             setRemovidos={setRemovidos}
             setItensRemovidos={setItensRemovidos}
             getRepeticao={getRepeticao}
+            nivel_treino={nivel_treino}
+            volume_treino={volume_treino}
+            desenvolvimento_treino={desenvolvimento_treino}
           />
         </div>
 
