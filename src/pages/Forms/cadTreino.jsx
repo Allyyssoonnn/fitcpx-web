@@ -85,6 +85,28 @@ function CadTreino() {
     return base[desenvolvimento_treino];
   }
 
+  function getSeries() {
+    const { desenvolvimento_treino } = getValues();
+    const base = {
+      Força: 4,
+      Hipertrofia: 3,
+      Resistência: 2,
+    };
+    if (!desenvolvimento_treino) return 3;
+    return base[desenvolvimento_treino];
+  }
+
+  function getInterval() {
+    const { desenvolvimento_treino } = getValues();
+    const base = {
+      Força: 120,
+      Hipertrofia: 80,
+      Resistência: 40,
+    };
+    if (!desenvolvimento_treino) return 60;
+    return base[desenvolvimento_treino];
+  }
+
   async function confirma(data) {
     var podeConfirmar = true;
     for (const sessao of sessoes) {
@@ -248,6 +270,8 @@ function CadTreino() {
             setRemovidos={setRemovidos}
             setItensRemovidos={setItensRemovidos}
             getRepeticao={getRepeticao}
+            getInterval={getInterval}
+            getSeries={getSeries}
             nivel_treino={nivel_treino}
             volume_treino={volume_treino}
             desenvolvimento_treino={desenvolvimento_treino}
