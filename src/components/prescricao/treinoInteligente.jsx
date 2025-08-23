@@ -141,12 +141,7 @@ function TreinoInteligente({
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="SessoesList">
           {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              // className="d-flex flex-column p-1"
-              // style={{ overflow: 'auto', height: '50vh', overflowX: 'hidden' }}
-            >
+            <div {...provided.droppableProps} ref={provided.innerRef}>
               {sessoes.map((sessao, index) => (
                 <Draggable key={index} draggableId={String(index)} index={index}>
                   {(provided) => (
