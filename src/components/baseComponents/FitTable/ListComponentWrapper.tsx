@@ -133,7 +133,7 @@ export default function ListComponentWrapper({
    });
 
    return (
-      <div className={`card ${sizeShadow == "none" ? "" : "shadow-lg"} rounded-4 ${className ?? ""}`}>
+      <div className={`card ${sizeShadow == "none" ? "" : "shadow-sm"} rounded-4 ${className ?? ""}`}>
          {!hideHeader && (
             <div className="card-header">
                <div className="row d-flex justify-content-between">
