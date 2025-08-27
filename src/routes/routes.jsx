@@ -39,59 +39,57 @@ import ContratacaoPlano from "../pages/Forms/contratacaoPlano";
 import CadContrato from "../pages/Forms/cadContrato";
 import Configuracao from "../pages/Infos/configuracao";
 import Contrato from "../pages/Infos/contrato";
-import ContratacaoSessao from "../pages/Forms/contratacaoSessao";
 import PacoteSessao from "../pages/Infos/pacoteSessao";
 import FinanceOverview from "../pages/Infos/financeOverview";
 
 const routes = [
-    //Base
-    { path: '/', exact: true, name: 'Home' },
-    { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+   //Base
+   { path: "/", exact: true, name: "Home" },
+   { path: "/dashboard", name: "Dashboard", element: Dashboard },
 
-    //Listas
-    { path: '/alunos', name: 'Alunos', element: Alunos },
-    { path: '/usuarios', name: 'Alunos', element: Usuarios },
-    { path: '/exercicios', name: 'Licença', element: Exercicios },
-    { path: '/grupoexercicios', name: 'Licença', element: GrupoExercicios },
-    { path: '/treinos', name: 'Licença', element: Treinos },
-    { path: '/avaliacoes', name: 'Licença', element: Avaliacoes },
-    { path: '/planos', name: 'Licença', element: Planos },
-    { path: '/modalidades', name: 'Licença', element: Modalidades },
-    { path: '/modcontratos', name: 'Licença', element: ModContratos },
+   //Listas
+   { path: "/alunos", name: "Alunos", element: Alunos },
+   { path: "/usuarios", name: "Alunos", element: Usuarios },
+   { path: "/exercicios", name: "Licença", element: Exercicios },
+   { path: "/grupoexercicios", name: "Licença", element: GrupoExercicios },
+   { path: "/treinos", name: "Licença", element: Treinos },
+   { path: "/avaliacoes", name: "Licença", element: Avaliacoes },
+   { path: "/planos", name: "Licença", element: Planos },
+   { path: "/modalidades", name: "Licença", element: Modalidades },
+   { path: "/modcontratos", name: "Licença", element: ModContratos },
 
-    { path: '/contratos', name: 'Licença', element: Contratos },
-    { path: '/grupoalimentos', name: 'Licença', element: GrupoAlimentos },
-    { path: '/cardapios', name: 'Licença', element: Cardapios },
-    { path: '/alimentos', name: 'Licença', element: Alimentos },
+   { path: "/contratos", name: "Licença", element: Contratos },
+   { path: "/grupoalimentos", name: "Licença", element: GrupoAlimentos },
+   { path: "/cardapios", name: "Licença", element: Cardapios },
+   { path: "/alimentos", name: "Licença", element: Alimentos },
 
-    //Cadastros
-    { path: '/cadgrupoexercicio', name: 'Licença', element: CadGrupoExercicio },
-    { path: '/cadexercicio', name: 'Licença', element: CadExercicio },
-    { path: '/cadsessao', name: 'Licença', element: CadSessao },
-    { path: '/cadaluno', name: 'Alunos', element: CadAluno },
-    { path: '/cadusuario', name: 'Alunos', element: CadUsuario },
-    { path: '/cadavaliacao', name: 'Alunos', element: CadAvaliacao },
-    { path: '/cadtreino', name: 'Alunos', element: CadTreino },
-    { path: '/cadcardapio', name: 'Alunos', element: CadCardapio },
-    { path: '/cadgrupoalimento', name: 'Alunos', element: CadGrupoAlimento },
-    { path: '/cadalimento', name: 'Alunos', element: CadAlimento },
-    { path: '/cadplano', name: 'Alunos', element: CadPlano },
-    { path: '/cadmodalidade', name: 'Alunos', element: CadModalidade },
-    { path: '/cadcontrato', name: 'Alunos', element: CadContrato },
-    { path: '/contratacaoplano', name: 'Alunos', element: ContratacaoPlano },
-    { path: '/contratacaosessao', name: 'Alunos', element: ContratacaoSessao },
+   //Cadastros
+   { path: "/cadgrupoexercicio", name: "Licença", element: CadGrupoExercicio },
+   { path: "/cadexercicio", name: "Licença", element: CadExercicio },
+   { path: "/cadsessao", name: "Licença", element: CadSessao },
+   { path: "/cadaluno", name: "Alunos", element: CadAluno },
+   { path: "/cadusuario", name: "Alunos", element: CadUsuario },
+   { path: "/cadavaliacao", name: "Alunos", element: CadAvaliacao },
+   { path: "/cadtreino", name: "Alunos", element: CadTreino },
+   { path: "/cadcardapio", name: "Alunos", element: CadCardapio },
+   { path: "/cadgrupoalimento", name: "Alunos", element: CadGrupoAlimento },
+   { path: "/cadalimento", name: "Alunos", element: CadAlimento },
+   { path: "/cadplano", name: "Alunos", element: CadPlano },
+   { path: "/cadmodalidade", name: "Alunos", element: CadModalidade },
+   { path: "/cadcontrato", name: "Alunos", element: CadContrato },
+   { path: "/contratacaoplano", name: "Alunos", element: ContratacaoPlano },
 
-    //Informações
-    { path: '/aluno', name: 'Aluno', element: Aluno },
-    { path: '/avaliacao', name: 'Avaliação', element: Avaliacao },
-    { path: '/compareavaliacao', name: 'Avaliação', element: CompareAvaliacao },
-    { path: '/agenda', name: 'Agenda', element: Agenda },
-    { path: '/planilha', name: 'Licença', element: Planilha },
-    { path: '/relatorios', name: 'Licença', element: Relatorios },
-    { path: '/configuracao', name: 'Licença', element: Configuracao },
-    { path: '/contrato', name: 'Licença', element: Contrato },
-    { path: '/pacoteSessao', name: 'Licença', element: PacoteSessao },
-    { path: '/financeOverview', name: 'Licença', element: FinanceOverview },
-]
-  
-export default routes;  
+   //Informações
+   { path: "/aluno", name: "Aluno", element: Aluno },
+   { path: "/avaliacao", name: "Avaliação", element: Avaliacao },
+   { path: "/compareavaliacao", name: "Avaliação", element: CompareAvaliacao },
+   { path: "/agenda", name: "Agenda", element: Agenda },
+   { path: "/planilha", name: "Licença", element: Planilha },
+   { path: "/relatorios", name: "Licença", element: Relatorios },
+   { path: "/configuracao", name: "Licença", element: Configuracao },
+   { path: "/contrato", name: "Licença", element: Contrato },
+   { path: "/pacoteSessao", name: "Licença", element: PacoteSessao },
+   { path: "/financeOverview", name: "Licença", element: FinanceOverview },
+];
+
+export default routes;
