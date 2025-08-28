@@ -1,6 +1,6 @@
 import { destroyCookie } from "nookies";
 import { useNavigate } from "react-router-dom";
-import { stateApp, stateEmpresa, stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
+import { stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import Notificacoes from "../components/notificacoes";
@@ -11,7 +11,7 @@ function Header() {
    const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
    const navigate = useNavigate();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
-   const { toggleTheme, theme, validLicense } = useStateApp();
+   const { toggleTheme, theme } = useStateApp();
 
    const [deferredPrompt, setDeferredPrompt] = useState(null);
    const [isInstalled, setIsInstalled] = useState(false);
