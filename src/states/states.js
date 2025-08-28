@@ -4,99 +4,99 @@ import Swal from "sweetalert2";
 const { persistAtom } = recoilPersist();
 
 export const stateUsuario = atom({
-    key: 'stateUsuario',
-    default: {
-        nome_usuario: '',
-        email_usuario: ''
-    },
-    effects_UNSTABLE: [persistAtom]
+   key: "stateUsuario",
+   default: {
+      nome_usuario: "",
+      email_usuario: "",
+   },
+   effects_UNSTABLE: [persistAtom],
 });
 
 export const stateEmpresa = atom({
-    key: 'stateEmpresa',
-    default: {},
-    effects_UNSTABLE: [persistAtom]
+   key: "stateEmpresa",
+   default: {},
+   effects_UNSTABLE: [persistAtom],
 });
 
 export const stateApp = atom({
-    key: 'stateApp',
-    default: {
-        openedSidebar: true,
-        // bloco / painel
-        viewTreino: 'bloco',
-        theme: 'light',
-    },
-    effects_UNSTABLE: [persistAtom]
+   key: "stateApp",
+   default: {
+      openedSidebar: true,
+      theme: "light",
+      validLicense: false,
+   },
+   effects_UNSTABLE: [persistAtom],
 });
 
 export const useNotificacao = () => {
-    const nSuccess = (title, message) => Swal.fire(title || "Sucesso!", message || "", "success");
-    const nError = (title, message) => Swal.fire(title || "Erro!", message || "", "error");
+   const nSuccess = (title, message) => Swal.fire(title || "Sucesso!", message || "", "success");
+   const nError = (title, message) => Swal.fire(title || "Erro!", message || "", "error");
 
-    const nConfirm = (title, message, func) => {
-        Swal.fire({
-            title: title ?? 'Tem certeza?',
-            text: message ?? '',
-            icon: "warning",
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar',
-            confirmButtonText: "Confirmar",
-            reverseButtons: true,
-        }).then(async (result) => {
-            if (result.isConfirmed && func) {
-                ;func();
-            }
-        })
-    }
+   const nConfirm = (title, message, func) => {
+      Swal.fire({
+         title: title ?? "Tem certeza?",
+         text: message ?? "",
+         icon: "warning",
+         showCancelButton: true,
+         cancelButtonText: "Cancelar",
+         confirmButtonText: "Confirmar",
+         reverseButtons: true,
+      }).then(async (result) => {
+         if (result.isConfirmed && func) {
+            func();
+         }
+      });
+   };
 
-    const nLoading = (title, message) => {
-        Swal.fire({
-            title: title ?? "Carregando...",
-            text: message ?? "Aguarde estamos processando.",
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            },
-        });
-    }
+   const nLoading = (title, message) => {
+      Swal.fire({
+         title: title ?? "Carregando...",
+         text: message ?? "Aguarde estamos processando.",
+         allowOutsideClick: false,
+         didOpen: () => {
+            Swal.showLoading();
+         },
+      });
+   };
 
-    const endLoading = () => Swal.close();
+   const endLoading = () => Swal.close();
 
-    return { nSuccess, nError, nConfirm, nLoading, endLoading };
-}
+   return { nSuccess, nError, nConfirm, nLoading, endLoading };
+};
 
 export const useToggleSidebar = () => {
-    const [appState, setAppState] = useRecoilState(stateApp);
-    const openSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: true }));
-    const closeSidebar = () => setAppState(prevState => ({ ...prevState, openedSidebar: false }));
-    return { openSidebar, closeSidebar, openedSidebar: appState.openedSidebar };
-}
+   const [appState, setAppState] = useRecoilState(stateApp);
+   const openSidebar = () => setAppState((prevState) => ({ ...prevState, openedSidebar: true }));
+   const closeSidebar = () => setAppState((prevState) => ({ ...prevState, openedSidebar: false }));
+   return { openSidebar, closeSidebar, openedSidebar: appState.openedSidebar };
+};
 
 export const useStateApp = () => {
-    const [appState, setAppState] = useRecoilState(stateApp);
-    const toggleTheme = () => setAppState(prevState => ({ ...prevState, theme: prevState.theme == 'light' ? 'dark' : 'light' }));
-    const setViewTreino = view => setAppState(prevState => ({ ...prevState, viewTreino: view }));
-    return { ...appState, toggleTheme, setViewTreino };
-}
+   const [appState, setAppState] = useRecoilState(stateApp);
+   const toggleTheme = () =>
+      setAppState((prevState) => ({ ...prevState, theme: prevState.theme == "light" ? "dark" : "light" }));
+   const setValidLicense = (valid) => setAppState((prevState) => ({ ...prevState, validLicense: valid }));
+   return { ...appState, toggleTheme, setValidLicense };
+};
 
 // ============== App-aluno
 
 export const stateAluno = atom({
-    key: 'stateAluno',
-    default: {
-        nome_aluno: '',
-        email_aluno: ''
-    },
-    effects_UNSTABLE: [persistAtom]
+   key: "stateAluno",
+   default: {
+      nome_aluno: "",
+      email_aluno: "",
+   },
+   effects_UNSTABLE: [persistAtom],
 });
 
 // ============== App-admin
 
 export const stateAdmin = atom({
-    key: 'stateAdmin',
-    default: {
-        nome_admin: '',
-        email_admin: ''
-    },
-    effects_UNSTABLE: [persistAtom]
+   key: "stateAdmin",
+   default: {
+      nome_admin: "",
+      email_admin: "",
+   },
+   effects_UNSTABLE: [persistAtom],
 });
