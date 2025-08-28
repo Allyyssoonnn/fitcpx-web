@@ -105,7 +105,7 @@ function Header() {
 
             <div className="navbar-collapse justify-content-end px-0 flex-grow-1" id="navbarNav">
                <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                  {!validLicense && (
+                  {localStorage.getItem("validLicense") == "false" && (
                      <a href="/configuracao?tab=3" className="btn btn-warning me-2">
                         <i className="bi bi-arrow-up-circle me-2"></i>Versão Pro
                      </a>

@@ -13,7 +13,6 @@ function Alunos() {
    const [usuario] = useRecoilState(stateUsuario);
    const [statusFilter, setStatusFilter] = useState("A");
    const [deleted, setDeleted] = useState(false);
-   const { validLicense } = useStateApp();
 
    const { data: alunos, refetch } = useQuery({
       queryKey: ["alunos", usuario.cod_usuario],
@@ -55,7 +54,7 @@ function Alunos() {
                   description={`${filteredAlunos?.length} ${filteredAlunos?.length > 1 ? "Alunos" : "Aluno"}`}
                   buttonText={t("newButtonText")}
                   fieldSearch="nome_aluno"
-                  buttonOnClick={validLicense ? () => navigate("/cadaluno") : null}
+                  buttonOnClick={localStorage.getItem("validLicense") ? () => navigate("/cadaluno") : null}
                   onClickItem={(row) => navigate("/aluno", { state: { cod_aluno: row.cod_aluno } })}
                   buttonId="newClient"
                   columns={[

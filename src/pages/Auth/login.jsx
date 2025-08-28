@@ -13,7 +13,6 @@ function Login() {
    const navigate = useNavigate();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
    const [empresa, setempresa] = useRecoilState(stateEmpresa);
-   const { setValidLicense } = useStateApp();
 
    useEffect(() => {
       (async function conect() {
@@ -49,7 +48,7 @@ function Login() {
    async function login(data) {
       const resp = await post("/usuario/login", data);
       if (resp.status) {
-         setValidLicense(resp?.validLicense);
+         localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
          setCookie(null, "token", resp.token, { maxAge: 60 * 60 * 7 });
          setCookie(null, "refreshToken", resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
