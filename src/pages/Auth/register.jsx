@@ -35,6 +35,7 @@ function Register() {
       const resp = await post("/usuario/register", data);
 
       if (resp.status) {
+         localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
          setusuario(resp?.usuario);
          setempresa(resp?.empresa);

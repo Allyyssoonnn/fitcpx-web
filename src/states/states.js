@@ -75,8 +75,7 @@ export const useStateApp = () => {
    const [appState, setAppState] = useRecoilState(stateApp);
    const toggleTheme = () =>
       setAppState((prevState) => ({ ...prevState, theme: prevState.theme == "light" ? "dark" : "light" }));
-   const setValidLicense = (valid) => setAppState((prevState) => ({ ...prevState, validLicense: valid }));
-   return { ...appState, toggleTheme, setValidLicense };
+   return { ...appState, toggleTheme };
 };
 
 // ============== App-aluno

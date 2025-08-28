@@ -37,6 +37,7 @@ api.interceptors.response.use(
                   maxAge: 60 * 15,
                });
                originalRequest.headers["Authorization"] = refreshResponse.data.token;
+               localStorage.setItem("validLicense", refreshResponse.data.validLicense);
                return api(originalRequest);
             }
          } catch (e) {
