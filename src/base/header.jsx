@@ -11,7 +11,7 @@ function Header() {
    const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
    const navigate = useNavigate();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
-   const { toggleTheme, theme } = useStateApp();
+   const { toggleTheme, theme, validLicense } = useStateApp();
 
    const [deferredPrompt, setDeferredPrompt] = useState(null);
    const [isInstalled, setIsInstalled] = useState(false);
@@ -78,7 +78,7 @@ function Header() {
    return (
       <header className="app-header mb-3">
          <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm bg-white min-h-[70px]">
-            <ul className="navbar-nav d-flex flex-row flex-grow-1 w-40 ms-md-3">
+            <ul className="navbar-nav d-flex flex-row flex-grow-1 ms-md-3">
                <li onClick={openedSidebar ? closeSidebar : openSidebar} className="nav-item d-block d-xl-none">
                   <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse">
                      <i className="bi bi-list fs-6 m-3"></i>
@@ -103,12 +103,13 @@ function Header() {
                </li>
             </ul>
 
-            <div className="navbar-collapse justify-content-end px-0 w-60" id="navbarNav">
+            <div className="navbar-collapse justify-content-end px-0 flex-grow-1" id="navbarNav">
                <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                  {/* <a href="#" onClick={() => navigate('/cadaluno')} className="btn btn-success me-2 d-none d-md-block">
-                            <span className="d-none d-md-block"><i className="bi bi-plus-circle me-2"></i>Novo aluno</span>
-                            <span className="d-block d-md-none"><i className="bi bi-plus-circle me-2"></i>Aluno</span>
-                        </a> */}
+                  {!validLicense && (
+                     <a href="/configuracao?tab=3" className="btn btn-warning me-2">
+                        <i className="bi bi-arrow-up-circle me-2"></i>Versão Pro
+                     </a>
+                  )}
 
                   <button
                      onClick={alteraTema}
