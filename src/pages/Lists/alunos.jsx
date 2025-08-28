@@ -54,7 +54,7 @@ function Alunos() {
                   description={`${filteredAlunos?.length} ${filteredAlunos?.length > 1 ? "Alunos" : "Aluno"}`}
                   buttonText={t("newButtonText")}
                   fieldSearch="nome_aluno"
-                  buttonOnClick={localStorage.getItem("validLicense") ? () => navigate("/cadaluno") : null}
+                  buttonOnClick={localStorage.getItem("validLicense") == "true" ? () => navigate("/cadaluno") : null}
                   onClickItem={(row) => navigate("/aluno", { state: { cod_aluno: row.cod_aluno } })}
                   buttonId="newClient"
                   columns={[
