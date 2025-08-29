@@ -1,6 +1,15 @@
 /* eslint-disable react/prop-types */
+import { ResponsiveBar } from "@nivo/bar";
+import { ResponsivePie } from "@nivo/pie";
+import printJS from "print-js";
 import { useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { getAluno } from "../../api/aluno";
+import { getResultPhysicalAssesment } from "../../api/avaliacao";
+import { stateEmpresa } from "../../states/states";
 import {
    calculaKGMCMMeta,
    calculaKGMusculoMeta,
@@ -20,15 +29,6 @@ import {
    getReferenciaKGGordura,
    getReferenciaPorcentagemGordura,
 } from "../../utils";
-import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
-import { stateEmpresa, stateUsuario } from "../../states/states";
-import { ResponsivePie } from "@nivo/pie";
-import { ResponsiveBar } from "@nivo/bar";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { getAluno } from "../../api/aluno";
-import { getResultPhysicalAssesment } from "../../api/avaliacao";
-import printJS from "print-js";
 
 function Avaliacao() {
    const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { getFitnessAssessmentTemplatePDF } from "./api/utils";
+import { getFitnessAssessmentTemplatePDF } from "./api/app";
 
 export async function getFitnessAssessmentPDF(assessment, companyImg) {
    if (!assessment) return null;

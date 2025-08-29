@@ -1,4 +1,5 @@
-import { get, post } from "./api";
+import axios from "axios";
+import { baseURL, get, post } from "./api";
 
 export const getNotifications = async (cod_empresa: number) => {
    const resp = await post("/app/getNotifications", { cod_empresa });
@@ -16,4 +17,10 @@ export const getDashboard = async () => {
    const resp = await get("/app/getDashboard");
    if (resp.dashboard) return resp.dashboard;
    throw new Error("Erro ao carregar dashboard");
+};
+
+export const getFitnessAssessmentTemplatePDF = async () => {
+   const resp = await axios.get(`${baseURL}/fitnessassessmentpdf`);
+   if (resp.status) return resp.data;
+   throw new Error("Erro ao carregar template");
 };
