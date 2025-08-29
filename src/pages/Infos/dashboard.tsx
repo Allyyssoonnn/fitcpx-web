@@ -1,37 +1,48 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { stateEmpresa, stateUsuario } from "../../states/states";
+import { stateEmpresa } from "../../states/states";
 import { useQuery } from "react-query";
-import { getAlunoContratos, getAlunos, getAvaliacoes } from "../../api/aluno";
-import { getUsuarios, setEmpresa, verifyEmail } from "../../api/usuario";
-import { getTreinos } from "../../api/treino";
-import { formatarData, formatarMoeda } from "../../utils";
+import { setEmpresa, verifyEmail } from "../../api/usuario";
+import { formatarData } from "../../utils";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { getDashboard } from "../../api/app";
+
+type Client = {
+   nome_aluno: string;
+};
+
+type LastPhysicalAssessment = {
+   cod_avaliacao: string;
+   data_avaliacao: string;
+   altura: number;
+   peso: number;
+   aluno: Client;
+};
+
+type DashboardProps = {
+   lengths: {
+      users: number;
+      workouts: number;
+      physicalAssessments: number;
+      clients: number;
+   };
+   lastPhysicalAssessments: LastPhysicalAssessment[];
+};
 
 function Dashboard() {
-   const [usuario] = useRecoilState(stateUsuario);
-   const [empresa] = useRecoilState(stateEmpresa);
-
-   const { data: alunos } = useQuery({
-      queryKey: ["alunos", usuario.cod_usuario],
-      queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
-      initialData: [],
-      enabled: !!usuario.cod_empresa,
-   });
-
-   const { data: avaliacoes } = useQuery({
-      queryKey: ["avaliacoes", usuario.cod_empresa],
-      queryFn: () => getAvaliacoes(usuario.cod_empresa),
-      initialData: [],
-      enabled: !!usuario.cod_empresa,
-   });
-
-   const { data: contratos, refetch } = useQuery({
-      queryKey: ["contratos", empresa.cod_empresa],
-      queryFn: () => getAlunoContratos(null, empresa.cod_empresa),
-      initialData: [],
-      enabled: !!empresa.cod_empresa,
+   const { data: dashboard } = useQuery<DashboardProps>({
+      queryKey: ["dashboard"],
+      queryFn: getDashboard,
+      initialData: {
+         lengths: {
+            users: 0,
+            workouts: 0,
+            physicalAssessments: 0,
+            clients: 0,
+         },
+         lastPhysicalAssessments: [],
+      },
    });
 
    return (
@@ -42,12 +53,11 @@ function Dashboard() {
             </div>
 
             <div className="col-lg-8">
-               {/* <UltimosContratos contratos={contratos} /> */}
-               <UltimasAvaliacoes alunos={alunos} avaliacoes={avaliacoes} />
+               <UltimasAvaliacoes lastPhysicalAssessments={dashboard?.lastPhysicalAssessments} />
             </div>
 
             <div className="col-lg-4">
-               <InfoTotais alunos={alunos} avaliacoes={avaliacoes} />
+               <InfoTotais lengths={dashboard?.lengths} />
             </div>
          </div>
       </div>
@@ -118,23 +128,8 @@ function VerifyEmail() {
    );
 }
 
-function InfoTotais({ alunos, avaliacoes }) {
+function InfoTotais({ lengths }: DashboardProps) {
    const { t } = useTranslation("dashboard");
-   const [usuario] = useRecoilState(stateUsuario);
-
-   const { data: usuarios } = useQuery({
-      queryKey: ["usuarios", usuario.cod_usuario],
-      queryFn: () => getUsuarios(usuario.cod_empresa),
-      initialData: [],
-      enabled: !!usuario.cod_empresa,
-   });
-
-   const { data: treinos } = useQuery({
-      queryKey: ["treinos", usuario.cod_empresa],
-      queryFn: () => getTreinos({ cod_empresa: usuario.cod_empresa, findAll: true }),
-      initialData: [],
-      enabled: !!usuario.cod_empresa,
-   });
 
    return (
       <div className="card shadow-sm rounded-4">
@@ -150,8 +145,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                   <div className="ms-3">
                      <h6>{t("clientsOverview")}</h6>
                      <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{alunos.filter((client) => client.status_aluno == "A").length}</h3>
-                        {/* <span className="badge bg-primary-subtle text-primary fw-semibold rounded-pill">+8.5</span> */}
+                        <h3 className="mb-0">{lengths?.clients}</h3>
                      </div>
                   </div>
                </div>
@@ -165,7 +159,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                      <h6>{t("physicalAssessamentsOverview")}</h6>
 
                      <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{avaliacoes.length}</h3>
+                        <h3 className="mb-0">{lengths?.physicalAssessments}</h3>
                      </div>
                   </div>
                </div>
@@ -179,7 +173,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                      <h6>{t("workoutsOverview")}</h6>
 
                      <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{treinos.length}</h3>
+                        <h3 className="mb-0">{lengths.workouts}</h3>
                      </div>
                   </div>
                </div>
@@ -193,7 +187,7 @@ function InfoTotais({ alunos, avaliacoes }) {
                      <h6>{t("usersOverview")}</h6>
 
                      <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{usuarios.length}</h3>
+                        <h3 className="mb-0">{lengths.users}</h3>
                      </div>
                   </div>
                </div>
@@ -203,7 +197,7 @@ function InfoTotais({ alunos, avaliacoes }) {
    );
 }
 
-function UltimasAvaliacoes({ alunos, avaliacoes }) {
+function UltimasAvaliacoes({ lastPhysicalAssessments }) {
    const { t } = useTranslation("dashboard");
 
    return (
@@ -229,29 +223,26 @@ function UltimasAvaliacoes({ alunos, avaliacoes }) {
                   </thead>
 
                   <tbody className="table-group-divider">
-                     {!avaliacoes.length && (
+                     {!lastPhysicalAssessments.length && (
                         <tr>
-                           <td colSpan="4" className="text-center py-5">
+                           <td colSpan={4} className="text-center py-5">
                               {t("noPhysicalAssessaments")}
                            </td>
                         </tr>
                      )}
-                     {avaliacoes
-                        .sort((a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao))
-                        .slice(0, 6)
-                        .map((avaliacao) => (
-                           // eslint-disable-next-line react/jsx-key
-                           <tr>
-                              <th scope="row" className="ps-0 fw-medium">
-                                 {avaliacao?.aluno?.nome_aluno}
-                              </th>
-                              <th scope="row" className="ps-0 fw-medium">
-                                 {formatarData(avaliacao?.data_avaliacao)}
-                              </th>
-                              <td>{avaliacao?.altura} M</td>
-                              <td className="text-center fw-medium">{avaliacao?.peso} KG</td>
-                           </tr>
-                        ))}
+                     {lastPhysicalAssessments.map((physicalAssessment: LastPhysicalAssessment) => (
+                        // eslint-disable-next-line react/jsx-key
+                        <tr>
+                           <th scope="row" className="ps-0 fw-medium">
+                              {physicalAssessment?.aluno?.nome_aluno}
+                           </th>
+                           <th scope="row" className="ps-0 fw-medium">
+                              {formatarData(physicalAssessment?.data_avaliacao)}
+                           </th>
+                           <td>{physicalAssessment?.altura} M</td>
+                           <td className="text-center fw-medium">{physicalAssessment?.peso} KG</td>
+                        </tr>
+                     ))}
                   </tbody>
                </table>
             </div>
