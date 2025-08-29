@@ -1,12 +1,12 @@
-import { deleteAluno, getAlunos, recoveryAluno } from "../../api/aluno";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
-import { stateUsuario, useStateApp } from "../../states/states";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { deleteAluno, getAlunos, recoveryAluno } from "../../api/aluno";
 import { FitTable } from "../../components/baseComponents/FitTable";
-import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
+import { stateUsuario } from "../../states/states";
 
 function Alunos() {
    const { t } = useTranslation("clients");
@@ -43,11 +43,23 @@ function Alunos() {
       refetch();
    };
 
+   const Alert =
+      localStorage.getItem("validLicense") != "true" ? (
+         <div className="text-center py-3 bg-light">
+            Você pode não estar vendo todos os alunos cadastrados,{" "}
+            <a href="/configuracao?tab=3" className="text-warning">
+               clique aqui
+            </a>{" "}
+            e adquira um plano de uso.
+         </div>
+      ) : null;
+
    return (
       <div className="container-fluid">
          <div className="row">
             <div className="col-md-12">
                <FitTable.Root
+                  subHeader={Alert}
                   rowId="aluno-"
                   list={filteredAlunos}
                   title={t("listName")}

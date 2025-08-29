@@ -1,6 +1,12 @@
-import React, { useMemo, useState } from "react";
-import ListComponentFilters from "./ListComponentFilters";
+import { Button } from "@/components/ui/button";
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatarData, formatarMoeda, getNestedError } from "@/utils";
 import {
    ColumnFiltersState,
    FilterFn,
@@ -10,16 +16,10 @@ import {
    getPaginationRowModel,
    useReactTable,
 } from "@tanstack/react-table";
-import FitPagination from "../TableComponent/FitPagination";
-import {
-   DropdownMenu,
-   DropdownMenuItem,
-   DropdownMenuContent,
-   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { formatarMoeda, formatarData, getNestedError } from "@/utils";
+import React, { useMemo, useState } from "react";
+import FitPagination from "../TableComponent/FitPagination";
+import ListComponentFilters from "./ListComponentFilters";
 
 type ListComponentProps = {
    list: any[];
@@ -38,6 +38,7 @@ type ListComponentProps = {
    onClickItem?: (row: any) => void;
    buttonId?: string;
    children: (filteredList: any[]) => React.ReactNode;
+   subHeader?: React.ReactNode;
 };
 
 type DataColumnsProp = {
@@ -77,6 +78,7 @@ export default function ListComponentWrapper({
    hideHeader = false,
    hideFooter = false,
    sizeShadow = "lg",
+   subHeader,
 }: ListComponentProps) {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -167,6 +169,8 @@ export default function ListComponentWrapper({
                </div>
             </div>
          )}
+
+         {subHeader}
 
          <div className="card-body p-0 pb-5">
             <Table>
