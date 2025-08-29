@@ -131,20 +131,6 @@ export function capitalizeFirstLetter(str) {
    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-export const segundosParaTempo = (tempo) => {
-   if (typeof tempo !== "number" || tempo < 0 || !tempo) {
-      return "00:00:00";
-   }
-
-   const horas = Math.floor(tempo / 3600);
-   const minutos = Math.floor((tempo % 3600) / 60);
-   const segundos = tempo % 60;
-
-   const formatar = (num) => String(num).padStart(2, "0");
-
-   return `${formatar(horas)}:${formatar(minutos)}:${formatar(segundos)}`;
-};
-
 export const formatarData = (data) => {
    if (!data) return "";
 
@@ -368,17 +354,6 @@ export function dividirParcelas(qtdParcelas, valorTotal) {
 
    return parcelas;
 }
-
-// export const dataURLToBlob = (dataURL) => {
-//     const [header, base64] = dataURL.split(',');
-//     const mime = header.match(/:(.*?);/)[1];
-//     const binary = atob(base64);
-//     const array = new Uint8Array(binary.length);
-//     for (let i = 0; i < binary.length; i++) {
-//         array[i] = binary.charCodeAt(i);
-//     }
-//     return new Blob([array], { type: mime });
-// };
 
 export function calcularMedianaOuRepetido(num1, num2, num3) {
    const numeros = [num1, num2, num3];

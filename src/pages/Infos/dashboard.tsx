@@ -1,24 +1,13 @@
+import { getDashboard } from "@/api/app";
+import { PhysicalAssessmentType } from "@/types/physicalAssessment";
 import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { stateEmpresa } from "../../states/states";
-import { useQuery } from "react-query";
-import { setEmpresa, verifyEmail } from "../../api/usuario";
-import { formatarData } from "../../utils";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { getDashboard } from "../../api/app";
-
-type Client = {
-   nome_aluno: string;
-};
-
-type LastPhysicalAssessment = {
-   cod_avaliacao: string;
-   data_avaliacao: string;
-   altura: number;
-   peso: number;
-   aluno: Client;
-};
+import { useRecoilState } from "recoil";
+import { setEmpresa, verifyEmail } from "../../api/usuario";
+import { stateEmpresa } from "../../states/states";
+import { formatarData } from "../../utils";
 
 type DashboardProps = {
    lengths: {
@@ -27,7 +16,7 @@ type DashboardProps = {
       physicalAssessments: number;
       clients: number;
    };
-   lastPhysicalAssessments: LastPhysicalAssessment[];
+   lastPhysicalAssessments: PhysicalAssessmentType[];
 };
 
 function Dashboard() {
