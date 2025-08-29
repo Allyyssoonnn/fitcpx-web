@@ -23,7 +23,8 @@ function License() {
 
    async function onCancel() {
       nConfirm(null, "Tem certeza que deseja cancelar o plano?", async () => {
-         const resp = await cancelLicenca(licencaAtual?.cod_empresa_licenca);
+         await cancelLicenca(licencaAtual?.cod_empresa_licenca);
+         localStorage.setItem("validLicense", "false");
          refetch();
       });
    }
@@ -34,6 +35,7 @@ function License() {
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
             await buyLicenca(empresa.cod_empresa, licenca.cod_licenca);
+            localStorage.setItem("validLicense", "true");
             refetch();
          }
       );
@@ -125,7 +127,7 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
                   )}
 
                   {onCancel && licenca?.status_empresa_licenca === "Active" && !isFree && !isVIP && (
-                     <button onClick={oncancel} className="btn btn-danger rounded">
+                     <button onClick={onCancel} className="btn btn-danger rounded">
                         <i className="bi bi-x me-2"></i>
                         Cancelar
                      </button>
