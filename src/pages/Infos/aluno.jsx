@@ -1,18 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Tabs, Tab, Modal, Tooltip, OverlayTrigger } from "react-bootstrap";
-import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
-import { useQuery } from "react-query";
-import { changeAlunoIMG, deleteAvaliacao, getAluno, getAlunoContratos, getAvaliacoes, setAluno } from "../../api/aluno";
-import { deleteTreino, getTreinos, setTreino } from "../../api/treino";
-import ImageCropModal from "../../components/cutImg";
-import { useRecoilState } from "recoil";
-import { stateUsuario, useNotificacao } from "../../states/states";
-import Swal from "sweetalert2";
-import { getAlunoSessoesPacote } from "../../api/sessao";
-import { imgProfile, PRODUCAO } from "../../api/api";
-import { FitTable } from "../../components/baseComponents/FitTable";
 import { ChartBar, Clipboard, Pencil, Rotate3D, Trash } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { useQuery } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { changeAlunoIMG, deleteAvaliacao, getAluno, getAlunoContratos, getAvaliacoes, setAluno } from "../../api/aluno";
+import { imgProfile, PRODUCAO } from "../../api/api";
+import { deleteTreino, getTreinos, setTreino } from "../../api/treino";
+import { FitTable } from "../../components/baseComponents/FitTable";
+import ImageCropModal from "../../components/cutImg";
+import { stateUsuario, useNotificacao } from "../../states/states";
+import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
 
 function Aluno() {
    const { nConfirm } = useNotificacao();
@@ -54,12 +52,6 @@ function Aluno() {
       queryFn: () => getAlunoContratos(cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
-   });
-
-   const { data: alunoSessoes } = useQuery({
-      queryKey: ["alunoSessoes"],
-      queryFn: () => getAlunoSessoesPacote(cod_aluno),
-      initialData: [],
    });
 
    useEffect(() => {
@@ -104,20 +96,11 @@ function Aluno() {
    };
 
    async function changeStatusAluno() {
-      Swal.fire({
-         title: "Carregando...",
-         text: "Aguarde",
-         allowOutsideClick: false,
-         didOpen: () => {
-            Swal.showLoading();
-         },
-      });
       await setAluno({
          ...aluno,
          status_aluno: aluno.status_aluno == "I" ? "A" : "I",
       });
       refetchAluno();
-      Swal.close();
    }
 
    if (isLoading)
