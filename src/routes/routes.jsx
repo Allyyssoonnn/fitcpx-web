@@ -37,7 +37,6 @@ import Configuracao from "../pages/Infos/configuracao";
 import Contrato from "../pages/Infos/contrato";
 import Dashboard from "../pages/Infos/dashboard";
 import FinanceOverview from "../pages/Infos/financeOverview";
-import PacoteSessao from "../pages/Infos/pacoteSessao";
 import Alimentos from "../pages/Lists/alimentos";
 import Cardapios from "../pages/Lists/cardapios";
 import GrupoAlimentos from "../pages/Lists/grupoAlimentos";
@@ -88,7 +87,6 @@ const routes = [
    { path: "/relatorios", name: "Licença", element: Relatorios },
    { path: "/configuracao", name: "Licença", element: Configuracao },
    { path: "/contrato", name: "Licença", element: Contrato },
-   { path: "/pacoteSessao", name: "Licença", element: PacoteSessao },
    { path: "/financeOverview", name: "Licença", element: FinanceOverview },
 ];
 

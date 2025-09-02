@@ -7,8 +7,8 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { getAluno } from "../../api/aluno";
 import { getResultPhysicalAssesment } from "../../api/avaliacao";
+import { getStudent } from "../../api/student";
 import { stateEmpresa } from "../../states/states";
 import {
    calculaKGMCMMeta,
@@ -50,7 +50,7 @@ function Avaliacao() {
          const avaliacaoRecebida = location.state?.avaliacao;
          var alunoRecebido = location.state?.aluno;
          if (!alunoRecebido?.cod_aluno && avaliacaoRecebida?.cod_aluno)
-            alunoRecebido = await getAluno(avaliacaoRecebida?.cod_aluno);
+            alunoRecebido = await getStudent(avaliacaoRecebida?.cod_aluno);
          avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate("/alunos");
          alunoRecebido ? setAluno(alunoRecebido) : navigate("/alunos");
       })();
