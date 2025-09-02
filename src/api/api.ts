@@ -17,6 +17,12 @@ api.interceptors.response.use(
       const cookies = parseCookies();
       const originalRequest = error.config;
 
+      if (error.response?.data?.error) {
+         toast.error(error.response.data.error, {
+            toastId: "api-error",
+         });
+      }
+
       if (error.response?.status === 403) {
          const msg = error.response.data?.message || "Você não tem permissão para acessar este recurso.";
          toast.error(msg, {

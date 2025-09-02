@@ -1,16 +1,14 @@
-import { useForm } from "react-hook-form";
-import { post } from "../../api/api";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { parseCookies, setCookie } from "nookies";
+import { setCookie } from "nookies";
 import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { stateEmpresa, stateUsuario, useStateApp } from "../../states/states";
-import { loggedGoogle, loginGoogle, getGoogleConnect } from "../../api/usuario";
+import { login } from "../../api/user";
+import { loggedGoogle, loginGoogle } from "../../api/usuario";
+import { stateEmpresa, stateUsuario } from "../../states/states";
 
 function Login() {
    const { handleSubmit, register } = useForm();
-   const navigate = useNavigate();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
    const [empresa, setempresa] = useRecoilState(stateEmpresa);
 
@@ -45,9 +43,9 @@ function Login() {
       if (url) window.location.href = url;
    }
 
-   async function login(data) {
-      const resp = await post("/usuario/login", data);
-      if (resp.status) {
+   async function onLogin(data) {
+      const resp = await login({ email: data.email, password: data.senha });
+      if (resp.token) {
          localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
          setCookie(null, "token", resp.token, { maxAge: 60 * 60 * 7 });
@@ -77,7 +75,7 @@ function Login() {
 
                            <div className="border mb-3" />
 
-                           <form onSubmit={handleSubmit(login)}>
+                           <form onSubmit={handleSubmit(onLogin)}>
                               <div className="mb-3">
                                  <label className="form-label">E-mail</label>
                                  <input
