@@ -1,46 +1,46 @@
 //LISTAS
 import Alunos from "../pages/Lists/alunos";
-import Usuarios from "../pages/Lists/usuarios";
+import Avaliacoes from "../pages/Lists/avaliacoes";
+import Contratos from "../pages/Lists/contratos";
 import Exercicios from "../pages/Lists/exercicios";
 import GrupoExercicios from "../pages/Lists/grupoExercicios";
-import Treinos from "../pages/Lists/treinos";
-import Avaliacoes from "../pages/Lists/avaliacoes";
-import Planos from "../pages/Lists/planos";
 import Modalidades from "../pages/Lists/modalidades";
 import ModContratos from "../pages/Lists/modContratos";
-import Contratos from "../pages/Lists/contratos";
+import Planos from "../pages/Lists/planos";
+import Treinos from "../pages/Lists/treinos";
+import Users from "../pages/Lists/users";
 
 import Agenda from "../pages/Infos/agenda";
-import Planilha from "../pages/Lists/planilha";
 import Relatorios from "../pages/Infos/relatorios";
+import Planilha from "../pages/Lists/planilha";
 
 // ===============================================
 
+import CadAlimento from "../pages/Forms/cadAlimento";
 import CadAluno from "../pages/Forms/cadAluno";
-import Dashboard from "../pages/Infos/dashboard";
-import Aluno from "../pages/Infos/aluno";
 import CadAvaliacao from "../pages/Forms/cadavaliacao";
+import CadCardapio from "../pages/Forms/cadCardapio";
+import CadContrato from "../pages/Forms/cadContrato";
+import CadExercicio from "../pages/Forms/cadExercicio";
+import CadGrupoAlimento from "../pages/Forms/cadGrupoAlimento";
+import CadGrupoExercicio from "../pages/Forms/cadGrupoExercicio";
+import CadModalidade from "../pages/Forms/cadModalidade";
+import CadPlano from "../pages/Forms/cadPlano";
+import CadSessao from "../pages/Forms/cadSessao";
+import CadTreino from "../pages/Forms/cadTreino";
+import CadUsuario from "../pages/Forms/cadusuario";
+import ContratacaoPlano from "../pages/Forms/contratacaoPlano";
+import Aluno from "../pages/Infos/aluno";
 import Avaliacao from "../pages/Infos/avaliacao";
 import CompareAvaliacao from "../pages/Infos/compareAvaliacao";
-import CadTreino from "../pages/Forms/cadTreino";
-import CadGrupoExercicio from "../pages/Forms/cadGrupoExercicio";
-import CadExercicio from "../pages/Forms/cadExercicio";
-import CadSessao from "../pages/Forms/cadSessao";
-import CadUsuario from "../pages/Forms/cadusuario";
-import Cardapios from "../pages/Lists/cardapios";
-import CadCardapio from "../pages/Forms/cadCardapio";
-import Alimentos from "../pages/Lists/alimentos";
-import GrupoAlimentos from "../pages/Lists/grupoAlimentos";
-import CadGrupoAlimento from "../pages/Forms/cadGrupoAlimento";
-import CadAlimento from "../pages/Forms/cadAlimento";
-import CadPlano from "../pages/Forms/cadPlano";
-import CadModalidade from "../pages/Forms/cadModalidade";
-import ContratacaoPlano from "../pages/Forms/contratacaoPlano";
-import CadContrato from "../pages/Forms/cadContrato";
 import Configuracao from "../pages/Infos/configuracao";
 import Contrato from "../pages/Infos/contrato";
-import PacoteSessao from "../pages/Infos/pacoteSessao";
+import Dashboard from "../pages/Infos/dashboard";
 import FinanceOverview from "../pages/Infos/financeOverview";
+import PacoteSessao from "../pages/Infos/pacoteSessao";
+import Alimentos from "../pages/Lists/alimentos";
+import Cardapios from "../pages/Lists/cardapios";
+import GrupoAlimentos from "../pages/Lists/grupoAlimentos";
 
 const routes = [
    //Base
@@ -48,8 +48,8 @@ const routes = [
    { path: "/dashboard", name: "Dashboard", element: Dashboard },
 
    //Listas
+   { path: "/users", name: "Alunos", element: Users },
    { path: "/alunos", name: "Alunos", element: Alunos },
-   { path: "/usuarios", name: "Alunos", element: Usuarios },
    { path: "/exercicios", name: "Licença", element: Exercicios },
    { path: "/grupoexercicios", name: "Licença", element: GrupoExercicios },
    { path: "/treinos", name: "Licença", element: Treinos },

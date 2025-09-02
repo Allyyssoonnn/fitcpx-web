@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { stateApp, stateEmpresa, useNotificacao, useToggleSidebar } from "../states/states";
-import { useRecoilState } from "recoil";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { PRODUCAO } from "../api/api";
-import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { PRODUCAO } from "../api/api";
+import { sendFeedback } from "../api/app";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { useForm } from "react-hook-form";
-import { sendFeedback } from "../api/app";
+import { stateApp, stateEmpresa, useNotificacao, useToggleSidebar } from "../states/states";
 
 function Sidebar() {
    const [empresa] = useRecoilState(stateEmpresa);
@@ -357,7 +357,7 @@ function Sidebar() {
                               id="users"
                               href="#"
                               className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1"
-                              onClick={() => go("/usuarios")}
+                              onClick={() => go("/users")}
                               aria-expanded="false"
                               whileHover={{ backgroundColor: "rgba(255, 193, 7, 0.1)" }}
                               whileTap={{ scale: 0.98 }}

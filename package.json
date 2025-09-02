@@ -13,6 +13,7 @@
     "dev:usuario": "cross-env VITE_BUILD_TYPE=usuario vite"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.19",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
@@ -32,6 +33,7 @@
     "@stripe/stripe-js": "^7.3.0",
     "@tailwindcss/vite": "^4.1.10",
     "@tanstack/react-table": "^8.21.3",
+    "ag-grid-community": "^34.1.2",
     "ag-grid-enterprise": "^33.0.4",
     "ag-grid-react": "^33.0.4",
     "apexcharts": "^4.1.0",
@@ -54,6 +56,7 @@
     "nookies": "^2.5.2",
     "npm": "^10.9.2",
     "print-js": "^1.6.0",
+    "prop-types": "^15.8.1",
     "radix-ui": "^1.4.2",
     "react": "^18.3.1",
     "react-apexcharts": "^1.7.0",
