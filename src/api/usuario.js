@@ -60,12 +60,6 @@ export const setUsuario = async (usuario) => {
    throw new Error("Erro ao carregar alunos");
 };
 
-export const getEmpresa = async (cod_empresa) => {
-   const resp = await post("/usuario/getEmpresa", { cod_empresa });
-   if (resp.status) return resp.empresa;
-   throw new Error("Erro ao carregar alunos");
-};
-
 export const setEmpresa = async (empresa) => {
    const resp = await post("/usuario/setEmpresa", { empresa });
    if (resp.status) return resp.empresa;

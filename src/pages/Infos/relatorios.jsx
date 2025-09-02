@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { getAlunos, getAvaliacoes } from "../../api/aluno";
+import { getAvaliacoes } from "../../api/aluno";
+import { getStudents } from "../../api/student";
 import { getTreinos } from "../../api/treino";
 import { getUsers } from "../../api/user";
 import VisualizarRel from "../../components/visualizarRel";
@@ -49,7 +50,7 @@ function Relatorios() {
       var data = [];
 
       //Alunos
-      if (tipo == "Alunos") data = removeObjetosArray(await getAlunos(usuario.cod_usuario, usuario.cod_empresa));
+      if (tipo == "Alunos") data = removeObjetosArray(await getStudents());
       if (tipo == "Avaliações") data = removeObjetosArray(await getAvaliacoes(usuario.cod_empresa));
       //Usuários
       if (tipo == "Usuários") data = removeObjetosArray(await getUsers(usuario.cod_empresa));

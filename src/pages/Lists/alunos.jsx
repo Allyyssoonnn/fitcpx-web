@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { deleteAluno, getAlunos, recoveryAluno } from "../../api/aluno";
+import { deleteAluno, recoveryAluno } from "../../api/aluno";
+import { getStudents } from "../../api/student";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import { stateUsuario } from "../../states/states";
 
@@ -15,15 +16,15 @@ function Alunos() {
    const [deleted, setDeleted] = useState(false);
 
    const { data: alunos, refetch } = useQuery({
-      queryKey: ["alunos", usuario.cod_usuario],
-      queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa, deleted),
+      queryKey: ["students"],
+      queryFn: () => getStudents(deleted),
       initialData: [],
       enabled: !!usuario.cod_empresa,
    });
 
    useEffect(() => {
       refetch();
-   }, [deleted]);
+   }, [deleted, refetch]);
 
    const navigate = useNavigate();
 

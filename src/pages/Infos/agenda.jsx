@@ -1,20 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { useEffect, useRef, useState } from "react";
 import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { stateEmpresa, stateUsuario } from "../../states/states";
+import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { conectedGoogle, conectGoogle, getAgenda, setAgenda, syncGoogleEvents } from "../../api/agenda";
-import { useQuery } from "react-query";
-import { getAlunos } from "../../api/aluno";
-import { getGoogleConnect } from "../../api/usuario";
-import FitSelectForm from "../../components/baseComponents/FitSelectForm";
-import FitInputForm from "../../components/baseComponents/FitInputForm";
 import { getModalidades } from "../../api/plano";
+import { getGoogleConnect } from "../../api/usuario";
+import FitInputForm from "../../components/baseComponents/FitInputForm";
+import FitSelectForm from "../../components/baseComponents/FitSelectForm";
+import { stateEmpresa, stateUsuario } from "../../states/states";
 import { formatDateToLocalInput } from "../../utils";
 
 function Agenda() {
@@ -124,8 +123,8 @@ function Calendario() {
    } = useForm();
 
    const { data: alunos } = useQuery({
-      queryKey: ["alunos", usuario.cod_usuario],
-      queryFn: () => getAlunos(usuario.cod_usuario, usuario.cod_empresa),
+      queryKey: ["alunos"],
+      queryFn: getStudents,
       initialData: [],
       enabled: !!usuario.cod_empresa,
    });
@@ -416,6 +415,7 @@ function Calendario() {
 }
 
 import { useWatch } from "react-hook-form";
+import { getStudents } from "../../api/student";
 
 const CorEventoPreset = ({ register, control, errors }) => {
    const selectedColor = useWatch({ control, name: "cor_evento" });
