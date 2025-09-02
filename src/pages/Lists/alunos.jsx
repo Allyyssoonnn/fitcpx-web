@@ -1,12 +1,12 @@
-import { deleteAluno, getAlunos, recoveryAluno } from "../../api/aluno";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
-import { stateUsuario, useStateApp } from "../../states/states";
+import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { deleteAluno, getAlunos, recoveryAluno } from "../../api/aluno";
 import { FitTable } from "../../components/baseComponents/FitTable";
-import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
+import { stateUsuario } from "../../states/states";
 
 function Alunos() {
    const { t } = useTranslation("clients");
@@ -54,7 +54,7 @@ function Alunos() {
                   description={`${filteredAlunos?.length} ${filteredAlunos?.length > 1 ? "Alunos" : "Aluno"}`}
                   buttonText={t("newButtonText")}
                   fieldSearch="nome_aluno"
-                  buttonOnClick={localStorage.getItem("validLicense") == "true" ? () => navigate("/cadaluno") : null}
+                  buttonOnClick={() => navigate("/cadaluno")}
                   onClickItem={(row) => navigate("/aluno", { state: { cod_aluno: row.cod_aluno } })}
                   buttonId="newClient"
                   columns={[
