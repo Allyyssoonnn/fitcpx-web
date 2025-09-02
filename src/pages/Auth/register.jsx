@@ -1,13 +1,13 @@
 import { setCookie } from "nookies";
+import { useState } from "react";
+import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { post } from "../../api/api";
-import { Modal } from "react-bootstrap";
-import { useState } from "react";
-import { stateEmpresa, stateUsuario } from "../../states/states";
 import { useRecoilState } from "recoil";
+import { userRegister } from "../../api/user";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
+import { stateEmpresa, stateUsuario } from "../../states/states";
 
 function Register() {
    const navigate = useNavigate();
@@ -32,9 +32,16 @@ function Register() {
          clearErrors("acceptTerms");
       }
 
-      const resp = await post("/usuario/register", data);
+      if (data.password !== data.confirmPassword) {
+         setError("confirmPassword", { type: "manual", message: "As senhas não coincidem." });
+         return;
+      } else {
+         clearErrors("confirmPassword");
+      }
 
-      if (resp.status) {
+      const resp = await userRegister(data);
+
+      if (resp.token) {
          localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
          setusuario(resp?.usuario);
@@ -77,7 +84,7 @@ function Register() {
                                  classNameContainer="mb-3"
                                  nameField="Nome"
                                  errors={errors}
-                                 {...register("nome_usuario", { required: true, minLength: 5 })}
+                                 {...register("name", { required: true, minLength: 5 })}
                               />
 
                               <FitInputForm
@@ -86,7 +93,7 @@ function Register() {
                                  classNameContainer="mb-3"
                                  nameField="E-mail"
                                  errors={errors}
-                                 {...register("email_usuario", { required: true })}
+                                 {...register("email", { required: true })}
                               />
 
                               <FitInputForm
@@ -95,7 +102,7 @@ function Register() {
                                  classNameContainer="mb-3"
                                  nameField="Senha"
                                  errors={errors}
-                                 {...register("senha_usuario", { required: true, minLength: 5 })}
+                                 {...register("password", { required: true, minLength: 5 })}
                               />
 
                               <FitInputForm
@@ -104,7 +111,7 @@ function Register() {
                                  classNameContainer="mb-3"
                                  nameField="Confirmar senha"
                                  errors={errors}
-                                 {...register("senha_confirma", { required: true, minLength: 5 })}
+                                 {...register("confirmPassword", { required: true, minLength: 5 })}
                               />
 
                               <div className="mb-4 form-check">
