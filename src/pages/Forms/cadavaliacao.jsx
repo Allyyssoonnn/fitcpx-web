@@ -1,21 +1,21 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
-import { stateUsuario, useNotificacao } from "../../states/states";
+import { useForm } from "react-hook-form";
+import { useQuery } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { sendAvaliacaoIMG, setAvaliacao } from "../../api/aluno";
-import { useQuery } from "react-query";
 import { getProtocolos } from "../../api/usuario";
-import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
-import { toast } from "react-toastify";
-import Imagens from "./cadAvaliacao/imagens";
-import Dobras from "./cadAvaliacao/dobras";
-import Perimetros from "./cadAvaliacao/perimetros";
-import Diametros from "./cadAvaliacao/diametros";
-import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
 import { useFormStore } from "../../hooks/useFormStore";
+import { stateUsuario, useNotificacao } from "../../states/states";
+import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
+import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
+import Diametros from "./cadAvaliacao/diametros";
+import Dobras from "./cadAvaliacao/dobras";
+import Imagens from "./cadAvaliacao/imagens";
+import Perimetros from "./cadAvaliacao/perimetros";
 
 function CadAvaliacao() {
    const { nLoading, endLoading } = useNotificacao();
@@ -48,7 +48,6 @@ function CadAvaliacao() {
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
    const [tipoAvaliacao, setTipoAvaliacao] = useState("");
-   const [isEditingEnabled, setIsEditingEnabled] = useState(false);
    const [protocolo, setProtocolo] = useState(0);
    const [ocultarCampos, setOcultarCampos] = useState(false);
 
@@ -105,19 +104,10 @@ function CadAvaliacao() {
    }, [setValue, location]);
 
    useEffect(() => {
-      const loadFromLocalStorage = (key, setter) => {
-         const savedData = localStorage.getItem(key);
-         if (savedData) setter(JSON.parse(savedData));
-      };
-
-      // Detecta se o navegador é compatível com SpeechRecognition
       const isSupported = "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
       if (!isSupported) {
          alert("Seu navegador não suporta reconhecimento de fala.");
       }
-      // loadFromLocalStorage("perimetros", setPerimetros);
-      // loadFromLocalStorage("perimetrosDireito", setPerimetrosDireito);
-      // loadFromLocalStorage("perimetrosEsquerdo", setPerimetrosEsquerdo);
       window.scrollTo({ top: 0, behavior: "smooth" });
    }, []);
 
@@ -160,7 +150,7 @@ function CadAvaliacao() {
 
       // Iterar sobre as imagens capturadas e adicioná-las ao FormData
       Object.entries(capturedImages).forEach(([key, imageData]) => {
-         if (!imageData.includes("amazonaws.com")) {
+         if (!imageData.includes("media.fitcpx.com")) {
             const imageBlob = dataURLToBlob(imageData);
             // const imageBlob = imageData;
             const fileSizeMB = (imageBlob.size / (1024 * 1024)).toFixed(2);
@@ -176,15 +166,6 @@ function CadAvaliacao() {
       } catch (error) {
          console.error("Erro na requisição:", error);
       }
-   };
-
-   const resetOrdering = () => {
-      localStorage.removeItem("perimetros");
-      localStorage.removeItem("perimetrosDireito");
-      localStorage.removeItem("perimetrosEsquerdo");
-      // setPerimetros(perimetroFields);
-      // setPerimetrosDireito(perimetroDireitoFields);
-      // setPerimetrosEsquerdo(perimetroEsquerdoFields);
    };
 
    const startSpeechRecognition = (inputName) => {
@@ -253,30 +234,6 @@ function CadAvaliacao() {
          </div>
 
          <div className="card">
-            {/* <div className="card-header d-flex justify-content-between align-items-center"> */}
-            {/* {activeTab === 'perimetros' && (
-                        <button
-                            type="button"
-                            className={`btn ${isEditingEnabled ? 'btn-warning' : 'btn-warning'} mb-3 me-3`}
-                            onClick={() => setIsEditingEnabled(!isEditingEnabled)}
-                        >
-                            <i className="bi bi-pen me-2"></i>
-                            {isEditingEnabled ? 'Desativar edição' : 'Editar ordem'}
-                        </button>
-                    )}
-
-                    {(activeTab === 'perimetros' && isEditingEnabled) && (
-                        <button
-                            type="button"
-                            className={`btn ${isEditingEnabled ? 'btn-danger' : 'btn-warning'} mb-3`}
-                            onClick={resetOrdering}
-                        >
-                            <i className="bi bi-back me-2"></i>
-                            Resetar ordenação
-                        </button>
-                    )} */}
-            {/* </div> */}
-
             <form onKeyDown={preventForm} className="card-body shadow-lg rounded-4" onSubmit={handleSubmit(confirma)}>
                <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
 
@@ -467,20 +424,14 @@ function CadAvaliacao() {
                   >
                      <Perimetros
                         getValues={getValues}
-                        isEditingEnabled={isEditingEnabled}
+                        isEditingEnabled={false}
                         metodoPerimetro={metodoPerimetro}
                         ocultarCampos={ocultarCampos}
-                        // perimetros={perimetros}
-                        // perimetrosDireito={perimetrosDireito}
-                        // perimetrosEsquerdo={perimetrosEsquerdo}
                         register={register}
                         setMetodoPerimetro={setMetodoPerimetro}
                         setValue={setValue}
                         startSpeechRecognition={startSpeechRecognition}
                         tipoAvaliacao={tipoAvaliacao}
-                        // setPerimetros={setPerimetros}
-                        // setPerimetrosEsquerdo={setPerimetrosEsquerdo}
-                        // setPerimetrosDireito={setPerimetrosDireito}
                         watch={watch}
                      />
                   </Tab>
