@@ -165,7 +165,6 @@ function Imagens({
    };
 
    const removePhoto = (option) => {
-      console.log("Removendo foto");
       if (editImages[option]) {
          setEditImages((prevImages) => {
             const updatedImages = { ...prevImages };
@@ -173,7 +172,6 @@ function Imagens({
             return updatedImages;
          });
       }
-      console.log(capturedImages);
       //Preenche caso já tenha salvo uma imagem para que seja deletada
       if (capturedImages[option].includes("media.fitcpx.com")) {
          setDeletedImages((prevImages) => [...prevImages, capturedImages[option]]);
@@ -197,6 +195,7 @@ function Imagens({
       <div className="col-md-3 text-center" onDrop={(e) => handleDrop(e, option)} onDragOver={handleDragOver}>
          <div className="upload-option border border-dark rounded p-3">
             {option}
+
             {capturedImages[option] ? (
                <div className="mb-2">
                   <img src={capturedImages[option]} style={{ width: "100%", border: "1px solid black" }} />
@@ -216,7 +215,9 @@ function Imagens({
                   Arraste uma imagem aqui
                </div>
             )}
+
             <p></p>
+
             <button
                onClick={(e) => {
                   e.preventDefault();
@@ -227,6 +228,7 @@ function Imagens({
                <i className="bi bi-upload me-2"></i>
                Carregar
             </button>
+
             {capturedImages[option] && (
                <button
                   onClick={(e) => {
@@ -239,7 +241,9 @@ function Imagens({
                   Remover
                </button>
             )}
+
             <p></p>
+
             <input
                className="form-control"
                placeholder="Descrição imagem"
@@ -247,12 +251,14 @@ function Imagens({
                value={imageDescriptions[option] || ""}
                onChange={(e) => updateDescription(option, e.target.value)}
             />
+
             <input
                type="file"
                ref={(el) => (fileInputRefs.current[option] = el)}
                style={{ display: "none" }}
                onChange={(e) => handleFileChange(e, option)}
             />
+
             <button
                onClick={(e) => {
                   e.preventDefault();
@@ -263,6 +269,7 @@ function Imagens({
                <i className="bi bi-pen me-2"></i>
                Editar
             </button>
+
             <button
                onClick={(e) => {
                   e.preventDefault();
@@ -292,11 +299,8 @@ function Imagens({
       }
       setOptions((prevOptions) => prevOptions.filter((o) => o !== option));
       //Preenche caso já tenha salvo uma imagem para que seja deletada
-      if (capturedImages[option]?.includes("media.fitcpx.com")) {
-         setDeletedImages((prevImages) => ({
-            ...prevImages,
-            [currentOption]: capturedImages[option],
-         }));
+      if (capturedImages[option].includes("media.fitcpx.com")) {
+         setDeletedImages((prevImages) => [...prevImages, capturedImages[option]]);
       }
       setCapturedImages((prevImages) => {
          const updatedImages = { ...prevImages };
