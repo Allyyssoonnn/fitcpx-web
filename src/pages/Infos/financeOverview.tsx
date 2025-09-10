@@ -66,15 +66,17 @@ export default function FinanceOverview() {
 
    return (
       <div className="container-fluid">
-         <div>
-            <div className="text-center py-3 bg-light">
-               Você não preencheu a chave PIX para repasses,{" "}
-               <a href="/configuracao?tab=2" className="text-success">
-                  clique aqui
-               </a>{" "}
-               e preencha para receber os repasses.
+         {(!empresa?.pix_empresa || empresa?.pix_empresa == "") && (
+            <div>
+               <div className="text-center py-3 bg-light">
+                  Você não preencheu a chave PIX para repasses,{" "}
+                  <a href="/configuracao?tab=2" className="text-success">
+                     clique aqui
+                  </a>{" "}
+                  e preencha para receber os repasses.
+               </div>
             </div>
-         </div>
+         )}
 
          <div className="row">
             <div className="col-md-3">
