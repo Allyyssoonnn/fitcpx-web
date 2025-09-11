@@ -10,6 +10,7 @@ import { useRecoilState } from "recoil";
 import { getResultPhysicalAssesment } from "../../api/avaliacao";
 import { getStudent } from "../../api/student";
 import { stateEmpresa } from "../../states/states";
+
 import {
    calculaKGMCMMeta,
    calculaKGMusculoMeta,
@@ -98,6 +99,21 @@ function Avaliacao() {
                </button>
 
                <div className="d-flex gap-2 items-center">
+                  <button
+                     onClick={() =>
+                        navigate("/cadavaliacao", {
+                           state: {
+                              avaliacao,
+                              aluno,
+                           },
+                        })
+                     }
+                     className="btn btn-outline-warning rounded-pill px-4"
+                  >
+                     <i className="bi bi-pen"></i>
+                     <span className="d-none d-md-inline-block ms-2">Editar</span>
+                  </button>
+
                   <button
                      onClick={() => navigate("/compareavaliacao", { state: { avaliacao, aluno } })}
                      className="btn btn-outline-danger rounded-pill px-4"
