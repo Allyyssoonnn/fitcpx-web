@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { login } from "../../api/user";
+import { userLogin } from "../../api/user";
 import { loggedGoogle, loginGoogle } from "../../api/usuario";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 
@@ -31,8 +31,6 @@ function Login() {
             } else {
                toast.error(resp?.msg);
             }
-            // const resp2 = await getGoogleConnect(usuario?.cod_empresa);
-            // setusuario(prev => ({ ...prev, google: resp2 }));
          }
       })();
    }, []);
@@ -44,7 +42,7 @@ function Login() {
    }
 
    async function onLogin(data) {
-      const resp = await login({ email: data.email, password: data.senha });
+      const resp = await userLogin({ email: data.email, password: data.senha });
       if (resp.token) {
          localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);

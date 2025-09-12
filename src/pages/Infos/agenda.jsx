@@ -8,9 +8,8 @@ import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
-import { conectedGoogle, conectGoogle, getAgenda, setAgenda, syncGoogleEvents } from "../../api/agenda";
+import { getAgenda, setAgenda } from "../../api/agenda";
 import { getModalidades } from "../../api/plano";
-import { getGoogleConnect } from "../../api/usuario";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
 import { stateEmpresa, stateUsuario } from "../../states/states";
@@ -19,41 +18,6 @@ import { formatDateToLocalInput } from "../../utils";
 function Agenda() {
    const [empresa] = useRecoilState(stateEmpresa);
    const [usuario, setusuario] = useRecoilState(stateUsuario);
-
-   useEffect(() => {
-      (async function conect() {
-         const params = new URLSearchParams(window.location.search);
-         const code = params.get("code");
-         const scope = params.get("scope");
-
-         if (code) {
-            const resp = await conectedGoogle(code, scope, empresa?.cod_empresa);
-
-            // Remove code e scope da URL
-            params.delete("code");
-            params.delete("scope");
-
-            // Atualiza a URL sem os parâmetros
-            window.history.replaceState({}, document.title, window.location.pathname + "?" + params.toString());
-
-            const resp2 = await getGoogleConnect(empresa?.cod_empresa);
-            setusuario((prev) => ({ ...prev, google: resp2 }));
-         }
-      })();
-      (async function getConnected() {
-         // if (usuario?.google?.email_google) return;
-         const resp = await getGoogleConnect(empresa?.cod_empresa);
-         setusuario((prev) => ({ ...prev, google: resp }));
-      })();
-   }, []);
-
-   async function conect() {
-      window.location.href = await conectGoogle();
-   }
-
-   async function syncEvents() {
-      await syncGoogleEvents(usuario?.cod_empresa);
-   }
 
    return (
       <div className="container-fluid">
@@ -82,23 +46,6 @@ function Agenda() {
                         height="18"
                      />
                      <span className="flex-shrink-0">{usuario?.google?.email_google}</span>
-                  </button>
-               </div>
-
-               <div className="col-3 mb-2 mb-sm-0">
-                  <button
-                     onClick={syncEvents}
-                     className={`${
-                        !usuario?.google?.email_google && "d-none"
-                     } btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`}
-                  >
-                     <img
-                        src="../assets/images/svgs/google-icon.svg"
-                        className="img-fluid me-2"
-                        width="18"
-                        height="18"
-                     />
-                     <span className="flex-shrink-0">Sincronizar eventos</span>
                   </button>
                </div>
             </div>

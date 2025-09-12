@@ -12,12 +12,6 @@ export const loggedGoogle = async (code, scope, cod_empresa) => {
    throw new Error("Erro ao carregar alunos");
 };
 
-export const getGoogleConnect = async (cod_empresa) => {
-   const resp = await post("/agenda/getGoogleConnect", { cod_empresa });
-   if (resp.status) return resp.google;
-   throw new Error("Erro ao carregar agendas");
-};
-
 export const recovery = async (email) => {
    const resp = await post("/usuario/recovery", { email });
    if (resp.status) return resp.usuario;
