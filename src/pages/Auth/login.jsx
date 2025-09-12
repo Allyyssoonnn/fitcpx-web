@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
+import { getGoogleUrlLogin, loggedGoogle } from "../../api/google";
 import { userLogin } from "../../api/user";
-import { loggedGoogle, loginGoogle } from "../../api/usuario";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 
 function Login() {
@@ -21,7 +21,7 @@ function Login() {
          if (code) {
             const resp = await loggedGoogle(code, scope, usuario?.cod_empresa);
 
-            if (resp.status) {
+            if (resp.token) {
                toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
                setCookie(null, "token", resp.token, { maxAge: 60 * 60 * 7 });
                setCookie(null, "refreshToken", resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
@@ -37,7 +37,7 @@ function Login() {
 
    async function conect(e) {
       e.preventDefault();
-      const url = await loginGoogle();
+      const url = await getGoogleUrlLogin();
       if (url) window.location.href = url;
    }
 

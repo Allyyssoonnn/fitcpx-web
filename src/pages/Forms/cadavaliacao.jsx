@@ -2,12 +2,10 @@
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { sendAvaliacaoIMG, setAvaliacao } from "../../api/aluno";
-import { getProtocolos } from "../../api/usuario";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
@@ -32,12 +30,33 @@ function CadAvaliacao() {
    const navigate = useNavigate();
    const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
-
-   const { data: protocolos, isLoading } = useQuery({
-      queryKey: ["protocolo"],
-      queryFn: () => getProtocolos(usuario.cod_usuario),
-      initialData: [],
-   });
+   const [protocolos] = useState([
+      {
+         cod_protocolo: 1,
+         nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
+         categoria_protocolo: "Geral",
+      },
+      {
+         cod_protocolo: 2,
+         nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
+         categoria_protocolo: "Masculino",
+      },
+      {
+         cod_protocolo: 3,
+         nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
+         categoria_protocolo: "Masculino",
+      },
+      {
+         cod_protocolo: 4,
+         nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
+         categoria_protocolo: "Feminino",
+      },
+      {
+         cod_protocolo: 5,
+         nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+         categoria_protocolo: "Feminino",
+      },
+   ]);
 
    const [capturedImages, setCapturedImages] = useState({});
    const [imageDescriptions, setImageDescriptions] = useState({});
