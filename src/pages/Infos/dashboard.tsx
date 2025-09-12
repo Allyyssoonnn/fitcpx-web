@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { setEmpresa, verifyEmail } from "../../api/usuario";
+import { resendConfirmationCode } from "../../api/user";
+import { setEmpresa } from "../../api/usuario";
 import { stateEmpresa } from "../../states/states";
 import { formatarData } from "../../utils";
 
@@ -64,7 +65,7 @@ function VerifyEmail() {
          return;
       }
       localStorage.setItem("emailCount", count ? count + 1 : 1);
-      verifyEmail(empresa.cod_empresa);
+      resendConfirmationCode(empresa.cod_empresa);
    }
 
    async function confirmEmail() {

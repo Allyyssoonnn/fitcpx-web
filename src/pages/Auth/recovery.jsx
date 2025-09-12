@@ -1,14 +1,14 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { recovery } from "../../api/usuario";
 import { toast } from "react-toastify";
+import { recoveryAccount } from "../../api/user";
 
 function Recovery() {
    const { handleSubmit, register } = useForm();
    const navigate = useNavigate();
 
    async function recoveryPassword(data) {
-      const resp = await recovery(data.email);
+      const resp = await recoveryAccount(data.email);
 
       if (resp.status) {
          navigate("/entrar");

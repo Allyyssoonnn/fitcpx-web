@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { changePassword, verifyTokenRecovery } from "../../api/usuario";
 import { useForm } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { updatePassword } from "../../api/user";
 
 function RecuperacaoSenha() {
    const { register, handleSubmit } = useForm();
    const location = useLocation();
-   const [email, setEmail] = useState("");
-   const [error, setError] = useState();
    const [token, setToken] = useState("");
    const [senhaAlterada, setSenhaAlterada] = useState(false);
 
@@ -16,9 +14,6 @@ function RecuperacaoSenha() {
       (async function load() {
          const token = new URLSearchParams(location.search).get("token");
          setToken(token);
-         const resp = await verifyTokenRecovery(token);
-         setError(resp.msg);
-         setEmail(resp.email_usuario);
       })();
    }, []);
 
@@ -28,10 +23,8 @@ function RecuperacaoSenha() {
          return;
       }
 
-      const resp = await changePassword(token, data.nova_senha);
-      if (resp.status) {
-         setSenhaAlterada(true);
-      }
+      const resp = await updatePassword(token, data.nova_senha);
+      if (resp) setSenhaAlterada(true);
    }
 
    return (
@@ -41,7 +34,7 @@ function RecuperacaoSenha() {
                <div className="row justify-content-center w-100">
                   <div className="col-md-8 col-lg-6 col-xxl-3">
                      <div className="card mb-0 shadow-lg">
-                        {!error && !senhaAlterada && (
+                        {!senhaAlterada && (
                            <form onSubmit={handleSubmit(submit)} className="card-body">
                               <div className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center align-items-center">
                                  <img src="../assets/images/logos/logo.png" width="60" alt="" />
@@ -51,8 +44,6 @@ function RecuperacaoSenha() {
                               <h5 className="text-center">Recuperar senha</h5>
 
                               <div className="border mb-3" />
-
-                              <p className="text-center">{email}</p>
 
                               <div className="mb-3">
                                  <label className="form-label">Nova senha</label>
@@ -77,17 +68,7 @@ function RecuperacaoSenha() {
                               </button>
                            </form>
                         )}
-                        {error && (
-                           <div className="card-body text-center d-flex flex-column gap-3">
-                              <i className="bi bi-exclamation-triangle fs-10 text-danger" />
 
-                              <h5 className="card-title">{error}</h5>
-
-                              <a href="https://fitcpx.com" className="btn btn-success rounded">
-                                 Voltar ao site
-                              </a>
-                           </div>
-                        )}
                         {senhaAlterada && (
                            <div className="card-body text-center d-flex flex-column gap-3">
                               <i className="bi bi-check-circle fs-10 text-success" />

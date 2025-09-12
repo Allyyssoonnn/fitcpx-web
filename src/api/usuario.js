@@ -12,24 +12,6 @@ export const loggedGoogle = async (code, scope, cod_empresa) => {
    throw new Error("Erro ao carregar alunos");
 };
 
-export const recovery = async (email) => {
-   const resp = await post("/usuario/recovery", { email });
-   if (resp.status) return resp.usuario;
-   throw new Error("Erro ao carregar alunos");
-};
-
-export const verifyTokenRecovery = async (token) => {
-   const resp = await post("/usuario/verifyTokenRecovery", { token });
-   if (resp.status) return resp;
-   throw new Error("Erro ao carregar alunos");
-};
-
-export const changePassword = async (token, senha) => {
-   const resp = await post("/usuario/changePassword", { token, senha });
-   if (resp.status) return resp;
-   throw new Error("Erro ao carregar alunos");
-};
-
 export const getProtocolos = async (codUsuario) => {
    const resp = await post("/usuario/getProtocolos", { cod_usuario: codUsuario });
    if (resp.status) return resp.protocolos;
@@ -57,11 +39,5 @@ export const setUsuario = async (usuario) => {
 export const setEmpresa = async (empresa) => {
    const resp = await post("/usuario/setEmpresa", { empresa });
    if (resp.status) return resp.empresa;
-   throw new Error("Erro ao carregar alunos");
-};
-
-export const verifyEmail = async (codEmpresa) => {
-   const resp = await post("/usuario/verifyEmail", { cod_empresa: codEmpresa });
-   if (resp.status) return resp.email;
    throw new Error("Erro ao carregar alunos");
 };
