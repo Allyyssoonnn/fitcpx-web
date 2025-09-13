@@ -17,8 +17,8 @@ api.interceptors.response.use(
       const cookies = parseCookies();
       const originalRequest = error.config;
 
-      if (error.response?.data?.error) {
-         toast.error(error.response.data.error, {
+      if (error.response?.data?.message) {
+         toast.error(error.response.data.message, {
             toastId: "api-error",
          });
       }
@@ -30,7 +30,7 @@ api.interceptors.response.use(
          });
       }
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if (error.response?.status === 401 && !originalRequest._retry && !(originalRequest?.url == "/users/login")) {
          originalRequest._retry = true;
 
          try {
