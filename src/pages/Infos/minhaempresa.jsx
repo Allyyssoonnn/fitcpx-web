@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateCompany } from "../../api/companies";
-import { changeEmpresaIMG } from "../../api/usuario";
+import { updateImageCompany } from "../../api/user";
 import ImageCropModal from "../../components/cutImg";
 import { stateEmpresa } from "../../states/states";
 import { dataURLToBlob } from "../../utils";
@@ -53,9 +53,9 @@ function MinhaEmpresa() {
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
          // Save the cropped image
-         changeEmpresaIMG(formData, { cod_empresa: empresa.cod_empresa })
-            .then((resp) => {
-               if (resp.id) setempresa({ ...empresa, imagem_empresa: resp.id });
+         updateImageCompany(formData, { cod_empresa: empresa.cod_empresa })
+            .then((url) => {
+               if (url) setempresa({ ...empresa, imagem_empresa: url });
                setShowModal(false);
                setCropper(null);
             })

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createOrUpdateUser } from "../../api/user";
-import { changeUsuarioIMG } from "../../api/usuario";
+import { createOrUpdateUser, updateImageUser } from "../../api/user";
 import ImageCropModal from "../../components/cutImg";
 import { useNotificacao } from "../../states/states";
 import { dataURLToBlob } from "../../utils";
@@ -42,9 +41,11 @@ function Account({ usuario, setusuario }) {
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
          // Save the cropped image
-         changeUsuarioIMG(formData, { cod_usuario: usuario.cod_usuario })
-            .then((resp) => {
-               if (resp.id) setusuario({ ...usuario, imagem_usuario: resp.id });
+         updateImageUser(formData, { cod_usuario: usuario.cod_usuario })
+            .then((url) => {
+               console.log(url);
+
+               if (url) setusuario({ ...usuario, imagem_usuario: url });
                setShowModal(false);
                setCropper(null);
             })

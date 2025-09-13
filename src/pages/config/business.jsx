@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createOrUpdateCompany } from "../../api/companies";
-import { changeEmpresaIMG } from "../../api/usuario";
+import { createOrUpdateCompany, updateImageCompany } from "../../api/companies";
 import ImageCropModal from "../../components/cutImg";
 import { useNotificacao } from "../../states/states";
 import { dataURLToBlob } from "../../utils";
@@ -42,9 +41,9 @@ function Business({ empresa, setempresa, usuario }) {
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
          // Save the cropped image
-         changeEmpresaIMG(formData, { cod_empresa: empresa.cod_empresa })
-            .then((resp) => {
-               if (resp.id) setempresa({ ...empresa, imagem_empresa: resp.id });
+         updateImageCompany(formData, { cod_empresa: empresa.cod_empresa })
+            .then((url) => {
+               if (url) setempresa({ ...empresa, imagem_empresa: url });
                setShowModal(false);
                setCropper(null);
             })

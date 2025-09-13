@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { createOrUpdateUser } from "../../api/user";
-import { changeUsuarioIMG } from "../../api/usuario";
+import { createOrUpdateUser, updateImageUser } from "../../api/user";
 import ImageCropModal from "../../components/cutImg";
 import { stateUsuario } from "../../states/states";
 import { dataURLToBlob } from "../../utils";
@@ -53,9 +52,9 @@ function MinhaConta() {
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
          // Save the cropped image
-         changeUsuarioIMG(formData, { cod_usuario: usuario.cod_usuario })
-            .then((resp) => {
-               if (resp.id) setusuario({ ...usuario, imagem_usuario: resp.id });
+         updateImageUser(formData, { cod_usuario: usuario.cod_usuario })
+            .then((url) => {
+               if (url) setusuario({ ...usuario, imagem_usuario: url });
                setShowModal(false);
                setCropper(null);
             })
