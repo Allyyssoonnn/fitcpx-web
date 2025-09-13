@@ -34,11 +34,11 @@ api.interceptors.response.use(
          originalRequest._retry = true;
 
          try {
-            const refreshResponse = await axios.post(`${baseURL}/usuario/refreshToken`, {
+            const refreshResponse = await axios.post(`${baseURL}/users/refreshToken`, {
                refreshToken: cookies.refreshToken,
             });
 
-            if (refreshResponse.data.status) {
+            if (refreshResponse.data.token) {
                setCookie(null, "token", refreshResponse.data.token, {
                   maxAge: 60 * 15,
                });
