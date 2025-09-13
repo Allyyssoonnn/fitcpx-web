@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { changeEmpresaIMG, setEmpresa } from "../../api/usuario";
+import { createOrUpdateCompany } from "../../api/companies";
+import { changeEmpresaIMG } from "../../api/usuario";
 import ImageCropModal from "../../components/cutImg";
 import { useNotificacao } from "../../states/states";
 import { dataURLToBlob } from "../../utils";
@@ -62,7 +63,7 @@ function Business({ empresa, setempresa, usuario }) {
    };
 
    async function HandleConfirm(data) {
-      const empresa = await setEmpresa(data);
+      const empresa = await createOrUpdateCompany(data);
       setempresa(empresa);
       nSuccess("Alteração confirmada");
    }

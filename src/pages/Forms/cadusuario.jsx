@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { setUsuario } from "../../api/usuario";
+import { createOrUpdateUser } from "../../api/user";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitStateForm from "../../components/baseComponents/FitStateForm";
 import { stateUsuario, useNotificacao } from "../../states/states";
@@ -61,7 +61,7 @@ function CadUsuario() {
    }, [watch]);
 
    async function confirma(data) {
-      await setUsuario({ ...data, cod_empresa: usuario.cod_empresa });
+      await createOrUpdateUser({ ...data, cod_empresa: usuario.cod_empresa });
       nSuccess();
       navigate("/users");
    }

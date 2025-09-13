@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
+import { createOrUpdateCompany } from "../../api/companies";
 import { resendConfirmationCode } from "../../api/user";
-import { setEmpresa } from "../../api/usuario";
 import { stateEmpresa } from "../../states/states";
 import { formatarData } from "../../utils";
 
@@ -75,7 +75,7 @@ function VerifyEmail() {
          return;
       }
 
-      const attEmpresa = await setEmpresa({ cod_empresa: empresa.cod_empresa, email_confirmado: "S" });
+      const attEmpresa = await createOrUpdateCompany({ cod_empresa: empresa.cod_empresa, email_confirmado: "S" });
       if (attEmpresa) setempresa({ ...empresa, email_confirmado: "S" });
       toast.success("Código confirmado, obrigado");
    }
