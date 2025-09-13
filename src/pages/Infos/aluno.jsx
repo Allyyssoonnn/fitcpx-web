@@ -4,9 +4,10 @@ import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { changeAlunoIMG, deleteAvaliacao, getAlunoContratos, getAvaliacoes, setAluno } from "../../api/aluno";
+import { deleteAvaliacao, getAlunoContratos } from "../../api/aluno";
 import { imgProfile, PRODUCAO } from "../../api/api";
-import { getStudent } from "../../api/student";
+import { getPhysicalAssessments } from "../../api/physicalAssessments";
+import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api/student";
 import { deleteTreino, getTreinos, setTreino } from "../../api/treino";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import ImageCropModal from "../../components/cutImg";
@@ -43,7 +44,7 @@ function Aluno() {
 
    const { data: avaliacoes, refetchAvalicao } = useQuery({
       queryKey: ["avaliacoes"],
-      queryFn: () => getAvaliacoes(null, cod_aluno),
+      queryFn: () => getPhysicalAssessments("false", cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
@@ -85,8 +86,9 @@ function Aluno() {
          const formData = new FormData();
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
-         changeAlunoIMG(formData, { cod_aluno })
-            .then(() => {
+         updateImageStudent(formData, { cod_aluno })
+            .then((url) => {
+               refetchAluno();
                setShowModal(false);
                setCropper(null);
             })
@@ -97,7 +99,7 @@ function Aluno() {
    };
 
    async function changeStatusAluno() {
-      await setAluno({
+      await createOrUpdateStudent({
          ...aluno,
          status_aluno: aluno.status_aluno == "I" ? "A" : "I",
       });

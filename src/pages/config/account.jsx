@@ -43,8 +43,6 @@ function Account({ usuario, setusuario }) {
          // Save the cropped image
          updateImageUser(formData, { cod_usuario: usuario.cod_usuario })
             .then((url) => {
-               console.log(url);
-
                if (url) setusuario({ ...usuario, imagem_usuario: url });
                setShowModal(false);
                setCropper(null);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { getAvaliacoes } from "../../api/aluno";
+import { getPhysicalAssessments } from "../../api/physicalAssessments";
 import { getStudents } from "../../api/student";
 import { getTreinos } from "../../api/treino";
 import { getUsers } from "../../api/user";
@@ -51,7 +51,7 @@ function Relatorios() {
 
       //Alunos
       if (tipo == "Alunos") data = removeObjetosArray(await getStudents());
-      if (tipo == "Avaliações") data = removeObjetosArray(await getAvaliacoes(usuario.cod_empresa));
+      if (tipo == "Avaliações") data = removeObjetosArray(await getPhysicalAssessments());
       //Usuários
       if (tipo == "Usuários") data = removeObjetosArray(await getUsers(usuario.cod_empresa));
       //Treinos

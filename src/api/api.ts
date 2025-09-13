@@ -112,6 +112,15 @@ async function get<T = any>(url: string): Promise<T> {
    return resp.data;
 }
 
+// DELETE genérico
+async function deleteAPI<T = any>(url: string): Promise<T> {
+   const cookies = parseCookies(null);
+   const resp = await api.delete<T>(url, {
+      headers: { Authorization: cookies.token },
+   });
+   return resp.data;
+}
+
 // POST de imagem com headers adicionais
 async function postImage<T = any>(url: string, img: Blob | File, data?: Record<string, string>): Promise<T> {
    const cookies = parseCookies(null);
@@ -125,4 +134,4 @@ async function postImage<T = any>(url: string, img: Blob | File, data?: Record<s
    return resp.data;
 }
 
-export { api, get, post, postFile, postImage };
+export { api, deleteAPI, get, post, postFile, postImage };

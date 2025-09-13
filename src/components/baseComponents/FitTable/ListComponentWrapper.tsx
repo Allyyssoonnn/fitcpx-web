@@ -228,13 +228,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
    if (!columns) return [];
 
    let cols: any[] = [];
-   const options = columns
-      .filter((col) => col.type === "option" && (!col.visible || col.visible({})))
-      .map((col) => ({
-         name: col.name,
-         Icon: col.Icon,
-         onClick: col.onClick,
-      }));
+   const options = columns.filter((col) => col.type === "option");
 
    function getCell(obj: any, name: string, type?: string, getValue?: (row: any) => any, getCell?: (row: any) => any) {
       if (getCell) return getCell(obj);
@@ -283,48 +277,56 @@ const getColumns = (columns: DataColumnsProp[]) => {
       cols.push({
          id: "option",
          header: "",
-         cell: ({ row: { original } }) => (
-            <Button
-               variant="ghost"
-               size="icon"
-               onClick={(e) => {
-                  e.stopPropagation();
-                  option.onClick(original);
-               }}
-            >
-               <option.Icon />
-            </Button>
-         ),
+         cell: ({ row: { original } }) => {
+            if (option.visible && !option.visible(original)) return null;
+            return (
+               <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                     e.stopPropagation();
+                     option.onClick(original);
+                  }}
+               >
+                  <option.Icon />
+               </Button>
+            );
+         },
       });
    } else if (options.length > 1) {
       cols.push({
          id: "options",
          header: "",
-         cell: ({ row: { original } }) => (
-            <DropdownMenu>
-               <DropdownMenuTrigger>
-                  <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                     <MoreHorizontal />
-                  </Button>
-               </DropdownMenuTrigger>
+         cell: ({ row: { original } }) => {
+            const rowOptions = options.filter((opt) => !opt.visible || opt.visible(original));
 
-               <DropdownMenuContent>
-                  {options.map((option, index) => (
-                     <DropdownMenuItem
-                        key={index}
-                        className="cursor-pointer"
-                        onClick={(e) => {
-                           e.stopPropagation();
-                           option.onClick(original);
-                        }}
-                     >
-                        <option.Icon />
-                        {option.name}
-                     </DropdownMenuItem>
-                  ))}
-               </DropdownMenuContent>
-            </DropdownMenu>
-         ),
+            if (rowOptions.length === 0) return null;
+            return (
+               <DropdownMenu>
+                  <DropdownMenuTrigger>
+                     <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                        <MoreHorizontal />
+                     </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent>
+                     {rowOptions.map((option, index) => (
+                        <DropdownMenuItem
+                           key={index}
+                           className="cursor-pointer"
+                           onClick={(e) => {
+                              e.stopPropagation();
+                              option.onClick(original);
+                           }}
+                        >
+                           <option.Icon />
+                           {option.name}
+                        </DropdownMenuItem>
+                     ))}
+                  </DropdownMenuContent>
+               </DropdownMenu>
+            );
+         },
       });
    }
 

@@ -5,8 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { deleteAluno, recoveryAluno } from "../../api/aluno";
-import { getStudents } from "../../api/student";
+import { createOrUpdateStudent, deleteStudent, getStudents } from "../../api/student";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import { stateUsuario } from "../../states/states";
 
@@ -36,12 +35,12 @@ function Alunos() {
    }, [alunos, statusFilter]);
 
    const delAlun = async (cod_aluno) => {
-      await deleteAluno(cod_aluno);
+      await deleteStudent(cod_aluno);
       refetch();
    };
 
-   const recoveryAlun = async (cod_aluno) => {
-      await recoveryAluno(cod_aluno);
+   const recoveryAlun = async (student) => {
+      await createOrUpdateStudent(student);
       refetch();
    };
 
@@ -82,10 +81,10 @@ function Alunos() {
                               src={row.imagem_aluno ? row.imagem_aluno : "https://placehold.co/150x150?text=img"}
                               alt="Imagem"
                               className={`img-fluid rounded-circle shadow-md border-3
-                                        ${row.status_aluno === "A" && "border-success"}
-                                        ${row.status_aluno === "I" && "border-danger"}
-                                        ${row.status_aluno === "B" && "border-warning"}
-                                    `}
+                                 ${row.status_aluno === "A" && "border-success"}
+                                 ${row.status_aluno === "I" && "border-danger"}
+                                 ${row.status_aluno === "B" && "border-warning"}
+                              `}
                               width={50}
                               height={50}
                               loading="lazy"
@@ -107,7 +106,7 @@ function Alunos() {
                         header: "",
                         type: "option",
                         visible: (row) => row?.deletedAt,
-                        onClick: (row) => recoveryAlun(row.cod_aluno),
+                        onClick: (row) => recoveryAlun({ ...row, deletedAt: null }),
                         Icon: ArrowLeftCircle,
                      },
                   ]}

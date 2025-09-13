@@ -1,40 +1,4 @@
-import { toast } from "react-toastify";
 import { post, postFile, postImage } from "./api";
-
-export const setAluno = async (aluno) => {
-   const resp = await post("/aluno/setAluno", { aluno });
-   if (resp.status) {
-      return resp.aluno;
-   } else toast.error(resp.msg);
-   throw new Error("Erro ao carregar alunos");
-};
-
-export const deleteAluno = async (cod_aluno) => {
-   const resp = await post("/aluno/deleteAluno", { cod_aluno });
-   if (resp.status) return resp.sessao;
-   throw new Error("Erro ao carregar sessao");
-};
-
-export const recoveryAluno = async (cod_aluno) => {
-   const resp = await post("/aluno/recoveryAluno", { cod_aluno });
-   if (resp.status) return resp.sessao;
-   throw new Error("Erro ao carregar sessao");
-};
-
-export const getAvaliacoes = async (codEmpresa, cod_aluno) => {
-   const resp = await post("/aluno/getAvaliacoes", {
-      cod_empresa: codEmpresa,
-      cod_aluno,
-   });
-   if (resp.status) return resp.avaliacoes;
-   throw new Error("Erro ao carregar aluno");
-};
-
-export const getAvaliacao = async (codAluno) => {
-   const resp = await post("/aluno/getAvaliacao", { cod_aluno: codAluno });
-   if (resp.status) return resp.aluno;
-   throw new Error("Erro ao carregar aluno");
-};
 
 export const setAvaliacao = async (avaliacao) => {
    const resp = await post("/aluno/setAvaliacao", { avaliacao });
@@ -46,12 +10,6 @@ export const deleteAvaliacao = async (cod_avaliacao) => {
    const resp = await post("/aluno/deleteAvaliacao", { cod_avaliacao });
    if (resp.status) return resp;
    throw new Error("Erro ao carregar sessao");
-};
-
-export const changeAlunoIMG = async (img, data) => {
-   const resp = await postImage("/aluno/changeAlunoIMG", img, data);
-   if (resp.status) return resp;
-   throw new Error("Erro ao carregar alunos");
 };
 
 export const sendAvaliacaoIMG = async (img, data) => {

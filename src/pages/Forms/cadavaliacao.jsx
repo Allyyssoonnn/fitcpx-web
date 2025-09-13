@@ -30,33 +30,39 @@ function CadAvaliacao() {
    const navigate = useNavigate();
    const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
-   const [protocolos] = useState([
-      {
-         cod_protocolo: 1,
-         nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
-         categoria_protocolo: "Geral",
-      },
-      {
-         cod_protocolo: 2,
-         nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
-         categoria_protocolo: "Masculino",
-      },
-      {
-         cod_protocolo: 3,
-         nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
-         categoria_protocolo: "Masculino",
-      },
-      {
-         cod_protocolo: 4,
-         nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
-         categoria_protocolo: "Feminino",
-      },
-      {
-         cod_protocolo: 5,
-         nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
-         categoria_protocolo: "Feminino",
-      },
-   ]);
+   const [protocolos] = useState({
+      Geral: [
+         {
+            cod_protocolo: 1,
+            nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
+            categoria_protocolo: "Geral",
+         },
+      ],
+      Masculino: [
+         {
+            cod_protocolo: 2,
+            nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
+            categoria_protocolo: "Masculino",
+         },
+         {
+            cod_protocolo: 3,
+            nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
+            categoria_protocolo: "Masculino",
+         },
+      ],
+      Feminino: [
+         {
+            cod_protocolo: 4,
+            nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
+            categoria_protocolo: "Feminino",
+         },
+         {
+            cod_protocolo: 5,
+            nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+            categoria_protocolo: "Feminino",
+         },
+      ],
+   });
 
    const [capturedImages, setCapturedImages] = useState({});
    const [imageDescriptions, setImageDescriptions] = useState({});
@@ -135,8 +141,6 @@ function CadAvaliacao() {
       if (watched?.cod_avaliacao) return;
       setAvaliacaoForm(watched);
    }, [JSON.stringify(watched)]);
-
-   if (isLoading) return <></>;
 
    async function confirma(data) {
       try {
@@ -266,33 +270,26 @@ function CadAvaliacao() {
                      />
                   </div>
 
-                  {isLoading ? (
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Protocolo *</label>
-                        <label className="form-control">Carregando...</label>
-                     </div>
-                  ) : (
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Protocolo *</label>
-                        <select
-                           id="select-protocol"
-                           {...register("cod_protocolo", { required: "Protocolo necessário!" })}
-                           className="form-control"
-                        >
-                           <option value="">Selecione um protocolo</option>
-                           {Object.keys(protocolos).map((categoria) => (
-                              <optgroup key={categoria} label={categoria}>
-                                 {Array.isArray(protocolos[categoria]) &&
-                                    protocolos[categoria]?.map((protocolo) => (
-                                       <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
-                                          {protocolo.nome_protocolo}
-                                       </option>
-                                    ))}
-                              </optgroup>
-                           ))}
-                        </select>
-                     </div>
-                  )}
+                  <div className="col-md-3">
+                     <label className="form-label fw-bold">Protocolo *</label>
+                     <select
+                        id="select-protocol"
+                        {...register("cod_protocolo", { required: "Protocolo necessário!" })}
+                        className="form-control"
+                     >
+                        <option value="">Selecione um protocolo</option>
+                        {Object.keys(protocolos).map((categoria) => (
+                           <optgroup key={categoria} label={categoria}>
+                              {Array.isArray(protocolos[categoria]) &&
+                                 protocolos[categoria]?.map((protocolo) => (
+                                    <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
+                                       {protocolo.nome_protocolo}
+                                    </option>
+                                 ))}
+                           </optgroup>
+                        ))}
+                     </select>
+                  </div>
 
                   <div className="col-md-3">
                      <label className="form-label fw-bold">
