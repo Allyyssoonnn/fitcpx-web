@@ -4,9 +4,9 @@ import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { deleteAvaliacao, getAlunoContratos } from "../../api/aluno";
+import { getAlunoContratos } from "../../api/aluno";
 import { imgProfile, PRODUCAO } from "../../api/api";
-import { getPhysicalAssessments } from "../../api/physicalAssessments";
+import { deletePhysicalAssessment, getPhysicalAssessments } from "../../api/physicalAssessments";
 import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api/student";
 import { deleteTreino, getTreinos, setTreino } from "../../api/treino";
 import { FitTable } from "../../components/baseComponents/FitTable";
@@ -42,7 +42,7 @@ function Aluno() {
       enabled: !!cod_aluno,
    });
 
-   const { data: avaliacoes, refetchAvalicao } = useQuery({
+   const { data: avaliacoes, refetchAvaliacao } = useQuery({
       queryKey: ["avaliacoes"],
       queryFn: () => getPhysicalAssessments("false", cod_aluno),
       initialData: [],
@@ -143,8 +143,8 @@ function Aluno() {
 
    async function clickDeletePhysicalAssessment(avaliacao) {
       nConfirm(null, "Tem certeza que deseja remover a avaliação?", async () => {
-         await deleteAvaliacao(avaliacao.cod_avaliacao);
-         refetchAvalicao();
+         await deletePhysicalAssessment(avaliacao.cod_avaliacao);
+         refetchAvaliacao();
       });
    }
 

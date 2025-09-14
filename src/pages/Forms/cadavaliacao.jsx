@@ -5,8 +5,7 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { setAvaliacao } from "../../api/aluno";
-import { updateImagePhysicalAssessment } from "../../api/physicalAssessments";
+import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
@@ -156,7 +155,7 @@ function CadAvaliacao() {
          if (cancel) return;
          nLoading();
 
-         const av = await setAvaliacao(data);
+         const av = await createOrUpdatePhysicalAssessment(data);
          await enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
          reset();
          navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
