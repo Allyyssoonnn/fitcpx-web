@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { sendAvaliacaoIMG, setAvaliacao } from "../../api/aluno";
+import { setAvaliacao } from "../../api/aluno";
+import { updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
@@ -182,10 +183,11 @@ function CadAvaliacao() {
       });
 
       try {
-         const resp = await sendAvaliacaoIMG(formData, { cod_avaliacao, deletedImages: JSON.stringify(deletedImages) });
-         resp.status
-            ? console.log("Imagens enviadas com sucesso!")
-            : console.error("Erro ao enviar as imagens:", resp.msg);
+         const resp = await updateImagePhysicalAssessment(formData, {
+            cod_avaliacao,
+            deletedImages: JSON.stringify(deletedImages),
+         });
+         resp ? console.log("Imagens enviadas com sucesso!") : console.error("Erro ao enviar as imagens:", resp.msg);
       } catch (error) {
          console.error("Erro na requisição:", error);
       }

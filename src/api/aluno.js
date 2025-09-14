@@ -1,4 +1,4 @@
-import { post, postFile, postImage } from "./api";
+import { post, postFile } from "./api";
 
 export const setAvaliacao = async (avaliacao) => {
    const resp = await post("/aluno/setAvaliacao", { avaliacao });
@@ -10,12 +10,6 @@ export const deleteAvaliacao = async (cod_avaliacao) => {
    const resp = await post("/aluno/deleteAvaliacao", { cod_avaliacao });
    if (resp.status) return resp;
    throw new Error("Erro ao carregar sessao");
-};
-
-export const sendAvaliacaoIMG = async (img, data) => {
-   const resp = await postImage("/aluno/sendAvaliacaoIMG", img, data);
-   if (resp.status) return resp;
-   throw new Error("Erro ao carregar alunos");
 };
 
 export const setAlunoContrato = async (plano) => {
