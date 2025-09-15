@@ -1,29 +1,27 @@
-import { useRecoilState } from "recoil";
-import { stateEmpresa, stateUsuario, useNotificacao } from "../../states/states";
-import { dataURLToBlob, formatarMoeda } from "../../utils";
-import { buyLicenca, cancelLicenca, getLicenca, getLicencas } from "../../api/licenca";
 import { useQuery } from "react-query";
+import { cancelCompanyLicense, getCompanyLicense } from "../../api/companies";
+import { buyLicense, getLicensesAvaliable } from "../../api/licenses";
+import { useNotificacao } from "../../states/states";
+import { formatarMoeda } from "../../utils";
 
 function License() {
-   const { nLoading, nConfirm, endLoading } = useNotificacao();
-   const [empresa] = useRecoilState(stateEmpresa);
+   const { nConfirm } = useNotificacao();
 
    const { data: licencas } = useQuery({
       queryKey: ["licencas"],
-      queryFn: () => getLicencas(),
+      queryFn: getLicensesAvaliable,
       initialData: [],
    });
 
    const { data: licencaAtual, refetch } = useQuery({
       queryKey: ["licenca"],
-      queryFn: () => getLicenca(empresa.cod_empresa),
+      queryFn: getCompanyLicense,
       initialData: [],
-      enabled: !!empresa.cod_empresa,
    });
 
    async function onCancel() {
       nConfirm(null, "Tem certeza que deseja cancelar o plano?", async () => {
-         await cancelLicenca(licencaAtual?.cod_empresa_licenca);
+         await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
          localStorage.setItem("validLicense", "false");
          refetch();
       });
@@ -34,7 +32,7 @@ function License() {
          `${formatarMoeda(licenca?.valor_licenca)}/Mês`,
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
-            await buyLicenca(empresa.cod_empresa, licenca.cod_licenca);
+            await buyLicense(licenca.cod_licenca);
             localStorage.setItem("validLicense", "true");
             refetch();
          }

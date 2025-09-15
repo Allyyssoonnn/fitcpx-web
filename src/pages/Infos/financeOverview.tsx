@@ -1,4 +1,4 @@
-import { getAlunoContratos } from "@/api/aluno";
+import { getContracts } from "@/api/contracts";
 import { markPaymentReceived } from "@/api/payments";
 import FitSelectDate from "@/components/baseComponents/FitSelectDate";
 import FitPagination from "@/components/baseComponents/TableComponent/FitPagination";
@@ -36,7 +36,7 @@ export default function FinanceOverview() {
 
    const { data: contratos, refetch } = useQuery({
       queryKey: ["contratos", empresa.cod_empresa],
-      queryFn: () => getAlunoContratos(null, empresa.cod_empresa),
+      queryFn: getContracts,
       initialData: [],
       enabled: !!empresa.cod_empresa,
    });

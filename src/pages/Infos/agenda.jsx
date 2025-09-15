@@ -8,7 +8,7 @@ import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
-import { getAgenda, setAgenda } from "../../api/agenda";
+import { getCalendar, newEvent } from "../../api/calendar";
 import { getModalidades } from "../../api/plano";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
@@ -16,8 +16,7 @@ import { stateEmpresa, stateUsuario } from "../../states/states";
 import { formatDateToLocalInput } from "../../utils";
 
 function Agenda() {
-   const [empresa] = useRecoilState(stateEmpresa);
-   const [usuario, setusuario] = useRecoilState(stateUsuario);
+   const [usuario] = useRecoilState(stateUsuario);
 
    return (
       <div className="container-fluid">
@@ -76,7 +75,7 @@ function Calendario() {
       enabled: !!usuario.cod_empresa,
    });
 
-   const { data: modalidades, refetch } = useQuery({
+   const { data: modalidades } = useQuery({
       queryKey: ["modalidades", usuario.cod_empresa],
       queryFn: () => getModalidades(usuario.cod_empresa),
       initialData: [],
@@ -85,7 +84,7 @@ function Calendario() {
    const { data: agenda } = useQuery({
       queryKey: ["agenda", usuario.cod_usuario],
       queryFn: async () => {
-         const resp = await getAgenda(empresa.cod_empresa);
+         const resp = await getCalendar();
          const data = resp.map((e) => ({
             id: e.cod_agenda,
             title: e.nome_evento,
@@ -154,7 +153,7 @@ function Calendario() {
 
    // Função para mostrar o modal e preencher a data de início
    const handleAddEvent = async (data) => {
-      await setAgenda({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+      await newEvent({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
       setShowModal(false);
    };
 
@@ -232,13 +231,7 @@ function Calendario() {
                center: "title",
                right: "dayGridMonth,timeGridWeek,timeGridDay",
             }}
-            // height={window.innerWidth <= 1199 ? 900 : 1052}
             height={900}
-            // height="auto"
-            // eventClassNames={({ event }) => {
-            //     const colorClass = `fc-bg-${event.extendedProps.calendar.toLowerCase()}`;
-            //     return ["event-fc-color", colorClass];
-            // }}
          />
 
          <Modal
@@ -300,7 +293,7 @@ function Calendario() {
                            classNameContainer="col-md-12 mt-6"
                            nameField="Modalidade (opcional)"
                            errors={errors}
-                           {...register("cod_modalidade")}
+                           {...register("cod_modalidade", { value: null })}
                         >
                            <option value={null}></option>
                            {modalidades.map((modalidade, index) => (
@@ -314,7 +307,7 @@ function Calendario() {
                            classNameContainer="col-md-12 mt-6"
                            nameField="Aluno (opcional)"
                            errors={errors}
-                           {...register("cod_aluno")}
+                           {...register("cod_aluno", { value: null })}
                         >
                            <option value={null}></option>
                            {alunos.map((aluno, index) => (

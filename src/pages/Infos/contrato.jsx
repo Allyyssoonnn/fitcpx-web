@@ -1,10 +1,9 @@
-import html2pdf from "html2pdf.js";
 import JoditEditor from "jodit-react";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { cancelAlunoContrato, downloadAlunoContrato, getAlunoContrato, resendAlunoContrato } from "../../api/aluno";
+import { deleteContract, downloadContract, getContract } from "../../api/contracts";
 import { getStudent } from "../../api/student";
 import { stateEmpresa, useNotificacao } from "../../states/states";
 import { formatarData, formatarMoeda } from "../../utils";
@@ -24,10 +23,10 @@ function Contrato() {
       enabled: !!cod_aluno,
    });
 
-   const { data: alunoContrato, refetch } = useQuery({
+   const { data: alunoContrato } = useQuery({
       queryKey: ["alunoContrato"],
-      queryFn: () => getAlunoContrato(cod_aluno_contrato, empresa?.cod_empresa),
-      enabled: !!cod_aluno_contrato || !!empresa?.cod_empresa,
+      queryFn: () => getContract(cod_aluno_contrato),
+      enabled: !!cod_aluno_contrato,
    });
 
    useEffect(() => {
@@ -37,29 +36,15 @@ function Contrato() {
    async function cancelContract() {
       nConfirm(null, "Tem certeza que deseja cancelar o contrato?", async () => {
          nLoading();
-         await cancelAlunoContrato(cod_aluno_contrato);
+         await deleteContract(cod_aluno_contrato);
          endLoading();
          navigate(-1);
       });
    }
 
    async function baixarContrato(signed) {
-      const url = await downloadAlunoContrato(alunoContrato?.cod_aluno_contrato, signed);
+      const url = await downloadContract(alunoContrato?.autentique_aluno_contrato, signed);
       window.open(url, "_blank");
-   }
-
-   async function resendContrato() {
-      const pdfOptions = {
-         margin: 10,
-         filename: "contrato.pdf",
-         image: { type: "jpeg", quality: 0.98 },
-         html2canvas: { scale: 2 },
-         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
-
-      const pdfBlob = await html2pdf().from(alunoContrato?.arquivo_aluno_contrato).set(pdfOptions).outputPdf("blob");
-
-      await resendAlunoContrato(alunoContrato.cod_aluno_contrato, pdfBlob);
    }
 
    return (

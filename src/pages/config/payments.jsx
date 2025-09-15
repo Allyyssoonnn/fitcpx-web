@@ -1,13 +1,12 @@
 import { useQuery } from "react-query";
-import { getPayments } from "../../api/licenca";
+import { getCompaniesLicenses } from "../../api/companies";
 import { formatarData, formatarMoeda } from "../../utils";
 
-function Payments({ cod_empresa }) {
+function Payments() {
    const { data: licenses } = useQuery({
       queryKey: ["payments"],
-      queryFn: () => getPayments(cod_empresa),
+      queryFn: getCompaniesLicenses,
       initialData: [],
-      enabled: !!cod_empresa,
    });
 
    return (
