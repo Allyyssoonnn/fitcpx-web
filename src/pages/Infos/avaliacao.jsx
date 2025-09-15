@@ -4,10 +4,8 @@ import { ResponsivePie } from "@nivo/pie";
 import printJS from "print-js";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { getResultPhysicalAssesment } from "../../api/avaliacao";
 import { getStudent } from "../../api/student";
 import { stateEmpresa } from "../../states/states";
 
@@ -38,13 +36,7 @@ function Avaliacao() {
 
    const [avaliacao, setAvaliacao] = useState({});
    const [aluno, setAluno] = useState({});
-
-   const { data: result } = useQuery({
-      queryKey: ["protocolo"],
-      queryFn: () => getResultPhysicalAssesment(avaliacao),
-      initialData: {},
-      enabled: !!avaliacao.cod_avaliacao,
-   });
+   const [result, setResult] = useState({});
 
    useEffect(() => {
       (async function load() {
@@ -52,7 +44,10 @@ function Avaliacao() {
          var alunoRecebido = location.state?.aluno;
          if (!alunoRecebido?.cod_aluno && avaliacaoRecebida?.cod_aluno)
             alunoRecebido = await getStudent(avaliacaoRecebida?.cod_aluno);
-         avaliacaoRecebida ? setAvaliacao(avaliacaoRecebida) : navigate("/alunos");
+         if (avaliacaoRecebida) {
+            setAvaliacao(avaliacaoRecebida);
+            setResult(avaliacaoRecebida?.result);
+         } else navigate("/alunos");
          alunoRecebido ? setAluno(alunoRecebido) : navigate("/alunos");
       })();
       window.scrollTo({ top: 0, behavior: "smooth" });

@@ -1,11 +1,5 @@
 import { post, postFile } from "./api";
 
-export const setAlunoContrato = async (plano) => {
-   const resp = await post("/aluno/setAlunoContrato", { plano });
-   if (resp.status) return resp.alunoContrato;
-   throw new Error("Erro ao carregar alunos");
-};
-
 export const cancelAlunoContrato = async (cod_aluno_contrato) => {
    const resp = await post("/aluno/cancelAlunoContrato", {
       cod_aluno_contrato,
@@ -16,12 +10,6 @@ export const cancelAlunoContrato = async (cod_aluno_contrato) => {
 
 export const resendAlunoContrato = async (cod_aluno_contrato, blob) => {
    const resp = await postFile("/aluno/resendAlunoContrato", { cod_aluno_contrato }, blob);
-   if (resp.status) return resp;
-   throw new Error("Erro ao carregar alunos");
-};
-
-export const sendAlunoContrato = async (cod_aluno_contrato, blob) => {
-   const resp = await post("/aluno/sendAlunoContrato", { cod_aluno_contrato }, blob);
    if (resp.status) return resp;
    throw new Error("Erro ao carregar alunos");
 };

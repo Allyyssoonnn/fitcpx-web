@@ -1,5 +1,5 @@
 import { getAlunoContratos } from "@/api/aluno";
-import { marcarCobrancaRecebida } from "@/api/pagamento";
+import { markPaymentReceived } from "@/api/payments";
 import FitSelectDate from "@/components/baseComponents/FitSelectDate";
 import FitPagination from "@/components/baseComponents/TableComponent/FitPagination";
 import { Badge } from "@/components/ui/badge";
@@ -227,7 +227,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
    }, [totals, onTotalsChange]);
 
    async function onRecieved(id) {
-      await marcarCobrancaRecebida(id);
+      await markPaymentReceived(id);
       refetch();
    }
 

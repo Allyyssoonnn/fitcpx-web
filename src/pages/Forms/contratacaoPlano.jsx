@@ -1,18 +1,17 @@
+import JoditEditor from "jodit-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { stateEmpresa, stateUsuario } from "../../states/states";
+import { newContract } from "../../api/contracts";
 import { getModContratos, getPlanos } from "../../api/plano";
 import Select from "../../components/baseComponents/select";
-import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
-import JoditEditor from "jodit-react";
-import Pagamento from "../../components/payment/pagamento";
 import MultiSelect from "../../components/multipleSelect";
-import { toast } from "react-toastify";
-import { sendAlunoContrato, setAlunoContrato } from "../../api/aluno";
-import { criarPagamentoAluno } from "../../api/pagamento";
+import Pagamento from "../../components/payment/pagamento";
 import SelectModalidades from "../../components/selectModalidades";
+import { stateEmpresa, stateUsuario } from "../../states/states";
+import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
 
 function ContratacaoPlano() {
    const [usuario] = useRecoilState(stateUsuario);
@@ -206,7 +205,7 @@ function ContratacaoPlano() {
 
    async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard, typePayment) {
       try {
-         const alunoContrato = await setAlunoContrato({
+         await newContract({
             ...plano,
             pagamentoInicial,
             formaPagamento,
@@ -214,20 +213,9 @@ function ContratacaoPlano() {
             cod_aluno: aluno?.cod_aluno,
             cod_usuario: usuario?.cod_usuario,
             cod_empresa: usuario?.cod_empresa,
+            typePayment,
+            installments: formCard?.installments,
          });
-
-         await criarPagamentoAluno(
-            aluno.cod_aluno,
-            formaPagamento,
-            empresa.cod_empresa,
-            usuario.cod_usuario,
-            alunoContrato.cod_aluno_contrato,
-            paymentMethodId,
-            formCard,
-            typePayment
-         );
-
-         if (geraContrato) await sendAlunoContrato(alunoContrato.cod_aluno_contrato);
          closeLoading();
       } catch (error) {
          console.log(error);
