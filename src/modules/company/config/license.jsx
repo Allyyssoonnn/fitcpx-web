@@ -76,11 +76,37 @@ function License() {
                      refetch={refetch}
                      isVIP={licencaAtual?.cod_licenca == 5}
                   />
-
+                  {/* 
                   <p className="card-subtitle fs-3 text-danger text-center">
                      Ao contratar um novo plano o plano vigente será cancelado.
-                  </p>
+                  </p> */}
                </div>
+            </div>
+
+            <div className="bg-light p-3 rounded-md">
+               <h5>Importante</h5>
+
+               <p className="fs-2">
+                  * Em caso de cancelamento da licença, as cobranças já confirmadas/recebidas (inclusive as que
+                  estiverem em processamento) continuarão sendo repassadas normalmente.
+               </p>
+               <p className="fs-2">
+                  * Contratos com pagamentos recorrentes deixarão de gerar novas cobranças, ficando a responsabilidade
+                  de cobrança sob você.
+               </p>
+               <p className="fs-2">
+                  * Todos os pagamentos pendentes serão cancelados e seus alunos não conseguirão mais pagar pelos links
+                  disponibilizados.
+               </p>
+               <p className="fs-2">* Seus contratos permanecerão legalmente válidos.</p>
+               <p className="fs-2">
+                  * Após o cancelamento da licença, você continuará com acesso ao sistema, mas não poderá inserir novos
+                  dados.
+               </p>
+               <p className="fs-2">
+                  * Você terá 2 dias para reverter a decisão. Após esse prazo, todos os itens acima entrarão em vigor de
+                  forma definitiva.
+               </p>
             </div>
          </div>
       </div>
