@@ -5,7 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { newContract } from "../../api/contracts";
-import { getModContratos, getPlanos } from "../../api/plano";
+import { getContractsTemplates } from "../../api/contractsTemplates";
+import { getPlans } from "../../api/plans";
 import Select from "../../components/baseComponents/select";
 import MultiSelect from "../../components/multipleSelect";
 import Pagamento from "../../components/payment/pagamento";
@@ -33,8 +34,8 @@ function ContratacaoPlano() {
    const [errors, setErrors] = useState([]);
 
    const { data: planos, refetch } = useQuery({
-      queryKey: ["planos", usuario.cod_empresa],
-      queryFn: () => getPlanos(usuario.cod_empresa),
+      queryKey: ["planos"],
+      queryFn: getPlans,
       initialData: [],
    });
 
@@ -66,7 +67,7 @@ function ContratacaoPlano() {
 
    const { data: contratos } = useQuery({
       queryKey: ["contratos", usuario.cod_empresa],
-      queryFn: () => getModContratos(usuario.cod_empresa),
+      queryFn: getContractsTemplates,
       initialData: [],
    });
 

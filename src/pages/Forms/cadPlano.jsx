@@ -1,13 +1,13 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
-import { setPlano } from "../../api/plano";
 import { useRecoilState } from "recoil";
-import { stateUsuario, useNotificacao } from "../../states/states";
-import { useEffect, useState } from "react";
-import { dividirParcelas, formatarMoeda } from "../../utils";
-import SelectModalidades from "../../components/selectModalidades";
+import { createOrUpdatePlan } from "../../api/plans";
+import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
+import SelectModalidades from "../../components/selectModalidades";
+import { stateUsuario, useNotificacao } from "../../states/states";
+import { dividirParcelas, formatarMoeda } from "../../utils";
 
 function CadPlano() {
    const { nSuccess } = useNotificacao();
@@ -110,7 +110,7 @@ function CadPlano() {
    }
 
    async function confirma(data) {
-      await setPlano(
+      await createOrUpdatePlan(
          {
             ...data,
             valor_plano: valorTotal,

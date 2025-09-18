@@ -3,7 +3,6 @@ import Alunos from "../pages/Lists/alunos";
 import Avaliacoes from "../pages/Lists/avaliacoes";
 import Contratos from "../pages/Lists/contratos";
 import Exercicios from "../pages/Lists/exercicios";
-import GrupoExercicios from "../pages/Lists/grupoExercicios";
 import Modalidades from "../pages/Lists/modalidades";
 import ModContratos from "../pages/Lists/modContratos";
 import Planos from "../pages/Lists/planos";
@@ -20,7 +19,6 @@ import CadAluno from "../pages/Forms/cadAluno";
 import CadAvaliacao from "../pages/Forms/cadavaliacao";
 import CadContrato from "../pages/Forms/cadContrato";
 import CadExercicio from "../pages/Forms/cadExercicio";
-import CadGrupoExercicio from "../pages/Forms/cadGrupoExercicio";
 import CadModalidade from "../pages/Forms/cadModalidade";
 import CadPlano from "../pages/Forms/cadPlano";
 import CadSessao from "../pages/Forms/cadSessao";
@@ -44,7 +42,6 @@ const routes = [
    { path: "/users", name: "Alunos", element: Users },
    { path: "/alunos", name: "Alunos", element: Alunos },
    { path: "/exercicios", name: "Licença", element: Exercicios },
-   { path: "/grupoexercicios", name: "Licença", element: GrupoExercicios },
    { path: "/treinos", name: "Licença", element: Treinos },
    { path: "/avaliacoes", name: "Licença", element: Avaliacoes },
    { path: "/planos", name: "Licença", element: Planos },
@@ -53,7 +50,6 @@ const routes = [
    { path: "/contratos", name: "Licença", element: Contratos },
 
    //Cadastros
-   { path: "/cadgrupoexercicio", name: "Licença", element: CadGrupoExercicio },
    { path: "/cadexercicio", name: "Licença", element: CadExercicio },
    { path: "/cadsessao", name: "Licença", element: CadSessao },
    { path: "/cadaluno", name: "Alunos", element: CadAluno },

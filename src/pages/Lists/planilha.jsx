@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudents } from "../../api/student";
-import { getTreinos } from "../../api/treino";
+import { getWorkouts } from "../../api/workouts";
 import { stateUsuario } from "../../states/states";
 import { calcularIdade } from "../../utils";
 
@@ -56,7 +56,7 @@ function Planilha() {
             openTab: false,
          }));
       for (const aluno of alunosFiltrado) {
-         const treinos = await getTreinos({ cod_aluno: aluno.cod_aluno });
+         const treinos = await getWorkouts(true, aluno.cod_aluno);
          aluno.treinos = treinos;
       }
       localStorage.setItem("planilhatreino", JSON.stringify(alunosFiltrado));

@@ -189,19 +189,6 @@ function Sidebar() {
                            <motion.a
                               href="#"
                               className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1"
-                              onClick={() => go("/grupoexercicios")}
-                              aria-expanded="false"
-                              whileHover={{ backgroundColor: "rgba(13, 110, 253, 0.1)" }}
-                              whileTap={{ scale: 0.98 }}
-                           >
-                              <i className="bi bi-collection fs-6 me-3"></i>
-                              <span className="hide-menu ps-1">{t("muscles")}</span>
-                           </motion.a>
-                        </li>
-                        <li className="sidebar-item ms-4">
-                           <motion.a
-                              href="#"
-                              className="sidebar-link p-2 d-flex align-items-center rounded-3 mx-2 mb-1"
                               onClick={() => go("/exercicios")}
                               aria-expanded="false"
                               whileHover={{ backgroundColor: "rgba(13, 110, 253, 0.1)" }}

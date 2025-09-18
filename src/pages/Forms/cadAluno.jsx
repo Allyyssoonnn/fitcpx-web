@@ -11,7 +11,7 @@ import { stateUsuario, useNotificacao } from "../../states/states";
 import { limpaForm } from "../../utils";
 
 function CadAluno() {
-   const { formData, setAlunoForm } = useFormStore();
+   const { formData, setAlunoForm, clearForm } = useFormStore();
    const { nSuccess } = useNotificacao();
    const {
       handleSubmit,
@@ -78,6 +78,7 @@ function CadAluno() {
 
    async function confirma(data) {
       await createOrUpdateStudent(limpaForm(data));
+      clearForm();
       nSuccess();
       navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
    }

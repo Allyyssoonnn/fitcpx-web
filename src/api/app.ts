@@ -20,7 +20,7 @@ export const getDashboard = async () => {
 };
 
 export const getFitnessAssessmentTemplatePDF = async () => {
-   const resp = await axios.get(`${baseURL}/fitnessassessmentpdf`);
+   const resp = await axios.get(`${baseURL}/physicalAssessments/fitnessassessmentpdf`);
    if (resp.status) return resp.data;
    throw new Error("Erro ao carregar template");
 };

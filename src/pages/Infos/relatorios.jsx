@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
 import { getStudents } from "../../api/student";
-import { getTreinos } from "../../api/treino";
 import { getUsers } from "../../api/user";
+import { getWorkouts } from "../../api/workouts";
 import VisualizarRel from "../../components/visualizarRel";
 import { stateUsuario } from "../../states/states";
 import { formatarData } from "../../utils";
@@ -55,7 +55,7 @@ function Relatorios() {
       //Usuários
       if (tipo == "Usuários") data = removeObjetosArray(await getUsers(usuario.cod_empresa));
       //Treinos
-      if (tipo == "Treinos") data = removeObjetosArray(await getTreinos({ cod_empresa: usuario.cod_empresa }));
+      if (tipo == "Treinos") data = removeObjetosArray(await getWorkouts());
 
       setData(data);
 

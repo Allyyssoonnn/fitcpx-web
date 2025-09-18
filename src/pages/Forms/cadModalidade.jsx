@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { setModalidade } from "../../api/plano";
+import { createOrUpdateService } from "../../api/services";
 import { getUsers } from "../../api/user";
 import CardIconFitCpxPay from "../../components/baseComponents/CardIconFitCpxPay";
 import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
@@ -40,7 +40,7 @@ function CadModalidade() {
 
    async function confirma(data) {
       const jsonComisao = comissao?.cod_usuario ? JSON.stringify(comissao) : null;
-      await setModalidade({
+      await createOrUpdateService({
          ...data,
          comissao_modalidade: jsonComisao,
          variacoes,

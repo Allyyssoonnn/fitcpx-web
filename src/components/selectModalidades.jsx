@@ -1,11 +1,11 @@
-import { Modal } from "react-bootstrap";
-import { formatarMoeda } from "../utils";
-import Select from "./baseComponents/select";
 import { useState } from "react";
+import { Modal } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
+import { getServices } from "../api/services";
 import { stateUsuario } from "../states/states";
-import { getModalidades } from "../api/plano";
+import { formatarMoeda } from "../utils";
+import Select from "./baseComponents/select";
 import EditableCurrency from "./editableCurrency";
 
 function SelectModalidades({
@@ -21,7 +21,7 @@ function SelectModalidades({
 
    const { data: modalidades } = useQuery({
       queryKey: ["modalidades", usuario.cod_empresa],
-      queryFn: () => getModalidades(usuario.cod_empresa),
+      queryFn: getServices,
       initialData: [],
    });
 

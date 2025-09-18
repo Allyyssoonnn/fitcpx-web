@@ -8,7 +8,7 @@ import { imgProfile, PRODUCAO } from "../../api/api";
 import { getContracts } from "../../api/contracts";
 import { deletePhysicalAssessment, getPhysicalAssessments } from "../../api/physicalAssessments";
 import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api/student";
-import { deleteTreino, getTreinos, setTreino } from "../../api/treino";
+import { createOrUpdateWorkout, deleteWorkout, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import ImageCropModal from "../../components/cutImg";
 import { stateUsuario, useNotificacao } from "../../states/states";
@@ -37,7 +37,7 @@ function Aluno() {
 
    const { data: treinos, refetch: refetchTreino } = useQuery({
       queryKey: ["treinos"],
-      queryFn: () => getTreinos({ cod_aluno }),
+      queryFn: () => getWorkouts(true, cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
@@ -136,7 +136,7 @@ function Aluno() {
 
    async function clickDeleteWorkout(treino) {
       nConfirm(null, "Tem certeza que deseja remover o treino?", async () => {
-         await deleteTreino(treino.cod_treino);
+         await deleteWorkout(treino.cod_treino);
          refetchTreino();
       });
    }
@@ -149,7 +149,7 @@ function Aluno() {
    }
 
    async function changeStatusTreino(treino) {
-      await setTreino({
+      await createOrUpdateWorkout({
          ...treino,
          status_treino: treino.status_treino == "A" ? "I" : "A",
       });
@@ -653,7 +653,7 @@ function AddTreino({ show, close, aluno, treinosAluno }) {
 
    const { data: treinos } = useQuery({
       queryKey: ["alunos", usuario.cod_empresa],
-      queryFn: () => getTreinos({ cod_empresa: usuario.cod_empresa }),
+      queryFn: getWorkouts,
       initialData: [],
    });
 

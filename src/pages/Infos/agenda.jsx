@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getCalendar, newEvent } from "../../api/calendar";
-import { getModalidades } from "../../api/plano";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
 import { stateEmpresa, stateUsuario } from "../../states/states";
@@ -77,7 +76,7 @@ function Calendario() {
 
    const { data: modalidades } = useQuery({
       queryKey: ["modalidades", usuario.cod_empresa],
-      queryFn: () => getModalidades(usuario.cod_empresa),
+      queryFn: getServices,
       initialData: [],
    });
 
@@ -355,6 +354,7 @@ function Calendario() {
 }
 
 import { useWatch } from "react-hook-form";
+import { getServices } from "../../api/services";
 import { getStudents } from "../../api/student";
 
 const CorEventoPreset = ({ register, control, errors }) => {
