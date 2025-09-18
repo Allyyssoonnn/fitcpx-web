@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { stateEmpresa, stateUsuario } from "../../states/states";
-import Account from "../config/account";
-import Business from "../config/business";
-import License from "../config/license";
-import Payments from "../config/payments";
+import Account from "./config/account";
+import Business from "./config/business";
+import License from "./config/license";
+import Payments from "./config/payments";
 
 function Configuracao() {
    const [usuario, setusuario] = useRecoilState(stateUsuario);

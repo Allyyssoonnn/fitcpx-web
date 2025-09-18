@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createOrUpdateUser, updateImageUser } from "../../api/user";
-import ImageCropModal from "../../components/cutImg";
-import { useNotificacao } from "../../states/states";
-import { dataURLToBlob } from "../../utils";
+import { createOrUpdateUser, updateImageUser } from "../../../api/user";
+import ImageCropModal from "../../../components/cutImg";
+import { useNotificacao } from "../../../states/states";
+import { dataURLToBlob } from "../../../utils";
 
 function Account({ usuario, setusuario }) {
    const { nSuccess } = useNotificacao();

@@ -8,3 +8,4 @@ export const createOrUpdatePhysicalAssessment = async (data: any) => await post(
 export const updateImagePhysicalAssessment = async (img: any, data: any) =>
    await postImage("/physicalAssessments/updateImagePhysicalAssessment", img, data);
 export const deletePhysicalAssessment = async (id: number) => await deleteAPI(`/physicalAssessments/${id}`);
+export const getFitnessAssessmentTemplatePDF = async () => await get("/physicalAssessments/fitnessassessmentpdf");

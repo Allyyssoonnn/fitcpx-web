@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { PRODUCAO } from "../api/api";
-import { sendFeedback } from "../api/app";
+import { sendFeedback } from "../api/companies";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { stateApp, stateEmpresa, useNotificacao, useToggleSidebar } from "../states/states";
@@ -39,8 +39,7 @@ function Sidebar() {
    }
 
    async function handleFeedbackSubmit(data) {
-      sendFeedback(empresa.cod_empresa, data.feedbackType, data.feedbackMessage);
-      console.log("Feedback submitted");
+      sendFeedback(data.feedbackType, data.feedbackMessage);
       reset();
       nSuccess("Feedback enviado com sucesso!", "Obrigado por nos ajudar a melhorar a sua experiencia!");
    }

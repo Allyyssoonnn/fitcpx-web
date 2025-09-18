@@ -1,11 +1,10 @@
-import { getDashboard } from "@/api/app";
 import { PhysicalAssessmentType } from "@/types/physicalAssessment";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { createOrUpdateCompany } from "../../api/companies";
+import { createOrUpdateCompany, getDashboardInfo } from "../../api/companies";
 import { resendConfirmationCode } from "../../api/user";
 import { stateEmpresa } from "../../states/states";
 import { formatarData } from "../../utils";
@@ -23,7 +22,7 @@ type DashboardProps = {
 function Dashboard() {
    const { data: dashboard } = useQuery<DashboardProps>({
       queryKey: ["dashboard"],
-      queryFn: getDashboard,
+      queryFn: getDashboardInfo,
       initialData: {
          lengths: {
             users: 0,

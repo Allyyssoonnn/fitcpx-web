@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import { getNotifications } from "../api/app";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { getNotifications } from "../api/companies";
 import { stateEmpresa } from "../states/states";
 
 function Notificacoes() {
@@ -10,7 +10,7 @@ function Notificacoes() {
 
    const { data: notifications } = useQuery({
       queryKey: ["notifications"],
-      queryFn: () => getNotifications(empresa.cod_empresa),
+      queryFn: getNotifications,
       initialData: [],
       enabled: !!empresa.cod_empresa,
    });

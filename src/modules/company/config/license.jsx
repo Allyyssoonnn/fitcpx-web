@@ -1,8 +1,8 @@
 import { useQuery } from "react-query";
-import { cancelCompanyLicense, getCompanyLicense } from "../../api/companies";
-import { buyLicense, getLicensesAvaliable } from "../../api/licenses";
-import { useNotificacao } from "../../states/states";
-import { formatarMoeda } from "../../utils";
+import { cancelCompanyLicense, getCompanyLicense } from "../../../api/companies";
+import { buyLicense, getLicensesAvaliable } from "../../../api/licenses";
+import { useNotificacao } from "../../../states/states";
+import { formatarMoeda } from "../../../utils";
 
 function License() {
    const { nConfirm } = useNotificacao();

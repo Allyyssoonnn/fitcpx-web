@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
-import { getCompaniesLicenses } from "../../api/companies";
-import { formatarData, formatarMoeda } from "../../utils";
+import { getCompaniesLicenses } from "../../../api/companies";
+import { formatarData, formatarMoeda } from "../../../utils";
 
 function Payments() {
    const { data: licenses } = useQuery({

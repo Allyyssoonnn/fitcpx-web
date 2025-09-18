@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createOrUpdateCompany, updateImageCompany } from "../../api/companies";
-import ImageCropModal from "../../components/cutImg";
-import { useNotificacao } from "../../states/states";
-import { dataURLToBlob } from "../../utils";
+import { createOrUpdateCompany, updateImageCompany } from "../../../api/companies";
+import ImageCropModal from "../../../components/cutImg";
+import { useNotificacao } from "../../../states/states";
+import { dataURLToBlob } from "../../../utils";
 
 function Business({ empresa, setempresa, usuario }) {
    const { nSuccess } = useNotificacao();
