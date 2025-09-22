@@ -66,7 +66,7 @@ function Login() {
                         <div className="card-body">
                            <div className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center align-items-center">
                               <img src="../assets/images/logos/logo.png" width="60" alt="" />
-                              <h1 className="mb-0 ms-3">Fit Cpx</h1>
+                              <h1 className="mb-0 ms-3">FitCpx</h1>
                            </div>
 
                            <p className="text-center">Seja Bem-vindo</p>

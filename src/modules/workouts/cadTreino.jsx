@@ -25,8 +25,6 @@ function CadTreino() {
    const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
    const [sessoes, setSessoes] = useState([]);
-   const [removidos, setRemovidos] = useState([]);
-   const [itensRemovidos, setItensRemovidos] = useState([]);
    const [nome_aluno, setNome_aluno] = useState("");
    const [codAluno, setCodAluno] = useState(0);
    const [sexo_aluno, setSexo_aluno] = useState(null);
@@ -261,8 +259,6 @@ function CadTreino() {
                   cod_aluno={codAluno}
                   sessoes={sessoes}
                   setSessoes={setSessoes}
-                  setRemovidos={setRemovidos}
-                  setItensRemovidos={setItensRemovidos}
                   getRepeticao={getRepeticao}
                   getInterval={getInterval}
                   getSeries={getSeries}

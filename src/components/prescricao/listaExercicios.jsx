@@ -3,13 +3,13 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getExercises } from "../../api/exercises";
-import AutoComplete from "../../components/autoComplete";
+import FitComboBox from "../../components/baseComponents/FitComboBox";
 import { stateUsuario } from "../../states/states";
 import { arrayBorders } from "../../utils";
 import FitModalViewVideo from "../baseComponents/FitModalVideoView";
 import FiltroTreinoInteligente from "./filtroTreinoInteligente";
 
-function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, setItensRemovidos }) {
+function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) {
    const [usuario] = useRecoilState(stateUsuario);
    const [showModalFiltro, setShowModalFiltro] = useState(false);
    const [indexExercicioFiltro, setIndexExercicioFiltro] = useState();
@@ -68,8 +68,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
    };
 
    const remove = (index) => {
-      setItensRemovidos((prev) => [...prev, exercicios[index]]);
-
       // Remove o item pelo índice
       const reorderedExercicios = Array.from(exercicios);
       reorderedExercicios.splice(index, 1);
@@ -204,41 +202,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
       setShowModalFiltro(true);
    };
 
-   function SelectExercicios({ exercicio, index, indexSet = null }) {
-      return (
-         <div className="d-flex align-items-center gap-2 w-100">
-            <button onClick={(e) => openFiltroTreinoInteligente(e, index)} className="btn rounded btn-info">
-               <i className="bi bi-funnel" />
-            </button>
-
-            <button
-               onClick={(e) => atualizaExercicioAleatorio(e, indexSessao, index, exercicio?.exerciciosFiltros ?? [])}
-               className={`btn rounded btn-outline-warning ${!exercicio?.exerciciosFiltros && "d-none"}`}
-            >
-               <i className="bi bi-arrow-clockwise" />
-            </button>
-
-            <FitModalViewVideo url={exercicio.url_exercicio} name={exercicio.nome_exercicio} />
-
-            <div className="form-floating w-100 me-2">
-               {screen.width > 766 && (
-                  <AutoComplete
-                     id={`inputExercise-${index}-session-${indexSessao}-set-${indexSet}`}
-                     chave="cod_exercicio"
-                     valueChave={exercicio.cod_exercicio}
-                     sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
-                     chavePesquisa="nome_exercicio"
-                     onChange={(cod_exercicio, exercicio) =>
-                        selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)
-                     }
-                  />
-               )}
-            </div>
-         </div>
-      );
-   }
-
-   function newSet(exercicio, index) {
+   function newSet(index) {
       adicionarSet(indexSessao, index);
    }
 
@@ -279,64 +243,94 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
                                  <div className="d-flex flex-column w-100">
                                     <div className="d-flex flex-column p-2 bg-light w-100">
                                        <div className="mb-2 d-flex justify-content-between align-items-center">
-                                          <SelectExercicios exercicio={exercicio} index={index} />
-
-                                          <div className="dropdown">
+                                          <div className="d-flex align-items-center gap-2 w-100">
                                              <button
-                                                id={`optionsExercise-${index}-session-${indexSessao}`}
-                                                onClick={(e) => e.stopPropagation()}
-                                                className="btn btn-outline-primary rounded"
-                                                data-bs-toggle="dropdown"
+                                                onClick={(e) => openFiltroTreinoInteligente(e, index)}
+                                                className="btn rounded btn-info"
                                              >
-                                                <i className="bi bi-three-dots-vertical"></i>
+                                                <i className="bi bi-funnel" />
                                              </button>
 
-                                             <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up rounded p-1 bg-white">
-                                                <a
-                                                   className="d-flex align-items-center gap-2 btn btn-sm btn-outline-primary rounded mb-1"
-                                                   onClick={(e) => {
-                                                      e.preventDefault();
-                                                      newSet(exercicio, index);
-                                                   }}
-                                                   href="#"
-                                                   id={`addSetMethod-exercise-${index}-session-${indexSessao}`}
+                                             <button
+                                                onClick={(e) =>
+                                                   atualizaExercicioAleatorio(
+                                                      e,
+                                                      indexSessao,
+                                                      index,
+                                                      exercicio?.exerciciosFiltros ?? []
+                                                   )
+                                                }
+                                                className={`btn rounded btn-outline-warning ${
+                                                   !exercicio?.exerciciosFiltros && "d-none"
+                                                }`}
+                                             >
+                                                <i className="bi bi-arrow-clockwise" />
+                                             </button>
+
+                                             <FitModalViewVideo
+                                                url={exercicio.url_exercicio}
+                                                name={exercicio.nome_exercicio}
+                                             />
+
+                                             <div className="dropdown">
+                                                <button
+                                                   id={`optionsExercise-${index}-session-${indexSessao}`}
+                                                   onClick={(e) => e.stopPropagation()}
+                                                   className="btn btn-outline-primary rounded"
+                                                   data-bs-toggle="dropdown"
                                                 >
-                                                   <i className="bi bi-collection"></i>
-                                                   <p className="mb-0">
-                                                      {exercicio.sets?.length == 0 ? "Bi-set " : ""}
-                                                      {exercicio.sets?.length == 1 ? "Tri-set " : ""}
-                                                      {exercicio.sets?.length >= 2 ? "Super-set " : ""}
-                                                   </p>
-                                                </a>
-                                                <a
-                                                   className="d-flex align-items-center gap-2 btn btn-sm btn-outline-danger rounded mb-1"
-                                                   onClick={(e) => {
-                                                      e.preventDefault();
-                                                      remove(index);
-                                                   }}
-                                                   href="#"
-                                                >
-                                                   <i className="bi bi-trash"></i>
-                                                   <p className="mb-0">Remover</p>
-                                                </a>
+                                                   <i className="bi bi-three-dots-vertical"></i>
+                                                </button>
+
+                                                <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up rounded p-1 bg-white">
+                                                   <a
+                                                      className="d-flex align-items-center gap-2 btn btn-sm btn-outline-primary rounded mb-1"
+                                                      onClick={(e) => {
+                                                         e.preventDefault();
+                                                         newSet(index);
+                                                      }}
+                                                      href="#"
+                                                      id={`addSetMethod-exercise-${index}-session-${indexSessao}`}
+                                                   >
+                                                      <i className="bi bi-collection"></i>
+                                                      <p className="mb-0">
+                                                         {exercicio.sets?.length == 0 ? "Bi-set " : ""}
+                                                         {exercicio.sets?.length == 1 ? "Tri-set " : ""}
+                                                         {exercicio.sets?.length >= 2 ? "Super-set " : ""}
+                                                      </p>
+                                                   </a>
+                                                   <a
+                                                      className="d-flex align-items-center gap-2 btn btn-sm btn-outline-danger rounded mb-1"
+                                                      onClick={(e) => {
+                                                         e.preventDefault();
+                                                         remove(index);
+                                                      }}
+                                                      href="#"
+                                                   >
+                                                      <i className="bi bi-trash"></i>
+                                                      <p className="mb-0">Remover</p>
+                                                   </a>
+                                                </div>
+                                             </div>
+
+                                             <div className="form-floating w-100 me-2">
+                                                <FitComboBox
+                                                   name={`exercise-${index}-session-${indexSessao}-set-null`}
+                                                   options={(exercicio?.exerciciosFiltros ?? exerciciosLista).map(
+                                                      (e) => ({
+                                                         label: e.nome_exercicio,
+                                                         value: String(e.cod_exercicio),
+                                                      })
+                                                   )}
+                                                   placeHolder="Selecione um exercício"
+                                                   value={exercicio.cod_exercicio}
+                                                   onChange={(cod_exercicio) =>
+                                                      selecionaExercicio(indexSessao, index, cod_exercicio)
+                                                   }
+                                                />
                                              </div>
                                           </div>
                                        </div>
-
-                                       {screen.width < 766 && (
-                                          <div className="my-3">
-                                             <AutoComplete
-                                                id={`inputExercise-${index}-session-${indexSessao}-set-null`}
-                                                chave="cod_exercicio"
-                                                valueChave={exercicio.cod_exercicio}
-                                                sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
-                                                chavePesquisa="nome_exercicio"
-                                                onChange={(cod_exercicio, exercicio) =>
-                                                   selecionaExercicio(indexSessao, index, cod_exercicio, indexSet)
-                                                }
-                                             />
-                                          </div>
-                                       )}
 
                                        <div className="d-flex row g-3">
                                           <div className="form-floating col-md-2 col-6">
@@ -413,7 +407,19 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
                                           <div key={idx} className="d-flex mt-2">
                                              <div className="d-flex flex-column p-2 bg-light w-100">
                                                 <div className="mb-2 d-flex justify-content-between align-items-center">
-                                                   <SelectExercicios exercicio={set} index={index} indexSet={idx} />
+                                                   <FitComboBox
+                                                      options={(exercicio?.exerciciosFiltros ?? exerciciosLista).map(
+                                                         (e) => ({
+                                                            label: e.nome_exercicio,
+                                                            value: String(e.cod_exercicio),
+                                                         })
+                                                      )}
+                                                      placeHolder="Selecione um exercício"
+                                                      value={exercicio.cod_exercicio}
+                                                      onChange={(cod_exercicio) =>
+                                                         selecionaExercicio(indexSessao, index, cod_exercicio, idx)
+                                                      }
+                                                   />
 
                                                    <div className="d-flex gap-1">
                                                       <button
@@ -427,26 +433,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, se
                                                       </button>
                                                    </div>
                                                 </div>
-
-                                                {screen.width < 766 && (
-                                                   <div className="my-3">
-                                                      <AutoComplete
-                                                         id={`inputExercise-${index}-session-${indexSessao}-set-${idx}`}
-                                                         chave="cod_exercicio"
-                                                         valueChave={exercicio.cod_exercicio}
-                                                         sugestoes={exercicio?.exerciciosFiltros ?? exerciciosLista}
-                                                         chavePesquisa="nome_exercicio"
-                                                         onChange={(cod_exercicio, exercicio) =>
-                                                            selecionaExercicio(
-                                                               indexSessao,
-                                                               index,
-                                                               cod_exercicio,
-                                                               indexSet
-                                                            )
-                                                         }
-                                                      />
-                                                   </div>
-                                                )}
 
                                                 <div id={`optionsExercise-${index}`} className="d-flex row g-3">
                                                    <div className="form-floating col-md-2 col-6">

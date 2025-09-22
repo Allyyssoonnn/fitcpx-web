@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import axios from "axios";
-import { parseCookies, setCookie } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -41,6 +41,7 @@ function Layout() {
 
                if (refreshResponse.data.token) {
                   setCookie(null, "token", refreshResponse.data.token, { maxAge: 60 * 15 });
+                  setCookie(null, "refreshToken", refreshResponse.data.refreshToken, { maxAge: 60 * 15 });
                   setusuario(refreshResponse.data.usuario);
                   setempresa(refreshResponse.data.empresa);
                   console.log("[Layout] - Success Verify refreshToken");
@@ -50,6 +51,10 @@ function Layout() {
                }
             } catch (error) {
                console.log("[Layout] - Error Verify refreshToken", error);
+               destroyCookie("token");
+               destroyCookie("refreshToken");
+               setusuario({});
+               setempresa({});
                navigate("/entrar");
             }
          }

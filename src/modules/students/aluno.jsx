@@ -37,7 +37,7 @@ function Aluno() {
 
    const { data: treinos, refetch: refetchTreino } = useQuery({
       queryKey: ["treinos"],
-      queryFn: () => getWorkouts(true, cod_aluno),
+      queryFn: () => getWorkouts(false, cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
