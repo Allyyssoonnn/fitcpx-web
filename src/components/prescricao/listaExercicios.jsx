@@ -7,6 +7,11 @@ import FitComboBox from "../../components/baseComponents/FitComboBox";
 import { stateUsuario } from "../../states/states";
 import { arrayBorders } from "../../utils";
 import FitModalViewVideo from "../baseComponents/FitModalVideoView";
+import { Badge } from "../ui/badge";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import { Input } from "../ui/input";
+import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
 import FiltroTreinoInteligente from "./filtroTreinoInteligente";
 
 function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) {
@@ -222,7 +227,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                      {exercicios.map((exercicio, index) => (
                         <Draggable key={index} draggableId={String(index)} index={index}>
                            {(provided) => (
-                              <div
+                              <Card
                                  ref={provided.innerRef}
                                  {...provided.draggableProps}
                                  className={`d-flex flex-row shadow-sm align-items-center border-start border-primary p-2 gap-2 rounded ${
@@ -240,17 +245,37 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                     <i className="bi bi-arrow-bar-down"></i>
                                  </div>
 
-                                 <div className="d-flex flex-column w-100">
-                                    <div className="d-flex flex-column p-2 bg-light w-100">
-                                       <div className="mb-2 d-flex justify-content-between align-items-center">
-                                          <div className="d-flex align-items-center gap-2 w-100">
+                                 <Card className="d-flex flex-column w-100">
+                                    <div className="py-2 px-3">
+                                       <CardHeader className="mb-2">
+                                          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+                                             {/* Botão filtro */}
                                              <button
                                                 onClick={(e) => openFiltroTreinoInteligente(e, index)}
-                                                className="btn rounded btn-info"
+                                                className="btn btn-info rounded"
                                              >
                                                 <i className="bi bi-funnel" />
                                              </button>
 
+                                             {/* Combo responsivo */}
+                                             <div className="form-floating flex-grow-1 min-w-200px">
+                                                <FitComboBox
+                                                   name={`exercise-${index}-session-${indexSessao}-set-null`}
+                                                   options={(exercicio?.exerciciosFiltros ?? exerciciosLista).map(
+                                                      (e) => ({
+                                                         label: e.nome_exercicio,
+                                                         value: String(e.cod_exercicio),
+                                                      })
+                                                   )}
+                                                   placeHolder="Selecione um exercício"
+                                                   value={exercicio.cod_exercicio}
+                                                   onChange={(cod_exercicio) =>
+                                                      selecionaExercicio(indexSessao, index, cod_exercicio)
+                                                   }
+                                                />
+                                             </div>
+
+                                             {/* Botão atualizar */}
                                              <button
                                                 onClick={(e) =>
                                                    atualizaExercicioAleatorio(
@@ -260,18 +285,20 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                                       exercicio?.exerciciosFiltros ?? []
                                                    )
                                                 }
-                                                className={`btn rounded btn-outline-warning ${
+                                                className={`btn btn-outline-warning rounded ${
                                                    !exercicio?.exerciciosFiltros && "d-none"
                                                 }`}
                                              >
                                                 <i className="bi bi-arrow-clockwise" />
                                              </button>
 
+                                             {/* Vídeo */}
                                              <FitModalViewVideo
                                                 url={exercicio.url_exercicio}
                                                 name={exercicio.nome_exercicio}
                                              />
 
+                                             {/* Dropdown */}
                                              <div className="dropdown">
                                                 <button
                                                    id={`optionsExercise-${index}-session-${indexSessao}`}
@@ -312,204 +339,130 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                                    </a>
                                                 </div>
                                              </div>
+                                          </div>
+                                       </CardHeader>
 
-                                             <div className="form-floating w-100 me-2">
-                                                <FitComboBox
-                                                   name={`exercise-${index}-session-${indexSessao}-set-null`}
-                                                   options={(exercicio?.exerciciosFiltros ?? exerciciosLista).map(
-                                                      (e) => ({
-                                                         label: e.nome_exercicio,
-                                                         value: String(e.cod_exercicio),
-                                                      })
-                                                   )}
-                                                   placeHolder="Selecione um exercício"
-                                                   value={exercicio.cod_exercicio}
-                                                   onChange={(cod_exercicio) =>
-                                                      selecionaExercicio(indexSessao, index, cod_exercicio)
-                                                   }
-                                                />
-                                             </div>
+                                       <CardContent className="grid gap-4">
+                                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                             {[
+                                                { label: "Séries", index: "serie_sessao_exercicio" },
+                                                { label: "Repetições", index: "repeticao_sessao_exercicio" },
+                                                { label: "Carga (kg)", index: "carga_sessao_exercicio" },
+                                                { label: "Intervalo (seg)", index: "intervalo_sessao_exercicio" },
+                                             ].map((v, i) => (
+                                                <div key={i}>
+                                                   <label className="text-sm font-medium">{v.label}</label>
+                                                   <Input
+                                                      type="number"
+                                                      defaultValue={3}
+                                                      value={exercicio[v.index]}
+                                                      onChange={(e) => updateField(index, v.index, e.target.value)}
+                                                   />
+                                                </div>
+                                             ))}
                                           </div>
-                                       </div>
 
-                                       <div className="d-flex row g-3">
-                                          <div className="form-floating col-md-2 col-6">
-                                             <input
-                                                name={`setsExercise-${index}-session-${indexSessao}`}
-                                                id="seriesInput"
-                                                value={exercicio.serie_sessao_exercicio}
-                                                onChange={(e) =>
-                                                   updateField(index, "serie_sessao_exercicio", e.target.value)
-                                                }
-                                                className="form-control form-control-sm"
-                                                placeholder="Séries"
-                                             />
-                                             <label htmlFor="seriesInput">Séries</label>
-                                          </div>
-                                          <div className="form-floating col-md-2 col-6">
-                                             <input
-                                                name={`repsExercise-${index}-session-${indexSessao}`}
-                                                id="repInput"
-                                                value={exercicio.repeticao_sessao_exercicio}
-                                                onChange={(e) =>
-                                                   updateField(index, "repeticao_sessao_exercicio", e.target.value)
-                                                }
-                                                className="form-control form-control-sm"
-                                                placeholder="Repetições"
-                                             />
-                                             <label htmlFor="repInput">Repetições</label>
-                                          </div>
-                                          <div className="form-floating col-md-2 col-6">
-                                             <input
-                                                id="cargaInput"
-                                                value={exercicio.carga_sessao_exercicio}
-                                                onChange={(e) =>
-                                                   updateField(index, "carga_sessao_exercicio", e.target.value)
-                                                }
-                                                className="form-control form-control-sm"
-                                                placeholder="Carga (kg)"
-                                             />
-                                             <label htmlFor="cargaInput">Carga (kg)</label>
-                                          </div>
-                                          <div className="form-floating col-md-2 col-6">
-                                             <input
-                                                name={`intervalExercise-${index}-session-${indexSessao}`}
-                                                id="interInput"
-                                                value={exercicio.intervalo_sessao_exercicio}
-                                                onChange={(e) =>
-                                                   updateField(index, "intervalo_sessao_exercicio", e.target.value)
-                                                }
-                                                className="form-control form-control-sm"
-                                                placeholder="Intervalo"
-                                             />
-                                             <label htmlFor="interInput">Intervalo</label>
-                                          </div>
-                                          <div className="form-floating col-md-4">
-                                             <input
-                                                name={`observationExercise-${index}-session-${indexSessao}`}
-                                                id="interInput"
+                                          <div>
+                                             <label className="text-sm font-medium">Observação</label>
+                                             <Textarea
+                                                placeholder="Digite uma observação..."
                                                 value={exercicio.observacao_sessao_exercicio}
                                                 onChange={(e) =>
                                                    updateField(index, "observacao_sessao_exercicio", e.target.value)
                                                 }
-                                                className="form-control form-control-sm"
-                                                placeholder="Observação"
                                              />
-                                             <label htmlFor="interInput">Observação</label>
                                           </div>
-                                       </div>
+                                       </CardContent>
                                     </div>
+
+                                    <Separator />
 
                                     {exercicio.sets
                                        ?.slice()
                                        .sort((a, b) => new Date(a.createdAt) + new Date(b.createdAt))
                                        .map((set, idx) => (
-                                          <div key={idx} className="d-flex mt-2">
-                                             <div className="d-flex flex-column p-2 bg-light w-100">
-                                                <div className="mb-2 d-flex justify-content-between align-items-center">
-                                                   <FitComboBox
-                                                      options={(exercicio?.exerciciosFiltros ?? exerciciosLista).map(
-                                                         (e) => ({
-                                                            label: e.nome_exercicio,
-                                                            value: String(e.cod_exercicio),
-                                                         })
-                                                      )}
-                                                      placeHolder="Selecione um exercício"
-                                                      value={exercicio.cod_exercicio}
-                                                      onChange={(cod_exercicio) =>
-                                                         selecionaExercicio(indexSessao, index, cod_exercicio, idx)
-                                                      }
-                                                   />
+                                          <div key={idx} className="mt-2">
+                                             <div className="py-2 px-3 mb-3">
+                                                <CardHeader className="mb-2 w-100">
+                                                   <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+                                                      {/* Badge */}
+                                                      <Badge variant="destructive" className="px-3">
+                                                         {idx == 0 && "Bi-set"}
+                                                         {idx == 1 && "Tri-set"}
+                                                         {idx >= 2 && "Super-set"}
+                                                      </Badge>
 
-                                                   <div className="d-flex gap-1">
+                                                      {/* Combo ocupa todo espaço disponível */}
+                                                      <div className="form-floating flex-grow-1 min-w-200px">
+                                                         <FitComboBox
+                                                            name={`exercise-${index}-session-${indexSessao}-set-${idx}`}
+                                                            options={(set?.exerciciosFiltros ?? exerciciosLista).map(
+                                                               (e) => ({
+                                                                  label: e.nome_exercicio,
+                                                                  value: String(e.cod_exercicio),
+                                                               })
+                                                            )}
+                                                            placeHolder="Selecione um exercício"
+                                                            value={set.cod_exercicio}
+                                                            onChange={(cod_exercicio) =>
+                                                               selecionaExercicio(
+                                                                  indexSessao,
+                                                                  index,
+                                                                  cod_exercicio,
+                                                                  idx
+                                                               )
+                                                            }
+                                                         />
+                                                      </div>
+
+                                                      {/* Modal vídeo */}
+                                                      <FitModalViewVideo
+                                                         url={set.url_exercicio}
+                                                         name={set.nome_exercicio}
+                                                      />
+
+                                                      {/* Botão remover */}
                                                       <button
-                                                         className="btn btn-outline-danger btn-sm"
+                                                         className="btn btn-outline-danger rounded"
                                                          onClick={(e) => {
                                                             e.preventDefault();
                                                             removeSet(index, idx);
                                                          }}
                                                       >
-                                                         <i className="bi bi-trash me-2"></i>Remover
+                                                         <i className="bi bi-trash"></i>
                                                       </button>
                                                    </div>
-                                                </div>
+                                                </CardHeader>
 
-                                                <div id={`optionsExercise-${index}`} className="d-flex row g-3">
-                                                   <div className="form-floating col-md-2 col-6">
-                                                      <input
-                                                         name={`setsExercise-${index}-session-${indexSessao}-set-${idx}`}
-                                                         id="seriesInput"
-                                                         value={set.serie_sessao_exercicio}
-                                                         onChange={(e) =>
-                                                            updateField(
-                                                               index,
-                                                               "serie_sessao_exercicio",
-                                                               e.target.value,
-                                                               idx
-                                                            )
-                                                         }
-                                                         className="form-control form-control-sm"
-                                                         placeholder="Séries"
-                                                      />
-                                                      <label htmlFor="seriesInput">Séries</label>
+                                                <CardContent className="grid gap-4">
+                                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                      {[
+                                                         { label: "Séries", index: "serie_sessao_exercicio" },
+                                                         { label: "Repetições", index: "repeticao_sessao_exercicio" },
+                                                         { label: "Carga (kg)", index: "carga_sessao_exercicio" },
+                                                         {
+                                                            label: "Intervalo (seg)",
+                                                            index: "intervalo_sessao_exercicio",
+                                                         },
+                                                      ].map((v, i) => (
+                                                         <div key={i}>
+                                                            <label className="text-sm font-medium">{v.label}</label>
+                                                            <Input
+                                                               type="number"
+                                                               defaultValue={3}
+                                                               value={set[v.index]}
+                                                               onChange={(e) =>
+                                                                  updateField(index, v.index, e.target.value, idx)
+                                                               }
+                                                            />
+                                                         </div>
+                                                      ))}
                                                    </div>
-                                                   <div className="form-floating col-md-2 col-6">
-                                                      <input
-                                                         name={`repsExercise-${index}-session-${indexSessao}-set-${idx}`}
-                                                         id="repInput"
-                                                         value={set.repeticao_sessao_exercicio}
-                                                         onChange={(e) =>
-                                                            updateField(
-                                                               index,
-                                                               "repeticao_sessao_exercicio",
-                                                               e.target.value,
-                                                               idx
-                                                            )
-                                                         }
-                                                         className="form-control form-control-sm"
-                                                         placeholder="Repetições"
-                                                      />
-                                                      <label htmlFor="repInput">Repetições</label>
-                                                   </div>
-                                                   <div className="form-floating col-md-2 col-6">
-                                                      <input
-                                                         id="cargaInput"
-                                                         value={set.carga_sessao_exercicio}
-                                                         onChange={(e) =>
-                                                            updateField(
-                                                               index,
-                                                               "carga_sessao_exercicio",
-                                                               e.target.value,
-                                                               idx
-                                                            )
-                                                         }
-                                                         className="form-control form-control-sm"
-                                                         placeholder="Carga (kg)"
-                                                      />
-                                                      <label htmlFor="cargaInput">Carga (kg)</label>
-                                                   </div>
-                                                   <div className="form-floating col-md-2 col-6">
-                                                      <input
-                                                         name={`intervalExercise-${index}-session-${indexSessao}-set-${idx}`}
-                                                         id="interInput"
-                                                         value={set.intervalo_sessao_exercicio}
-                                                         onChange={(e) =>
-                                                            updateField(
-                                                               index,
-                                                               "intervalo_sessao_exercicio",
-                                                               e.target.value,
-                                                               idx
-                                                            )
-                                                         }
-                                                         className="form-control form-control-sm"
-                                                         placeholder="Intervalo"
-                                                      />
-                                                      <label htmlFor="interInput">Intervalo</label>
-                                                   </div>
-                                                   <div className="form-floating col-md-4">
-                                                      <input
-                                                         name={`observationExercise-${index}-session-${indexSessao}-set-${idx}`}
-                                                         id="interInput"
+
+                                                   <div>
+                                                      <label className="text-sm font-medium">Observação</label>
+                                                      <Textarea
+                                                         placeholder="Digite uma observação..."
                                                          value={set.observacao_sessao_exercicio}
                                                          onChange={(e) =>
                                                             updateField(
@@ -519,17 +472,16 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                                                idx
                                                             )
                                                          }
-                                                         className="form-control form-control-sm"
-                                                         placeholder="Observação"
                                                       />
-                                                      <label htmlFor="interInput">Observação</label>
                                                    </div>
-                                                </div>
+                                                </CardContent>
                                              </div>
+
+                                             <Separator />
                                           </div>
                                        ))}
-                                 </div>
-                              </div>
+                                 </Card>
+                              </Card>
                            )}
                         </Draggable>
                      ))}

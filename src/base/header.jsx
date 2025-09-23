@@ -1,11 +1,11 @@
 import { destroyCookie } from "nookies";
-import { useNavigate } from "react-router-dom";
-import { stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import Notificacoes from "../components/notificacoes";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { imgProfile, PRODUCAO } from "../api/api";
+import Notificacoes from "../components/notificacoes";
+import { stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
 
 function Header() {
    const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
@@ -94,20 +94,22 @@ function Header() {
                      <i className={`bi ${openedSidebar ? "bi-arrow-bar-left" : "bi-arrow-bar-right"} fs-4`} />
                   </button>
                </li>
-
-               <li className={`d-md-none ${isInstalled || isIos ? "d-none" : ""}`}>
-                  <button onClick={handleInstallClick} className="btn btn-success">
-                     <i className="bi bi-download me-2"></i>
-                     Baixar app
-                  </button>
-               </li>
             </ul>
 
             <div className="navbar-collapse justify-content-end px-0 flex-grow-1" id="navbarNav">
                <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                  <li className={`d-md-none ${isInstalled || isIos ? "d-none" : ""}`}>
+                     <button onClick={handleInstallClick} className="btn btn-success d-flex">
+                        <i className="bi bi-download"></i>
+                        <i className="d-none d-md-flex ms-2">Baixar app</i>
+                     </button>
+                  </li>
+
                   {localStorage.getItem("validLicense") == "false" && (
-                     <a href="/configuracao?tab=3" className="btn btn-warning me-2">
-                        <i className="bi bi-arrow-up-circle me-2"></i>Versão Pro
+                     <a href="/configuracao?tab=3" className="btn btn-warning me-2 d-flex">
+                        <i className="bi bi-arrow-up-circle"></i>
+                        <i className="d-none d-md-flex ms-2">Versão Pro</i>
+                        <i className="d-md-none ms-2">Pro</i>
                      </a>
                   )}
 
