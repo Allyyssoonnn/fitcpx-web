@@ -56,7 +56,7 @@ function Planilha() {
             openTab: false,
          }));
       for (const aluno of alunosFiltrado) {
-         const treinos = await getWorkouts(true, aluno.cod_aluno);
+         const treinos = await getWorkouts(false, aluno.cod_aluno);
          aluno.treinos = treinos;
       }
       localStorage.setItem("planilhatreino", JSON.stringify(alunosFiltrado));

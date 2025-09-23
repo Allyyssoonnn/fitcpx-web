@@ -28,7 +28,7 @@ function PlanilhaTreino() {
       (async () => {
          const alunosCache = JSON.parse(localStorage.getItem("planilhatreino"));
          for (const aluno of alunosCache) {
-            const treinos = await getWorkouts(true, aluno.cod_aluno);
+            const treinos = await getWorkouts(false, aluno.cod_aluno);
             aluno.treinos = treinos;
          }
          setAlunos(alunosCache.map((aluno) => ({ ...aluno, indexTreino: 0, indexSessao: 0 })));
