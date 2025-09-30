@@ -49,7 +49,7 @@ function Treinos() {
                columns={[
                   { name: "nome_treino", header: "Nome", className: "fw-bold text-black" },
                   { name: "nivel_treino", header: "Nível", className: "fw-bold text-black" },
-                  { name: "observacao_treino", header: "Observação", className: "fw-bold text-black" },
+                  // { name: "observacao_treino", header: "Observação", className: "fw-bold text-black" },
                   { name: "Editar", header: "", type: "option", onClick: (row) => editarTreino(row), Icon: Pencil },
                   {
                      name: "Excluir",
