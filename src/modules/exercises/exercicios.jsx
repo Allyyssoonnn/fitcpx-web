@@ -92,7 +92,14 @@ function Exercicios() {
                      header: "Grupo muscular",
                      className: "fw-bold text-black",
                   },
-                  { name: "Editar", header: "", type: "option", onClick: (row) => editarExercicio(row), Icon: Pencil },
+                  {
+                     name: "Editar",
+                     header: "",
+                     type: "option",
+                     onClick: (row) => editarExercicio(row),
+                     Icon: Pencil,
+                     visible: (row) => row.base_exercicio !== "S",
+                  },
                   {
                      name: "Excluir",
                      header: "",
