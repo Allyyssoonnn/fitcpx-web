@@ -105,14 +105,6 @@ function Header() {
                      </button>
                   </li>
 
-                  {localStorage.getItem("validLicense") == "false" && (
-                     <a href="/configuracao?tab=3" className="btn btn-warning me-2 d-flex">
-                        <i className="bi bi-arrow-up-circle"></i>
-                        <i className="d-none d-md-flex ms-2">Versão Pro</i>
-                        <i className="d-md-none ms-2">Pro</i>
-                     </a>
-                  )}
-
                   <button
                      onClick={alteraTema}
                      className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex me-2"
