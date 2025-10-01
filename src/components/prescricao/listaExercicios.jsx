@@ -257,11 +257,13 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                         <CardHeader className="mb-2">
                            <div className="d-flex flex-wrap align-items-center gap-2 w-100">
                               {/* Badge */}
-                              <Badge variant="destructive" className="px-3">
-                                 {exercicio?.sets.length == 1 && "Bi-set"}
-                                 {exercicio?.sets.length == 2 && "Tri-set"}
-                                 {exercicio?.sets.length >= 3 && "Super-set"}
-                              </Badge>
+                              {exercicio?.sets.length > 0 && (
+                                 <Badge variant="destructive" className="px-3">
+                                    {exercicio?.sets.length == 1 && "Bi-set"}
+                                    {exercicio?.sets.length == 2 && "Tri-set"}
+                                    {exercicio?.sets.length >= 3 && "Super-set"}
+                                 </Badge>
+                              )}
 
                               {/* Botão filtro */}
                               <button
