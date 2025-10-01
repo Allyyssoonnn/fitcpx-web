@@ -20,6 +20,13 @@ type FitComboBoxProps = {
    onChange?: (value: string) => void;
 };
 
+function normalize(text: string) {
+   return text
+      .normalize("NFD") // separa acentos
+      .replace(/[\u0300-\u036f]/g, "") // remove acentos
+      .toLowerCase();
+}
+
 export default function FitComboBox({ name, options = [], placeHolder, value, onChange }: FitComboBoxProps) {
    const [open, setOpen] = React.useState(false);
    const [valueComp, setValueComp] = React.useState(String(value));
@@ -47,7 +54,14 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
             </Button>
          </PopoverTrigger>
          <PopoverContent className="w-[100%] p-0">
-            <Command>
+            <Command
+               filter={(value, search) => {
+                  const normalizedValue = normalize(value);
+                  const normalizedSearch = normalize(search);
+
+                  return normalizedValue.includes(normalizedSearch) ? 1 : 0;
+               }}
+            >
                <CommandInput name={`input-${name}`} placeholder="Pesquisa" />
                <CommandList>
                   <CommandEmpty>Nenhum item encontrado</CommandEmpty>
