@@ -1,4 +1,4 @@
-import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
+import { ArrowLeftCircle, Info, Pencil, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil";
 import { createOrUpdateExercise, deleteExercise, getExercises } from "../../api/exercises";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import FiltroExercicio from "../../components/filtroExercicio";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { stateUsuario } from "../../states/states";
 
 function Exercicios() {
@@ -54,7 +55,33 @@ function Exercicios() {
                description={`${exercicios?.length} ${exercicios?.length > 1 ? "Exercícios" : "Exercício"}`}
                fieldSearch="nome_exercicio"
                columns={[
-                  { name: "nome_exercicio", header: "Nome", className: "fw-bold text-black" },
+                  {
+                     name: "nome_exercicio",
+                     header: "Nome",
+                     className: "fw-bold text-black",
+                     getCell: (row) => {
+                        if (row.exercicio_base === "S") {
+                           return <tr>{row.nome_exercicio}</tr>;
+                        } else {
+                           return (
+                              <div className="flex items-center gap-2">
+                                 <Tooltip>
+                                    <TooltipTrigger>
+                                       <Info color="#8eea47ff" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                       <p>
+                                          Este exercício é um modelo padrão do sistema e não pode ser editado nem
+                                          excluído.
+                                       </p>
+                                    </TooltipContent>
+                                 </Tooltip>
+                                 {row.nome_exercicio}
+                              </div>
+                           );
+                        }
+                     },
+                  },
                   {
                      name: "grupo_exercicio_1.nome_grupo_exercicio",
                      header: "Grupo muscular",
