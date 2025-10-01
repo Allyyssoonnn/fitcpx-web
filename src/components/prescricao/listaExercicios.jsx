@@ -256,6 +256,13 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                      <div className="py-2 px-3">
                         <CardHeader className="mb-2">
                            <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+                              {/* Badge */}
+                              <Badge variant="destructive" className="px-3">
+                                 {exercicio?.sets.length == 1 && "Bi-set"}
+                                 {exercicio?.sets.length == 2 && "Tri-set"}
+                                 {exercicio?.sets.length >= 3 && "Super-set"}
+                              </Badge>
+
                               {/* Botão filtro */}
                               <button
                                  onClick={(e) => openFiltroTreinoInteligente(e, index)}
@@ -383,13 +390,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                               <div className="py-2 px-3 mb-3">
                                  <CardHeader className="mb-2 w-100">
                                     <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-                                       {/* Badge */}
-                                       <Badge variant="destructive" className="px-3">
-                                          {idx == 0 && "Bi-set"}
-                                          {idx == 1 && "Tri-set"}
-                                          {idx >= 2 && "Super-set"}
-                                       </Badge>
-
                                        {/* Combo ocupa todo espaço disponível */}
                                        <div className="form-floating flex-grow-1 min-w-200px">
                                           <FitComboBox
