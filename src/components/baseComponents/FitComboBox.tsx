@@ -24,6 +24,10 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
    const [open, setOpen] = React.useState(false);
    const [valueComp, setValueComp] = React.useState(String(value));
 
+   React.useEffect(() => {
+      setValueComp(String(value));
+   }, [value]);
+
    const optionsMemo = useMemo(() => options, [options]);
 
    return (
