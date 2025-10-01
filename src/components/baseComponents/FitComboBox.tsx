@@ -40,7 +40,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
                aria-expanded={open}
                className="w-[100%] justify-between"
             >
-               {valueComp
+               {valueComp != "null"
                   ? optionsMemo.find((framework) => framework.value === valueComp)?.label
                   : placeHolder ?? "Selecione um item"}
                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
