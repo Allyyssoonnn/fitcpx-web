@@ -268,13 +268,42 @@ export function filtrarExerciciosFunc(exerciciosFiltrados, filtrosAtuais) {
    return exerciciosFiltrados;
 }
 
-export const arrayBorders = ["border-success", "border-info", "border-danger", "border-primary", "border-secondary"];
+export const arrayBorders = [
+   "border-primary",
+   "border-secondary",
+   "border-success",
+   "border-danger",
+   "border-warning",
+   "border-info",
+   "border-light",
+   "border-dark",
+   "border-white",
+   // Tailwind (fallback / alternativas se Tailwind estiver presente)
+   "border-green-500",
+   "border-blue-500",
+   "border-red-500",
+   "border-yellow-400",
+   "border-indigo-600",
+   "border-pink-500",
+];
+
 export const arrayBackgrounds = [
    "bg-success-subtle",
    "bg-info-subtle",
    "bg-danger-subtle",
    "bg-primary-subtle",
    "bg-secondary-subtle",
+   // Tailwind (alternativas suaves)
+   "bg-green-50",
+   "bg-blue-50",
+   "bg-red-50",
+   "bg-yellow-50",
+   "bg-indigo-50",
+   "bg-purple-50",
+   "bg-pink-50",
+   "bg-gray-100",
+   "bg-slate-50",
+   "bg-emerald-50",
 ];
 
 export const protocolosCampos = {
