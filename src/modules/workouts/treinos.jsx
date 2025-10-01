@@ -53,7 +53,7 @@ function Treinos() {
                      header: "Nome",
                      className: "fw-bold text-black",
                      getCell: (row) => {
-                        if (!row.cod_empresa) {
+                        if (row.cod_empresa) {
                            return <tr>{row.nome_treino}</tr>;
                         } else {
                            return (
@@ -82,13 +82,13 @@ function Treinos() {
                      type: "option",
                      onClick: (row) => editarTreino(row),
                      Icon: Pencil,
-                     visible: (row) => !row?.cod_empresa,
+                     visible: (row) => row?.cod_empresa,
                   },
                   {
                      name: "Excluir",
                      header: "",
                      type: "option",
-                     visible: (row) => !row?.deletedAt && !row.cod_empresa,
+                     visible: (row) => !row?.deletedAt && row.cod_empresa,
                      onClick: (row) => delTreino(row.cod_treino),
                      Icon: Trash,
                   },

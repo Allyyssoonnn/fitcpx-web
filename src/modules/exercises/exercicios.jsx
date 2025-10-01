@@ -60,7 +60,7 @@ function Exercicios() {
                      header: "Nome",
                      className: "fw-bold text-black",
                      getCell: (row) => {
-                        if (row.exercicio_base === "S") {
+                        if (row.base_exercicio === "N") {
                            return <tr>{row.nome_exercicio}</tr>;
                         } else {
                            return (
