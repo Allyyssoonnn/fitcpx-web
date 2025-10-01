@@ -1,10 +1,11 @@
-import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
+import { ArrowLeftCircle, Info, Pencil, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateWorkout, deleteWorkout, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { stateUsuario } from "../../states/states";
 
 function Treinos() {
@@ -47,9 +48,34 @@ function Treinos() {
                buttonOnClick={() => navigate("/cadtreino")}
                buttonText="Novo treino"
                columns={[
-                  { name: "nome_treino", header: "Nome", className: "fw-bold text-black" },
+                  {
+                     name: "nome_treino",
+                     header: "Nome",
+                     className: "fw-bold text-black",
+                     getCell: (row) => {
+                        if (!row.cod_empresa) {
+                           return <tr>{row.nome_treino}</tr>;
+                        } else {
+                           return (
+                              <div className="flex items-center gap-2">
+                                 <Tooltip>
+                                    <TooltipTrigger>
+                                       <Info color="#8eea47ff" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                       <p>
+                                          Este treino é um modelo padrão do sistema e não pode ser editado nem excluído.
+                                       </p>
+                                    </TooltipContent>
+                                 </Tooltip>
+                                 {row.nome_treino}
+                              </div>
+                           );
+                        }
+                     },
+                  },
                   { name: "nivel_treino", header: "Nível", className: "fw-bold text-black" },
-                  { name: "observacao_treino", header: "Observação", className: "fw-bold text-black" },
+                  // { name: "observacao_treino", header: "Observação", className: "fw-bold text-black" },
                   { name: "Editar", header: "", type: "option", onClick: (row) => editarTreino(row), Icon: Pencil },
                   {
                      name: "Excluir",
