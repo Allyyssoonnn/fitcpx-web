@@ -8,7 +8,6 @@ import { newContract } from "../../api/contracts";
 import { getContractsTemplates } from "../../api/contractsTemplates";
 import { getPlans } from "../../api/plans";
 import Select from "../../components/baseComponents/select";
-import MultiSelect from "../../components/multipleSelect";
 import Pagamento from "../../components/payment/pagamento";
 import SelectModalidades from "../../components/selectModalidades";
 import { stateEmpresa, stateUsuario } from "../../states/states";
@@ -26,7 +25,6 @@ function ContratacaoPlano() {
    const [contratoPreenchido, setContratoPreenchido] = useState();
    const [montandoPlano, setMontandoPlano] = useState(false);
    const [selectContrato, setSelectContrato] = useState();
-   const [descricao, setDescricao] = useState([]);
    const [pagamentoInicial, setPagamentoInicial] = useState();
    // const [inicioContrato, setInicioContrato] = useState();
    const [geraContrato, setGeraContrato] = useState(true);
@@ -142,10 +140,10 @@ function ContratacaoPlano() {
    useMemo(() => {
       if (selectContrato?.contrato) {
          setContratoPreenchido(
-            preencherContrato(selectContrato.contrato, aluno, empresa, descricao, plano, pagamentoInicial)
+            preencherContrato(selectContrato.contrato, aluno, empresa, plano?.modalidades, plano, pagamentoInicial)
          );
       }
-   }, [selectContrato, aluno, empresa, descricao]);
+   }, [selectContrato, aluno, empresa, plano?.modalidades]);
 
    function confirmar(e) {
       e.preventDefault();
@@ -388,16 +386,6 @@ function ContratacaoPlano() {
                               onChange={(e) => setPagamentoInicial(e.target.value)}
                            />
                         </div>
-
-                        {/* <div className="col-md-6">
-                           <label className="form-label">Inicio contrato</label>
-                           <input
-                              className="form-control"
-                              type="date"
-                              value={inicioContrato}
-                              onChange={(e) => setInicioContrato(e.target.value)}
-                           />
-                        </div> */}
                      </div>
                   </div>
                </div>
@@ -456,22 +444,6 @@ function ContratacaoPlano() {
                            label="Selecione o contrato"
                         />
                      </div>
-
-                     <div className="col-md-6">
-                        <MultiSelect
-                           options={[
-                              "Treinamento físico",
-                              "Consultoria nutricional",
-                              "Fisioterapia",
-                              "Acesso a academia",
-                           ]}
-                           state={descricao}
-                           setState={setDescricao}
-                           className="mb-3"
-                           label="Selecione a descrição do serviço"
-                           hideLabel={true}
-                        />
-                     </div>
                   </div>
                )}
 
@@ -504,7 +476,7 @@ function ContratacaoPlano() {
    );
 }
 
-function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInicio = new Date()) {
+function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataInicio = new Date()) {
    // Função para decodificar entidades HTML (como &lt; e &gt;)
    function decodeHtml(html) {
       const textarea = document.createElement("textarea");
@@ -524,7 +496,7 @@ function preencherContrato(contrato, aluno, empresa, descricao, plano, dataInici
       )
       .join("")}`;
 
-   const desc = descricao && descricao.length > 0 ? descricao.join(", ") : "";
+   const desc = modalidades && modalidades.length > 0 ? modalidades.map((m) => m.nome_modalidade).join(", ") : "";
    var preenchido = decodeHtml(contrato);
 
    // Substituições de variáveis do aluno
