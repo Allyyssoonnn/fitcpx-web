@@ -59,10 +59,7 @@ function SelectModalidades({
                <tbody>
                   {modalidadesPlano?.map((modalidade, index) => (
                      <tr key={index}>
-                        <td>
-                           {modalidade.quantidade_modalidade && `${modalidade.quantidade_modalidade}x - `}
-                           {modalidade.nome_modalidade}
-                        </td>
+                        <td>{modalidade.nome_modalidade}</td>
                         {attValue && !disableControls ? (
                            <td>
                               <EditableCurrency
