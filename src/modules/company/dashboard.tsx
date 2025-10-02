@@ -121,7 +121,7 @@ function InfoTotais({ lengths }: DashboardProps) {
    const { t } = useTranslation("dashboard");
 
    return (
-      <div className="card shadow-sm rounded-4">
+      <div className="card shadow-lg rounded-4">
          <div className="card-body">
             <div className="d-flex flex-column">
                <h6 className="card-title">{t("overview")}</h6>
@@ -190,7 +190,7 @@ function UltimasAvaliacoes({ lastPhysicalAssessments }) {
    const { t } = useTranslation("dashboard");
 
    return (
-      <div className="card shadow-sm rounded-4">
+      <div className="card shadow-lg rounded-4">
          <div className="card-body">
             <h5 className="card-title">{t("recentPhysicalAssessament")}</h5>
 
