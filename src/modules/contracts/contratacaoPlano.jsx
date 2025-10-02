@@ -26,7 +26,6 @@ function ContratacaoPlano() {
    const [montandoPlano, setMontandoPlano] = useState(false);
    const [selectContrato, setSelectContrato] = useState();
    const [pagamentoInicial, setPagamentoInicial] = useState();
-   // const [inicioContrato, setInicioContrato] = useState();
    const [geraContrato, setGeraContrato] = useState(true);
 
    const [errors, setErrors] = useState([]);
@@ -193,7 +192,7 @@ function ContratacaoPlano() {
                  valor_modalidade: v,
                  valor_modalidade_alterado: v,
               }
-            : planoTemp
+            : m
       );
       var planoAtualizado = calculaValoresDoPlano({
          ...planoTemp,
