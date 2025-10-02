@@ -44,23 +44,11 @@ function Alunos() {
       refetch();
    };
 
-   const Alert =
-      localStorage.getItem("validLicense") != "true" ? (
-         <div className="text-center py-3 bg-light">
-            Você pode não estar vendo todos os alunos cadastrados,{" "}
-            <a href="/configuracao?tab=3" className="text-warning">
-               clique aqui
-            </a>{" "}
-            e adquira um plano de uso.
-         </div>
-      ) : null;
-
    return (
       <div className="container-fluid">
          <div className="row">
             <div className="col-md-12">
                <FitTable.Root
-                  subHeader={Alert}
                   rowId="aluno-"
                   list={filteredAlunos}
                   title={t("listName")}
