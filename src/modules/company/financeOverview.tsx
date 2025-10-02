@@ -46,10 +46,10 @@ export default function FinanceOverview() {
          contratos.reduce(
             (resp, contract) => [
                ...resp,
-               ...contract?.pagamentos?.map((payment) => ({
+               ...(contract?.pagamentos?.map((payment) => ({
                   ...payment,
                   contract,
-               })),
+               })) ?? []),
             ],
             []
          ) || []
@@ -80,7 +80,7 @@ export default function FinanceOverview() {
 
          <div className="row">
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 p-4">
+               <div className="card shadow-sm rounded-4 p-4">
                   <h5 className="card-title">Resumo financeiro</h5>
                   <FitSelectDate
                      minDate={payments[0]?.data_aluno_contrato_pagamento ?? new Date()}
@@ -92,7 +92,7 @@ export default function FinanceOverview() {
             </div>
 
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 p-4 hover:scale-105 transition-all">
+               <div className="card shadow-sm rounded-4 p-4 hover:scale-105 transition-all">
                   <div className="card-subtitle">Total</div>
 
                   <div className="card-body p-3 d-flex">
@@ -105,7 +105,7 @@ export default function FinanceOverview() {
             </div>
 
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 py-3 px-4 hover:scale-105 transition-all">
+               <div className="card shadow-sm rounded-4 py-3 px-4 hover:scale-105 transition-all">
                   <div className="card-subtitle">A receber</div>
 
                   <div className="card-body p-3 d-flex">
@@ -119,7 +119,7 @@ export default function FinanceOverview() {
             </div>
 
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 p-4 hover:scale-105 transition-all">
+               <div className="card shadow-sm rounded-4 p-4 hover:scale-105 transition-all">
                   <div className="card-subtitle">Entrar em contato</div>
 
                   <div className="card-body p-3 d-flex justify-center">
@@ -232,7 +232,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
    }
 
    return (
-      <div className="card shadow-lg rounded-4 p-4">
+      <div className="card shadow-sm rounded-4 p-4">
          <div className="card-title">
             Pagamentos de {String(date?.month).padStart(2, "0")}/{String(date?.year).padEnd(2, "0")}
          </div>
