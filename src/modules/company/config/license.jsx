@@ -22,7 +22,6 @@ function License() {
    async function onCancel() {
       nConfirm(null, "Tem certeza que deseja cancelar o plano?", async () => {
          await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
-         localStorage.setItem("validLicense", "false");
          refetch();
       });
    }
@@ -33,7 +32,6 @@ function License() {
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
             await buyLicense(licenca.cod_licenca);
-            localStorage.setItem("validLicense", "true");
             refetch();
          }
       );
@@ -46,7 +44,7 @@ function License() {
                <div className="card-body p-4">
                   <h4 className="card-title">Planos disponíveis</h4>
                   <p className="card-subtitle">
-                     Aqui você pode contrata um plano para mais limites e opções de trabalho.
+                     Aqui você pode contratar um plano para mais limites e opções de trabalho.
                   </p>
 
                   {licencas.map((licenca, index) => (
@@ -66,7 +64,8 @@ function License() {
             <div className="card border shadow-none">
                <div className="card-body p-4">
                   <h4 className="card-title">
-                     Plano atual : <span className="text-success">{licencaAtual.nome_licenca ?? "Gratuito"}</span>
+                     Plano atual :{" "}
+                     <span className="text-success">{licencaAtual.nome_licenca ?? "Período de teste"}</span>
                   </h4>
                   <p className="card-subtitle">Pagamento e verificação de licença.</p>
 
@@ -76,10 +75,6 @@ function License() {
                      refetch={refetch}
                      isVIP={licencaAtual?.cod_licenca == 5}
                   />
-                  {/* 
-                  <p className="card-subtitle fs-3 text-danger text-center">
-                     Ao contratar um novo plano o plano vigente será cancelado.
-                  </p> */}
                </div>
             </div>
 
@@ -128,7 +123,7 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
                   <i className="bi bi-box-seam text-dark d-block fs-7" width="22" height="22"></i>
                </div>
                <div>
-                  <h5 className="fs-4 fw-semibold mb-0">{licenca.nome_licenca ?? "Gratuito"}</h5>
+                  <h5 className="fs-4 fw-semibold mb-0">{licenca.nome_licenca ?? "Período de teste"}</h5>
                   <p className="mb-0 fs-3">{licenca.descricao_licenca}</p>
                   <h5 className="fs-4 fw-semibold mb-0">
                      {formatarMoeda(licenca.valor_licenca ?? 0)}

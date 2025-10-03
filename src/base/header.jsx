@@ -1,15 +1,18 @@
-import { destroyCookie } from "nookies";
+import { AlarmClockIcon, AlarmClockOff } from "lucide-react";
+import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { imgProfile, PRODUCAO } from "../api/api";
 import Notificacoes from "../components/notificacoes";
+import { Button } from "../components/ui/button";
 import { stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
 
 function Header() {
-   const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
+   const cookies = parseCookies(null);
    const navigate = useNavigate();
+   const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
    const { toggleTheme, theme } = useStateApp();
 
@@ -79,13 +82,7 @@ function Header() {
       <header className="app-header mb-3">
          <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm bg-white min-h-[70px]">
             <ul className="navbar-nav d-flex flex-row flex-grow-1 ms-md-3">
-               <li onClick={openedSidebar ? closeSidebar : openSidebar} className="nav-item d-block d-xl-none">
-                  <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse">
-                     <i className="bi bi-list fs-6 m-3"></i>
-                  </a>
-               </li>
-
-               <li className="nav-item nav-icon-hover-bg rounded-circle d-none d-md-flex shadow-lg rounded-circle bg-white">
+               <li className="nav-item nav-icon-hover-bg rounded-circle shadow-lg rounded-circle bg-white">
                   <button
                      className="nav-link btn btn-outline-white rounded-pill"
                      onClick={openedSidebar ? closeSidebar : openSidebar}
@@ -99,22 +96,48 @@ function Header() {
             <div className="navbar-collapse justify-content-end px-0 flex-grow-1" id="navbarNav">
                <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                   <li className={`d-md-none ${isInstalled || isIos ? "d-none" : ""}`}>
-                     <button onClick={handleInstallClick} className="btn btn-success d-flex">
+                     <Button onClick={handleInstallClick} size="sm">
                         <i className="bi bi-download"></i>
                         <i className="d-none d-md-flex ms-2">Baixar app</i>
-                     </button>
+                     </Button>
                   </li>
+
+                  {["Trial Active", "Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
+                     <Button
+                        variant={
+                           ["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus)
+                              ? "destructive"
+                              : "default"
+                        }
+                        onClick={() => navigate("/configuracao?tab=3")}
+                        size="sm"
+                        className="ms-2"
+                     >
+                        {["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && <AlarmClockOff />}
+                        {["Trial Active"].includes(cookies.licenseStatus) && <AlarmClockIcon />}
+
+                        {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft > 0 && (
+                           <>
+                              {cookies.licenseTrialDaysLeft} Dias <span className="d-none d-xl-block">restantes</span>
+                           </>
+                        )}
+                        {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft == 0 && (
+                           <>Expira hoje</>
+                        )}
+                        {cookies.licenseStatus == "Trial Expired" && <>Teste expirado</>}
+                        {cookies.licenseStatus == "Expired" && <>Licença expirada</>}
+                        {cookies.licenseStatus == "Cancelled" && <>Licença cancelada</>}
+                     </Button>
+                  )}
 
                   <button
                      onClick={alteraTema}
-                     className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex me-2"
+                     className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex mx-2"
                   >
                      {theme == "light" ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-sun-fill"></i>}
                   </button>
 
                   <Notificacoes />
-
-                  <LanguageSelect />
 
                   <li className="nav-item dropdown me-2">
                      <a
@@ -141,7 +164,7 @@ function Header() {
                      </a>
 
                      <div
-                        style={{ height: "280px" }}
+                        style={{ height: "350px" }}
                         className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                         aria-labelledby="imgMenu"
                      >
@@ -171,6 +194,10 @@ function Header() {
                                     {usuario?.email_usuario}
                                  </p>
                               </div>
+                           </div>
+
+                           <div className="d-flex justify-center mx-7 py-2 border-bottom">
+                              <LanguageSelect />
                            </div>
 
                            <a

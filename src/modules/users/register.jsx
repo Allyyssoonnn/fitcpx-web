@@ -42,12 +42,12 @@ function Register() {
       const resp = await userRegister(data);
 
       if (resp.token) {
-         localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
          setusuario(resp?.usuario);
          setempresa(resp?.empresa);
          setCookie(null, "token", resp.token, { maxAge: 30000 });
          setCookie(null, "refreshToken", resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+         setCookie(null, "licenseStatus", resp.status, { maxAge: 60 * 60 * 24 * 7 });
          window.location.href = "/";
       } else {
          toast.error(resp?.msg);

@@ -42,6 +42,10 @@ function Layout() {
                if (refreshResponse.data.token) {
                   setCookie(null, "token", refreshResponse.data.token, { maxAge: 60 * 15 });
                   setCookie(null, "refreshToken", refreshResponse.data.refreshToken, { maxAge: 60 * 15 });
+                  setCookie(null, "licenseStatus", refreshResponse.data.license.status, { maxAge: 60 * 15 });
+                  setCookie(null, "licenseTrialDaysLeft", refreshResponse.data.license.trialDaysLeft, {
+                     maxAge: 60 * 15,
+                  });
                   setusuario(refreshResponse.data.usuario);
                   setempresa(refreshResponse.data.empresa);
                   console.log("[Layout] - Success Verify refreshToken");

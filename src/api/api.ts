@@ -43,8 +43,11 @@ api.interceptors.response.use(
                   maxAge: 60 * 15,
                });
                setCookie(null, "refreshToken", refreshResponse.data.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseStatus", refreshResponse.data.license.status, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseTrialDaysLeft", refreshResponse.data.license.trialDaysLeft, {
+                  maxAge: 60 * 60 * 24 * 7,
+               });
                originalRequest.headers["Authorization"] = refreshResponse.data.token;
-               localStorage.setItem("validLicense", refreshResponse.data.validLicense);
                return api(originalRequest);
             }
          } catch (e) {

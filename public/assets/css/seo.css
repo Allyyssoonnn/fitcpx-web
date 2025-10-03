@@ -17790,10 +17790,10 @@ textarea.form-control-lg{
 .link-underline-opacity-100-hover:hover{
     --bs-link-underline-opacity:1
 }
-.bg-primary{
+/* .bg-primary{
     --bs-bg-opacity:1;
     background-color:rgba(var(--bs-primary-rgb),var(--bs-bg-opacity))!important
-}
+} */
 .bg-secondary{
     --bs-bg-opacity:1;
     background-color:rgba(var(--bs-secondary-rgb),var(--bs-bg-opacity))!important

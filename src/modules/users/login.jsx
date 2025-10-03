@@ -25,6 +25,7 @@ function Login() {
                toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
                setCookie(null, "token", resp.token, { maxAge: 60 * 60 * 7 });
                setCookie(null, "refreshToken", resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseStatus", resp.status, { maxAge: 60 * 60 * 24 * 7 });
                setusuario(resp.usuario);
                setempresa(resp.empresa);
                window.location.href = "/";
@@ -44,10 +45,11 @@ function Login() {
    async function onLogin(data) {
       const resp = await userLogin({ email: data.email, password: data.senha });
       if (resp.token) {
-         localStorage.setItem("validLicense", resp.validLicense);
          toast.success(`Bem vindo ${resp.usuario.nome_usuario}!`);
          setCookie(null, "token", resp.token, { maxAge: 60 * 60 * 7 });
          setCookie(null, "refreshToken", resp.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+         setCookie(null, "licenseStatus", resp.license.status, { maxAge: 60 * 60 * 24 * 7 });
+         setCookie(null, "licenseTrialDaysLeft", resp.license.trialDaysLeft, { maxAge: 60 * 60 * 24 * 7 });
          setusuario(resp.usuario);
          setempresa(resp.empresa);
          window.location.href = "/";

@@ -23,7 +23,6 @@ export const stateApp = atom({
    default: {
       openedSidebar: true,
       theme: "light",
-      validLicense: false,
    },
    effects_UNSTABLE: [persistAtom],
 });
