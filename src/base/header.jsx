@@ -7,6 +7,7 @@ import { useRecoilState } from "recoil";
 import { imgProfile, PRODUCAO } from "../api/api";
 import Notificacoes from "../components/notificacoes";
 import { Button } from "../components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../components/ui/tooltip";
 import { stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
 
 function Header() {
@@ -103,31 +104,53 @@ function Header() {
                   </li>
 
                   {["Trial Active", "Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
-                     <Button
-                        variant={
-                           ["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus)
-                              ? "destructive"
-                              : "default"
-                        }
-                        onClick={() => navigate("/configuracao?tab=3")}
-                        size="sm"
-                        className="ms-2"
-                     >
-                        {["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && <AlarmClockOff />}
-                        {["Trial Active"].includes(cookies.licenseStatus) && <AlarmClockIcon />}
+                     <Tooltip>
+                        <TooltipTrigger>
+                           <Button
+                              variant={
+                                 ["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus)
+                                    ? "destructive"
+                                    : "default"
+                              }
+                              onClick={() => navigate("/configuracao?tab=3")}
+                              size="sm"
+                              className="ms-2"
+                           >
+                              {["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
+                                 <AlarmClockOff />
+                              )}
+                              {["Trial Active"].includes(cookies.licenseStatus) && <AlarmClockIcon />}
 
-                        {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft > 0 && (
-                           <>
-                              {cookies.licenseTrialDaysLeft} Dias <span className="d-none d-xl-block">restantes</span>
-                           </>
-                        )}
-                        {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft == 0 && (
-                           <>Expira hoje</>
-                        )}
-                        {cookies.licenseStatus == "Trial Expired" && <>Teste expirado</>}
-                        {cookies.licenseStatus == "Expired" && <>Licença expirada</>}
-                        {cookies.licenseStatus == "Cancelled" && <>Licença cancelada</>}
-                     </Button>
+                              {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft > 0 && (
+                                 <>
+                                    {cookies.licenseTrialDaysLeft} Dias{" "}
+                                    <span className="d-none d-xl-block">restantes</span>
+                                 </>
+                              )}
+                              {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft == 0 && (
+                                 <>Expira hoje</>
+                              )}
+                              {cookies.licenseStatus == "Trial Expired" && <>Teste expirado</>}
+                              {cookies.licenseStatus == "Expired" && <>Licença expirada</>}
+                              {cookies.licenseStatus == "Cancelled" && <>Licença cancelada</>}
+                           </Button>
+                        </TooltipTrigger>
+
+                        <TooltipContent>
+                           {cookies.licenseStatus == "Trial Active" &&
+                              cookies.licenseTrialDaysLeft == 0 &&
+                              "Seu período de teste expira hoje."}
+                           {cookies.licenseStatus == "Trial Active" &&
+                              cookies.licenseTrialDaysLeft > 0 &&
+                              `Seu período de teste em ${cookies.licenseTrialDaysLeft} dias.`}
+                           {cookies.licenseStatus == "Trial Expired" &&
+                              "O período de teste terminou. É necessário assinar um plano para continuar."}
+                           {cookies.licenseStatus == "Expired" &&
+                              "Sua licença expirou. Realize o pagamento para continuar utilizando."}
+                           {cookies.licenseStatus == "Cancelled" &&
+                              "Sua licença foi cancelada. É necessário assinar um plano para continuar."}
+                        </TooltipContent>
+                     </Tooltip>
                   )}
 
                   <button
