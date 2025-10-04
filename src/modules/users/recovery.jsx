@@ -9,8 +9,9 @@ function Recovery() {
 
    async function recoveryPassword(data) {
       const resp = await recoveryAccount(data.email);
+      console.log(resp);
 
-      if (resp.status) {
+      if (resp) {
          navigate("/entrar");
          toast.success("E-mail enviado!");
       } else {
