@@ -60,6 +60,11 @@ function Header() {
       toggleTheme();
       const novoTema = theme === "light" ? "dark" : "light";
       document.documentElement.setAttribute("data-bs-theme", novoTema);
+      if (novoTema == "dark") {
+         document.documentElement.classList.add("dark");
+      } else {
+         document.documentElement.classList.remove("dark");
+      }
    }
 
    const handleInstallClick = async () => {
