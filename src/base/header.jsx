@@ -142,7 +142,7 @@ function Header() {
                               "Seu período de teste expira hoje."}
                            {cookies.licenseStatus == "Trial Active" &&
                               cookies.licenseTrialDaysLeft > 0 &&
-                              `Seu período de teste em ${cookies.licenseTrialDaysLeft} dias.`}
+                              `Seu período de teste expira em ${cookies.licenseTrialDaysLeft} dias.`}
                            {cookies.licenseStatus == "Trial Expired" &&
                               "O período de teste terminou. É necessário assinar um plano para continuar."}
                            {cookies.licenseStatus == "Expired" &&
