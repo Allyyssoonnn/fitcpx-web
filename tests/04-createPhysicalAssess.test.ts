@@ -12,7 +12,7 @@ test("Create Physical Assessments", async ({ page }) => {
    await page.click('a[id="clients"]');
    await page.click('button[id="sidebarCollapse"]');
    await page.click('tr[id="aluno-0"]');
-   await page.click('button[id="aluno-tabs-tab-avaliacaoFisica"]');
+   await page.click('button[id="radix-:r5:-trigger-avaliacaoFisica"]');
    await page.click('button[id="addPhysicalAssessment"]');
 
    await expect(page).toHaveURL(/.*\/cadavaliacao/);

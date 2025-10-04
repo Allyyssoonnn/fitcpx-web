@@ -109,7 +109,7 @@ function CadExercicio() {
    return (
       <form onSubmit={handleSubmit(confirma)} className="container-fluid">
          <div className="row ms-1">
-            <Card className="card col-md-6 p-4">
+            <Card className="card col-md-6">
                <CardHeader className="d-flex">
                   <button
                      onClick={(e) => {
@@ -167,7 +167,7 @@ function CadExercicio() {
             </div>
          </div>
 
-         <Card className="p-4 mb-3">
+         <Card className="mb-3">
             <CardContent>
                <div className="row g-3">
                   <div className="col-md-3">
@@ -233,7 +233,7 @@ function CadExercicio() {
             </CardContent>
          </Card>
 
-         <Card className="px-4 mb-3">
+         <Card className="mb-3">
             <CardContent>
                <Accordion type="multiple">
                   <AccordionItem value="item-1">

@@ -11,6 +11,7 @@ import { useRecoilState } from "recoil";
 import { getCalendar, newEvent } from "../../api/calendar";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { formatDateToLocalInput } from "../../utils";
 
@@ -19,8 +20,8 @@ function Agenda() {
 
    return (
       <div className="container-fluid">
-         <div className="card shadow-lg rounded-4">
-            <div className="card-header d-flex justify-between">
+         <Card>
+            <CardHeader className="card-header d-flex justify-between">
                <div className="col-3 mb-2 mb-sm-0">
                   {/* <button
                             disabled
@@ -46,11 +47,12 @@ function Agenda() {
                      <span className="flex-shrink-0">{usuario?.google?.email_google}</span>
                   </button>
                </div>
-            </div>
-            <div className="card-body calender-sidebar app-calendar">
+            </CardHeader>
+
+            <CardContent className="calender-sidebar app-calendar">
                <Calendario />
-            </div>
-         </div>
+            </CardContent>
+         </Card>
       </div>
    );
 }

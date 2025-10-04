@@ -4,6 +4,7 @@ import FitSelectDate from "@/components/baseComponents/FitSelectDate";
 import FitPagination from "@/components/baseComponents/TableComponent/FitPagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import {
    DropdownMenu,
@@ -80,64 +81,87 @@ export default function FinanceOverview() {
 
          <div className="row">
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 p-4">
-                  <h5 className="card-title">Resumo financeiro</h5>
-                  <FitSelectDate
-                     minDate={payments[0]?.data_aluno_contrato_pagamento ?? new Date()}
-                     maxDate={maxDate}
-                     value={date}
-                     onChange={(value) => setDate(value)}
-                  />
-               </div>
+               <Card className="h-45">
+                  <CardHeader>
+                     <CardTitle>Resumo financeiro</CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+                     <FitSelectDate
+                        minDate={payments[0]?.data_aluno_contrato_pagamento ?? new Date()}
+                        maxDate={maxDate}
+                        value={date}
+                        onChange={(value) => setDate(value)}
+                     />
+                  </CardContent>
+               </Card>
             </div>
 
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 p-4 hover:scale-105 transition-all">
-                  <div className="card-subtitle">Total</div>
+               <Card className="hover:scale-105 transition-all h-45">
+                  <CardHeader>
+                     <CardTitle>Total</CardTitle>
+                  </CardHeader>
 
-                  <div className="card-body p-3 d-flex">
-                     <Coins />
-                     <h5 className="card-title ms-2">{formatarMoeda(value)}</h5>
-                  </div>
+                  <CardContent>
+                     <div className="card-body p-3 d-flex">
+                        <Coins />
+                        <h5 className="card-title ms-2">{formatarMoeda(value)}</h5>
+                     </div>
+                  </CardContent>
 
-                  <label>Valor total de pagamentos</label>
-               </div>
+                  <CardFooter>
+                     <CardDescription>Valor total de pagamentos</CardDescription>
+                  </CardFooter>
+               </Card>
             </div>
 
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 py-3 px-4 hover:scale-105 transition-all">
-                  <div className="card-subtitle">A receber</div>
+               <Card className="hover:scale-105 transition-all h-45">
+                  <CardHeader>
+                     <CardTitle>A receber</CardTitle>
+                  </CardHeader>
 
-                  <div className="card-body p-3 d-flex">
-                     <HandCoins />
-                     <h5 className="card-title ms-2">{formatarMoeda(valueRecieve)}</h5>
-                  </div>
+                  <CardContent>
+                     <div className="card-body p-3 d-flex">
+                        <HandCoins />
+                        <h5 className="card-title ms-2">{formatarMoeda(valueRecieve)}</h5>
+                     </div>
+                  </CardContent>
 
-                  <label>Valor total a ser recebido</label>
-                  <label className="fs-1 text-muted">* Não inclui recebidos manualmente</label>
-               </div>
+                  <CardFooter className="d-flex flex-column">
+                     <CardDescription>Valor total a ser recebido</CardDescription>
+                     <CardDescription className="fs-1 text-muted">* Não inclui recebidos manualmente</CardDescription>
+                  </CardFooter>
+               </Card>
             </div>
 
             <div className="col-md-3">
-               <div className="card shadow-lg rounded-4 p-4 hover:scale-105 transition-all">
-                  <div className="card-subtitle">Entrar em contato</div>
+               <Card className="hover:scale-105 transition-all h-45">
+                  <CardHeader>
+                     <CardTitle>Entrar em contato</CardTitle>
+                  </CardHeader>
 
-                  <div className="card-body p-3 d-flex justify-center">
-                     <button
-                        className="btn d-flex btn-outline-success rounded-3 py-1"
-                        onClick={() => window.open("https://wa.me/5544991654044", "_blank")}
-                     >
-                        <MessageCircleMore size={20} className="me-2" />
-                        Suporte
-                     </button>
-                  </div>
+                  <CardContent>
+                     <div className="d-flex justify-center">
+                        <button
+                           className="btn d-flex btn-outline-success rounded-3 py-1"
+                           onClick={() => window.open("https://wa.me/5544991654044", "_blank")}
+                        >
+                           <MessageCircleMore size={20} className="me-2" />
+                           Suporte
+                        </button>
+                     </div>
+                  </CardContent>
 
-                  <label>Tirar dúvidas sobre pagamentos</label>
-               </div>
+                  <CardFooter>
+                     <CardDescription>Tirar dúvidas sobre pagamentos</CardDescription>
+                  </CardFooter>
+               </Card>
             </div>
          </div>
 
-         <div className="row">
+         <div className="row mt-3">
             <div className="col-md-12">
                <Payments
                   payments={payments}
@@ -232,71 +256,77 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
    }
 
    return (
-      <div className="card shadow-lg rounded-4 p-4">
-         <div className="card-title">
-            Pagamentos de {String(date?.month).padStart(2, "0")}/{String(date?.year).padEnd(2, "0")}
-         </div>
+      <Card>
+         <CardHeader>
+            <CardTitle>
+               Pagamentos de {String(date?.month).padStart(2, "0")}/{String(date?.year).padEnd(2, "0")}
+            </CardTitle>
+         </CardHeader>
 
-         <div className="mb-3 d-flex gap-2">
-            <input
-               placeholder="Filtrar aluno"
-               value={table.getColumn("client")?.getFilterValue() ?? ""}
-               onChange={(e) => table.getColumn("client")?.setFilterValue(e.target.value)}
-               className="form-control"
-            />
+         <CardContent>
+            <div className="mb-3 d-flex gap-2">
+               <input
+                  placeholder="Filtrar aluno"
+                  value={table.getColumn("client")?.getFilterValue() ?? ""}
+                  onChange={(e) => table.getColumn("client")?.setFilterValue(e.target.value)}
+                  className="form-control"
+               />
 
-            <select
-               value={table.getColumn("status")?.getFilterValue() ?? ""}
-               onChange={(e) => table.getColumn("status")?.setFilterValue(e.target.value)}
-               className="form-select"
-            >
-               <option value="">Todos os status</option>
-               <option value="Pending">Pendente</option>
-               <option value="overdue">Vencido</option>
-               <option value="succeeded">Disponível</option>
-               <option value="paid">Repassado</option>
-               <option value="receivedCash">Recebido Manual</option>
-            </select>
-         </div>
+               <select
+                  value={table.getColumn("status")?.getFilterValue() ?? ""}
+                  onChange={(e) => table.getColumn("status")?.setFilterValue(e.target.value)}
+                  className="form-select"
+               >
+                  <option value="">Todos os status</option>
+                  <option value="Pending">Pendente</option>
+                  <option value="overdue">Vencido</option>
+                  <option value="succeeded">Disponível</option>
+                  <option value="paid">Repassado</option>
+                  <option value="receivedCash">Recebido Manual</option>
+               </select>
+            </div>
 
-         <Table>
-            <TableHeader>
-               {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow id={headerGroup.id}>
-                     {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                           {header.isPlaceholder
-                              ? null
-                              : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                     ))}
-                  </TableRow>
-               ))}
-            </TableHeader>
-
-            <TableBody>
-               {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                     <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                           <TableCell key={cell.id}>
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                           </TableCell>
+            <Table>
+               <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                     <TableRow id={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                           <TableHead key={header.id} colSpan={header.colSpan}>
+                              {header.isPlaceholder
+                                 ? null
+                                 : flexRender(header.column.columnDef.header, header.getContext())}
+                           </TableHead>
                         ))}
                      </TableRow>
-                  ))
-               ) : (
-                  <TableRow>
-                     <TableCell colSpan={getColumns.length} className="h-24 text-center">
-                        Nenhum resultado
-                     </TableCell>
-                  </TableRow>
-               )}
-            </TableBody>
-         </Table>
+                  ))}
+               </TableHeader>
 
-         <FitPagination table={table} />
-      </div>
+               <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                     table.getRowModel().rows.map((row) => (
+                        <TableRow key={row.id}>
+                           {row.getVisibleCells().map((cell) => (
+                              <TableCell key={cell.id}>
+                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                           ))}
+                        </TableRow>
+                     ))
+                  ) : (
+                     <TableRow>
+                        <TableCell colSpan={getColumns.length} className="h-24 text-center">
+                           Nenhum resultado
+                        </TableCell>
+                     </TableRow>
+                  )}
+               </TableBody>
+            </Table>
+         </CardContent>
+
+         <CardFooter className="d-flex justify-end">
+            <FitPagination table={table} />
+         </CardFooter>
+      </Card>
    );
 }
 

@@ -17160,10 +17160,10 @@ textarea.form-control-lg{
     padding-right:3rem!important;
     padding-left:3rem!important
 }
-.px-6{
+/* .px-6{
     padding-right:12px!important;
     padding-left:12px!important
-}
+} */
 .px-7{
     padding-right:30px!important;
     padding-left:30px!important
@@ -17200,10 +17200,10 @@ textarea.form-control-lg{
     padding-top:3rem!important;
     padding-bottom:3rem!important
 }
-.py-6{
+/* .py-6{
     padding-top:12px!important;
     padding-bottom:12px!important
-}
+} */
 .py-7{
     padding-top:30px!important;
     padding-bottom:30px!important
@@ -17794,10 +17794,10 @@ textarea.form-control-lg{
     --bs-bg-opacity:1;
     background-color:rgba(var(--bs-primary-rgb),var(--bs-bg-opacity))!important
 } */
-.bg-secondary{
+/* .bg-secondary{
     --bs-bg-opacity:1;
     background-color:rgba(var(--bs-secondary-rgb),var(--bs-bg-opacity))!important
-}
+} */
 .bg-success{
     --bs-bg-opacity:1;
     background-color:rgba(var(--bs-success-rgb),var(--bs-bg-opacity))!important

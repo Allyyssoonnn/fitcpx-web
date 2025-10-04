@@ -1,6 +1,16 @@
-import { ChartBar, Clipboard, Pencil, Rotate3D, Trash } from "lucide-react";
+import {
+   ChartBar,
+   Clipboard,
+   PauseCircle,
+   Pen,
+   Pencil,
+   PlayCircle,
+   PlusCircleIcon,
+   Rotate3D,
+   Trash,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Modal, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
@@ -11,6 +21,10 @@ import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api
 import { createOrUpdateWorkout, deleteWorkout, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import ImageCropModal from "../../components/cutImg";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
 
@@ -117,20 +131,20 @@ function Aluno() {
 
    const getStatusBadge = (status) => {
       const statusConfig = {
-         A: { class: "bg-success", text: "Ativo", icon: "bi-check-circle" },
-         B: { class: "bg-danger", text: "Bloqueado", icon: "bi-x-circle" },
+         A: { variant: "default", text: "Ativo", icon: "bi-check-circle" },
+         B: { variant: "destructive", text: "Bloqueado", icon: "bi-x-circle" },
          I: {
-            class: "bg-warning",
+            variant: "destructive",
             text: "Inativo",
             icon: "bi-pause-circle",
          },
       };
       const config = statusConfig[status] || statusConfig["I"];
       return (
-         <span className={`badge ${config.class} px-3 py-2`}>
+         <Badge variant={config.variant}>
             <i className={`bi ${config.icon} me-1`}></i>
             {config.text}
-         </span>
+         </Badge>
       );
    };
 
@@ -161,17 +175,17 @@ function Aluno() {
          <ImageCropModal show={showModal} image={image} onConfirm={handleModalConfirm} onCancel={handleModalClose} />
 
          {/* Header Section */}
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
+         <Card className="bg-gradient-primary rounded-4 p-4 mb-4">
             <div className="d-flex justify-content-between align-items-center">
                <button onClick={() => navigate("/alunos")} className="btn btn-outline-danger rounded-pill px-4">
                   <i className="bi bi-arrow-left me-2"></i>
                   Voltar
                </button>
             </div>
-         </div>
+         </Card>
 
-         <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-            <div className="card-body p-0">
+         <Card className="border-0 rounded-4 overflow-hidden">
+            <CardContent className="p-0">
                {/* Profile Header */}
                <div className="bg-light p-5">
                   <div className="row align-items-center">
@@ -229,29 +243,27 @@ function Aluno() {
                            </div>
 
                            <div className="d-flex gap-3 flex-wrap">
-                              <button
-                                 className="btn btn-outline-primary rounded-pill px-4"
+                              <Button
+                                 size="sm"
+                                 variant="outline"
                                  onClick={() =>
                                     navigate("/cadaluno", {
                                        state: { aluno },
                                     })
                                  }
                               >
-                                 <i className="bi bi-pencil me-2"></i>
+                                 <Pen />
                                  Editar Perfil
-                              </button>
+                              </Button>
 
-                              <button
-                                 className={`btn ${
-                                    aluno?.status_aluno == "A" ? "btn-outline-danger" : "btn-outline-success"
-                                 } rounded-pill px-4`}
+                              <Button
+                                 size="sm"
+                                 variant={aluno?.status_aluno == "A" ? "destructive" : "default"}
                                  onClick={changeStatusAluno}
                               >
-                                 <i
-                                    className={`bi bi-${aluno?.status_aluno == "A" ? "pause" : "play"}-circle me-2`}
-                                 ></i>
+                                 {aluno?.status_aluno == "A" ? <PauseCircle /> : <PlayCircle />}
                                  {aluno?.status_aluno == "A" ? "Desativar" : "Ativar"}
-                              </button>
+                              </Button>
                            </div>
                         </div>
                      </div>
@@ -260,25 +272,26 @@ function Aluno() {
 
                {/* Tabs Section */}
                <div className="p-4">
-                  <Tabs id="aluno-tabs" activeKey={key} onSelect={(k) => setKey(k)} className="nav-tabs-custom">
-                     <Tab
-                        eventKey="informacoesPessoais"
-                        title={
-                           <span className="d-flex align-items-center">
-                              <i className="bi bi-person-lines-fill me-2"></i>
-                              <span className="d-none d-md-inline">Informações Pessoais</span>
-                              <span className="d-inline d-md-none">Info</span>
-                           </span>
-                        }
-                     >
+                  <Tabs defaultValue="informacoesPessoais">
+                     <TabsList>
+                        <TabsTrigger value="informacoesPessoais">Informações Pessoais</TabsTrigger>
+                        <TabsTrigger value="avaliacaoFisica">Avaliações Físicas</TabsTrigger>
+                        <TabsTrigger value="treino">Treinos</TabsTrigger>
+                        <TabsTrigger value="contratos">Contratos</TabsTrigger>
+                     </TabsList>
+
+                     <TabsContent value="informacoesPessoais" id="aluno-tab-avaliacaoFisica">
                         <div className="row g-4 mt-2">
                            <div className="col-lg-6">
-                              <div className="card border-0 shadow-sm h-100">
-                                 <div className="card-body">
-                                    <h5 className="card-title text-primary mb-3">
+                              <Card>
+                                 <CardHeader>
+                                    <CardTitle>
                                        <i className="bi bi-person-lines-fill me-2"></i>
                                        Detalhes Pessoais
-                                    </h5>
+                                    </CardTitle>
+                                 </CardHeader>
+
+                                 <CardContent>
                                     <div className="space-y-3">
                                        <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                                           <span className="text-muted">Telefone:</span>
@@ -299,17 +312,20 @@ function Aluno() {
                                           </span>
                                        </div>
                                     </div>
-                                 </div>
-                              </div>
+                                 </CardContent>
+                              </Card>
                            </div>
 
                            <div className="col-lg-6">
-                              <div className="card border-0 shadow-sm h-100">
-                                 <div className="card-body">
-                                    <h5 className="card-title text-primary mb-3">
+                              <Card>
+                                 <CardHeader>
+                                    <CardTitle>
                                        <i className="bi bi-geo-alt-fill me-2"></i>
                                        Endereço
-                                    </h5>
+                                    </CardTitle>
+                                 </CardHeader>
+
+                                 <CardContent>
                                     <div className="space-y-3">
                                        <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                                           <span className="text-muted">Endereço:</span>
@@ -328,26 +344,17 @@ function Aluno() {
                                           </span>
                                        </div>
                                     </div>
-                                 </div>
-                              </div>
+                                 </CardContent>
+                              </Card>
                            </div>
                         </div>
-                     </Tab>
+                     </TabsContent>
 
-                     <Tab
-                        eventKey="avaliacaoFisica"
-                        title={
-                           <span className="d-flex align-items-center">
-                              <i className="bi bi-clipboard-data me-2"></i>
-                              <span className="d-none d-md-inline">Avaliação Física</span>
-                              <span className="d-inline d-md-none">Avaliação</span>
-                           </span>
-                        }
-                     >
+                     <TabsContent value="avaliacaoFisica">
                         <div className="mt-4">
-                           <button
+                           <Button
                               id="addPhysicalAssessment"
-                              className="btn btn-success shadow-sm mb-4"
+                              className="mb-4"
                               onClick={() =>
                                  navigate("/cadavaliacao", {
                                     state: {
@@ -357,13 +364,12 @@ function Aluno() {
                                  })
                               }
                            >
-                              <i className="bi bi-plus-circle me-2"></i>
+                              <PlusCircleIcon />
                               Adicionar Avaliação
-                           </button>
+                           </Button>
 
                            <div className="row g-4">
                               <FitTable.Root
-                                 sizeShadow="none"
                                  hideHeader
                                  list={avaliacoes.sort(
                                     (a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao)
@@ -458,18 +464,9 @@ function Aluno() {
                               />
                            </div>
                         </div>
-                     </Tab>
+                     </TabsContent>
 
-                     <Tab
-                        eventKey="treino"
-                        title={
-                           <span className="d-flex align-items-center">
-                              <i className="bi bi-card-checklist me-2"></i>
-                              <span className="d-none d-md-inline">Treinos</span>
-                              <span className="d-inline d-md-none">Treinos</span>
-                           </span>
-                        }
-                     >
+                     <TabsContent value="treino">
                         <div className="mt-4">
                            <AddTreino
                               treinosAluno={treinos}
@@ -477,18 +474,13 @@ function Aluno() {
                               close={() => setModalAddTreino(false)}
                               aluno={aluno}
                            />
-                           <button
-                              id="addWorkout"
-                              className="btn btn-success shadow-sm mb-4"
-                              onClick={() => setModalAddTreino(true)}
-                           >
-                              <i className="bi bi-plus-circle me-2"></i>
+                           <Button id="addWorkout" className="mb-4" onClick={() => setModalAddTreino(true)}>
+                              <PlusCircleIcon />
                               Adicionar Treino
-                           </button>
+                           </Button>
 
                            <div className="row g-4">
                               <FitTable.Root
-                                 sizeShadow="none"
                                  hideHeader
                                  list={treinos.sort((a, b) => b.cod_treino - a.cod_treino)}
                                  fieldSearch="nome_treino"
@@ -553,34 +545,24 @@ function Aluno() {
                               />
                            </div>
                         </div>
-                     </Tab>
+                     </TabsContent>
 
-                     <Tab
-                        eventKey="contratos"
-                        title={
-                           <span className="d-flex align-items-center">
-                              <i className="bi bi-paperclip me-2"></i>
-                              <span className="d-none d-md-inline">Contratos</span>
-                              <span className="d-inline d-md-none">Contratos</span>
-                           </span>
-                        }
-                     >
+                     <TabsContent value="contratos">
                         <div className="mt-4">
-                           <button
-                              className="btn btn-success shadow-sm mb-4"
+                           <Button
+                              className="mb-4"
                               onClick={() =>
                                  navigate("/contratacaoplano", {
                                     state: { aluno },
                                  })
                               }
                            >
-                              <i className="bi bi-plus-circle me-2"></i>
+                              <PlusCircleIcon />
                               Contratar Plano
-                           </button>
+                           </Button>
 
                            <div className="row g-4">
                               <FitTable.Root
-                                 sizeShadow="none"
                                  hideHeader
                                  list={alunoContratos}
                                  fieldSearch="nome_aluno_contrato"
@@ -634,11 +616,11 @@ function Aluno() {
                               />
                            </div>
                         </div>
-                     </Tab>
+                     </TabsContent>
                   </Tabs>
                </div>
-            </div>
-         </div>
+            </CardContent>
+         </Card>
       </div>
    );
 }

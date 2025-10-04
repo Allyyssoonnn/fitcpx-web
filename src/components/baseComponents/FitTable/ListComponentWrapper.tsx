@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -16,7 +17,7 @@ import {
    getPaginationRowModel,
    useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, PlusCircle } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import FitPagination from "../TableComponent/FitPagination";
 import ListComponentFilters from "./ListComponentFilters";
@@ -25,7 +26,6 @@ type ListComponentProps = {
    list: any[];
    title: string;
    description: string;
-   sizeShadow: "sm" | "lg" | "none";
    buttonText?: string;
    fieldSearch: string;
    className?: string;
@@ -77,7 +77,6 @@ export default function ListComponentWrapper({
    hideSearch = false,
    hideHeader = false,
    hideFooter = false,
-   sizeShadow = "lg",
    subHeader,
 }: ListComponentProps) {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
@@ -135,9 +134,9 @@ export default function ListComponentWrapper({
    });
 
    return (
-      <div className={`card ${sizeShadow == "none" ? "" : "shadow-lg"} rounded-4 ${className ?? ""}`}>
+      <Card className={`rounded-4 ${className ?? ""}`}>
          {!hideHeader && (
-            <div className="card-header">
+            <CardHeader>
                <div className="row d-flex justify-content-between">
                   <div className="col-md-4 col-7 d-flex align-items-center gap-2">
                      {!hideSearch && (
@@ -154,25 +153,25 @@ export default function ListComponentWrapper({
                   </div>
 
                   <div className="col-md-3 col-5 d-flex flex-column items-end">
-                     <h4>{title}</h4>
-                     <p>{description}</p>
+                     <CardTitle>{title}</CardTitle>
+                     <CardDescription>{description}</CardDescription>
                   </div>
                </div>
 
                <div className="d-flex justify-content-end align-items-center">
                   {buttonOnClick && (
-                     <button id={buttonId} className="btn rounded-3 btn-outline-success" onClick={buttonOnClick}>
-                        <i className="bi bi-plus-circle me-2"></i>
+                     <Button variant="outline" id={buttonId} onClick={buttonOnClick}>
+                        <PlusCircle />
                         {buttonText ?? "Novo"}
-                     </button>
+                     </Button>
                   )}
                </div>
-            </div>
+            </CardHeader>
          )}
 
          {subHeader}
 
-         <div className="card-body p-0 pb-5">
+         <CardContent className="p-0 pb-5">
             <Table>
                <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -219,8 +218,8 @@ export default function ListComponentWrapper({
             </Table>
 
             {!hideFooter && <FitPagination table={table} />}
-         </div>
-      </div>
+         </CardContent>
+      </Card>
    );
 }
 

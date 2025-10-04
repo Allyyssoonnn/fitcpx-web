@@ -1,9 +1,12 @@
+import { Dumbbell } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudents } from "../../api/student";
 import { getWorkouts } from "../../api/workouts";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { stateUsuario } from "../../states/states";
 import { calcularIdade } from "../../utils";
 
@@ -65,13 +68,14 @@ function Planilha() {
 
    return (
       <div className="container-fluid">
-         <div className="card shadow-lg rounded-4">
-            <div className="card-header d-flex justify-content-between align-items-center">
+         <Card>
+            <CardHeader className="d-flex justify-content-between align-items-center">
                <div className="d-flex align-items-center">
-                  <button className="btn rounded-3 btn-info" disabled={!selecionados.length} onClick={abrirPlanilha}>
+                  <Button disabled={!selecionados.length} onClick={abrirPlanilha}>
+                     <Dumbbell />
                      <span className="d-flex d-md-none">Abrir</span>
                      <span className="d-none d-md-flex">Abrir planilha</span>
-                  </button>
+                  </Button>
                   <h4 className="card-title d-none d-md-block ms-3">Planilha de treinos</h4>
                   <h4 className="card-title d-none d-md-block ms-3">{selecionados.length}/15</h4>
                </div>
@@ -85,44 +89,46 @@ function Planilha() {
                      onChange={(e) => setSearchTerm(e.target.value)}
                   />
                </div>
-            </div>
+            </CardHeader>
 
-            <div className="table-responsive">
-               <table id="basic-datatables" className="display table table-striped table-hover">
-                  <tbody>
-                     {filteredAlunos.map((aluno, index) => {
-                        let idade = calcularIdade(aluno.data_nascimento_aluno);
-                        return (
-                           <tr key={aluno.cod_aluno} onClick={() => toggleSelecao(aluno.cod_aluno)}>
-                              <th scope="row" className="d-flex align-items-center">
-                                 <input
-                                    checked={selecionados.includes(aluno.cod_aluno)}
-                                    className="me-3"
-                                    type="checkbox"
-                                 />
-                                 <img
-                                    src={
-                                       aluno.imagem_aluno
-                                          ? `${aluno.imagem_aluno}`
-                                          : "https://placehold.co/150x150?text=img"
-                                    }
-                                    alt="Foto do Aluno"
-                                    className="img-fluid rounded-circle me-3"
-                                    style={{ width: "50px", height: "50px" }}
-                                    loading="lazy"
-                                 />
-                                 <div className="col-md-3 d-flex flex-column">
-                                    <label>{aluno.nome_aluno}</label>
-                                    <label className="text-muted">{idade > 0 ? `${idade} anos` : "-"}</label>
-                                 </div>
-                              </th>
-                           </tr>
-                        );
-                     })}
-                  </tbody>
-               </table>
-            </div>
-         </div>
+            <CardContent>
+               <div className="table-responsive">
+                  <table id="basic-datatables" className="display table table-striped table-hover">
+                     <tbody>
+                        {filteredAlunos.map((aluno, index) => {
+                           let idade = calcularIdade(aluno.data_nascimento_aluno);
+                           return (
+                              <tr key={aluno.cod_aluno} onClick={() => toggleSelecao(aluno.cod_aluno)}>
+                                 <th scope="row" className="d-flex align-items-center">
+                                    <input
+                                       checked={selecionados.includes(aluno.cod_aluno)}
+                                       className="me-3"
+                                       type="checkbox"
+                                    />
+                                    <img
+                                       src={
+                                          aluno.imagem_aluno
+                                             ? `${aluno.imagem_aluno}`
+                                             : "https://placehold.co/150x150?text=img"
+                                       }
+                                       alt="Foto do Aluno"
+                                       className="img-fluid rounded-circle me-3"
+                                       style={{ width: "50px", height: "50px" }}
+                                       loading="lazy"
+                                    />
+                                    <div className="col-md-3 d-flex flex-column">
+                                       <label>{aluno.nome_aluno}</label>
+                                       <label className="text-muted">{idade > 0 ? `${idade} anos` : "-"}</label>
+                                    </div>
+                                 </th>
+                              </tr>
+                           );
+                        })}
+                     </tbody>
+                  </table>
+               </div>
+            </CardContent>
+         </Card>
       </div>
    );
 }

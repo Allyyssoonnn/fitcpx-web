@@ -1,3 +1,4 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PhysicalAssessmentType } from "@/types/physicalAssessment";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
@@ -48,11 +49,12 @@ function InfoTotais({ lengths }: DashboardProps) {
    const { t } = useTranslation("dashboard");
 
    return (
-      <div className="card shadow-lg rounded-4">
-         <div className="card-body">
+      <Card>
+         <CardHeader>
+            <CardTitle>{t("overview")}</CardTitle>
+         </CardHeader>
+         <CardContent>
             <div className="d-flex flex-column">
-               <h6 className="card-title">{t("overview")}</h6>
-
                <div className="d-flex border-bottom py-3">
                   <span className="rounded-circle round-48 mb-4 bg-success-subtle text-success d-flex align-items-center justify-content-center">
                      <i className="bi bi-person"></i>
@@ -108,8 +110,8 @@ function InfoTotais({ lengths }: DashboardProps) {
                   </div>
                </div>
             </div>
-         </div>
-      </div>
+         </CardContent>
+      </Card>
    );
 }
 
@@ -117,10 +119,12 @@ function UltimasAvaliacoes({ lastPhysicalAssessments }) {
    const { t } = useTranslation("dashboard");
 
    return (
-      <div className="card shadow-lg rounded-4">
-         <div className="card-body">
-            <h5 className="card-title">{t("recentPhysicalAssessament")}</h5>
+      <Card>
+         <CardHeader>
+            <CardTitle>{t("recentPhysicalAssessament")}</CardTitle>
+         </CardHeader>
 
+         <CardContent>
             <div className="table-responsive">
                <table className="table text-nowrap align-middle mb-0">
                   <thead>
@@ -162,8 +166,8 @@ function UltimasAvaliacoes({ lastPhysicalAssessments }) {
                   </tbody>
                </table>
             </div>
-         </div>
-      </div>
+         </CardContent>
+      </Card>
    );
 }
 
