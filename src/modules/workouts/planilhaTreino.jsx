@@ -7,6 +7,7 @@ import { getExercises } from "../../api/exercises";
 import { createOrUpdateWorkout, getWorkouts } from "../../api/workouts";
 import AutoComplete from "../../components/autoComplete";
 import FitModalViewVideo from "../../components/baseComponents/FitModalVideoView";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import { stateUsuario } from "../../states/states";
 import { arrayBorders } from "../../utils";
 
@@ -217,23 +218,15 @@ function PlanilhaTreino() {
 
                {/* Workout Selection */}
                <div className="p-4">
-                  <div className="accordion" id="workoutAccordion">
-                     <div className="accordion-item border-0 shadow-sm rounded-4 mb-3">
-                        <h2 className="accordion-header">
-                           <button
-                              className="accordion-button bg-gradient-primary rounded-top-4"
-                              type="button"
-                              data-bs-toggle="collapse"
-                              data-bs-target="#workoutCollapse"
-                              aria-expanded="true"
-                              aria-controls="workoutCollapse"
-                           >
-                              <i className="bi bi-card-checklist me-2"></i>
-                              Selecionar Treino e Sessão
-                           </button>
-                        </h2>
-                        <div id="workoutCollapse" className="accordion-collapse collapse show">
-                           <div className="accordion-body p-4">
+                  <Accordion type="multiple" className="mx-3">
+                     <AccordionItem value="item-1">
+                        <AccordionTrigger>
+                           <i className="bi bi-card-checklist me-2"></i>
+                           <h4>Selecionar Treino/Sessão</h4>
+                        </AccordionTrigger>
+
+                        <AccordionContent>
+                           <div className="p-4">
                               <div className="row g-4">
                                  <div className="col-md-6">
                                     <h6 className="text-primary mb-3">
@@ -293,33 +286,23 @@ function PlanilhaTreino() {
                                  </div>
                               </div>
                            </div>
-                        </div>
-                     </div>
-                  </div>
+                        </AccordionContent>
+                     </AccordionItem>
 
-                  {/* Timer Section */}
-                  <div className="accordion" id="timerAccordion">
-                     <div className="accordion-item border-0 shadow-sm rounded-4 mb-4">
-                        <h2 className="accordion-header">
-                           <button
-                              className="accordion-button collapsed bg-gradient-warning text-dark rounded-top-4"
-                              type="button"
-                              data-bs-toggle="collapse"
-                              data-bs-target="#timerCollapse"
-                              aria-expanded="false"
-                              aria-controls="timerCollapse"
-                           >
-                              <i className="bi bi-stopwatch me-2"></i>
-                              Temporizador
-                           </button>
-                        </h2>
-                        <div id="timerCollapse" className="accordion-collapse collapse">
-                           <div className="accordion-body p-4">
+                     {/* Timer Section */}
+                     <AccordionItem value="item-2">
+                        <AccordionTrigger>
+                           <i className="bi bi-stopwatch me-2"></i>
+                           <h4>Temporizador</h4>
+                        </AccordionTrigger>
+
+                        <AccordionContent>
+                           <div className="p-4">
                               <Timer />
                            </div>
-                        </div>
-                     </div>
-                  </div>
+                        </AccordionContent>
+                     </AccordionItem>
+                  </Accordion>
 
                   {/* Exercise Table */}
                   <div className="mt-4">

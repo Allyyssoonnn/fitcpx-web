@@ -7,6 +7,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudent } from "../../api/student";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import { stateEmpresa } from "../../states/states";
 
 import {
@@ -185,12 +186,14 @@ function Avaliacao() {
                   </div>
                </div>
 
-               <Metas aluno={aluno} avaliacao={avaliacao} result={result} />
-               <AreaMagraGorda result={result} />
-               <Perimetro avaliacao={avaliacao} />
-               <Dobras avaliacao={avaliacao} />
-               <Diametro avaliacao={avaliacao} />
-               <Imagens avaliacao={avaliacao} />
+               <Accordion type="single" collapsible className="mx-3">
+                  <Metas aluno={aluno} avaliacao={avaliacao} result={result} />
+                  <AreaMagraGorda result={result} />
+                  <Perimetro avaliacao={avaliacao} />
+                  <Dobras avaliacao={avaliacao} />
+                  <Diametro avaliacao={avaliacao} />
+                  <Imagens avaliacao={avaliacao} />
+               </Accordion>
             </div>
          </div>
       </div>
@@ -203,20 +206,13 @@ function Metas({ aluno, avaliacao, result }) {
    const [imc, setImc] = useState(24);
 
    return (
-      <div className="card accordion">
-         <div className="card-header accordion-header">
-            <button
-               className="accordion-button"
-               data-bs-toggle="collapse"
-               data-bs-target="#avMetas"
-               aria-controls="avMetas"
-            >
-               <h4>Metas</h4>
-            </button>
-         </div>
+      <AccordionItem value="item-1">
+         <AccordionTrigger>
+            <h4>Metas</h4>
+         </AccordionTrigger>
 
-         <div id="avMetas" className="accordion-collapse collapse">
-            <div className="card-body accordion-body">
+         <AccordionContent>
+            <div className="card-body">
                <div className="col-md-3">
                   <label className="form-label">Meta</label>
                   <select className="form-control" value={meta} onChange={(e) => setMeta(e.target.value)}>
@@ -353,19 +349,19 @@ function Metas({ aluno, avaliacao, result }) {
                   </div>
                </div>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
 function Imagens({ avaliacao }) {
    return (
-      <div className="card">
-         <div className="card-header">
+      <AccordionItem value="item-6">
+         <AccordionTrigger>
             <h4>Imagens</h4>
-         </div>
+         </AccordionTrigger>
 
-         <div className="card-body">
+         <AccordionContent>
             <div className="row g-3">
                {avaliacao?.imagem?.map((img, index) => (
                   <div key={index} className="col-md-3">
@@ -376,92 +372,83 @@ function Imagens({ avaliacao }) {
                   </div>
                ))}
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
 function AreaMagraGorda({ result }) {
    return (
-      <div className="card accordion">
-         <div className="card-header accordion-header">
-            <div
-               className="accordion-button"
-               data-bs-toggle="collapse"
-               data-bs-target="#avLeanAndFatArea"
-               aria-controls="avLeanAndFatArea"
-            >
-               <h4>Área Magra/Gorda</h4>
+      <AccordionItem value="item-2">
+         <AccordionTrigger>
+            <h4>Área Magra/Gorda</h4>
+         </AccordionTrigger>
+
+         <AccordionContent className="d-flex">
+            <div className="col-md-4 table-responsive">
+               <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                  <thead>
+                     <tr>
+                        <th>Braço</th>
+                     </tr>
+                  </thead>
+
+                  <tbody>
+                     {result?.leanAndFatArea?.braco?.map((campo, id) => (
+                        <tr key={id}>
+                           <th>{campo.nome}</th>
+                           <th>
+                              {campo.valor} {campo.prefix}
+                           </th>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
             </div>
-         </div>
 
-         <div id="avLeanAndFatArea" className="accordion-collapse collapse">
-            <div className="card-body row justify-content-around accordion-body">
-               <div className="col-md-4 table-responsive">
-                  <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                     <thead>
-                        <tr>
-                           <th>Braço</th>
+            <div className="col-md-4 table-responsive">
+               <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                  <thead>
+                     <tr>
+                        <th>Coxa</th>
+                     </tr>
+                  </thead>
+
+                  <tbody>
+                     {result?.leanAndFatArea?.coxa?.map((campo, id) => (
+                        <tr key={id}>
+                           <th>{campo.nome}</th>
+                           <th>
+                              {campo.valor} {campo.prefix}
+                           </th>
                         </tr>
-                     </thead>
-
-                     <tbody>
-                        {result?.leanAndFatArea?.braco?.map((campo, id) => (
-                           <tr key={id}>
-                              <th>{campo.nome}</th>
-                              <th>
-                                 {campo.valor} {campo.prefix}
-                              </th>
-                           </tr>
-                        ))}
-                     </tbody>
-                  </table>
-               </div>
-
-               <div className="col-md-4 table-responsive">
-                  <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                     <thead>
-                        <tr>
-                           <th>Coxa</th>
-                        </tr>
-                     </thead>
-
-                     <tbody>
-                        {result?.leanAndFatArea?.coxa?.map((campo, id) => (
-                           <tr key={id}>
-                              <th>{campo.nome}</th>
-                              <th>
-                                 {campo.valor} {campo.prefix}
-                              </th>
-                           </tr>
-                        ))}
-                     </tbody>
-                  </table>
-               </div>
-
-               <div className="col-md-4 table-responsive">
-                  <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                     <thead>
-                        <tr>
-                           <th>Panturrilha</th>
-                        </tr>
-                     </thead>
-
-                     <tbody>
-                        {result?.leanAndFatArea?.panturrilha?.map((campo, id) => (
-                           <tr key={id}>
-                              <th>{campo.nome}</th>
-                              <th>
-                                 {campo.valor} {campo.prefix}
-                              </th>
-                           </tr>
-                        ))}
-                     </tbody>
-                  </table>
-               </div>
+                     ))}
+                  </tbody>
+               </table>
             </div>
-         </div>
-      </div>
+
+            <div className="col-md-4 table-responsive">
+               <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                  <thead>
+                     <tr>
+                        <th>Panturrilha</th>
+                     </tr>
+                  </thead>
+
+                  <tbody>
+                     {result?.leanAndFatArea?.panturrilha?.map((campo, id) => (
+                        <tr key={id}>
+                           <th>{campo.nome}</th>
+                           <th>
+                              {campo.valor} {campo.prefix}
+                           </th>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
@@ -758,20 +745,13 @@ function SimetriaMembro({ avaliacao }) {
 
 function Perimetro({ avaliacao }) {
    return (
-      <div className="card no-print accordion">
-         <div className="card-header accordion-header">
-            <button
-               className="accordion-button"
-               data-bs-toggle="collapse"
-               data-bs-target="#avGirth"
-               aria-controls="avGirth"
-            >
-               <h4>Perimetria (cm)</h4>
-            </button>
-         </div>
+      <AccordionItem value="item-3">
+         <AccordionTrigger>
+            <h4>Perimetria (cm)</h4>
+         </AccordionTrigger>
 
-         <div id="avGirth" className="card-body accordion-collapse collapse">
-            <div className="card-body accordion-body">
+         <AccordionContent>
+            <div className="card-body">
                <div className="row g-3 mt-3">
                   <div className="card col-md-4">
                      <h6>Geral</h6>
@@ -844,26 +824,19 @@ function Perimetro({ avaliacao }) {
                   </div>
                </div>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
 function Diametro({ avaliacao }) {
    return (
-      <div className="card no-print accordion">
-         <div className="card-header accordion-header">
-            <button
-               className="accordion-button"
-               data-bs-target="#avDiameters"
-               data-bs-toggle="collapse"
-               aria-controls="avDiameters"
-            >
-               <h4>Diamêtros Osséos</h4>
-            </button>
-         </div>
+      <AccordionItem value="item-5">
+         <AccordionTrigger>
+            <h4>Diamêtros Osséos</h4>
+         </AccordionTrigger>
 
-         <div id="avDiameters" className="accordion-collapse collapse">
+         <AccordionContent>
             <div className="card-body">
                <ul className="mt-3">
                   <li>
@@ -877,27 +850,20 @@ function Diametro({ avaliacao }) {
                   </li>
                </ul>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
 function Dobras({ avaliacao }) {
    return (
-      <div className="card no-print accordion">
-         <div className="card-header accordion-header">
-            <div
-               className="accordion-button"
-               data-bs-target="#avCurves"
-               data-bs-toggle="collapse"
-               aria-controls="avCurves"
-            >
-               <h4>Dobras Cutâneas (cm)</h4>
-            </div>
-         </div>
+      <AccordionItem value="item-4">
+         <AccordionTrigger>
+            <h4>Dobras Cutâneas (cm)</h4>
+         </AccordionTrigger>
 
-         <div id="avCurves" className="accordion-collapse collapse">
-            <div className="card-body accordion-body">
+         <AccordionContent>
+            <div className="card-body">
                <row className="row g-3">
                   <ul className="mt-3 col-md-3">
                      <li>
@@ -937,8 +903,8 @@ function Dobras({ avaliacao }) {
                   </div>
                </row>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 

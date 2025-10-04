@@ -12,6 +12,8 @@ import {
    getMuscleGroups,
    getSugestions,
 } from "../../api/workouts";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { getYouTubeEmbedUrl } from "../../utils";
 
@@ -106,9 +108,9 @@ function CadExercicio() {
 
    return (
       <form onSubmit={handleSubmit(confirma)} className="container-fluid">
-         <div className="row g-3">
-            <div className="card col-md-6">
-               <div className="card-header">
+         <div className="row ms-1">
+            <Card className="card col-md-6 p-4">
+               <CardHeader className="d-flex">
                   <button
                      onClick={(e) => {
                         e.stopPropagation();
@@ -119,9 +121,9 @@ function CadExercicio() {
                      <i className="bi bi-backspace me-2"></i>
                      Voltar
                   </button>
-               </div>
+               </CardHeader>
 
-               <div className="card-body">
+               <CardContent>
                   {base_exercicio == "S" && (
                      <p className="text-danger">* Exercício base do sistema [Não é possível edição]</p>
                   )}
@@ -149,8 +151,8 @@ function CadExercicio() {
                         <input {...register("url_exercicio_empresa")} className="form-control" />
                      </div>
                   )}
-               </div>
-            </div>
+               </CardContent>
+            </Card>
 
             <div className="d-flex justify-content-center align-items-center col-md-6">
                <iframe
@@ -165,8 +167,8 @@ function CadExercicio() {
             </div>
          </div>
 
-         <div className="card">
-            <div className="card-body">
+         <Card className="p-4 mb-3">
+            <CardContent>
                <div className="row g-3">
                   <div className="col-md-3">
                      <label className="form-label fw-bold">Tipo exercício</label>
@@ -228,327 +230,327 @@ function CadExercicio() {
                      </select>
                   </div>
                </div>
-            </div>
-         </div>
+            </CardContent>
+         </Card>
 
-         <div className="accordion">
-            <div className="accordion-item">
-               <h2 className="accordion-header">
-                  <button
-                     disabled={base_exercicio === "S"}
-                     className="accordion-button"
-                     type="button"
-                     data-bs-toggle="collapse"
-                     data-bs-target="#panelsStayOpen-collapseOne"
-                     aria-expanded="true"
-                     aria-controls="panelsStayOpen-collapseOne"
-                  >
-                     Grupos principais
-                  </button>
-               </h2>
-
-               <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
-                  <div className="accordion-body row g-3">
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 1</label>
-                        <select
+         <Card className="px-4 mb-3">
+            <CardContent>
+               <Accordion type="multiple">
+                  <AccordionItem value="item-1">
+                     <AccordionTrigger>
+                        <button
                            disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_1")}
-                           className="form-control"
+                           type="button"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#panelsStayOpen-collapseOne"
+                           aria-expanded="true"
+                           aria-controls="panelsStayOpen-collapseOne"
                         >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
+                           <h4>Grupos principais</h4>
+                        </button>
+                     </AccordionTrigger>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 2</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_2")}
-                           className="form-control"
+                     <AccordionContent>
+                        <div className="accordion-body row g-3">
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 1</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_1")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 2</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_2")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 3</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_3")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 4</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_4")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+                        </div>
+                     </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-2">
+                     <AccordionTrigger>
+                        <button
+                           type="button"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#panelsStayOpen-collapseTwo"
+                           aria-expanded="false"
+                           aria-controls="panelsStayOpen-collapseTwo"
                         >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
+                           <h4>Grupos principais</h4>
+                        </button>
+                     </AccordionTrigger>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 3</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_3")}
-                           className="form-control"
+                     <AccordionContent>
+                        <div className="accordion-body row g-3">
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 1</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_5")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 2</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_6")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 3</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_7")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Grupo 4</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_grupo_exercicio_8")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o grupo de exercício</option>
+                                 {grupos.map((gp, i) => (
+                                    <option value={gp.cod_grupo_exercicio} key={i}>
+                                       {gp.nome_grupo_exercicio}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+                        </div>
+                     </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-3">
+                     <AccordionTrigger>
+                        <button
+                           type="button"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#panelsStayOpen-collapseThree"
+                           aria-expanded="false"
+                           aria-controls="panelsStayOpen-collapseThree"
                         >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
+                           <h4>Equipamentos</h4>
+                        </button>
+                     </AccordionTrigger>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 4</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_4")}
-                           className="form-control"
+                     <AccordionContent>
+                        <div className="accordion-body row g-3">
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Equipamento 1</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_equipamento_1")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o equipamento</option>
+                                 {equipamentos.map((eq, i) => (
+                                    <option value={eq.cod_equipamento} key={i}>
+                                       {eq.nome_equipamento}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Equipamento 2</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_equipamento_2")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o equipamento</option>
+                                 {equipamentos.map((eq, i) => (
+                                    <option value={eq.cod_equipamento} key={i}>
+                                       {eq.nome_equipamento}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Equipamento 3</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_equipamento_3")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione o equipamento</option>
+                                 {equipamentos.map((eq, i) => (
+                                    <option value={eq.cod_equipamento} key={i}>
+                                       {eq.nome_equipamento}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+                        </div>
+                     </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-4">
+                     <AccordionTrigger>
+                        <button
+                           type="button"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#panelsStayOpen-collapseFour"
+                           aria-expanded="false"
+                           aria-controls="panelsStayOpen-collapseFour"
                         >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-                  </div>
-               </div>
-            </div>
+                           <h4>Articulações</h4>
+                        </button>
+                     </AccordionTrigger>
 
-            <div className="accordion-item">
-               <h2 className="accordion-header">
-                  <button
-                     className="accordion-button collapsed"
-                     type="button"
-                     data-bs-toggle="collapse"
-                     data-bs-target="#panelsStayOpen-collapseTwo"
-                     aria-expanded="false"
-                     aria-controls="panelsStayOpen-collapseTwo"
-                  >
-                     Grupos secundários
-                  </button>
-               </h2>
+                     <AccordionContent>
+                        <div className="accordion-body row g-3">
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Articulação 1</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_articulacao_1")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione a articulação</option>
+                                 {articulacoes.map((at, i) => (
+                                    <option value={at.cod_articulacao} key={i}>
+                                       {at.nome_articulacao}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
 
-               <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse">
-                  <div className="accordion-body row g-3">
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 1</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_5")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Articulação 2</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_articulacao_2")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione a articulação</option>
+                                 {articulacoes.map((at, i) => (
+                                    <option value={at.cod_articulacao} key={i}>
+                                       {at.nome_articulacao}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 2</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_6")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Articulação 3</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_articulacao_3")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione a articulação</option>
+                                 {articulacoes.map((at, i) => (
+                                    <option value={at.cod_articulacao} key={i}>
+                                       {at.nome_articulacao}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 3</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_7")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Grupo 4</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_grupo_exercicio_8")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o grupo de exercício</option>
-                           {grupos.map((gp, i) => (
-                              <option value={gp.cod_grupo_exercicio} key={i}>
-                                 {gp.nome_grupo_exercicio}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            <div className="accordion-item">
-               <h2 className="accordion-header">
-                  <button
-                     className="accordion-button collapsed"
-                     type="button"
-                     data-bs-toggle="collapse"
-                     data-bs-target="#panelsStayOpen-collapseThree"
-                     aria-expanded="false"
-                     aria-controls="panelsStayOpen-collapseThree"
-                  >
-                     Equipamentos
-                  </button>
-               </h2>
-
-               <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse">
-                  <div className="accordion-body row g-3">
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Equipamento 1</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_equipamento_1")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o equipamento</option>
-                           {equipamentos.map((eq, i) => (
-                              <option value={eq.cod_equipamento} key={i}>
-                                 {eq.nome_equipamento}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Equipamento 2</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_equipamento_2")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o equipamento</option>
-                           {equipamentos.map((eq, i) => (
-                              <option value={eq.cod_equipamento} key={i}>
-                                 {eq.nome_equipamento}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Equipamento 3</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_equipamento_3")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione o equipamento</option>
-                           {equipamentos.map((eq, i) => (
-                              <option value={eq.cod_equipamento} key={i}>
-                                 {eq.nome_equipamento}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            <div className="accordion-item">
-               <h2 className="accordion-header">
-                  <button
-                     className="accordion-button collapsed"
-                     type="button"
-                     data-bs-toggle="collapse"
-                     data-bs-target="#panelsStayOpen-collapseFour"
-                     aria-expanded="false"
-                     aria-controls="panelsStayOpen-collapseFour"
-                  >
-                     Articulações
-                  </button>
-               </h2>
-
-               <div id="panelsStayOpen-collapseFour" className="accordion-collapse collapse">
-                  <div className="accordion-body row g-3">
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Articulação 1</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_articulacao_1")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione a articulação</option>
-                           {articulacoes.map((at, i) => (
-                              <option value={at.cod_articulacao} key={i}>
-                                 {at.nome_articulacao}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Articulação 2</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_articulacao_2")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione a articulação</option>
-                           {articulacoes.map((at, i) => (
-                              <option value={at.cod_articulacao} key={i}>
-                                 {at.nome_articulacao}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Articulação 3</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_articulacao_3")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione a articulação</option>
-                           {articulacoes.map((at, i) => (
-                              <option value={at.cod_articulacao} key={i}>
-                                 {at.nome_articulacao}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Articulação 4</label>
-                        <select
-                           disabled={base_exercicio === "S"}
-                           {...register("cod_articulacao_4")}
-                           className="form-control"
-                        >
-                           <option value="">Selecione a articulação</option>
-                           {articulacoes.map((at, i) => (
-                              <option value={at.cod_articulacao} key={i}>
-                                 {at.nome_articulacao}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
+                           <div className="col-md-3">
+                              <label className="form-label fw-bold">Articulação 4</label>
+                              <select
+                                 disabled={base_exercicio === "S"}
+                                 {...register("cod_articulacao_4")}
+                                 className="form-control"
+                              >
+                                 <option value="">Selecione a articulação</option>
+                                 {articulacoes.map((at, i) => (
+                                    <option value={at.cod_articulacao} key={i}>
+                                       {at.nome_articulacao}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+                        </div>
+                     </AccordionContent>
+                  </AccordionItem>
+               </Accordion>
+            </CardContent>
+         </Card>
 
          <div className="card">
             <div className="card-footer">

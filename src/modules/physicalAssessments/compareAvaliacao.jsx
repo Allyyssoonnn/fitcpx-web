@@ -4,7 +4,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
-import { useNotificacao } from "../../states/states";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import { calcularIdade, formatarData, ordenaAvalicaoData } from "../../utils";
 
 function CompareAvaliacao() {
@@ -184,11 +184,13 @@ function CompareAvaliacao() {
                   </div>
                </div>
 
-               <AreaMagraGorda avaliacoes={[physical1, physical2, physical3]} />
-               <SimetriaMembro avaliacoes={[physical1, physical2, physical3]} />
-               <Dobras avaliacoes={[physical1, physical2, physical3]} />
-               <Diametro avaliacoes={[physical1, physical2, physical3]} />
-               <Imagens avaliacoes={[physical1, physical2, physical3]} />
+               <Accordion type="single" collapsible className="mx-3">
+                  <AreaMagraGorda avaliacoes={[physical1, physical2, physical3]} />
+                  <SimetriaMembro avaliacoes={[physical1, physical2, physical3]} />
+                  <Dobras avaliacoes={[physical1, physical2, physical3]} />
+                  <Diametro avaliacoes={[physical1, physical2, physical3]} />
+                  <Imagens avaliacoes={[physical1, physical2, physical3]} />
+               </Accordion>
             </div>
          </div>
       </div>
@@ -196,7 +198,6 @@ function CompareAvaliacao() {
 }
 
 function Imagens({ avaliacoes }) {
-   const { nLoading, endLoading } = useNotificacao();
    const [tipoColagem, setTipoColagem] = useState(2);
    const [indexImg, setIndexImg] = useState([0, 0, 0]);
 
@@ -204,72 +205,13 @@ function Imagens({ avaliacoes }) {
       setIndexImg((prev) => prev.map((v, i) => (index == i ? Number(value) : v)));
    }
 
-   const handleSalvarColagem = async () => {
-      try {
-         nLoading();
-         const canvas = document.createElement("canvas");
-         const ctx = canvas.getContext("2d");
-
-         // Carregar as imagens e obter seus tamanhos
-         const images = await Promise.all(
-            avaliacoes.slice(0, tipoColagem).map(async (av, index) => {
-               const img = new Image();
-               img.crossOrigin = "anonymous"; // Habilita CORS
-               img.src = av.imagem[indexImg[index]]?.url_imagem || "";
-
-               return new Promise((resolve, reject) => {
-                  img.onload = () => resolve({ img, width: img.width, height: img.height });
-                  img.onerror = () =>
-                     reject(new Error(`Erro ao carregar imagem ${index} ${av.imagem[indexImg[index]]?.url_imagem}`));
-               });
-            })
-         );
-
-         // Encontrar as menores dimensões de largura e altura
-         const minWidth = Math.min(...images.map(({ width }) => width));
-         const minHeight = Math.min(...images.map(({ height }) => height));
-
-         // Calcular a largura total do canvas baseado no número de imagens
-         const totalWidth = images.length * minWidth;
-         canvas.width = totalWidth;
-         canvas.height = minHeight;
-
-         // Desenhar as imagens no canvas, redimensionando proporcionalmente
-         let currentX = 0;
-         images.forEach(({ img, width, height }) => {
-            const scale = Math.min(minWidth / width, minHeight / height); // Redimensionamento proporcional
-            const newWidth = width * scale; // Nova largura proporcional
-            const newHeight = height * scale; // Nova altura proporcional
-
-            const xOffset = (minWidth - newWidth) / 2; // Centraliza a imagem na largura
-            const yOffset = (minHeight - newHeight) / 2; // Centraliza a imagem na altura
-
-            // Desenhar imagem redimensionada no canvas
-            ctx.drawImage(img, currentX + xOffset, yOffset, newWidth, newHeight);
-            currentX += minWidth; // Mover para a próxima posição
-         });
-
-         // Gerar imagem do canvas
-         const dataURL = canvas.toDataURL("image/png");
-
-         // Criar link para download
-         const link = document.createElement("a");
-         link.href = dataURL;
-         link.download = "colagem.png";
-         link.click();
-         endLoading();
-      } catch (error) {
-         endLoading();
-         console.error("Erro ao salvar a colagem:", error);
-         alert("Ocorreu um erro ao salvar a colagem. Verifique as imagens e tente novamente.");
-      }
-   };
-
    return (
-      <div className="card">
-         <div className="card-header d-flex gap-3 row g-3">
+      <AccordionItem value="item-5">
+         <AccordionTrigger>
             <h4>Comparação visual</h4>
+         </AccordionTrigger>
 
+         <AccordionContent>
             <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
                <input
                   type="radio"
@@ -295,11 +237,6 @@ function Imagens({ avaliacoes }) {
                   3 Fotos
                </label>
             </div>
-
-            {/* <button className="btn btn-info" onClick={handleSalvarColagem}>Salvar</button> */}
-         </div>
-
-         <div className="card-body">
             <div className={`row g-3 ${tipoColagem === 3 ? "row-cols-3" : "row-cols-2"}`}>
                {avaliacoes?.slice(0, tipoColagem).map((av, index) => (
                   <div key={index} className="col-md-3">
@@ -325,8 +262,8 @@ function Imagens({ avaliacoes }) {
                   </div>
                ))}
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
@@ -375,20 +312,13 @@ function AreaMagraGorda({ avaliacoes }) {
    }, [avaliacoes]);
 
    return (
-      <div className="card table-responsive accordion">
-         <div className="card-header accordion-header">
-            <div
-               className="accordion-button"
-               data-bs-target="#avLeanAndFatArea"
-               data-bs-toggle="collapse"
-               aria-controls="avLeanAndFatArea"
-            >
-               <h4>Área Magra/Gorda</h4>
-            </div>
-         </div>
+      <AccordionItem value="item-1">
+         <AccordionTrigger>
+            <h4>Área Magra/Gorda</h4>
+         </AccordionTrigger>
 
-         <div id="avLeanAndFatArea" className="accordion-collapse collapse">
-            <div className="card-body accordion-body">
+         <AccordionContent>
+            <div className="card-body">
                <row className="row g-3 justify-content-around">
                   <table id="basic-datatables" className="table table-sm table-striped table-hover">
                      <tbody>
@@ -507,8 +437,8 @@ function AreaMagraGorda({ avaliacoes }) {
                   </table>
                </row>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
@@ -520,25 +450,18 @@ function SimetriaMembro({ avaliacoes }) {
    );
 
    return (
-      <div className="card table-responsive accordion">
-         <div className="card-header accordion-header">
-            <button
-               className="accordion-button"
-               data-bs-target="#avAssymmetry"
-               data-bs-toggle="collapse"
-               aria-controls="avAssymmetry"
-            >
-               <div className="d-flex justify-between items-center w-100">
-                  <h4>Simetria dos membros (cm)</h4>
-                  <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
-                     <i className="bi bi-question-circle text-danger ms-2 me-5"></i>
-                  </OverlayTrigger>
-               </div>
-            </button>
-         </div>
+      <AccordionItem value="item-2">
+         <AccordionTrigger>
+            <div className="d-flex justify-between items-center w-100">
+               <h4>Simetria dos membros (cm)</h4>
+               <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
+                  <i className="bi bi-question-circle text-danger ms-2 me-5"></i>
+               </OverlayTrigger>
+            </div>
+         </AccordionTrigger>
 
-         <div id="avAssymmetry" className="accordion-collapse collapse">
-            <div className="card-body accordion-body">
+         <AccordionContent>
+            <div className="card-body">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <thead>
                      <tr>
@@ -607,27 +530,20 @@ function SimetriaMembro({ avaliacoes }) {
                   </tbody>
                </table>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
 function Dobras({ avaliacoes }) {
    return (
-      <div className="card no-print accordion">
-         <div className="card-header accordion-header">
-            <div
-               className="accordion-button"
-               data-bs-toggle="collapse"
-               data-bs-target="#avCurves"
-               aria-controls="avCurves"
-            >
-               <h4>Dobras Cutâneas (cm)</h4>
-            </div>
-         </div>
+      <AccordionItem value="item-3">
+         <AccordionTrigger>
+            <h4>Dobras Cutâneas (cm)</h4>
+         </AccordionTrigger>
 
-         <div id="avCurves" className="accordion-collapse collapse">
-            <div className="card-body accordion-body">
+         <AccordionContent>
+            <div className="card-body">
                <row className="row g-3 justify-content-around">
                   <div className="table-responsive">
                      <table id="basic-datatables" className="table table-sm table-striped table-hover">
@@ -692,26 +608,19 @@ function Dobras({ avaliacoes }) {
                   </div>
                </row>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
 function Diametro({ avaliacoes }) {
    return (
-      <div className="card no-print accordion">
-         <div className="card-header accordion-header">
-            <div
-               className="accordion-button"
-               data-bs-toggle="collapse"
-               data-bs-target="#avDiameters"
-               aria-controls="avDiameters"
-            >
-               <h4>Diamêtros Osséos</h4>
-            </div>
-         </div>
+      <AccordionItem value="item-4">
+         <AccordionTrigger>
+            <h4>Diamêtros Osséos</h4>
+         </AccordionTrigger>
 
-         <div id="avDiameters" className="carddion-collapse collapse">
+         <AccordionContent>
             <div className="card-body accordion-bogy">
                <div className="row">
                   <div className="table-responsive">
@@ -770,8 +679,8 @@ function Diametro({ avaliacoes }) {
                   </div>
                </div>
             </div>
-         </div>
-      </div>
+         </AccordionContent>
+      </AccordionItem>
    );
 }
 
