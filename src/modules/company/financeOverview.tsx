@@ -13,6 +13,7 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { stateEmpresa } from "@/states/states";
 import { formatarMoeda } from "@/utils";
 import {
@@ -339,45 +340,81 @@ const getPaymentColumns = (navigate, onRecieved) => [
          const status = original.status_aluno_contrato_pagamento;
          if (status === "receivedCash")
             return (
-               <Badge variant="outline">
-                  <i className="bi bi-check-circle-fill text-success" />
-                  Recebido Manual
-               </Badge>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-check-circle-fill text-success" />
+                        Recebido Manual
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Recebimento manual registrado; o app não controla este pagamento.</TooltipContent>
+               </Tooltip>
             );
          if (status === "overdue")
             return (
-               <Badge variant="outline">
-                  <i className="bi bi-x-circle-fill text-danger" />
-                  Vencido
-               </Badge>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-x-circle-fill text-danger" />
+                        Vencido
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>A fatura ultrapassou a data de vencimento."</TooltipContent>
+               </Tooltip>
             );
          if (status === "Pendente" || status === "Pending")
             return (
-               <Badge variant="outline">
-                  <i className="bi bi-x-circle-fill text-warning" />
-                  Pendente
-               </Badge>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-x-circle-fill text-warning" />
+                        Pendente
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>O aluno ainda não efetuou o pagamento.</TooltipContent>
+               </Tooltip>
             );
          if (status === "confirmed")
             return (
-               <Badge variant="outline">
-                  <i className="bi bi-check-circle-fill text-info" />
-                  Confirmado
-               </Badge>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-check-circle-fill text-info" />
+                        Confirmado
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Pagamento efetuado pelo aluno, aguardando confirmação de recebimento.</TooltipContent>
+               </Tooltip>
             );
          if (status === "succeeded")
             return (
-               <Badge variant="outline">
-                  <i className="bi bi-check-circle-fill text-success" />
-                  Disponível
-               </Badge>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-check-circle-fill text-success" />
+                        Disponível
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Valor já disponível para repasse.</TooltipContent>
+               </Tooltip>
             );
          if (status === "paid")
             return (
-               <Badge variant="outline">
-                  <i className="bi bi-check-circle-fill text-success" />
-                  Repassado
-               </Badge>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-check-circle-fill text-success" />
+                        Enviado
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Valor já disponível em sua conta.</TooltipContent>
+               </Tooltip>
             );
       },
    },

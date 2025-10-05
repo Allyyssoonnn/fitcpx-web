@@ -1,3 +1,7 @@
+.jodit-status-bar-link {
+   display: none !important;
+}
+
 .cropper-crop-box,
 .cropper-view-box {
    border-radius: 50%; /* Define o círculo */
