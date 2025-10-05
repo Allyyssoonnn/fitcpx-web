@@ -21,7 +21,6 @@ export const stateEmpresa = atom({
 export const stateApp = atom({
    key: "stateApp",
    default: {
-      openedSidebar: true,
       theme: "light",
    },
    effects_UNSTABLE: [persistAtom],
@@ -61,13 +60,6 @@ export const useNotificacao = () => {
    const endLoading = () => Swal.close();
 
    return { nSuccess, nError, nConfirm, nLoading, endLoading };
-};
-
-export const useToggleSidebar = () => {
-   const [appState, setAppState] = useRecoilState(stateApp);
-   const openSidebar = () => setAppState((prevState) => ({ ...prevState, openedSidebar: true }));
-   const closeSidebar = () => setAppState((prevState) => ({ ...prevState, openedSidebar: false }));
-   return { openSidebar, closeSidebar, openedSidebar: appState.openedSidebar };
 };
 
 export const useStateApp = () => {

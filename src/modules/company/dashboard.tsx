@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { PhysicalAssessmentType } from "@/types/physicalAssessment";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
@@ -125,47 +126,45 @@ function UltimasAvaliacoes({ lastPhysicalAssessments }) {
          </CardHeader>
 
          <CardContent>
-            <div className="table-responsive">
-               <table className="table text-nowrap align-middle mb-0">
-                  <thead>
-                     <tr className="border-2 border-bottom border-primary border-0">
-                        <th scope="col" className="ps-0">
-                           {t("student")}
-                        </th>
-                        <th scope="col" className="ps-0">
-                           {t("date")}
-                        </th>
-                        <th scope="col">{t("heigth")}</th>
-                        <th scope="col" className="text-center">
-                           {t("weight")}
-                        </th>
-                     </tr>
-                  </thead>
+            <Table>
+               <TableHeader>
+                  <TableRow className="border-2 border-bottom border-primary border-0">
+                     <TableCell scope="col" className="ps-0">
+                        {t("student")}
+                     </TableCell>
+                     <TableCell scope="col" className="ps-0">
+                        {t("date")}
+                     </TableCell>
+                     <TableCell scope="col">{t("heigth")}</TableCell>
+                     <TableCell scope="col" className="text-center">
+                        {t("weight")}
+                     </TableCell>
+                  </TableRow>
+               </TableHeader>
 
-                  <tbody className="table-group-divider">
-                     {!lastPhysicalAssessments.length && (
-                        <tr>
-                           <td colSpan={4} className="text-center py-5">
-                              {t("noPhysicalAssessaments")}
-                           </td>
-                        </tr>
-                     )}
-                     {lastPhysicalAssessments.map((physicalAssessment: LastPhysicalAssessment) => (
-                        // eslint-disable-next-line react/jsx-key
-                        <tr>
-                           <th scope="row" className="ps-0 fw-medium">
-                              {physicalAssessment?.aluno?.nome_aluno}
-                           </th>
-                           <th scope="row" className="ps-0 fw-medium">
-                              {formatarData(physicalAssessment?.data_avaliacao)}
-                           </th>
-                           <td>{physicalAssessment?.altura} M</td>
-                           <td className="text-center fw-medium">{physicalAssessment?.peso} KG</td>
-                        </tr>
-                     ))}
-                  </tbody>
-               </table>
-            </div>
+               <TableBody className="table-group-divider">
+                  {!lastPhysicalAssessments.length && (
+                     <TableRow>
+                        <td colSpan={4} className="text-center py-5">
+                           {t("noPhysicalAssessaments")}
+                        </td>
+                     </TableRow>
+                  )}
+                  {lastPhysicalAssessments.map((physicalAssessment: LastPhysicalAssessment) => (
+                     // eslint-disable-next-line react/jsx-key
+                     <TableRow>
+                        <TableCell scope="row" className="ps-0 fw-medium">
+                           {physicalAssessment?.aluno?.nome_aluno}
+                        </TableCell>
+                        <TableCell scope="row" className="ps-0 fw-medium">
+                           {formatarData(physicalAssessment?.data_avaliacao)}
+                        </TableCell>
+                        <TableCell>{physicalAssessment?.altura} M</TableCell>
+                        <TableCell className="text-center fw-medium">{physicalAssessment?.peso} KG</TableCell>
+                     </TableRow>
+                  ))}
+               </TableBody>
+            </Table>
          </CardContent>
       </Card>
    );

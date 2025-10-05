@@ -1,4 +1,4 @@
-import { AlarmClockIcon, AlarmClockOff } from "lucide-react";
+import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed } from "lucide-react";
 import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,14 +6,24 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { imgProfile, PRODUCAO } from "../api/api";
 import Notificacoes from "../components/notificacoes";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuShortcut,
+   DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { Separator } from "../components/ui/separator";
+import { SidebarTrigger } from "../components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../components/ui/tooltip";
-import { stateUsuario, useStateApp, useToggleSidebar } from "../states/states";
+import { stateUsuario, useStateApp } from "../states/states";
 
 function Header() {
    const cookies = parseCookies(null);
    const navigate = useNavigate();
-   const { openedSidebar, closeSidebar, openSidebar } = useToggleSidebar();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
    const { toggleTheme, theme } = useStateApp();
 
@@ -54,6 +64,11 @@ function Header() {
 
    useEffect(() => {
       document.documentElement.setAttribute("data-bs-theme", theme);
+      if (theme == "dark") {
+         document.documentElement.classList.add("dark");
+      } else {
+         document.documentElement.classList.remove("dark");
+      }
    }, []);
 
    function alteraTema() {
@@ -85,18 +100,10 @@ function Header() {
    };
 
    return (
-      <header className="app-header mb-3">
-         <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm bg-white min-h-[70px]">
+      <div className="mb-3">
+         <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm min-h-[70px] bg-secondary">
             <ul className="navbar-nav d-flex flex-row flex-grow-1 ms-md-3">
-               <li className="nav-item nav-icon-hover-bg rounded-circle shadow-lg rounded-circle bg-white">
-                  <button
-                     className="nav-link btn btn-outline-white rounded-pill"
-                     onClick={openedSidebar ? closeSidebar : openSidebar}
-                  >
-                     {/* <iconify-icon icon="solar:list-bold-duotone" className="fs-6"></iconify-icon> */}
-                     <i className={`bi ${openedSidebar ? "bi-arrow-bar-left" : "bi-arrow-bar-right"} fs-4`} />
-                  </button>
-               </li>
+               <SidebarTrigger />
             </ul>
 
             <div className="navbar-collapse justify-content-end px-0 flex-grow-1" id="navbarNav">
@@ -167,38 +174,32 @@ function Header() {
 
                   <Notificacoes />
 
-                  <li className="nav-item dropdown me-2">
-                     <a
-                        className="d-flex align-items-center nav-link nav-icon-hover"
-                        href="javascript:void(0)"
-                        id="imgMenu"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                     >
-                        <img
-                           src={
-                              usuario.imagem_usuario
-                                 ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
-                                 : !PRODUCAO
-                                 ? imgProfile
-                                 : "https://placehold.co/150x150?text=img"
-                           }
-                           alt=""
-                           width="35"
-                           height="35"
-                           className={`rounded-circle ${usuario.admin_usuario == "S" ? "border border-danger" : ""}`}
-                           loading="lazy"
-                        />
-                     </a>
+                  <DropdownMenu>
+                     <DropdownMenuTrigger>
+                        <Avatar className="ms-3 me-3">
+                           <AvatarImage
+                              className={`rounded-circle ${usuario.admin_usuario == "S" ? "border border-danger" : ""}`}
+                              src={
+                                 usuario.imagem_usuario
+                                    ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
+                                    : !PRODUCAO
+                                    ? imgProfile
+                                    : "https://placehold.co/150x150?text=img"
+                              }
+                           />
+                           <AvatarFallback>
+                              {(usuario?.nome_usuario ?? "US").substring(0, 2)?.toUpperCase()}
+                           </AvatarFallback>
+                        </Avatar>
+                     </DropdownMenuTrigger>
 
-                     <div
-                        style={{ height: "350px" }}
-                        className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
-                        aria-labelledby="imgMenu"
-                     >
-                        <div className="message-body">
-                           <div className="d-flex align-items-center mx-7 py-9 border-bottom">
-                              <img
+                     <DropdownMenuContent className="p-3 me-3 w-80">
+                        <div className="d-flex align-items-center">
+                           <Avatar className="h-14 w-14">
+                              <AvatarImage
+                                 className={`rounded-circle ${
+                                    usuario.admin_usuario == "S" ? "border border-danger" : ""
+                                 }`}
                                  src={
                                     usuario.imagem_usuario
                                        ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
@@ -206,51 +207,54 @@ function Header() {
                                        ? imgProfile
                                        : "https://placehold.co/150x150?text=img"
                                  }
-                                 alt=""
-                                 width="70"
-                                 height="35"
-                                 className={`rounded-circle ${
-                                    usuario.admin_usuario == "S" ? "border border-danger" : ""
-                                 }`}
-                                 loading="lazy"
                               />
-                              <div className="ms-4">
-                                 <h4 className="mb-0 fs-5">{usuario?.nome_usuario}</h4>
-                                 {usuario.admin_usuario == "S" && <span className="badge bg-danger fs-1">Admin</span>}
-                                 <p className="mb-0 mt-1 d-flex align-items-center gap-1">
-                                    <i className="bi bi-envelope" />
-                                    {usuario?.email_usuario}
-                                 </p>
-                              </div>
-                           </div>
+                              <AvatarFallback>
+                                 {(usuario?.nome_usuario ?? "US").substring(0, 2)?.toUpperCase()}
+                              </AvatarFallback>
+                           </Avatar>
 
-                           <div className="d-flex justify-center mx-7 py-2 border-bottom">
-                              <LanguageSelect />
+                           <div className="ms-3">
+                              <h4 className="mb-0 fs-5">{usuario?.nome_usuario}</h4>
+                              {usuario.admin_usuario == "S" && <Badge>Admin</Badge>}
+                              <p className="mb-0 mt-1 d-flex align-items-center gap-1">
+                                 <i className="bi bi-envelope" />
+                                 {usuario?.email_usuario}
+                              </p>
                            </div>
-
-                           <a
-                              id="imgMenu-config"
-                              href="#"
-                              onClick={() => navigate("/configuracao")}
-                              className="d-flex align-items-center gap-2 dropdown-item"
-                           >
-                              <i className="bi bi-gear fs-6"></i>
-                              <p className="mb-0 fs-3">Configuração</p>
-                           </a>
-                           <a href="https://fitcpx.com" className="d-flex align-items-center gap-2 dropdown-item">
-                              <i className="bi bi-house fs-6"></i>
-                              <p className="mb-0 fs-3">Acessar site</p>
-                           </a>
-                           <a className="btn btn-outline-danger mx-3 mt-2 d-block" onClick={sair}>
-                              <i className="bi bi-box-arrow-left me-2"></i>Sair da conta
-                           </a>
                         </div>
-                     </div>
-                  </li>
+
+                        <Separator className="my-2" />
+
+                        <div className="d-flex justify-center">
+                           <LanguageSelect />
+                        </div>
+
+                        <Separator className="my-2" />
+
+                        <DropdownMenuItem onClick={() => navigate("/configuracao")}>
+                           Configuração
+                           <DropdownMenuShortcut>
+                              <ArrowRight />
+                           </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                           <a href="https://fitcpx.com">Acessar site</a>
+                           <DropdownMenuShortcut>
+                              <ArrowRight />
+                           </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem variant="destructive" onClick={sair}>
+                           Sair da conta
+                           <DropdownMenuShortcut>
+                              <DoorClosed />
+                           </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                     </DropdownMenuContent>
+                  </DropdownMenu>
                </ul>
             </div>
          </nav>
-      </header>
+      </div>
    );
 }
 
@@ -271,7 +275,7 @@ function LanguageSelect() {
 
    return (
       <div className="position-relative d-inline-block">
-         <button className="btn btn-sm d-flex align-items-center gap-2" onClick={toggleMenu}>
+         <button disabled className="btn btn-sm d-flex align-items-center gap-2" onClick={toggleMenu}>
             <iconify-icon icon={i18n.language === "pt" ? "cif:br" : "cif:us"} width="20"></iconify-icon>
             {i18n.language === "pt" ? "Português" : "English"}
             <iconify-icon icon={open ? "mdi:chevron-up" : "mdi:chevron-down"} width="20"></iconify-icon>

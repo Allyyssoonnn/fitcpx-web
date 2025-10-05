@@ -69,7 +69,7 @@ export default function FinanceOverview() {
       <div className="container-fluid">
          {(!empresa?.pix_empresa || empresa?.pix_empresa == "") && (
             <div>
-               <div className="text-center py-3 bg-light">
+               <div className="text-center py-3 bg-secondary">
                   Você não preencheu a chave PIX para repasses,{" "}
                   <a href="/configuracao?tab=2" className="text-success">
                      clique aqui

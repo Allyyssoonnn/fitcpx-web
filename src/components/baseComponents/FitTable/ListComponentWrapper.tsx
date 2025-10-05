@@ -197,11 +197,7 @@ export default function ListComponentWrapper({
                            onClick={() => onClickItem !== undefined && onClickItem(row?.original)}
                         >
                            {row.getVisibleCells().map((cell) => (
-                              <TableCell
-                                 key={cell.id}
-                                 className={cell.column.columnDef.className}
-                                 width={cell.column.columnDef.size}
-                              >
+                              <TableCell key={cell.id} width={cell.column.columnDef.size}>
                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                               </TableCell>
                            ))}

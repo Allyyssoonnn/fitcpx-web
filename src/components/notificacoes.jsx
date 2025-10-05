@@ -20,7 +20,7 @@ function Notificacoes() {
    }
 
    return (
-      <li className="nav-item dropdown nav-icon-hover-bg rounded-circle me-2">
+      <li className="nav-item dropdown nav-icon-hover-bg rounded-circle">
          <a
             className="nav-link position-relative"
             href="javascript:void(0)"
