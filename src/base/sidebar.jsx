@@ -180,7 +180,7 @@ const dropdown = [
          {
             label: "Contratos",
             Icon: PenIcon,
-            path: "contrato",
+            path: "contratos",
          },
          {
             label: "Modalidades",

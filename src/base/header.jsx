@@ -101,12 +101,12 @@ function Header() {
 
    return (
       <div className="mb-3">
-         <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between w-100 shadow-sm min-h-[70px] bg-secondary">
-            <ul className="navbar-nav d-flex flex-row flex-grow-1 ms-md-3">
+         <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between items-center w-100 shadow-sm min-h-[70px] bg-sidebar">
+            <div className="d-flex items-center ms-3">
                <SidebarTrigger />
-            </ul>
+            </div>
 
-            <div className="navbar-collapse justify-content-end px-0 flex-grow-1" id="navbarNav">
+            <div className="justify-content-end px-0" id="navbarNav">
                <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                   <li className={`d-md-none ${isInstalled || isIos ? "d-none" : ""}`}>
                      <Button onClick={handleInstallClick} size="sm">
