@@ -82,6 +82,7 @@ function CadUsuario() {
                         errors={errors}
                         fields={[
                            {
+                              separator: true,
                               title: "Informações pessoais",
                               cols: 4,
                               fields: [
@@ -114,6 +115,7 @@ function CadUsuario() {
                               ],
                            },
                            {
+                              separator: true,
                               title: "Acesso ao sistema",
                               cols: 4,
                               fields: [

@@ -106,17 +106,19 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                  <FieldLabel htmlFor={field.label}>
                                     {field.label} {field.options?.required && "*"}
                                  </FieldLabel>
+
                                  <Select
                                     disabled={field.options?.disabled}
-                                    value={value}
+                                    value={String(value)}
                                     onValueChange={(val) => setValue(field.fieldName, val)}
                                  >
                                     <SelectTrigger id={field.id}>
                                        <SelectValue placeholder={field.label} />
                                     </SelectTrigger>
+
                                     <SelectContent>
                                        {field.selectOptions?.map((option) => {
-                                          const value = typeof option === "string" ? option : option.value;
+                                          const value = typeof option === "string" ? option : String(option.value);
                                           const label = typeof option === "string" ? option : option.label;
                                           return <SelectItem value={value}>{label}</SelectItem>;
                                        })}
