@@ -59,7 +59,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
                   const normalizedValue = normalize(value);
                   const normalizedSearch = normalize(search);
 
-                  return normalizedValue.includes(normalizedSearch) ? 1 : 0;
+                  return normalizedSearch.split(/\s+/).every((word) => normalizedValue.includes(word)) ? 1 : 0;
                }}
             >
                <CommandInput name={`input-${name}`} placeholder="Pesquisa" />
