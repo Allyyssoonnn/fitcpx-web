@@ -1,27 +1,31 @@
+import { Check } from "lucide-react";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateUser } from "../../api/user";
-import FitInputForm from "../../components/baseComponents/FitInputForm";
-import FitStateForm from "../../components/baseComponents/FitStateForm";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
 import { stateUsuario, useNotificacao } from "../../states/states";
+import { states } from "../../utils";
 
 function CadUsuario() {
    const { nSuccess } = useNotificacao();
-   const {
-      handleSubmit,
-      register,
-      setValue,
-      watch,
-      formState: { isSubmitting, errors },
-   } = useForm();
    const [usuario] = useRecoilState(stateUsuario);
    const navigate = useNavigate();
    const location = useLocation();
+   const usuarioRecebido = location.state?.usuario;
+   const form = useForm({ defaultValues: usuarioRecebido });
+   const {
+      handleSubmit,
+      setValue,
+      watch,
+      formState: { isSubmitting, errors },
+   } = form;
 
    useEffect(() => {
-      const usuarioRecebido = location.state?.usuario;
       if (usuarioRecebido) {
          Object.keys(usuarioRecebido).forEach((key) => {
             setValue(key, usuarioRecebido[key]);
@@ -67,147 +71,135 @@ function CadUsuario() {
    }
 
    return (
-      <form onSubmit={handleSubmit(confirma)} className="container-fluid">
-         <div className="card">
-            <div className="card-header">
-               <button
-                  onClick={(e) => {
-                     e.stopPropagation();
-                     navigate("/users");
-                  }}
-                  className="btn btn-danger mb-3 me-3"
-               >
-                  <i className="bi bi-backspace me-2"></i>
-                  Voltar
-               </button>
-            </div>
+      <div className="container-fluid">
+         <BackBoxUI />
 
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Usuário</h5>
+         <Card>
+            <CardContent>
+               <FormProvider {...form}>
+                  <form onSubmit={handleSubmit(confirma)}>
+                     <FitFormUI
+                        errors={errors}
+                        fields={[
+                           {
+                              title: "Informações pessoais",
+                              cols: 4,
+                              fields: [
+                                 {
+                                    label: "Nome",
+                                    fieldName: "nome_usuario",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    id: "idnumber",
+                                    label: "CPF",
+                                    format: "documentId",
+                                    fieldName: "cpf_usuario",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    type: "phone",
+                                    id: "cellphone",
+                                    label: "Celular",
+                                    fieldName: "celular_usuario",
+                                    description: "Necessário para contratação de plano",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                              ],
+                           },
+                           {
+                              title: "Acesso ao sistema",
+                              cols: 4,
+                              fields: [
+                                 {
+                                    label: "E-mail",
+                                    fieldName: "email_usuario",
+                                    inputType: "email",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    label: "Senha",
+                                    fieldName: "senha_usuario",
+                                    inputType: "password",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                              ],
+                           },
+                           {
+                              title: "Endereço",
+                              cols: 4,
+                              fields: [
+                                 {
+                                    format: "CEP",
+                                    id: "cep",
+                                    label: "CEP",
+                                    fieldName: "cep_usuario",
+                                 },
+                                 {
+                                    id: "state",
+                                    label: "Estado",
+                                    fieldName: "estado_usuario",
+                                    type: "select",
+                                    selectOptions: states,
+                                 },
+                                 {
+                                    id: "city",
+                                    label: "Cidade",
+                                    fieldName: "cidade_usuario",
+                                 },
+                                 {
+                                    id: "neighborhood",
+                                    label: "Bairro",
+                                    fieldName: "bairro_usuario",
+                                 },
+                              ],
+                           },
+                           {
+                              cols: 4,
+                              separator: true,
+                              fields: [
+                                 {
+                                    id: "address",
+                                    label: "Endereço",
+                                    fieldName: "endereco_usuario",
+                                 },
+                                 {
+                                    id: "address2",
+                                    label: "Complemento",
+                                    fieldName: "complemento_usuario",
+                                 },
+                                 {
+                                    id: "number",
+                                    label: "Número",
+                                    fieldName: "numero_usuario",
+                                    inputType: "number",
+                                 },
+                              ],
+                           },
+                        ]}
+                     />
 
-               <FitInputForm
-                  id="idnumber"
-                  nameField="CPF"
-                  classNameContainer="col-md-3 mb-3"
-                  {...register("cpf_usuario", { required: true })}
-                  errors={errors}
-               />
-
-               <div className="row g-3">
-                  <FitInputForm
-                     nameField="Nome *"
-                     classNameContainer="col-md-3"
-                     {...register("nome_usuario", { required: true })}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     id="phone"
-                     nameField="Telefone"
-                     classNameContainer="col-md-3"
-                     {...register("telefone_usuario")}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     id="cellphone"
-                     nameField="Celular"
-                     classNameContainer="col-md-3"
-                     {...register("celular_usuario")}
-                     errors={errors}
-                  />
-               </div>
-            </div>
-         </div>
-
-         <div className="card">
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Acesso ao sistema</h5>
-
-               <div className="row g-3">
-                  <FitInputForm
-                     nameField="E-mail *"
-                     classNameContainer="col-md-3"
-                     {...register("email_usuario", { required: true })}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     nameField="Senha *"
-                     classNameContainer="col-md-3"
-                     {...register("senha_usuario", { required: true })}
-                     errors={errors}
-                  />
-               </div>
-            </div>
-         </div>
-
-         <div className="card">
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Endereço</h5>
-
-               <div className="row g-3">
-                  <FitInputForm
-                     id="cep"
-                     nameField="CEP"
-                     classNameContainer="col-md-3"
-                     {...register("cep_usuario")}
-                     errors={errors}
-                  />
-
-                  <FitStateForm
-                     nameField="Estado"
-                     classNameContainer="col-md-3"
-                     {...register("estado_usuario")}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     nameField="Cidade"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("cidade_usuario")}
-                  />
-
-                  <FitInputForm
-                     nameField="Endereço"
-                     classNameContainer="col-md-3"
-                     {...register("endereco_usuario")}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     id="number"
-                     nameField="Número"
-                     classNameContainer="col-md-3"
-                     {...register("numero_usuario")}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     nameField="Bairro"
-                     classNameContainer="col-md-3"
-                     {...register("bairro_usuario")}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     nameField="Complemento"
-                     classNameContainer="col-md-3"
-                     {...register("complemento_usuario")}
-                     errors={errors}
-                  />
-               </div>
-            </div>
-
-            <div className="card-footer">
-               <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
-                  <i className="bi bi-check me-2"></i>
-                  Confirmar
-               </button>
-            </div>
-         </div>
-      </form>
+                     <div className="d-flex justify-end">
+                        <Button id="submit" type="submit" disabled={isSubmitting}>
+                           <Check />
+                           Confirmar
+                        </Button>
+                     </div>
+                  </form>
+               </FormProvider>
+            </CardContent>
+         </Card>
+      </div>
    );
 }
 
