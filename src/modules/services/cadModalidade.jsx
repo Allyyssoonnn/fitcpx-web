@@ -6,7 +6,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateService } from "../../api/services";
 import { getUsers } from "../../api/user";
-import CardIconFitCpxPay from "../../components/baseComponents/CardIconFitCpxPay";
 import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
@@ -154,13 +153,13 @@ function CadModalidade() {
 
             <div className="card border border-success">
                <div className="card-body">
-                  <CardIconFitCpxPay>
+                  <div>
                      <h5 className="card-title fw-semibold">Comissão</h5>
                      <h5 className="card-subtitle fw-semibold">Selecione quem recebe por essa modalidade</h5>
                      <h5 className="card-subtitle fs-2 mb-4">
                         (Na confirmação do pagamento referente a modalidade é feito o repasse automaticamente)
                      </h5>
-                  </CardIconFitCpxPay>
+                  </div>
 
                   <button className="btn btn-outline-success" onClick={addComissao}>
                      Adicionar

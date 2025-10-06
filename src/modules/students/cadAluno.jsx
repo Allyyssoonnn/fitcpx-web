@@ -85,7 +85,7 @@ function CadAluno() {
 
    return (
       <div className="container-fluid">
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
+         <div className="rounded-4 p-4 mb-4 shadow-lg">
             <div className="d-flex justify-content-between align-items-center">
                <button
                   onClick={(e) => {
