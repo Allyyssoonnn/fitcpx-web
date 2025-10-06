@@ -431,7 +431,16 @@ const getPaymentColumns = (navigate, onRecieved) => [
       cell: ({ row: { original } }) => moment(original?.expiracao_aluno_contrato_pagamento).format("DD/MM/YYYY"),
    },
    {
-      id: "dueDate",
+      id: "payoutDate",
+      header: "Data pagamento",
+      cell: ({ row: { original } }) =>
+         original.jsonwebhook_aluno_contrato_pagamento &&
+         JSON.parse(original.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
+            ? moment(JSON.parse(original.jsonwebhook_aluno_contrato_pagamento).paymentDate).format("DD/MM/YYYY")
+            : "-",
+   },
+   {
+      id: "payoutDate",
       header: "Data repasse",
       cell: ({ row: { original } }) =>
          original.repasse_aluno_contrato_pagamento
