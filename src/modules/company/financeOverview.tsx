@@ -344,7 +344,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                   <TooltipTrigger>
                      <Badge variant="outline">
                         <i className="bi bi-check-circle-fill text-success" />
-                        Recebido Manual
+                        Manual
                      </Badge>
                   </TooltipTrigger>
 
@@ -370,7 +370,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                   <TooltipTrigger>
                      <Badge variant="outline">
                         <i className="bi bi-x-circle-fill text-warning" />
-                        Pendente
+                        Aguardando
                      </Badge>
                   </TooltipTrigger>
 
@@ -383,7 +383,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                   <TooltipTrigger>
                      <Badge variant="outline">
                         <i className="bi bi-check-circle-fill text-info" />
-                        Confirmado
+                        Processando
                      </Badge>
                   </TooltipTrigger>
 
@@ -396,7 +396,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                   <TooltipTrigger>
                      <Badge variant="outline">
                         <i className="bi bi-check-circle-fill text-success" />
-                        Disponível
+                        Aprovado
                      </Badge>
                   </TooltipTrigger>
 
@@ -409,7 +409,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                   <TooltipTrigger>
                      <Badge variant="outline">
                         <i className="bi bi-check-circle-fill text-success" />
-                        Enviado
+                        Repassado
                      </Badge>
                   </TooltipTrigger>
 
