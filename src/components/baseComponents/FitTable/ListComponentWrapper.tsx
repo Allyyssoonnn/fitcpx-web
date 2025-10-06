@@ -6,6 +6,7 @@ import {
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatarData, formatarMoeda, getNestedError } from "@/utils";
 import {
@@ -140,9 +141,8 @@ export default function ListComponentWrapper({
                <div className="row d-flex justify-content-between">
                   <div className="col-md-4 col-7 d-flex align-items-center gap-2">
                      {!hideSearch && (
-                        <input
+                        <Input
                            type="text"
-                           className="form-control"
                            placeholder="Pesquisar"
                            value={(table.getColumn(fieldSearch)?.getFilterValue() as string) ?? ""}
                            onChange={(event) => table.getColumn(fieldSearch)?.setFilterValue(event.target.value)}

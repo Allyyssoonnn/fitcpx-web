@@ -33,12 +33,12 @@ function Dashboard() {
 
    return (
       <div className="container-fluid">
-         <div className="row">
-            <div className="col-lg-8">
+         <div className="grid lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
                <UltimasAvaliacoes lastPhysicalAssessments={dashboard?.lastPhysicalAssessments} />
             </div>
 
-            <div className="col-lg-4">
+            <div>
                <InfoTotais lengths={dashboard?.lengths} />
             </div>
          </div>

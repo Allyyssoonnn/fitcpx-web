@@ -1,30 +1,32 @@
+import { Check } from "lucide-react";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateStudent } from "../../api/student";
-import FitInputForm from "../../components/baseComponents/FitInputForm";
-import FitSelectForm from "../../components/baseComponents/FitSelectForm";
-import FitStateForm from "../../components/baseComponents/FitStateForm";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
-import { limpaForm } from "../../utils";
+import { limpaForm, states } from "../../utils";
 
 function CadAluno() {
+   const location = useLocation();
+   const alunoRecebido = location.state?.aluno;
    const { formData, setAlunoForm, clearForm } = useFormStore();
    const { nSuccess } = useNotificacao();
+   const form = useForm({ defaultValues: alunoRecebido });
    const {
       handleSubmit,
-      register,
       setValue,
       watch,
       formState: { isSubmitting, errors },
-   } = useForm();
-   const location = useLocation();
+   } = form;
    const navigate = useNavigate();
    const [usuario] = useRecoilState(stateUsuario);
 
-   const alunoRecebido = location.state?.aluno;
    let cepAtual = "";
 
    useEffect(() => {
@@ -85,180 +87,185 @@ function CadAluno() {
 
    return (
       <div className="container-fluid">
-         <div className="rounded-4 p-4 mb-4 shadow-lg">
-            <div className="d-flex justify-content-between align-items-center">
-               <button
-                  onClick={(e) => {
-                     e.preventDefault();
-                     navigate(-1);
-                  }}
-                  className="btn btn-outline-danger rounded-pill px-4"
-               >
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Voltar
-               </button>
-            </div>
-         </div>
+         <BackBoxUI />
 
-         <div className="card shadow-lg rounded-4">
-            <form className="card-body" onSubmit={handleSubmit(confirma)}>
-               <h5 className="card-title fw-semibold mb-4">Informações pessoais</h5>
+         <Card>
+            <CardContent>
+               <FormProvider {...form}>
+                  <form onSubmit={handleSubmit(confirma)}>
+                     <FitFormUI
+                        errors={errors}
+                        fields={[
+                           {
+                              title: "Informações pessoais",
+                              cols: 4,
+                              fields: [
+                                 {
+                                    id: "name",
+                                    label: "Nome",
+                                    fieldName: "nome_aluno",
+                                    options: {
+                                       required: true,
+                                       minLength: 5,
+                                    },
+                                 },
+                                 {
+                                    format: "documentId",
+                                    id: "cpf",
+                                    label: "CPF",
+                                    fieldName: "cpf_aluno",
+                                    description: "Necessário para contratação de plano",
+                                 },
+                                 {
+                                    id: "rg",
+                                    label: "RG",
+                                    fieldName: "rg_aluno",
+                                    description: "Necessário para contratação de plano",
+                                    inputType: "number",
+                                 },
+                                 {
+                                    type: "phone",
+                                    id: "phone",
+                                    label: "Telefone",
+                                    fieldName: "telefone_aluno",
+                                    description: "Necessário para contratação de plano",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                              ],
+                           },
+                           {
+                              separator: true,
+                              cols: 4,
+                              fields: [
+                                 {
+                                    id: "birthdate",
+                                    label: "Data de nascimento",
+                                    fieldName: "data_nascimento_aluno",
+                                    inputType: "date",
+                                    required: true,
+                                 },
+                                 {
+                                    id: "gender",
+                                    label: "Sexo",
+                                    fieldName: "sexo_aluno",
+                                    type: "select",
+                                    selectOptions: [
+                                       { label: "Masculino", value: "M" },
+                                       { label: "Feminino", value: "F" },
+                                    ],
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    id: "ethnicity",
+                                    label: "Etnia",
+                                    fieldName: "etnia_aluno",
+                                    type: "select",
+                                    selectOptions: [
+                                       { label: "Caucasiano", value: "Caucasiano" },
+                                       { label: "Negro", value: "Negro" },
+                                       { label: "Asiático", value: "Asiático" },
+                                    ],
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                              ],
+                           },
+                           {
+                              title: "FitCpx - Aluno",
+                              separator: true,
+                              fields: [
+                                 {
+                                    id: "email",
+                                    label: "E-mail",
+                                    fieldName: "email_aluno",
+                                    inputType: "email",
+                                    description: "O aluno usará para acessar o app do aluno",
+                                    options: {
+                                       required: true,
+                                       minLength: 5,
+                                    },
+                                 },
+                                 {
+                                    id: "senha",
+                                    label: "Senha",
+                                    fieldName: "senha_aluno",
+                                    description: "O aluno define a senha no primeiro acesso",
+                                    options: {
+                                       disabled: true,
+                                    },
+                                    inputType: "password",
+                                 },
+                              ],
+                           },
+                           {
+                              title: "Endereço",
+                              cols: 4,
+                              fields: [
+                                 {
+                                    format: "CEP",
+                                    id: "cep",
+                                    label: "CEP",
+                                    fieldName: "cep_aluno",
+                                 },
+                                 {
+                                    id: "state",
+                                    label: "Estado",
+                                    fieldName: "estado_aluno",
+                                    type: "select",
+                                    selectOptions: states,
+                                 },
+                                 {
+                                    id: "city",
+                                    label: "Cidade",
+                                    fieldName: "cidade_aluno",
+                                 },
+                                 {
+                                    id: "neighborhood",
+                                    label: "Bairro",
+                                    fieldName: "bairro_aluno",
+                                 },
+                              ],
+                           },
+                           {
+                              cols: 4,
+                              separator: true,
+                              fields: [
+                                 {
+                                    id: "address",
+                                    label: "Endereço",
+                                    fieldName: "endereco_aluno",
+                                 },
+                                 {
+                                    id: "address2",
+                                    label: "Complemento",
+                                    fieldName: "complemento_aluno",
+                                 },
+                                 {
+                                    id: "number",
+                                    label: "Número",
+                                    fieldName: "numero_aluno",
+                                    inputType: "number",
+                                 },
+                              ],
+                           },
+                        ]}
+                     />
 
-               <div className="row g-3">
-                  <FitInputForm
-                     id="name"
-                     nameField="Nome *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("nome_aluno", { required: true, minLength: 5 })}
-                  />
-
-                  <FitInputForm
-                     id="cpf"
-                     nameField="CPF"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("cpf_aluno")}
-                  />
-
-                  <FitInputForm
-                     id="rg"
-                     nameField="RG"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("rg_aluno")}
-                  />
-
-                  <FitInputForm
-                     id="phone"
-                     nameField="Telefone *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("telefone_aluno", { required: true })}
-                  />
-
-                  <FitInputForm
-                     id="birthdate"
-                     type="date"
-                     nameField="Data de nascimento *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("data_nascimento_aluno")}
-                  />
-
-                  <FitSelectForm
-                     id="gender"
-                     nameField="Sexo *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("sexo_aluno", { required: true })}
-                  >
-                     <option value="M">Masculino</option>
-                     <option value="F">Feminino</option>
-                  </FitSelectForm>
-
-                  <FitSelectForm
-                     id="ethnicity"
-                     nameField="Etnia *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("etnia_aluno", { required: true })}
-                  >
-                     <option value="Caucasiano">Caucasiano</option>
-                     <option value="Negro">Negro</option>
-                     <option value="Asiático">Asiático</option>
-                  </FitSelectForm>
-               </div>
-
-               <h5 className="card-title fw-semibold mb-4 mt-5">Acesso do app</h5>
-
-               <div className="row g-3">
-                  <FitInputForm
-                     id="email"
-                     textHelp="O aluno usará para acessar o app do aluno"
-                     type="email"
-                     nameField="E-mail *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("email_aluno", { required: true, minLength: 5 })}
-                  />
-
-                  <FitInputForm
-                     id="password"
-                     type="password"
-                     nameField="Senha *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("senha_aluno", { required: true, minLength: 5 })}
-                  />
-               </div>
-
-               <h5 className="card-title fw-semibold mb-4 mt-5">Endereço</h5>
-
-               <div className="row g-3">
-                  <FitInputForm
-                     id="cep"
-                     nameField="CEP"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("cep_aluno")}
-                  />
-
-                  <FitStateForm
-                     id="state"
-                     nameField="Estado"
-                     classNameContainer="col-md-3"
-                     {...register("estado_aluno")}
-                     errors={errors}
-                  />
-
-                  <FitInputForm
-                     id="city"
-                     nameField="Cidade"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("cidade_aluno")}
-                  />
-
-                  <FitInputForm
-                     id="address"
-                     nameField="Endereço"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("endereco_aluno")}
-                  />
-
-                  <FitInputForm
-                     id="number"
-                     nameField="Número"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("numero_aluno", { maxLength: 10 })}
-                  />
-
-                  <FitInputForm
-                     id="neighborhood"
-                     nameField="Bairro"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("bairro_aluno")}
-                  />
-
-                  <FitInputForm
-                     id="address2"
-                     nameField="Complemento"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     {...register("complemento_aluno")}
-                  />
-               </div>
-
-               <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
-                  <i className="bi bi-check me-2"></i>
-                  Confirmar
-               </button>
-            </form>
-         </div>
+                     <div className="d-flex justify-end">
+                        <Button id="submit" type="submit" disabled={isSubmitting}>
+                           <Check />
+                           Confirmar
+                        </Button>
+                     </div>
+                  </form>
+               </FormProvider>
+            </CardContent>
+         </Card>
       </div>
    );
 }

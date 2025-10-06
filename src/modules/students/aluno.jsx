@@ -21,6 +21,7 @@ import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api
 import { createOrUpdateWorkout, deleteWorkout, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import ImageCropModal from "../../components/cutImg";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
@@ -174,20 +175,12 @@ function Aluno() {
       <div className="container-fluid">
          <ImageCropModal show={showModal} image={image} onConfirm={handleModalConfirm} onCancel={handleModalClose} />
 
-         {/* Header Section */}
-         <Card className="bg-gradient-primary rounded-4 p-4 mb-4">
-            <div className="d-flex justify-content-between align-items-center">
-               <button onClick={() => navigate("/alunos")} className="btn btn-outline-danger rounded-pill px-4">
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Voltar
-               </button>
-            </div>
-         </Card>
+         <BackBoxUI />
 
          <Card className="border-0 rounded-4 overflow-hidden">
             <CardContent className="p-0">
                {/* Profile Header */}
-               <div className="bg-light p-5">
+               <div className="bg-accent p-5">
                   <div className="row align-items-center">
                      <div className="col-lg-3 col-md-4 text-center mb-4 mb-md-0">
                         <div className="position-relative d-inline-block">
