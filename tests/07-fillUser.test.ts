@@ -1,11 +1,15 @@
 import { expect, test } from "@playwright/test";
 
 test("Fill User Info", async ({ page }) => {
-   await page.goto("http://localhost:5173/");
+   await page.goto("http://localhost:5173/entrar");
+   await page.locator("#email").click();
+   await page.locator("#email").fill("fitcomplex@fitcpx.com");
+   await page.locator("#password").click();
+   await page.locator("#password").fill("12345");
+   await page.getByRole("button", { name: "Entrar" }).click();
 
-   await page.click('a[id="admin"]');
+   await page.click('button[id="adminMenu"]');
    await page.click('a[id="users"]');
-   await page.click('button[id="sidebarCollapse"]');
    await page.click('tr[id="user-0"]');
 
    await page.fill('input[id="idnumber"]', "10940113988");

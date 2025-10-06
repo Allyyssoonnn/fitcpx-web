@@ -175,7 +175,7 @@ function Header() {
                   <Notificacoes />
 
                   <DropdownMenu>
-                     <DropdownMenuTrigger>
+                     <DropdownMenuTrigger id="avatar">
                         <Avatar className="ms-3 me-3">
                            <AvatarImage
                               className={`rounded-circle ${usuario.admin_usuario == "S" ? "border border-danger" : ""}`}
@@ -231,7 +231,7 @@ function Header() {
 
                         <Separator className="my-2" />
 
-                        <DropdownMenuItem onClick={() => navigate("/configuracao")}>
+                        <DropdownMenuItem id="avatar-config" onClick={() => navigate("/configuracao")}>
                            Configuração
                            <DropdownMenuShortcut>
                               <ArrowRight />

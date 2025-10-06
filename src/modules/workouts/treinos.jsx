@@ -47,6 +47,7 @@ function Treinos() {
                fieldSearch="nome_treino"
                buttonOnClick={() => navigate("/cadtreino")}
                buttonText="Novo treino"
+               buttonId="newWorkout"
                columns={[
                   {
                      name: "nome_treino",

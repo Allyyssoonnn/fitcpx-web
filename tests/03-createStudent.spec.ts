@@ -7,9 +7,8 @@ test("test", async ({ page }) => {
    await page.locator("#password").click();
    await page.locator("#password").fill("12345");
    await page.getByRole("button", { name: "Entrar" }).click();
-   await page.getByRole("link", { name: " Alunos" }).click();
-   await page.getByRole("button", { name: "" }).click();
-   await page.getByRole("button", { name: " Novo aluno" }).click();
+   await page.locator("#clients").click();
+   await page.locator("#newClient").click();
    await page.locator("#name").click();
    await page.locator("#name").fill("Fit Student Test");
    await page.locator("#cpf").click();

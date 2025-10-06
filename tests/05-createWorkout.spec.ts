@@ -8,10 +8,10 @@ test("test", async ({ page }) => {
    await page.locator("#password").fill("12345");
    await page.getByRole("button", { name: "Entrar" }).click();
 
-   await page.getByRole("link", { name: " Treinos " }).click();
-   await page.getByRole("link", { name: " Treinos", exact: true }).click();
-   await page.getByRole("button", { name: "" }).click();
-   await page.getByRole("button", { name: " Novo treino" }).click();
+   await page.click('button[id="workoutsMenu"]');
+   await page.click('a[id="workouts"]');
+   await page.click('button[id="newWorkout"]');
+
    await page.locator("#name").click();
    await page.locator("#name").fill("Workout Pattern");
    await page.locator("#periodicity").click();
@@ -28,7 +28,7 @@ test("test", async ({ page }) => {
    await page.getByRole("button", { name: " Sessão A" }).click();
    await page.getByRole("button", { name: " Adicionar exercício" }).click();
    await page.locator('button[name="exercise-0-session-0-set-null"]').click();
-   await page.locator('input[name="input-exercise-0-session-0-set-null"]').fill("agachamento barr");
+   await page.locator('input[name="input-exercise-0-session-0-set-null"]').fill("agachamento com B");
    await page.getByText("Agachamento com Barra").click();
 
    await page.locator("#addSessions").click();

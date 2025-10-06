@@ -84,7 +84,7 @@ function AppSidebar() {
                      <Collapsible key={index} className="group/collapsible">
                         <SidebarMenuItem>
                            <CollapsibleTrigger asChild>
-                              <SidebarMenuButton className="w-full justify-between p-4">
+                              <SidebarMenuButton id={menu.id} className="w-full justify-between p-4">
                                  <span className="fs-4">{menu.label}</span>
                                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                               </SidebarMenuButton>
@@ -155,6 +155,7 @@ const items = [
 
 const dropdown = [
    {
+      id: "workoutsMenu",
       label: "Treinos",
       items: [
          {
@@ -163,6 +164,7 @@ const dropdown = [
             path: "exercicios",
          },
          {
+            id: "workouts",
             label: "Treinos",
             Icon: ClipboardCheck,
             path: "treinos",
@@ -170,6 +172,7 @@ const dropdown = [
       ],
    },
    {
+      id: "financeMenu",
       label: "Financeiro",
       items: [
          {
@@ -183,11 +186,13 @@ const dropdown = [
             path: "contratos",
          },
          {
+            id: "services",
             label: "Modalidades",
             Icon: BoxIcon,
             path: "modalidades",
          },
          {
+            id: "contractTemplates",
             label: "Mod. Contratos",
             Icon: BoxSelect,
             path: "modcontratos",
@@ -200,9 +205,11 @@ const dropdown = [
       ],
    },
    {
+      id: "adminMenu",
       label: "ADMIN",
       items: [
          {
+            id: "users",
             label: "Usuários",
             Icon: User2,
             path: "users",

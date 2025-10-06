@@ -7,10 +7,12 @@ test("test", async ({ page }) => {
    await page.locator("#password").click();
    await page.locator("#password").fill("12345");
    await page.getByRole("button", { name: "Entrar" }).click();
-   await page.getByRole("link", { name: " Financeiro " }).click();
-   await page.getByRole("link", { name: " Modalidades" }).click();
-   await page.getByRole("button", { name: "" }).click();
-   await page.getByRole("button", { name: " Nova modalidade" }).click();
+
+   await page.click('button[id="financeMenu"]');
+   await page.click('a[id="services"]');
+
+   await page.click('button[id="newService"]');
+
    await page.locator("#name").click();
    await page.locator("#name").fill("Fit Plan Test");
    await page.getByRole("textbox", { name: "R$" }).click();

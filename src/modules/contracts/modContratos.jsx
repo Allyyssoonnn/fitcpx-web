@@ -46,6 +46,7 @@ function ModContratos() {
                fieldSearch="nome_contrato"
                buttonOnClick={() => navigate("/cadcontrato")}
                buttonText="Novo contrato"
+               buttonId="newContractTemplate"
                columns={[
                   { name: "nome_contrato", header: "Nome", className: "fw-bold text-black" },
                   // { name: "valor_adesao", type: "currency", header: "Adesão", className: "fw-bold text-black" },

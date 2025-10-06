@@ -10,9 +10,10 @@ test("Create Physical Assessments", async ({ page }) => {
    await page.getByRole("button", { name: "Entrar" }).click();
 
    await page.click('a[id="clients"]');
-   await page.click('button[id="sidebarCollapse"]');
    await page.click('tr[id="aluno-0"]');
-   await page.click('button[id="radix-:r5:-trigger-avaliacaoFisica"]');
+   await page.waitForTimeout(2000);
+   await page.getByRole("tab", { name: "Avaliações Físicas" }).click();
+   await page.pause();
    await page.click('button[id="addPhysicalAssessment"]');
 
    await expect(page).toHaveURL(/.*\/cadavaliacao/);
