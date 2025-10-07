@@ -1,3 +1,4 @@
+import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useQuery } from "react-query";
@@ -7,6 +8,8 @@ import { stateUsuario } from "../states/states";
 import { formatarMoeda } from "../utils";
 import Select from "./baseComponents/select";
 import EditableCurrency from "./editableCurrency";
+import { Button } from "./ui/button";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
 
 function SelectModalidades({
    modalidadesPlano,
@@ -40,48 +43,47 @@ function SelectModalidades({
             allowSubVariacao={allowSubVariacao}
          />
          {!disableControls && (
-            <button className="btn btn-outline-success" onClick={openModalidade}>
+            <Button variant="outline" onClick={openModalidade}>
+               <PlusCircle />
                Adicionar modalidade
-            </button>
+            </Button>
          )}
 
          <h5 className="card-title fs-3 mt-3">Modalidades</h5>
 
-         <div className="table-responsive">
-            <table className="table table-striped">
-               <thead>
-                  <tr>
-                     <th>Nome</th>
-                     <th>Valor</th>
-                  </tr>
-               </thead>
+         <Table>
+            <TableHeader>
+               <TableRow>
+                  <TableCell>Nome</TableCell>
+                  <TableCell>Valor</TableCell>
+               </TableRow>
+            </TableHeader>
 
-               <tbody>
-                  {modalidadesPlano?.map((modalidade, index) => (
-                     <tr key={index}>
-                        <td>{modalidade.nome_modalidade}</td>
-                        {attValue && !disableControls ? (
-                           <td>
-                              <EditableCurrency
-                                 value={modalidade?.valor_modalidade || 0}
-                                 onUpdate={(v) => attValue(v, index)}
-                              />
-                           </td>
-                        ) : (
-                           <td>{formatarMoeda(modalidade?.valor_modalidade || 0)}</td>
-                        )}
-                        {!disableControls && (
-                           <td>
-                              <button className="btn btn-sm btn-outline-danger" onClick={() => removeModalidade(index)}>
-                                 <i className="bi bi-trash" />
-                              </button>
-                           </td>
-                        )}
-                     </tr>
-                  ))}
-               </tbody>
-            </table>
-         </div>
+            <TableBody>
+               {modalidadesPlano?.map((modalidade, index) => (
+                  <TableRow key={index}>
+                     <TableCell>{modalidade.nome_modalidade}</TableCell>
+                     {attValue && !disableControls ? (
+                        <TableCell>
+                           <EditableCurrency
+                              value={modalidade?.valor_modalidade || 0}
+                              onUpdate={(v) => attValue(v, index)}
+                           />
+                        </TableCell>
+                     ) : (
+                        <TableCell>{formatarMoeda(modalidade?.valor_modalidade || 0)}</TableCell>
+                     )}
+                     {!disableControls && (
+                        <TableCell>
+                           <button className="btn btn-sm btn-outline-danger" onClick={() => removeModalidade(index)}>
+                              <i className="bi bi-trash" />
+                           </button>
+                        </TableCell>
+                     )}
+                  </TableRow>
+               ))}
+            </TableBody>
+         </Table>
       </div>
    );
 }

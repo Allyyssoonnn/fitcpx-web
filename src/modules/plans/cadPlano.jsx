@@ -1,17 +1,25 @@
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdatePlan } from "../../api/plans";
-import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
-import FitInputForm from "../../components/baseComponents/FitInputForm";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
 import SelectModalidades from "../../components/selectModalidades";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
+import { Field, FieldLabel } from "../../components/ui/field";
+import { Input } from "../../components/ui/input";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { dividirParcelas, formatarMoeda } from "../../utils";
 
 function CadPlano() {
+   const location = useLocation();
+   const planoRecebido = location.state?.plano;
    const { nSuccess } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
+   const form = useForm({ defaultValues: planoRecebido });
    const {
       register,
       handleSubmit,
@@ -20,14 +28,12 @@ function CadPlano() {
       watch,
       getValues,
       formState: { errors },
-   } = useForm();
+   } = form;
    const navigate = useNavigate();
-   const location = useLocation();
    const [selectModalidades, setSelectModalidades] = useState([]);
    const [valorTotal, setValorTotal] = useState(0);
 
    useEffect(() => {
-      const planoRecebido = location.state?.plano;
       if (planoRecebido?.modalidades) setSelectModalidades(planoRecebido?.modalidades);
       if (planoRecebido) {
          Object.keys(planoRecebido).forEach((key) => {
@@ -45,7 +51,7 @@ function CadPlano() {
          await atualizarModalidadesComSubvariacoes({ plano, modalidades: selectModalidades });
          await calculaValoresDoPlano(plano);
       })();
-   }, [duracao_plano]);
+   }, [duracao_plano, selectModalidades]);
 
    function calculaValoresDoPlano(plano) {
       let total = 0;
@@ -124,82 +130,71 @@ function CadPlano() {
    }
 
    return (
-      <form onSubmit={handleSubmit(confirma)} className="container-fluid">
-         <div className="card">
-            <div className="card-header">
-               <button
-                  onClick={(e) => {
-                     e.stopPropagation();
-                     navigate("/planos");
-                  }}
-                  className="btn btn-danger mb-3 me-3"
-               >
-                  <i className="bi bi-backspace me-2"></i>
-                  Voltar
-               </button>
-            </div>
+      <FormProvider {...form}>
+         <form onSubmit={handleSubmit(confirma)} className="container-fluid">
+            <BackBoxUI />
 
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Informações</h5>
-
-               <div className="row g-3">
-                  <FitInputForm
-                     id="name"
-                     nameField="Nome *"
-                     classNameContainer="col-md-5"
+            <Card>
+               <CardContent>
+                  <FitFormUI
                      errors={errors}
-                     {...register("nome_plano", { required: "O nome é obrigatório", minLength: 5 })}
+                     fields={[
+                        {
+                           cols: 4,
+                           title: "Informações",
+                           fields: [
+                              {
+                                 id: "name",
+                                 label: "Nome",
+                                 fieldName: "nome_plano",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 id: "name",
+                                 label: "Duração do plano (Meses)",
+                                 fieldName: "duracao_plano",
+                                 inputType: "number",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 label: "Valor Adesão",
+                                 fieldName: "valor_adesao",
+                                 type: "currency",
+                              },
+                           ],
+                        },
+                     ]}
                   />
-               </div>
+               </CardContent>
+            </Card>
 
-               <div className="row g-3 mt-3">
-                  <FitInputForm
-                     nameField="Duração plano (Meses) *"
-                     classNameContainer="col-md-3"
-                     errors={errors}
-                     type="number"
-                     {...register("duracao_plano", { required: "A duração é obrigatório" })}
+            <Card className="mt-3">
+               <CardContent>
+                  <SelectModalidades
+                     addModalidade={addModalidade}
+                     removeModalidade={removeModalidade}
+                     modalidadesPlano={selectModalidades}
                   />
+               </CardContent>
+
+               <div className="d-flex justify-end items-end gap-3 px-3">
+                  <Field className="col-2">
+                     <FieldLabel>Valor total</FieldLabel>
+                     <Input disabled value={formatarMoeda(valorTotal)} />
+                  </Field>
+
+                  <Button id="submit" type="submit">
+                     <Check />
+                     Confirmar
+                  </Button>
                </div>
-            </div>
-         </div>
-
-         <div className="card">
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Fincanceiro</h5>
-
-               <div className="row g-3 mt-3">
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Valor plano</label>
-                     <input disabled className="form-control" value={formatarMoeda(valorTotal)} />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Valor adesão</label>
-                     <FitInputCurrency control={control} name="valor_adesao" />
-                  </div>
-               </div>
-            </div>
-         </div>
-
-         <div className="card">
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Modalidades</h5>
-
-               <SelectModalidades
-                  addModalidade={addModalidade}
-                  removeModalidade={removeModalidade}
-                  modalidadesPlano={selectModalidades}
-               />
-            </div>
-
-            <div className="card-footer">
-               <button type="submit" className="btn btn-success">
-                  Confirmar
-               </button>
-            </div>
-         </div>
-      </form>
+            </Card>
+         </form>
+      </FormProvider>
    );
 }
 

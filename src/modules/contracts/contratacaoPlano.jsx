@@ -1,4 +1,5 @@
 import JoditEditor from "jodit-react";
+import { Check } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,9 +8,16 @@ import { useRecoilState } from "recoil";
 import { newContract } from "../../api/contracts";
 import { getContractsTemplates } from "../../api/contractsTemplates";
 import { getPlans } from "../../api/plans";
-import Select from "../../components/baseComponents/select";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
 import Pagamento from "../../components/payment/pagamento";
 import SelectModalidades from "../../components/selectModalidades";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Field, FieldLabel } from "../../components/ui/field";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
 
@@ -30,7 +38,7 @@ function ContratacaoPlano() {
 
    const [errors, setErrors] = useState([]);
 
-   const { data: planos, refetch } = useQuery({
+   const { data: planos } = useQuery({
       queryKey: ["planos"],
       queryFn: getPlans,
       initialData: [],
@@ -222,15 +230,7 @@ function ContratacaoPlano() {
 
    return (
       <div className="container-fluid">
-         {/* Header Section */}
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
-            <div className="d-flex justify-content-between align-items-center">
-               <button onClick={() => navigate(-1)} className="btn btn-outline-danger rounded-pill px-4">
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Voltar
-               </button>
-            </div>
-         </div>
+         <BackBoxUI />
 
          <Pagamento
             show={pagando}
@@ -242,50 +242,72 @@ function ContratacaoPlano() {
                })
             }
          />
-         <div className="card shadow-lg rounded-4">
-            <div className="card-body row">
-               <h5 className="card-title mb-3">Contratação de plano</h5>
 
-               <div className="row">
-                  <div className="col-md-6 bg-light rounded p-3">
-                     <h5 className="form-label">Aluno</h5>
+         <Card>
+            <CardHeader>
+               <CardTitle>Contratação de plano</CardTitle>
+            </CardHeader>
 
-                     <label className="fs-4 mb-2">{aluno?.nome_aluno}</label>
+            <CardContent>
+               <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2">
+                     <CardTitle>Aluno</CardTitle>
 
-                     <p className="mb-1">
-                        <strong>CEP:</strong> {aluno?.cep_aluno}
-                     </p>
-                     <p className="mb-1">
-                        <strong>Endereço:</strong> {aluno?.endereco_aluno}, {aluno?.numero_aluno}
-                     </p>
-                     <p className="mb-1">
-                        <strong>Cidade:</strong> {aluno?.cidade_aluno} - {aluno?.estado_aluno}
-                     </p>
-                     <p className="mb-1">
-                        <strong>CPF:</strong> {formatarCPF(aluno?.cpf_aluno)}
-                     </p>
-                     <p className="mb-1">
-                        <strong>RG:</strong> {aluno?.rg_aluno ?? "-"}
-                     </p>
+                     <Label className="fs-4 mb-2">{aluno?.nome_aluno}</Label>
+
+                     <Label>
+                        CEP: <strong>{aluno?.cep_aluno}</strong>
+                     </Label>
+
+                     <Label>
+                        Endereço:{" "}
+                        <strong>
+                           {aluno?.endereco_aluno}, {aluno?.numero_aluno}
+                        </strong>
+                     </Label>
+
+                     <Label>
+                        Cidade:{" "}
+                        <strong>
+                           {aluno?.cidade_aluno} - {aluno?.estado_aluno}
+                        </strong>
+                     </Label>
+
+                     <Label>
+                        CPF: <strong>{formatarCPF(aluno?.cpf_aluno)}</strong>
+                     </Label>
+
+                     <Label>
+                        RG: <strong>{aluno?.rg_aluno ?? "-"}</strong>
+                     </Label>
                   </div>
 
-                  <div className="col-md-6 bg-light rounded p-3">
-                     <h5 className="form-label">Empresa</h5>
+                  <div className="grid grid-cols-1 gap-2">
+                     <CardTitle>Empresa</CardTitle>
 
-                     <label className="fs-4 mb-2">{empresa?.nome_empresa}</label>
+                     <Label className="fs-4 mb-2">{empresa?.nome_empresa}</Label>
 
-                     <p className="mb-1">
-                        <strong>CEP:</strong> {empresa?.cep_empresa}
-                     </p>
-                     <p className="mb-1">
-                        <strong>Endereço:</strong> {empresa?.endereco_empresa}, {empresa?.numero_empresa}
-                     </p>
-                     <p className="mb-1">
-                        <strong>Cidade:</strong> {empresa?.cidade_empresa} - {empresa?.estado_empresa}
-                     </p>
-                     <p className="mb-1">
-                        <strong>CPF:</strong> {formatarCNPJ(empresa?.doc_empresa)}
-                     </p>
+                     <Label className="mb-1">
+                        CEP: <strong>{empresa?.cep_empresa}</strong>
+                     </Label>
+
+                     <Label className="mb-1">
+                        Endereço:{" "}
+                        <strong>
+                           {empresa?.endereco_empresa}, {empresa?.numero_empresa}
+                        </strong>
+                     </Label>
+
+                     <Label className="mb-1">
+                        Cidade:{" "}
+                        <strong>
+                           {empresa?.cidade_empresa} - {empresa?.estado_empresa}
+                        </strong>
+                     </Label>
+
+                     <Label className="mb-1">
+                        CPF: <strong>{formatarCNPJ(empresa?.doc_empresa)}</strong>
+                     </Label>
                   </div>
                </div>
 
@@ -320,131 +342,155 @@ function ContratacaoPlano() {
                      </div>
                   </div>
                )}
-            </div>
-         </div>
+            </CardContent>
+         </Card>
 
-         <div className="row">
-            <div className="col-md-6">
-               <div className="card shadow-lg rounded-4">
-                  <div className="card-body row">
-                     <div className="text-center d-flex flex-column mb-3">
-                        <div className="btn-group" role="group">
-                           <button
-                              className={`btn ${!montandoPlano ? "btn-primary" : "btn-outline-primary"}`}
-                              onClick={() => setMontandoPlano(false)}
-                           >
-                              Selecionar plano
-                           </button>
+         <div className="grid grid-cols-2 gap-3 mt-3">
+            <Card>
+               <CardContent className="grid grid-cols-1">
+                  <TooltipProvider delayDuration={100}>
+                     <div className="flex justify-center flex-wrap gap-2 mb-3">
+                        <Tooltip>
+                           <TooltipTrigger asChild>
+                              <Button
+                                 variant={!montandoPlano ? "default" : "outline"}
+                                 onClick={() => setMontandoPlano(false)}
+                              >
+                                 Selecionar plano
+                              </Button>
+                           </TooltipTrigger>
+                           <TooltipContent>Selecionar um plano pré cadastrado</TooltipContent>
+                        </Tooltip>
 
-                           <button
-                              className={`btn ${montandoPlano ? "btn-primary" : "btn-outline-primary"}`}
-                              onClick={() => setMontandoPlano(true)}
-                           >
-                              Montar plano
-                           </button>
-                        </div>
+                        <Tooltip>
+                           <TooltipTrigger asChild>
+                              <Button
+                                 variant={montandoPlano ? "default" : "outline"}
+                                 onClick={() => setMontandoPlano(true)}
+                              >
+                                 Montar plano
+                              </Button>
+                           </TooltipTrigger>
+                           <TooltipContent>Montar um plano agora</TooltipContent>
+                        </Tooltip>
                      </div>
+                  </TooltipProvider>
 
-                     {!montandoPlano && (
-                        <div>
-                           <Select
-                              label="Selecione o plano"
-                              options={planos}
-                              fieldName="nome_plano"
-                              fieldValue="cod_plano"
-                              className="mb-3"
-                              // setValue={setPlano}
-                              onChange={(v) => setPlano(v)}
-                           />
-                        </div>
-                     )}
+                  {!montandoPlano && (
+                     <Field className="w-[50%]">
+                        <FieldLabel>Selecione o plano</FieldLabel>
+                        <Select onValueChange={(v) => setPlano(planos.find((e) => e.cod_plano == v) || null)}>
+                           <SelectTrigger>
+                              <SelectValue placeholder="Selecione o plano" />
+                           </SelectTrigger>
 
-                     {montandoPlano && (
-                        <div className="d-flex flex-column">
-                           <div className="col-md-6">
-                              <label className="form-label fw-bold">Duração plano (Meses)</label>
-                              <Select
-                                 // value={plano?.duracao_plano}
-                                 options={[...Array(12).keys()].map((i) => ({ label: i + 1, value: i + 1 }))}
-                                 onChange={(v) => updatePlano("duracao_plano", v.value)}
-                                 fieldName="label"
-                                 fieldValue="value"
-                                 label="Duração do plano (Meses)"
-                              />
-                           </div>
-                        </div>
-                     )}
+                           <SelectContent>
+                              {planos.map((plano, index) => (
+                                 <SelectItem value={String(plano.cod_plano)} key={index}>
+                                    {plano.nome_plano}
+                                 </SelectItem>
+                              ))}
+                           </SelectContent>
+                        </Select>
+                     </Field>
+                  )}
 
-                     <div className="row g-3 px-3 mt-0">
-                        <div className="col-md-6">
-                           <label className="form-label">Primeira cobrança</label>
-                           <input
-                              className="form-control"
-                              type="date"
-                              value={pagamentoInicial}
-                              onChange={(e) => setPagamentoInicial(e.target.value)}
-                           />
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            <div className="col-md-6">
-               <div className="card shadow-lg rounded-4">
-                  <div className="card-body row">
-                     <SelectModalidades
-                        disableControls={!montandoPlano}
-                        addModalidade={addModalidade}
-                        removeModalidade={removeModalidade}
-                        attValue={attValue}
-                        modalidadesPlano={plano?.modalidades}
-                     />
-                     <div className="d-flex justify-between mt-3 mb-0">
-                        <p className={`${montandoPlano && "d-none"}`}>
-                           Adesão - <strong>{formatarMoeda(plano?.valor_adesao || 0)}</strong>
-                        </p>
-                        <p>
-                           Total - <strong>{formatarMoeda(plano?.valor_plano || 0)}</strong>
-                        </p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-
-         <div className="card shadow-lg rounded-4">
-            <div className="card-body">
-               <h5 className="card-title">Revisão do contrato</h5>
-
-               <div className="form-check form-switch mt-3 mb-3">
-                  <input
-                     className="form-check-input"
-                     type="checkbox"
-                     id="flexSwitchCheckDefault"
-                     checked={geraContrato}
-                     onChange={() => setGeraContrato(!geraContrato)}
-                  />
-                  <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                     [Jurídico] - Gerar e enviar contrato para assinatura?
-                  </label>
-               </div>
-
-               {geraContrato && (
-                  <div className="row g-3">
-                     <div className="col-md-6">
+                  {montandoPlano && (
+                     <Field className="w-[50%]">
+                        <FieldLabel>Duração plano</FieldLabel>
                         <Select
-                           options={contratos}
-                           fieldName="nome_contrato"
-                           fieldValue="cod_contrato"
-                           value={selectContrato?.cod_contrato}
-                           onChange={(value) => setSelectContrato(value)}
-                           className="mb-3"
-                           label="Selecione o contrato"
-                        />
-                     </div>
+                           onValueChange={(v) =>
+                              updatePlano("duracao_plano", planos.find((e) => e.cod_plano == v) || null)
+                           }
+                        >
+                           <SelectTrigger>
+                              <SelectValue placeholder="Selecione a duração" />
+                           </SelectTrigger>
+
+                           <SelectContent>
+                              {[...Array(12).keys()].map((i) => (
+                                 <SelectItem value={i + 1} key={i}>
+                                    {i + 1}
+                                 </SelectItem>
+                              ))}
+                           </SelectContent>
+                        </Select>
+                     </Field>
+                  )}
+
+                  <Field className="w-[50%] mt-3">
+                     <FieldLabel>Primeira cobrança</FieldLabel>
+                     <Input
+                        type="date"
+                        value={pagamentoInicial}
+                        onChange={(e) => setPagamentoInicial(e.target.value)}
+                     />
+                  </Field>
+               </CardContent>
+            </Card>
+
+            <Card>
+               <CardContent>
+                  <SelectModalidades
+                     disableControls={!montandoPlano}
+                     addModalidade={addModalidade}
+                     removeModalidade={removeModalidade}
+                     attValue={attValue}
+                     modalidadesPlano={plano?.modalidades}
+                  />
+                  <div className="d-flex justify-between mt-3 mb-0">
+                     <p className={`${montandoPlano && "d-none"}`}>
+                        Adesão - <strong>{formatarMoeda(plano?.valor_adesao || 0)}</strong>
+                     </p>
+
+                     <p>
+                        Total - <strong>{formatarMoeda(plano?.valor_plano || 0)}</strong>
+                     </p>
                   </div>
-               )}
+               </CardContent>
+            </Card>
+         </div>
+
+         <Card className="mt-3">
+            <CardHeader>
+               <CardTitle>Revisão do contrato</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+               <div className="grid grid-cols-2">
+                  <div className="form-check form-switch mt-3 mb-3">
+                     <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="flexSwitchCheckDefault"
+                        checked={geraContrato}
+                        onChange={() => setGeraContrato(!geraContrato)}
+                     />
+                     <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
+                        [Jurídico] - Gerar e enviar contrato para assinatura?
+                     </label>
+                  </div>
+
+                  {geraContrato && (
+                     <div className="row g-3">
+                        <Select
+                           onValueChange={(v) => setSelectContrato(contratos.find((e) => e.cod_contrato == v) || null)}
+                        >
+                           <SelectTrigger>
+                              <SelectValue placeholder="Selecione o contrato" />
+                           </SelectTrigger>
+
+                           <SelectContent>
+                              {contratos.map((contrato, index) => (
+                                 <SelectItem value={String(contrato.cod_contrato)} key={index}>
+                                    {contrato.nome_contrato}
+                                 </SelectItem>
+                              ))}
+                           </SelectContent>
+                        </Select>
+                     </div>
+                  )}
+               </div>
 
                {contratoPreenchido && geraContrato && (
                   <JoditEditor
@@ -463,14 +509,15 @@ function ContratacaoPlano() {
                      }}
                   />
                )}
-            </div>
+            </CardContent>
 
-            <div className="card-footer d-flex justify-content-end gap-3">
-               <button disabled={errors.length > 0} className="btn btn-success" onClick={confirmar}>
-                  Finalizar contratação
-               </button>
+            <div className="d-flex justify-end px-3">
+               <Button id="submit" type="submit" disabled={errors.length > 0} onClick={confirmar}>
+                  <Check />
+                  Confirmar
+               </Button>
             </div>
-         </div>
+         </Card>
       </div>
    );
 }
