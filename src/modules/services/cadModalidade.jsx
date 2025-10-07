@@ -1,4 +1,4 @@
-import { PlusCircle } from "lucide-react";
+import { Check, PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
@@ -265,6 +265,7 @@ function CadModalidade() {
 
                         <CardFooter>
                            <Button id="submit" type="submit">
+                              <Check />
                               Confirmar
                            </Button>
                         </CardFooter>

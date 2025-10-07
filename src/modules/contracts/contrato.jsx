@@ -1,16 +1,35 @@
 import JoditEditor from "jodit-react";
+import { Check, Clipboard, MoreHorizontal } from "lucide-react";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
 import { deleteContract, downloadContract, getContract } from "../../api/contracts";
+import { markPaymentReceived } from "../../api/payments";
 import { getStudent } from "../../api/student";
-import { stateEmpresa, useNotificacao } from "../../states/states";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import {
+   Dialog,
+   DialogClose,
+   DialogContent,
+   DialogFooter,
+   DialogHeader,
+   DialogTrigger,
+} from "../../components/ui/dialog";
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
+import { Label } from "../../components/ui/label";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
+import { useNotificacao } from "../../states/states";
 import { formatarData, formatarMoeda } from "../../utils";
 
 function Contrato() {
    const { nConfirm, nLoading, endLoading } = useNotificacao();
-   const [empresa] = useRecoilState(stateEmpresa);
    const navigate = useNavigate();
    const location = useLocation();
 
@@ -47,203 +66,211 @@ function Contrato() {
       window.open(url, "_blank");
    }
 
+   async function onRecieved(id) {
+      await markPaymentReceived(id);
+   }
+
    return (
       <div className="container-fluid">
-         <div className="row">
-            <div className="col-md-8">
-               <div className="card">
-                  <div className="card-header">
-                     <button onClick={() => navigate(-1)} className="btn btn-danger mb-3">
-                        <i className="bi bi-backspace me-2"></i>
-                        Voltar
-                     </button>
-                  </div>
+         <BackBoxUI />
 
-                  <div className="card-body">
-                     <p>
-                        <strong>Aluno:</strong> {aluno?.nome_aluno}
-                     </p>
-                     {/* {PRODUCAO ? (
-                                <p><strong>ID da assinatura:</strong> {alunoContrato?.stripe_id ?? (<label className="badge bg-danger">Não consta assinatura</label>)}</p>
-                            ) : (
-                                <p><strong>ID da assinatura:</strong> {alunoContrato?.dev_stripe_id ?? (<label className="badge bg-danger">Não consta assinatura</label>)}</p>
-                            )} */}
-                     <p>
-                        <strong>ID do contrato:</strong>{" "}
-                        {alunoContrato?.autentique_aluno_contrato ?? (
-                           <label className="badge bg-danger">Não consta contrato</label>
-                        )}
-                     </p>
-                     <p>
-                        <strong>Valor total:</strong> {formatarMoeda(alunoContrato?.total_aluno_contrato)}
-                     </p>
-                     <p>
-                        <strong>Expiração:</strong> {formatarData(alunoContrato?.expiracao_aluno_contrato)}
-                     </p>
-                     <p>
-                        <strong>Forma de cobrança: </strong> {alunoContrato?.formapagamento_aluno_contrato}
-                     </p>
-                     <p>
-                        <strong>Forma de pagamento: </strong> {alunoContrato?.tipopagamento_aluno_contrato}
-                     </p>
-                     <p>
-                        <strong>Status: </strong>
-                        <label className="badge bg-info">{alunoContrato?.status_aluno_contrato}</label>
-                     </p>
+         <Card>
+            <CardHeader>
+               <CardTitle>
+                  Contrato do aluno <strong>{aluno?.nome_aluno}</strong>
+               </CardTitle>
+            </CardHeader>
 
-                     <div className="d-flex gap-3">
-                        {/* {(!alunoContrato?.stripe_id && !alunoContrato?.dev_stripe_id && !alunoContrato?.dev_invoice_stripe_id && !alunoContrato?.invoice_stripe_id) && (
-                                    <button className="btn btn-sm btn-outline-success rounded" onClick={cancelContract}>Criar pagamento</button>
-                                )} */}
-                        <button className="btn btn-sm btn-outline-danger rounded" onClick={cancelContract}>
-                           Solicitar cancelamento
-                        </button>
-                     </div>
-                  </div>
+            <CardContent className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+               <div className="grid grid-cols-1 lg:col-span-2 gap-3">
+                  <Label>
+                     ID do contrato:{" "}
+                     <strong>{alunoContrato?.autentique_aluno_contrato ?? "Não consta contrato"}</strong>
+                  </Label>
+
+                  <Label>
+                     Valor total: <strong>{formatarMoeda(alunoContrato?.total_aluno_contrato)}</strong>
+                  </Label>
+
+                  <Label>
+                     Vencimento: <strong>{formatarData(alunoContrato?.expiracao_aluno_contrato)}</strong>
+                  </Label>
+
+                  <Label>
+                     Forma de cobrança: <strong>{alunoContrato?.formapagamento_aluno_contrato}</strong>
+                  </Label>
+
+                  <Label>
+                     Forma de pagamento: <strong>{alunoContrato?.tipopagamento_aluno_contrato}</strong>
+                  </Label>
+
+                  <Label>
+                     Status do contrato: <strong>{alunoContrato?.status_aluno_contrato}</strong>
+                  </Label>
                </div>
-            </div>
 
-            <div className="col-md-4">
-               <div className="d-flex flex-column gap-3">
-                  {alunoContrato?.autentique_aluno_contrato != "Contrato recusado." &&
-                     alunoContrato?.autentique_aluno_contrato && (
-                        <>
-                           <button
-                              disabled={!alunoContrato?.autentique_aluno_contrato}
-                              className="btn btn-info rounded w-100"
-                              onClick={() => baixarContrato(false)}
-                           >
-                              Baixar contrato
-                           </button>
+               <div className="grid grid-cols-1 gap-3">
+                  <CardTitle>Ações</CardTitle>
 
-                           <button
-                              disabled={
-                                 !alunoContrato?.autentique_aluno_contrato ||
-                                 alunoContrato?.statusautentique_aluno_contrato !== "O aluno assinou o contrato."
-                              }
-                              className="btn btn-success rounded w-100"
-                              onClick={() => baixarContrato(true)}
-                           >
-                              Baixar contrato (assinado)
-                           </button>
-                        </>
-                     )}
-
-                  {alunoContrato?.autentique_aluno_contrato == "Contrato recusado." &&
-                     !alunoContrato?.autentique_aluno_contrato && (
-                        <button className="btn btn-info" onClick={resendContrato}>
-                           Reenviar contrato
-                        </button>
-                     )}
+                  <Button onClick={() => baixarContrato(false)} disabled={!alunoContrato?.autentique_aluno_contrato}>
+                     Baixar contrato
+                  </Button>
+                  <Button
+                     onClick={() => baixarContrato(true)}
+                     disabled={
+                        !alunoContrato?.autentique_aluno_contrato ||
+                        alunoContrato?.statusautentique_aluno_contrato !== "O aluno assinou o contrato."
+                     }
+                  >
+                     Baixar contrato (Assinado)
+                  </Button>
+                  <Button onClick={cancelContract} variant="destructive">
+                     Solicitar Cancelamento
+                  </Button>
                </div>
-            </div>
-         </div>
+            </CardContent>
+         </Card>
 
-         <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body">
-               <h5 className="mb-3 fw-semibold text-dark">Pagamentos</h5>
+         <Card className="mt-3">
+            <CardHeader>
+               <CardTitle>Pagamentos</CardTitle>
+            </CardHeader>
 
+            <CardContent>
                {alunoContrato?.pagamentos?.length < 1 ? (
                   <p className="text-muted">Nenhum pagamento registrado</p>
                ) : (
-                  <div className="table-responsive">
-                     <table className="table table-borderless align-middle">
-                        <thead className="text-secondary small text-uppercase">
-                           <tr>
-                              <th>Data</th>
-                              <th>Status</th>
-                              <th>Expiração</th>
-                              <th>Valor</th>
-                              <th>Identificação</th>
-                              <th className="text-end">Ações</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           {alunoContrato?.pagamentos?.map((pagamento, index) => (
-                              <tr key={index} className="border-top">
-                                 <td>{formatarData(pagamento.data_aluno_contrato_pagamento)}</td>
-                                 <td>
-                                    <span className="d-block small text-muted">
-                                       {pagamento.statustexto_aluno_contrato_pagamento}
-                                    </span>
+                  <Table>
+                     <TableHeader>
+                        <TableRow>
+                           <TableCell>Data</TableCell>
+                           <TableCell>Status</TableCell>
+                           <TableCell>Expiração</TableCell>
+                           <TableCell>Valor</TableCell>
+                           <TableCell>Identificação</TableCell>
+                           <TableCell></TableCell>
+                        </TableRow>
+                     </TableHeader>
 
-                                    {pagamento.status_aluno_contrato_pagamento === "overdue" && (
-                                       <span className="badge bg-danger-subtle text-danger mt-1">Vencido</span>
-                                    )}
-                                    {pagamento.status_aluno_contrato_pagamento === "confirmed" && (
-                                       <span className="badge bg-info-subtle text-info mt-1">Confirmado</span>
-                                    )}
-                                    {pagamento.status_aluno_contrato_pagamento === "succeeded" && (
-                                       <span className="badge bg-success-subtle text-success mt-1">Disponível</span>
-                                    )}
-                                    {pagamento.status_aluno_contrato_pagamento === "paid" && (
-                                       <span className="badge bg-success-subtle text-success mt-1">Repassado</span>
-                                    )}
-                                    {pagamento.status_aluno_contrato_pagamento === "recievedCash" && (
-                                       <span className="badge bg-success-subtle text-success mt-1">
-                                          Recebido manual
-                                       </span>
-                                    )}
-                                    {(pagamento.status_aluno_contrato_pagamento === "Pendente" ||
-                                       pagamento.status_aluno_contrato_pagamento === "Pending") && (
-                                       <span className="badge bg-warning-subtle text-warning mt-1">Pendente</span>
-                                    )}
-                                 </td>
-                                 <td>
-                                    <span className="badge bg-light text-dark">
-                                       {formatarData(pagamento.expiracao_aluno_contrato_pagamento)}
-                                    </span>
-                                 </td>
-                                 <td className="text-muted">
-                                    {formatarMoeda(pagamento?.valor_aluno_contrato_pagamento)}
-                                 </td>
-                                 <td>
-                                    <span className="badge bg-warning-subtle text-dark">
-                                       {pagamento.stripe_payment_id || pagamento.asaas_id}
-                                    </span>
-                                 </td>
-                                 <td className="text-end">
-                                    {pagamento.status_aluno_contrato_pagamento !== "confirmed" &&
-                                       pagamento.asaas_id && (
-                                          <a
-                                             className="btn btn-sm btn-outline-success"
-                                             href={pagamento?.asaas_url}
-                                             target="_blank" // Se quiser abrir em nova aba
-                                             rel="noopener noreferrer" // Segurança ao usar target="_blank"
-                                          >
-                                             <i className="bi bi-credit-card me-1" />
-                                             Pagar
-                                          </a>
-                                       )}
+                     <TableBody>
+                        {alunoContrato?.pagamentos?.map((pagamento, index) => (
+                           <TableRow key={index} className="border-top">
+                              <TableCell>{formatarData(pagamento.data_aluno_contrato_pagamento)}</TableCell>
+                              <TableCell>
+                                 <span className="d-block small text-muted">
+                                    {pagamento.statustexto_aluno_contrato_pagamento}
+                                 </span>
 
-                                    {pagamento.status_aluno_contrato_pagamento === "succeeded" &&
-                                       !pagamento.asaas_id && (
-                                          <button
-                                             onClick={() => refund(pagamento)}
-                                             className="btn btn-sm btn-outline-danger"
-                                          >
-                                             <i className="bi bi-arrow-counterclockwise me-1" />
-                                             Reembolsar
-                                          </button>
+                                 {pagamento.status_aluno_contrato_pagamento === "overdue" && (
+                                    <span className="badge bg-danger-subtle text-danger mt-1">Vencido</span>
+                                 )}
+                                 {pagamento.status_aluno_contrato_pagamento === "confirmed" && (
+                                    <span className="badge bg-info-subtle text-info mt-1">Confirmado</span>
+                                 )}
+                                 {pagamento.status_aluno_contrato_pagamento === "succeeded" && (
+                                    <span className="badge bg-success-subtle text-success mt-1">Disponível</span>
+                                 )}
+                                 {pagamento.status_aluno_contrato_pagamento === "paid" && (
+                                    <span className="badge bg-success-subtle text-success mt-1">Repassado</span>
+                                 )}
+                                 {pagamento.status_aluno_contrato_pagamento === "recievedCash" && (
+                                    <span className="badge bg-success-subtle text-success mt-1">Recebido manual</span>
+                                 )}
+                                 {(pagamento.status_aluno_contrato_pagamento === "Pendente" ||
+                                    pagamento.status_aluno_contrato_pagamento === "Pending") && (
+                                    <span className="badge bg-warning-subtle text-warning mt-1">Pendente</span>
+                                 )}
+                              </TableCell>
+                              <TableCell>
+                                 <span className="badge bg-light text-dark">
+                                    {formatarData(pagamento.expiracao_aluno_contrato_pagamento)}
+                                 </span>
+                              </TableCell>
+                              <TableCell className="text-muted">
+                                 {formatarMoeda(pagamento?.valor_aluno_contrato_pagamento)}
+                              </TableCell>
+                              <TableCell>
+                                 <span className="badge bg-warning-subtle text-dark">
+                                    {pagamento.stripe_payment_id || pagamento.asaas_id}
+                                 </span>
+                              </TableCell>
+                              <TableCell>
+                                 <DropdownMenu>
+                                    <DropdownMenuTrigger>
+                                       <Button variant="ghost" size="icon">
+                                          <MoreHorizontal />
+                                       </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent>
+                                       <DropdownMenuItem
+                                          className="cursor-pointer"
+                                          onClick={() =>
+                                             window.open(pagamento?.asaas_url, "_blank", "noopener,noreferrer")
+                                          }
+                                       >
+                                          <Clipboard />
+                                          Link de pagamento
+                                       </DropdownMenuItem>
+
+                                       {(pagamento.status_aluno_contrato_pagamento === "Pending" ||
+                                          pagamento.status_aluno_contrato_pagamento === "overdue" ||
+                                          pagamento.status_aluno_contrato_pagamento === "Pendente") && (
+                                          <div>
+                                             <Dialog>
+                                                <DialogTrigger asChild>
+                                                   <Button variant="ghost" className="ps-2 py-0.5">
+                                                      <Check />
+                                                      Marcar como recebido
+                                                   </Button>
+                                                </DialogTrigger>
+
+                                                <DialogContent className="col-md-3 col-12">
+                                                   <DialogHeader>
+                                                      <h5 className="text-start card-title">
+                                                         Confirmação de pagamento recebido
+                                                      </h5>
+                                                   </DialogHeader>
+
+                                                   <p>
+                                                      Ao confirmar o pagamento, a cobrança será cancelada
+                                                      automaticamente, pois entendemos que você recebeu o valor por
+                                                      outro meio manualmente.
+                                                   </p>
+
+                                                   <DialogFooter>
+                                                      <DialogClose>
+                                                         <button className="btn btn-danger rounded">Fechar</button>
+                                                      </DialogClose>
+
+                                                      <button
+                                                         className="btn btn-success rounded"
+                                                         onClick={() => onRecieved(pagamento.asaas_id)}
+                                                      >
+                                                         Confirmar
+                                                      </button>
+                                                   </DialogFooter>
+                                                </DialogContent>
+                                             </Dialog>
+                                          </div>
                                        )}
-                                 </td>
-                              </tr>
-                           ))}
-                        </tbody>
-                     </table>
-                  </div>
+                                    </DropdownMenuContent>
+                                 </DropdownMenu>
+                              </TableCell>
+                           </TableRow>
+                        ))}
+                     </TableBody>
+                  </Table>
                )}
-            </div>
-         </div>
+            </CardContent>
+         </Card>
 
-         <div className="card">
-            <div className="card-header d-flex justify-content-between">
-               <h5 className="card-title">Contrato</h5>
+         <Card className="mt-3">
+            <CardHeader>
+               <CardTitle>Contrato</CardTitle>
+            </CardHeader>
 
-               {/* <button className="btn btn-info rounded" onClick={sendEmail}>Enviar E-mail para assinatura</button> */}
-            </div>
-
-            <div className="card-body">
+            <CardContent>
                {alunoContrato?.arquivo_aluno_contrato && (
                   <JoditEditor
                      value={alunoContrato?.arquivo_aluno_contrato}
@@ -260,8 +287,8 @@ function Contrato() {
                      }}
                   />
                )}
-            </div>
-         </div>
+            </CardContent>
+         </Card>
       </div>
    );
 }
