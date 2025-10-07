@@ -1,6 +1,8 @@
+import { PlusCircle } from "lucide-react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
 import EditableText from "../editableText";
+import { Button } from "../ui/button";
 import GerarTreino from "./gerarTreino";
 import ListaExercicios from "./listaExercicios";
 
@@ -147,7 +149,7 @@ function TreinoInteligente({
                                  key={index}
                                  className={`accordion rounded-2 mb-1`}
                               >
-                                 <div className="accordion-item">
+                                 <div className="accordion-item p-3">
                                     <div className="card-header accordion-header d-flex justify-content-between align-items-center">
                                        <div
                                           {...provided.dragHandleProps}
@@ -261,10 +263,10 @@ function TreinoInteligente({
             </Droppable>
          </DragDropContext>
 
-         <button id="addSessions" className="btn btn-outline-primary w-100" onClick={adicionarSessao}>
-            <i className="bi bi-plus me-2" />
+         <Button variant="outline" className="w-[100%] mt-3" id="addSessions" onClick={adicionarSessao}>
+            <PlusCircle />
             Adicionar sessão
-         </button>
+         </Button>
       </div>
    );
 }

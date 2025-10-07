@@ -125,6 +125,16 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     </SelectContent>
                                  </Select>
 
+                                 <input
+                                    type="hidden"
+                                    {...(register
+                                       ? register(field.fieldName as string, {
+                                            required: field.options?.required || false,
+                                         })
+                                       : {})}
+                                    value={value}
+                                 />
+
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
                                     <FieldError>{field.label} obrigatório</FieldError>
                                  )}

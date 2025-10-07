@@ -9592,14 +9592,14 @@ hr{
         font-size:2.5rem
     }
 }
-.h2,h2{
+/* .h2,h2{
     font-size:calc(1.3375rem + 1.05vw)
-}
-@media (min-width:1200px){
+} */
+/* @media (min-width:1200px){
     .h2,h2{
         font-size:2.125rem
     }
-}
+} */
 .h3,h3{
     font-size:calc(1.3rem + .6vw)
 }
@@ -17124,9 +17124,9 @@ textarea.form-control-lg{
 .p-5{
     padding:3rem!important
 }
-.p-6{
+/* .p-6{
     padding:12px!important
-}
+} */
 .p-7{
     padding:30px!important
 }
@@ -17348,9 +17348,9 @@ textarea.form-control-lg{
 .gap-3{
     gap:1rem!important
 }
-.gap-4{
+/* .gap-4{
     gap:1.5rem!important
-}
+} */
 .gap-5{
     gap:3rem!important
 }
@@ -17523,9 +17523,9 @@ textarea.form-control-lg{
 .text-end{
     text-align:right!important
 }
-.text-center{
+/* .text-center{
     text-align:center!important
-}
+} */
 .text-decoration-none{
     text-decoration:none!important
 }
@@ -24708,9 +24708,9 @@ html[dir=rtl] .ps-5{
     padding-left:unset!important;
     padding-right:3rem!important
 }
-html[dir=rtl] .p-6{
+/* html[dir=rtl] .p-6{
     padding:12px!important
-}
+} */
 html[dir=rtl] .pt-6,html[dir=rtl] .py-6{
     padding-top:12px!important
 }

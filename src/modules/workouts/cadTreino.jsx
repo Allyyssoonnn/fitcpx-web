@@ -1,17 +1,27 @@
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { createOrUpdateWorkout } from "../../api/workouts";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
 import TreinoInteligente from "../../components/prescricao/treinoInteligente";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Separator } from "../../components/ui/separator";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { preventForm } from "../../utils";
 
 function CadTreino() {
+   const location = useLocation();
+   const treinoRecebido = location.state?.treino;
+   const alunoRecebido = location.state?.aluno;
    const { formData, setTreinoForm, clearForm } = useFormStore();
    const { nSuccess } = useNotificacao();
+   const form = useForm({ defaultValues: { ...treinoRecebido, sexo_treino: alunoRecebido?.sexo_aluno || "M" } });
    const {
       handleSubmit,
       register,
@@ -19,10 +29,10 @@ function CadTreino() {
       getValues,
       watch,
       reset,
-      formState: { isSubmitting },
-   } = useForm();
+      formState: { isSubmitting, errors },
+   } = form;
    const navigate = useNavigate();
-   const location = useLocation();
+
    const [usuario] = useRecoilState(stateUsuario);
    const [sessoes, setSessoes] = useState([]);
    const [nome_aluno, setNome_aluno] = useState("");
@@ -30,8 +40,6 @@ function CadTreino() {
    const [sexo_aluno, setSexo_aluno] = useState(null);
 
    useEffect(() => {
-      const treinoRecebido = location.state?.treino;
-      const alunoRecebido = location.state?.aluno;
       if (treinoRecebido) {
          Object.keys(treinoRecebido).forEach((key) => {
             setValue(key, treinoRecebido[key]);
@@ -137,145 +145,115 @@ function CadTreino() {
    const { desenvolvimento_treino, volume_treino, nivel_treino } = watch();
 
    return (
-      <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid">
-         {/* Header Section */}
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
-            <div className="d-flex justify-content-between align-items-center">
-               <button
-                  onClick={(e) => {
-                     e.preventDefault();
-                     navigate(-1);
-                  }}
-                  className="btn btn-outline-danger rounded-pill px-4"
-               >
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Voltar
-               </button>
-            </div>
-         </div>
+      <FormProvider {...form}>
+         <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)} className="container-fluid gap-3">
+            <BackBoxUI />
 
-         <div className="card shadow-lg rounded-4">
-            <div className="card-body">
-               <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
+            <Card>
+               <CardContent>
+                  <CardTitle className="mb-3">Treino do aluno: {nome_aluno}</CardTitle>
 
-               <div className={`row g-3 mb-3 ${nome_aluno ? "" : "d-none"}`}>
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Aluno</label>
-                     <input disabled {...register("nome_aluno")} className="form-control" />
+                  <FitFormUI
+                     errors={errors}
+                     fields={[
+                        {
+                           title: "Informações iniciais",
+                           cols: 4,
+                           fields: [
+                              {
+                                 id: "name",
+                                 label: "Nome",
+                                 fieldName: "nome_treino",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 id: "periodicity",
+                                 label: "Frequência",
+                                 fieldName: "frequencia_treino",
+                                 inputType: "number",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 id: "gender",
+                                 label: "Sexo",
+                                 fieldName: "sexo_treino",
+                                 type: "select",
+                                 selectOptions: [
+                                    { label: "Masculino", value: "M" },
+                                    { label: "Feminino", value: "F" },
+                                 ],
+                                 options: {
+                                    required: true,
+                                    disabled: !!nome_aluno,
+                                 },
+                              },
+                              {
+                                 id: "difficulty",
+                                 label: "Nível",
+                                 fieldName: "nivel_treino",
+                                 type: "select",
+                                 selectOptions: ["Iniciante", "Intermediário", "Avançado"],
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 id: "observation",
+                                 label: "Observação",
+                                 fieldName: "observacao_treino",
+                              },
+                              {
+                                 id: "development",
+                                 label: "Desenvolvimento",
+                                 fieldName: "desenvolvimento_treino",
+                                 type: "select",
+                                 selectOptions: ["Força", "Hipertrofia", "Resistência"],
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                           ],
+                        },
+                     ]}
+                  />
+               </CardContent>
+            </Card>
+
+            <Card className="mt-3">
+               <CardHeader>
+                  <CardTitle>Prescrição</CardTitle>
+                  <label>{sessoes?.length}/15</label>
+               </CardHeader>
+
+               <CardContent>
+                  <TreinoInteligente
+                     cod_aluno={codAluno}
+                     sessoes={sessoes}
+                     setSessoes={setSessoes}
+                     getRepeticao={getRepeticao}
+                     getInterval={getInterval}
+                     getSeries={getSeries}
+                     nivel_treino={nivel_treino}
+                     volume_treino={volume_treino}
+                     desenvolvimento_treino={desenvolvimento_treino}
+                  />
+
+                  <Separator className="mt-3" />
+
+                  <div className="d-flex justify-end mt-3">
+                     <Button id="submit" type="submit" disabled={isSubmitting}>
+                        <Check />
+                        Confirmar
+                     </Button>
                   </div>
-               </div>
-
-               <div className="row g-3">
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Nome *</label>
-                     <input
-                        id="name"
-                        {...register("nome_treino", { required: "O nome é obrigatório" })}
-                        className="form-control"
-                     />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Frequência *</label>
-                     <input
-                        id="periodicity"
-                        {...register("frequencia_treino", { required: "Frequência de treino é obrigatório" })}
-                        type="number"
-                        step="0.01"
-                        className="form-control"
-                     />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Sexo *</label>
-                     <select
-                        id="gender"
-                        {...register("sexo_treino", { required: "O sexo é obrigatório" })}
-                        className="form-control"
-                     >
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                     </select>
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Nível *</label>
-                     <select
-                        id="difficulty"
-                        {...register("nivel_treino", { required: "Nível de treino necessário!" })}
-                        className="form-control"
-                     >
-                        <option value="">Selecione o nível do treino</option>
-                        <option value="Iniciante">Iniciante</option>
-                        <option value="Intermediário">Intermediário</option>
-                        <option value="Avançado">Avançado</option>
-                     </select>
-                  </div>
-
-                  <div className="col-md-6">
-                     <label className="form-label fw-bold">Observação</label>
-                     <input id="observation" {...register("observacao_treino")} className="form-control" />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Desenvolvimento *</label>
-                     <select
-                        id="development"
-                        {...register("desenvolvimento_treino", { required: "O desenvolvimento é obrigatório" })}
-                        className="form-control"
-                     >
-                        <option value="">Selecione o desenvolvimento</option>
-                        <option value="Força">Força</option>
-                        <option value="Hipertrofia">Hipertrofia</option>
-                        <option value="Resistência">Resistência</option>
-                     </select>
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Volume de treino *</label>
-                     <select
-                        id="volume"
-                        {...register("volume_treino", { required: "O volume de treino é obrigatório" })}
-                        className="form-control"
-                     >
-                        <option value="">Selecione o volume de treino</option>
-                        <option value="Baixo">Baixo</option>
-                        <option value="Médio">Médio</option>
-                        <option value="Alto">Alto</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-         </div>
-
-         <div className="card shadow-lg rounded-4">
-            <div className="card-header d-flex justify-content-between flex-wrap">
-               <h5 className="card-title fw-semibold m-3">Prescrição</h5>
-               <label>{sessoes?.length}/15</label>
-            </div>
-
-            <div className="card-body p-1">
-               <TreinoInteligente
-                  cod_aluno={codAluno}
-                  sessoes={sessoes}
-                  setSessoes={setSessoes}
-                  getRepeticao={getRepeticao}
-                  getInterval={getInterval}
-                  getSeries={getSeries}
-                  nivel_treino={nivel_treino}
-                  volume_treino={volume_treino}
-                  desenvolvimento_treino={desenvolvimento_treino}
-               />
-            </div>
-
-            <div className="card-footer">
-               <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success mt-3">
-                  <i className="bi bi-check me-2"></i>
-                  Confirmar
-               </button>
-            </div>
-         </div>
-      </form>
+               </CardContent>
+            </Card>
+         </form>
+      </FormProvider>
    );
 }
 

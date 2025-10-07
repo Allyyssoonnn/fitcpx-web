@@ -203,25 +203,6 @@ function Filters({
             onMaxSelected={() => toast.error("Máximo de 3 grupos selecionados")}
          />
 
-         {/* <div className="d-flex justify-content-between align-items-center mt-3">
-        <label className="form-label">Indicações</label>
-        <label>{indicacoesSelecionadas?.length}/3</label>
-      </div>
-
-      <MultiSelect
-        value={indicacoesSelecionadas}
-        options={indicacoes.map((indicacao, index) => ({
-          label: indicacao.nome_indicacao,
-          value: indicacao.cod_indicacao,
-        }))}
-        onChange={setIndicacoesSelecionadas}
-        placeholder="Selecione as indicações"
-        emptyIndicator={<p className="text-center text-sm">Nenhuma indicação disponível</p>}
-        maxSelected={5}
-        hidePlaceholderWhenSelected
-        onMaxSelected={() => toast.error("Máximo de 3 indicações selecionadas")}
-      /> */}
-
          <ToggleGroup
             type="single"
             variant="outline"
