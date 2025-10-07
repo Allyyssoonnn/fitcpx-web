@@ -151,7 +151,7 @@ function CadTreino() {
 
             <Card>
                <CardContent>
-                  <CardTitle className="mb-3">Treino do aluno: {nome_aluno}</CardTitle>
+                  {nome_aluno && <CardTitle className="mb-3">Treino do aluno: {nome_aluno}</CardTitle>}
 
                   <FitFormUI
                      errors={errors}
