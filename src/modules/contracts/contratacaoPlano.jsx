@@ -1,5 +1,5 @@
 import JoditEditor from "jodit-react";
-import { Check, Percent } from "lucide-react";
+import { Check } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,7 +15,6 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Field, FieldLabel } from "../../components/ui/field";
 import { Input } from "../../components/ui/input";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/ui/input-group";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Separator } from "../../components/ui/separator";
@@ -436,60 +435,6 @@ function ContratacaoPlano() {
                   </Field>
 
                   <Separator className="my-3" />
-
-                  {montandoPlano && (
-                     <>
-                        <CardTitle className="text-destructive">Cancelamento e Multa</CardTitle>
-                        {/* Max 10% */}
-                        <Field className="w-[50%] mt-3">
-                           <FieldLabel>Multa Compensatória</FieldLabel>
-
-                           <InputGroup>
-                              <InputGroupAddon>
-                                 <Percent />
-                              </InputGroupAddon>
-
-                              <InputGroupInput
-                                 onChange={(e) => updatePlano("multa_compensatoria", e.target.value)}
-                                 type="number"
-                                 defaultValue={0}
-                              />
-                           </InputGroup>
-                        </Field>
-
-                        {/* Max 2% */}
-                        <Field className="w-[50%] mt-3">
-                           <FieldLabel>Multa Moratória</FieldLabel>
-                           <InputGroup>
-                              <InputGroupAddon>
-                                 <Percent />
-                              </InputGroupAddon>
-
-                              <InputGroupInput
-                                 onChange={(e) => updatePlano("multa_moratoria", e.target.value)}
-                                 type="number"
-                                 defaultValue={0}
-                              />
-                           </InputGroup>
-                        </Field>
-
-                        <Field className="w-[50%] mt-3">
-                           <FieldLabel>Juros ao mês</FieldLabel>
-
-                           <InputGroup>
-                              <InputGroupAddon>
-                                 <Percent />
-                              </InputGroupAddon>
-
-                              <InputGroupInput
-                                 onChange={(e) => updatePlano("juros_atraso", e.target.value)}
-                                 type="number"
-                                 defaultValue={0}
-                              />
-                           </InputGroup>
-                        </Field>
-                     </>
-                  )}
                </CardContent>
             </Card>
 
@@ -538,7 +483,16 @@ function ContratacaoPlano() {
                   {geraContrato && (
                      <div className="row g-3">
                         <Select
-                           onValueChange={(v) => setSelectContrato(contratos.find((e) => e.cod_contrato == v) || null)}
+                           onValueChange={(v) => {
+                              const contrato = contratos.find((e) => e.cod_contrato == v) || null;
+                              if (!contrato) return;
+                              setSelectContrato(contrato);
+                              if (contrato.multa_compensatoria)
+                                 updatePlano("multa_compensatoria", contrato?.multa_compensatoria || "0");
+                              if (contrato.multa_moratoria)
+                                 updatePlano("multa_moratoria", contrato?.multa_moratoria || "0");
+                              if (contrato.juros_atraso) updatePlano("juros_atraso", contrato?.juros_atraso || "0");
+                           }}
                         >
                            <SelectTrigger>
                               <SelectValue placeholder="Selecione o contrato" />

@@ -69,6 +69,7 @@ function CadContrato() {
                      fields={[
                         {
                            title: "Informações",
+                           cols: 4,
                            fields: [
                               {
                                  label: "Nome",
@@ -76,6 +77,21 @@ function CadContrato() {
                                  options: {
                                     required: true,
                                  },
+                              },
+                              {
+                                 label: "Multa Compensatória",
+                                 fieldName: "multa_compensatoria",
+                                 inputType: "number",
+                              },
+                              {
+                                 label: "Multa Moratória",
+                                 fieldName: "multa_moratoria",
+                                 inputType: "number",
+                              },
+                              {
+                                 label: "Juros ao mês",
+                                 fieldName: "juros_atraso",
+                                 inputType: "number",
                               },
                            ],
                         },

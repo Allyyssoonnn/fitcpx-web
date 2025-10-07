@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { PRODUCAO } from "../../../api/api";
+import { Card, CardContent } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
 
 function NewPayment({ close, onPay, callback, atSigth }) {
@@ -40,8 +41,8 @@ function NewPayment({ close, onPay, callback, atSigth }) {
    }
 
    return (
-      <div className="card" style={{ height: formaPagamento != "MANUAL" ? "90vh" : "" }}>
-         <div className="card-body m-0 overflow-scroll">
+      <Card style={{ height: formaPagamento != "MANUAL" ? "90vh" : "" }}>
+         <CardContent className="px-4">
             <h5 className="text-center">Novo pagamento</h5>
 
             <div className="border border-bottom-3 border-gray m-1"></div>
@@ -141,7 +142,7 @@ function NewPayment({ close, onPay, callback, atSigth }) {
                   </div>
                </div>
             )}
-         </div>
+         </CardContent>
 
          <div className="card-footer d-flex p-3 align-items-center justify-content-between">
             <button className="btn btn-danger rounded" onClick={onClose}>
@@ -153,7 +154,7 @@ function NewPayment({ close, onPay, callback, atSigth }) {
                Finalizar
             </button>
          </div>
-      </div>
+      </Card>
    );
 }
 
