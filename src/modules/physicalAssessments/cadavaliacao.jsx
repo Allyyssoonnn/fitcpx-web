@@ -1,11 +1,16 @@
 /* eslint-disable react/prop-types */
+import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import { Button } from "../../components/ui/button";
+import { Card } from "../../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
@@ -242,253 +247,228 @@ function CadAvaliacao() {
 
    return (
       <div className="container-fluid">
+         <BackBoxUI />
          {/* Header Section */}
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
-            <div className="d-flex justify-content-between align-items-center">
-               <button onClick={() => navigate(-1)} className="btn btn-outline-danger rounded-pill px-4">
-                  <i className="bi bi-arrow-left me-2"></i>
-                  Voltar
-               </button>
-
-               <button className="btn btn-outline-danger rounded-pill px-4" onClick={clear}>
-                  <i className="bi bi-trash me-2"></i>
+         <Card className="px-4">
+            <CardBody>
+               <Button variant="outline" onClick={clear}>
+                  <Trash />
                   Limpar
-               </button>
-            </div>
-         </div>
+               </Button>
+            </CardBody>
+         </Card>
 
-         <div className="card">
-            <form onKeyDown={preventForm} className="card-body shadow-lg rounded-4" onSubmit={handleSubmit(confirma)}>
-               <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
+         <Card className="mt-3">
+            <CardBody className="p-4">
+               <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)}>
+                  <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
 
-               <div className="row g-3">
-                  <div className="col-md-3">
-                     <label className="form-label">Aluno</label>
-                     <input
-                        value={`${calcularIdade(aluno?.data_nascimento_aluno)} - Anos / ${aluno?.nome_aluno}`}
-                        disabled
-                        className="form-control"
-                     />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Protocolo *</label>
-                     <select
-                        id="select-protocol"
-                        {...register("cod_protocolo", { required: "Protocolo necessário!" })}
-                        className="form-control"
-                     >
-                        <option value="">Selecione um protocolo</option>
-                        {Object.keys(protocolos).map((categoria) => (
-                           <optgroup key={categoria} label={categoria}>
-                              {Array.isArray(protocolos[categoria]) &&
-                                 protocolos[categoria]?.map((protocolo) => (
-                                    <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
-                                       {protocolo.nome_protocolo}
-                                    </option>
-                                 ))}
-                           </optgroup>
-                        ))}
-                     </select>
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">
-                        Tipo *
-                        <OverlayTrigger placement="bottom" overlay={tooltip}>
-                           <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
-                        </OverlayTrigger>
-                     </label>
-                     <select
-                        id="select-type"
-                        disabled={!protocolo}
-                        {...register("tipo_avaliacao", { required: "Tipo da avaliação necessário!" })}
-                        className="form-control"
-                     >
-                        <option value="">Selecione um tipo</option>
-                        <option value="simples">Simples</option>
-                        <option value="completo">Completo</option>
-                     </select>
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Data da Avaliação *</label>
-                     <input
-                        id="date"
-                        {...register("data_avaliacao", { required: "A data é obrigatória" })}
-                        type="date"
-                        className="form-control"
-                        defaultValue={new Date().toISOString().split("T")[0]}
-                     />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Peso (kg) *</label>
-                     <input
-                        id="weight"
-                        {...register("peso", { required: "O peso é obrigatório" })}
-                        type="number"
-                        step="0.01"
-                        className="form-control"
-                     />
-                  </div>
-
-                  <div className="col-md-3">
-                     <label className="form-label fw-bold">Altura (m) *</label>
-                     <div className="input-group">
+                  <div className="row g-3">
+                     <div className="col-md-3">
+                        <label className="form-label">Aluno</label>
                         <input
-                           id="height"
-                           {...register("altura", { required: "A altura é obrigatória" })}
+                           value={`${calcularIdade(aluno?.data_nascimento_aluno)} - Anos / ${aluno?.nome_aluno}`}
+                           disabled
+                           className="form-control"
+                        />
+                     </div>
+
+                     <div className="col-md-3">
+                        <label className="form-label fw-bold">Protocolo *</label>
+                        <select
+                           id="select-protocol"
+                           {...register("cod_protocolo", { required: "Protocolo necessário!" })}
+                           className="form-control"
+                        >
+                           <option value="">Selecione um protocolo</option>
+                           {Object.keys(protocolos).map((categoria) => (
+                              <optgroup key={categoria} label={categoria}>
+                                 {Array.isArray(protocolos[categoria]) &&
+                                    protocolos[categoria]?.map((protocolo) => (
+                                       <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
+                                          {protocolo.nome_protocolo}
+                                       </option>
+                                    ))}
+                              </optgroup>
+                           ))}
+                        </select>
+                     </div>
+
+                     <div className="col-md-3">
+                        <label className="form-label fw-bold">
+                           Tipo *
+                           <OverlayTrigger placement="bottom" overlay={tooltip}>
+                              <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
+                           </OverlayTrigger>
+                        </label>
+                        <select
+                           id="select-type"
+                           disabled={!protocolo}
+                           {...register("tipo_avaliacao", { required: "Tipo da avaliação necessário!" })}
+                           className="form-control"
+                        >
+                           <option value="">Selecione um tipo</option>
+                           <option value="simples">Simples</option>
+                           <option value="completo">Completo</option>
+                        </select>
+                     </div>
+
+                     <div className="col-md-3">
+                        <label className="form-label fw-bold">Data da Avaliação *</label>
+                        <input
+                           id="date"
+                           {...register("data_avaliacao", { required: "A data é obrigatória" })}
+                           type="date"
+                           className="form-control"
+                           defaultValue={new Date().toISOString().split("T")[0]}
+                        />
+                     </div>
+
+                     <div className="col-md-3">
+                        <label className="form-label fw-bold">Peso (kg) *</label>
+                        <input
+                           id="weight"
+                           {...register("peso", { required: "O peso é obrigatório" })}
                            type="number"
                            step="0.01"
                            className="form-control"
                         />
-                        {!!ultimaAvaliacao && (
-                           <button className="btn btn-outline-dark" onClick={(e) => bringLast(e, "altura")}>
-                              <i className="bi bi-arrow-counterclockwise" />
-                           </button>
-                        )}
+                     </div>
+
+                     <div className="col-md-3">
+                        <label className="form-label fw-bold">Altura (m) *</label>
+                        <div className="input-group">
+                           <input
+                              id="height"
+                              {...register("altura", { required: "A altura é obrigatória" })}
+                              type="number"
+                              step="0.01"
+                              className="form-control"
+                           />
+                           {!!ultimaAvaliacao && (
+                              <button className="btn btn-outline-dark" onClick={(e) => bringLast(e, "altura")}>
+                                 <i className="bi bi-arrow-counterclockwise" />
+                              </button>
+                           )}
+                        </div>
                      </div>
                   </div>
-               </div>
 
-               <div className="row g-3 m-1">
-                  <div className="form-check">
-                     <input
-                        value={ocultarCampos}
-                        onChange={(e) => setOcultarCampos(e.target.checked)}
-                        type="checkbox"
-                        className="form-check-input"
-                        id="ocultarCampos"
-                     />
-                     <label className="form-check-label" htmlFor="ocultarCampos">
-                        Ocultar campos não obrigatórios
-                     </label>
-                     <OverlayTrigger placement="bottom" overlay={tooltipCampos}>
-                        <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
-                     </OverlayTrigger>
+                  <div className="row g-3 m-1">
+                     <div className="form-check">
+                        <input
+                           value={ocultarCampos}
+                           onChange={(e) => setOcultarCampos(e.target.checked)}
+                           type="checkbox"
+                           className="form-check-input"
+                           id="ocultarCampos"
+                        />
+                        <label className="form-check-label" htmlFor="ocultarCampos">
+                           Ocultar campos não obrigatórios
+                        </label>
+                        <OverlayTrigger placement="bottom" overlay={tooltipCampos}>
+                           <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
+                        </OverlayTrigger>
+                     </div>
                   </div>
-               </div>
 
-               <h5 className="card-title fw-semibold mb-4 mt-4">Avaliação</h5>
-               <h6 className={`text-danger ${protocolo ? "d-none" : ""}`}>Selecione um protocolo</h6>
+                  <h5 className="card-title fw-semibold mb-4 mt-4">Avaliação</h5>
+                  <h6 className={`text-danger ${protocolo ? "d-none" : ""}`}>Selecione um protocolo</h6>
 
-               <Tabs activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)} className="mb-3">
-                  <Tab
-                     eventKey="bioimpedancia"
-                     title={
-                        <>
-                           <i className="bi bi-activity me-2"></i>Bioimpedância
-                        </>
-                     }
+                  <Tabs
+                     value={activeTab}
+                     activeKey={activeTab}
+                     onValueChange={(tab) => setActiveTab(tab)}
+                     className="mb-3"
                   >
-                     <Bioimpedancia
-                        ocultarCampos={ocultarCampos}
-                        register={register}
-                        startSpeechRecognition={startSpeechRecognition}
-                        tipoAvaliacao={tipoAvaliacao}
-                     />
-                  </Tab>
+                     <TabsList>
+                        <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
+                        <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
+                        <TabsTrigger value="dobras">Dobras cutâneas</TabsTrigger>
+                        <TabsTrigger value="perimetros">Perímetros</TabsTrigger>
+                        <TabsTrigger value="imagens">Imagens</TabsTrigger>
+                     </TabsList>
 
-                  <Tab
-                     key="diametros"
-                     eventKey="diametros"
-                     title={
-                        <>
-                           <i className="bi bi-arrows-angle-contract me-2"></i>Diâmetros
-                        </>
-                     }
-                  >
-                     <Diametros
-                        ocultarCampos={ocultarCampos}
-                        register={register}
-                        startSpeechRecognition={startSpeechRecognition}
-                        tipoAvaliacao={tipoAvaliacao}
-                        bringLast={bringLast}
-                        showBringLast={!!ultimaAvaliacao}
-                     />
-                  </Tab>
+                     <TabsContent value="bioimpedancia" className="mt-3">
+                        <Bioimpedancia
+                           ocultarCampos={ocultarCampos}
+                           register={register}
+                           startSpeechRecognition={startSpeechRecognition}
+                           tipoAvaliacao={tipoAvaliacao}
+                        />
+                     </TabsContent>
 
-                  <Tab
-                     eventKey="dobras"
-                     title={
-                        <>
-                           <i className="bi bi-arrows-collapse me-2"></i>Dobras cutâneas
-                        </>
-                     }
-                  >
-                     <Dobras
-                        getValues={getValues}
-                        metodoDobras={metodoDobras}
-                        ocultarCampos={ocultarCampos}
-                        protocolo={protocolo}
-                        register={register}
-                        setMetodoDobras={setMetodoDobras}
-                        setValue={setValue}
-                        startSpeechRecognition={startSpeechRecognition}
-                        tipoAvaliacao={tipoAvaliacao}
-                        watch={watch}
-                     />
-                  </Tab>
+                     <TabsContent value="diametros" className="mt-3">
+                        <Diametros
+                           ocultarCampos={ocultarCampos}
+                           register={register}
+                           startSpeechRecognition={startSpeechRecognition}
+                           tipoAvaliacao={tipoAvaliacao}
+                           bringLast={bringLast}
+                           showBringLast={!!ultimaAvaliacao}
+                        />
+                     </TabsContent>
 
-                  <Tab
-                     eventKey="perimetros"
-                     title={
-                        <>
-                           <i className="bi bi-rulers me-2"></i>Perímetros
-                        </>
-                     }
-                  >
-                     <Perimetros
-                        getValues={getValues}
-                        isEditingEnabled={false}
-                        metodoPerimetro={metodoPerimetro}
-                        ocultarCampos={ocultarCampos}
-                        register={register}
-                        setMetodoPerimetro={setMetodoPerimetro}
-                        setValue={setValue}
-                        startSpeechRecognition={startSpeechRecognition}
-                        tipoAvaliacao={tipoAvaliacao}
-                        watch={watch}
-                     />
-                  </Tab>
+                     <TabsContent value="dobras" className="mt-3">
+                        <Dobras
+                           getValues={getValues}
+                           metodoDobras={metodoDobras}
+                           ocultarCampos={ocultarCampos}
+                           protocolo={protocolo}
+                           register={register}
+                           setMetodoDobras={setMetodoDobras}
+                           setValue={setValue}
+                           startSpeechRecognition={startSpeechRecognition}
+                           tipoAvaliacao={tipoAvaliacao}
+                           watch={watch}
+                        />
+                     </TabsContent>
 
-                  <Tab
-                     eventKey="imagens"
-                     title={
-                        <>
-                           <i className="bi bi-camera me-2"></i>Imagens
-                        </>
-                     }
-                  >
-                     <Imagens
-                        capturedImages={capturedImages}
-                        setCapturedImages={setCapturedImages}
-                        imageDescriptions={imageDescriptions}
-                        setImageDescriptions={setImageDescriptions}
-                        deletedImages={deletedImages}
-                        setDeletedImages={setDeletedImages}
-                     />
-                  </Tab>
-               </Tabs>
+                     <TabsContent value="perimetros" className="mt-3">
+                        <Perimetros
+                           getValues={getValues}
+                           isEditingEnabled={false}
+                           metodoPerimetro={metodoPerimetro}
+                           ocultarCampos={ocultarCampos}
+                           register={register}
+                           setMetodoPerimetro={setMetodoPerimetro}
+                           setValue={setValue}
+                           startSpeechRecognition={startSpeechRecognition}
+                           tipoAvaliacao={tipoAvaliacao}
+                           watch={watch}
+                        />
+                     </TabsContent>
 
-               <div className="d-flex align-items-center mt-4 gap-3">
-                  <OverlayTrigger placement="top" overlay={tooltipErros}>
-                     <i
-                        className={`bi bi-exclamation-octagon ms-2 text-danger ${
-                           Object.keys(errors).length > 0 ? "" : "d-none"
-                        }`}
-                        style={{ cursor: "pointer" }}
-                     ></i>
-                  </OverlayTrigger>
+                     <TabsContent value="imagens" className="mt-3">
+                        <Imagens
+                           capturedImages={capturedImages}
+                           setCapturedImages={setCapturedImages}
+                           imageDescriptions={imageDescriptions}
+                           setImageDescriptions={setImageDescriptions}
+                           deletedImages={deletedImages}
+                           setDeletedImages={setDeletedImages}
+                        />
+                     </TabsContent>
+                  </Tabs>
 
-                  <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success">
-                     <i className="bi bi-check me-2"></i>
-                     Confirmar
-                  </button>
-               </div>
-            </form>
-         </div>
+                  <div className="d-flex align-items-center mt-4 gap-3">
+                     <OverlayTrigger placement="top" overlay={tooltipErros}>
+                        <i
+                           className={`bi bi-exclamation-octagon ms-2 text-danger ${
+                              Object.keys(errors).length > 0 ? "" : "d-none"
+                           }`}
+                           style={{ cursor: "pointer" }}
+                        ></i>
+                     </OverlayTrigger>
+
+                     <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success">
+                        <i className="bi bi-check me-2"></i>
+                        Confirmar
+                     </button>
+                  </div>
+               </form>
+            </CardBody>
+         </Card>
       </div>
    );
 }

@@ -17554,14 +17554,14 @@ textarea.form-control-lg{
     word-wrap:break-word!important;
     word-break:break-word!important
 }
-.text-primary{
+/* .text-primary{
     --bs-text-opacity:1;
     color:rgba(var(--bs-primary-rgb),var(--bs-text-opacity))!important
-}
-.text-secondary{
+} */
+/* .text-secondary{
     --bs-text-opacity:1;
     color:rgba(var(--bs-secondary-rgb),var(--bs-text-opacity))!important
-}
+} */
 .text-success{
     --bs-text-opacity:1;
     color:rgba(var(--bs-success-rgb),var(--bs-text-opacity))!important

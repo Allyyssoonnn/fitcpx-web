@@ -140,6 +140,7 @@ function CadPlano() {
                      errors={errors}
                      fields={[
                         {
+                           separator: true,
                            cols: 4,
                            title: "Informações",
                            fields: [
@@ -164,6 +165,26 @@ function CadPlano() {
                                  label: "Valor Adesão",
                                  fieldName: "valor_adesao",
                                  type: "currency",
+                              },
+                           ],
+                        },
+                        {
+                           cols: 4,
+                           fields: [
+                              {
+                                 label: "Multa Compensatória",
+                                 fieldName: "multa_compensatoria",
+                                 inputType: "number",
+                              },
+                              {
+                                 label: "Multa Moratória",
+                                 fieldName: "multa_moratoria",
+                                 inputType: "number",
+                              },
+                              {
+                                 label: "Juros ao mês",
+                                 fieldName: "juros_atraso",
+                                 inputType: "number",
                               },
                            ],
                         },

@@ -260,6 +260,13 @@ export const formatarCNPJ = (cnpj) => {
    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
 };
 
+export const formatarCEP = (cep) => {
+   if (!cep) return "-";
+   const digits = cep.replace(/\D/g, ""); // Remove tudo que não for dígito
+   if (digits.length !== 8) return digits; // CEP tem sempre 8 dígitos
+   return digits.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+};
+
 export const camposFiltrosExercicios = {
    grupoPrincipal: ["cod_grupo_exercicio_1", "cod_grupo_exercicio_2", "cod_grupo_exercicio_3"],
    grupoSecundario: [

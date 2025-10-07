@@ -1,5 +1,5 @@
 import JoditEditor from "jodit-react";
-import { Check } from "lucide-react";
+import { Check, Percent } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,11 +15,14 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Field, FieldLabel } from "../../components/ui/field";
 import { Input } from "../../components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/ui/input-group";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Separator } from "../../components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 import { stateEmpresa, stateUsuario } from "../../states/states";
-import { adicionarMesData, dividirParcelas, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
+import { adicionarMesData, dividirParcelas, formatarCEP, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
+import { convertNumberToTextWithDecimals } from "../../utils/convertNumberToText";
 
 function ContratacaoPlano() {
    const [usuario] = useRecoilState(stateUsuario);
@@ -150,7 +153,16 @@ function ContratacaoPlano() {
             preencherContrato(selectContrato.contrato, aluno, empresa, plano?.modalidades, plano, pagamentoInicial)
          );
       }
-   }, [selectContrato, aluno, empresa, plano?.modalidades]);
+   }, [
+      selectContrato,
+      aluno,
+      empresa,
+      plano?.modalidades,
+      plano?.duracao_plano,
+      plano?.multa_moratoria,
+      plano?.multa_compensatoria,
+      plano?.juros_atraso,
+   ]);
 
    function confirmar(e) {
       e.preventDefault();
@@ -398,11 +410,7 @@ function ContratacaoPlano() {
                   {montandoPlano && (
                      <Field className="w-[50%]">
                         <FieldLabel>Duração plano</FieldLabel>
-                        <Select
-                           onValueChange={(v) =>
-                              updatePlano("duracao_plano", planos.find((e) => e.cod_plano == v) || null)
-                           }
-                        >
+                        <Select onValueChange={(v) => updatePlano("duracao_plano", v)}>
                            <SelectTrigger>
                               <SelectValue placeholder="Selecione a duração" />
                            </SelectTrigger>
@@ -426,6 +434,62 @@ function ContratacaoPlano() {
                         onChange={(e) => setPagamentoInicial(e.target.value)}
                      />
                   </Field>
+
+                  <Separator className="my-3" />
+
+                  {montandoPlano && (
+                     <>
+                        <CardTitle className="text-destructive">Cancelamento e Multa</CardTitle>
+                        {/* Max 10% */}
+                        <Field className="w-[50%] mt-3">
+                           <FieldLabel>Multa Compensatória</FieldLabel>
+
+                           <InputGroup>
+                              <InputGroupAddon>
+                                 <Percent />
+                              </InputGroupAddon>
+
+                              <InputGroupInput
+                                 onChange={(e) => updatePlano("multa_compensatoria", e.target.value)}
+                                 type="number"
+                                 defaultValue={0}
+                              />
+                           </InputGroup>
+                        </Field>
+
+                        {/* Max 2% */}
+                        <Field className="w-[50%] mt-3">
+                           <FieldLabel>Multa Moratória</FieldLabel>
+                           <InputGroup>
+                              <InputGroupAddon>
+                                 <Percent />
+                              </InputGroupAddon>
+
+                              <InputGroupInput
+                                 onChange={(e) => updatePlano("multa_moratoria", e.target.value)}
+                                 type="number"
+                                 defaultValue={0}
+                              />
+                           </InputGroup>
+                        </Field>
+
+                        <Field className="w-[50%] mt-3">
+                           <FieldLabel>Juros ao mês</FieldLabel>
+
+                           <InputGroup>
+                              <InputGroupAddon>
+                                 <Percent />
+                              </InputGroupAddon>
+
+                              <InputGroupInput
+                                 onChange={(e) => updatePlano("juros_atraso", e.target.value)}
+                                 type="number"
+                                 defaultValue={0}
+                              />
+                           </InputGroup>
+                        </Field>
+                     </>
+                  )}
                </CardContent>
             </Card>
 
@@ -545,30 +609,54 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    const desc = modalidades && modalidades.length > 0 ? modalidades.map((m) => m.nome_modalidade).join(", ") : "";
    var preenchido = decodeHtml(contrato);
 
+   preenchido = preenchido.replaceAll(/<tempo_contrato>/g, plano?.duracao_plano || "Não definido");
+   preenchido = preenchido.replaceAll(
+      /<valor_total_plano>/g,
+      plano?.valor_plano ? convertNumberToTextWithDecimals(plano.valor_plano, "pt") : "Não definido"
+   );
+   preenchido = preenchido.replaceAll(
+      /<valor_mensal_unitario>/g,
+      parcelas[0] ? convertNumberToTextWithDecimals(parcelas[0], "pt") : "Não definido"
+   );
+
+   preenchido = preenchido.replaceAll(
+      /<multa_percentagem>/g,
+      plano?.multa_moratoria ? `${plano.multa_moratoria}%` : "0%"
+   );
+   preenchido = preenchido.replaceAll(/<juros_percentagem>/g, plano?.juros_atraso ? `${plano.juros_atraso}%` : "0%");
+   preenchido = preenchido.replaceAll(
+      /<percentagem_multa>/g,
+      plano?.multa_compensatoria ? `${plano.multa_compensatoria}%` : "0%"
+   );
+   //multa_percentagem
+   //juros_percentagem
+   //percentagem_multa
+
    // Substituições de variáveis do aluno
-   preenchido = preenchido.replace(/<nome_aluno>/g, aluno.nome_aluno || "");
-   preenchido = preenchido.replace(/<cpf_aluno>/g, aluno.cpf_aluno || "");
-   preenchido = preenchido.replace(/<rg_aluno>/g, aluno.rg_aluno || "");
-   preenchido = preenchido.replace(/<email_aluno>/g, aluno.email_aluno || "");
-   preenchido = preenchido.replace(/<endereco_aluno>/g, aluno.endereco_aluno || "");
-   preenchido = preenchido.replace(/<cidade_aluno>/g, aluno.cidade_aluno || "");
-   preenchido = preenchido.replace(/<estado_aluno>/g, aluno.estado_aluno || "");
-   preenchido = preenchido.replace(/<numero_aluno>/g, aluno.numero_aluno || "");
+   preenchido = preenchido.replaceAll(/<nome_aluno>/g, aluno.nome_aluno || "");
+   preenchido = preenchido.replaceAll(/<cpf_aluno>/g, aluno?.cpf_aluno ? formatarCPF(aluno.cpf_aluno) : "");
+   preenchido = preenchido.replaceAll(/<rg_aluno>/g, aluno.rg_aluno || "");
+   preenchido = preenchido.replaceAll(/<email_aluno>/g, aluno.email_aluno || "");
+   preenchido = preenchido.replaceAll(/<endereco_aluno>/g, aluno.endereco_aluno || " - ");
+   preenchido = preenchido.replaceAll(/<cidade_aluno>/g, aluno.cidade_aluno || " - ");
+   preenchido = preenchido.replaceAll(/<estado_aluno>/g, aluno.estado_aluno || " - ");
+   preenchido = preenchido.replaceAll(/<numero_aluno>/g, aluno.numero_aluno || " - ");
+   preenchido = preenchido.replaceAll(/<cep_aluno>/g, empresa?.cep_aluno ? formatarCEP(aluno?.cep_aluno) : " - ");
 
    // Substituições de variáveis da empresa
-   preenchido = preenchido.replace(/<nome_empresa>/g, empresa.nome_empresa || "");
-   preenchido = preenchido.replace(/<cnpj_empresa>/g, empresa.doc_empresa || "");
-   preenchido = preenchido.replace(/<endereco_empresa>/g, empresa.endereco_empresa || "");
-   preenchido = preenchido.replace(/<cidade_empresa>/g, empresa.cidade_empresa || "");
-   preenchido = preenchido.replace(/<estado_empresa>/g, empresa.estado_empresa || "");
-   preenchido = preenchido.replace(/<numero_empresa>/g, empresa.numero_empresa || "");
-   preenchido = preenchido.replace(/<bairro_empresa>/g, empresa.bairro_empresa || "");
-   preenchido = preenchido.replace(/<cep_empresa>/g, empresa.cep_empresa || "");
-   preenchido = preenchido.replace(/<descricao_empresa>/g, desc);
+   preenchido = preenchido.replaceAll(/<nome_empresa>/g, empresa.nome_empresa || "");
+   preenchido = preenchido.replaceAll(/<cnpj_empresa>/g, empresa?.doc_empresa ? formatarCNPJ(empresa.doc_empresa) : "");
+   preenchido = preenchido.replaceAll(/<endereco_empresa>/g, empresa.endereco_empresa || " - ");
+   preenchido = preenchido.replaceAll(/<cidade_empresa>/g, empresa.cidade_empresa || " - ");
+   preenchido = preenchido.replaceAll(/<estado_empresa>/g, empresa.estado_empresa || " - ");
+   preenchido = preenchido.replaceAll(/<numero_empresa>/g, empresa.numero_empresa || " - ");
+   preenchido = preenchido.replaceAll(/<bairro_empresa>/g, empresa.bairro_empresa || " - ");
+   preenchido = preenchido.replaceAll(/<cep_empresa>/g, empresa?.cep_empresa ? formatarCEP(empresa?.cep_empresa) : "");
+   preenchido = preenchido.replaceAll(/<modalidade>/g, desc);
 
    // Substituições de variáveis de valores
-   preenchido = preenchido.replace(/<valor_total>/g, formatarMoeda(plano?.valor_plano ?? 0));
-   preenchido = preenchido.replace(/<valor_mensal>/g, descMensalidades);
+   preenchido = preenchido.replaceAll(/<valor_total>/g, formatarMoeda(plano?.valor_plano ?? 0));
+   preenchido = preenchido.replaceAll(/<valor_mensal>/g, descMensalidades);
 
    return preenchido;
 }

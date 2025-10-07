@@ -3,13 +3,17 @@ import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import printJS from "print-js";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudent } from "../../api/student";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { stateEmpresa } from "../../states/states";
 
+import { Button } from "../../components/ui/button";
+import { Card, CardHeader, CardTitle } from "../../components/ui/card";
 import {
    calculaKGMCMMeta,
    calculaKGMusculoMeta,
@@ -88,14 +92,13 @@ function Avaliacao() {
 
    return (
       <div className="container-fluid">
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
-            <div className="d-flex justify-content-between align-items-center">
-               <button onClick={() => navigate(-1)} className="btn btn-danger me-3">
-                  <i className="bi bi-arrow-left-circle me-2"></i> Voltar
-               </button>
+         <BackBoxUI />
 
-               <div className="d-flex gap-2 items-center">
-                  <button
+         <Card>
+            <CardBody>
+               <div className="d-flex gap-2 items-center mx-3">
+                  <Button
+                     variant="outline"
                      onClick={() =>
                         navigate("/cadavaliacao", {
                            state: {
@@ -104,36 +107,35 @@ function Avaliacao() {
                            },
                         })
                      }
-                     className="btn btn-outline-warning rounded-pill px-4"
                   >
                      <i className="bi bi-pen"></i>
                      <span className="d-none d-md-inline-block ms-2">Editar</span>
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
+                     variant="outline"
                      onClick={() => navigate("/compareavaliacao", { state: { avaliacao, aluno } })}
-                     className="btn btn-outline-danger rounded-pill px-4"
                   >
                      <i className="bi bi-graph-up-arrow"></i>
                      <span className="d-none d-md-inline-block ms-2">Comparar</span>
-                  </button>
+                  </Button>
 
-                  <button onClick={shareResult} className="btn btn-outline-primary">
+                  <Button variant="outline" onClick={shareResult}>
                      <i className="bi bi-share"></i>
                      <span className="d-none d-md-inline-block ms-2">Exportar</span>
-                  </button>
+                  </Button>
                </div>
-            </div>
-         </div>
+            </CardBody>
+         </Card>
 
-         <div className="card shadow-lg rounded-4">
-            <div className="card-body px-0 px-sm-4" id="printable-area">
-               <div className="card">
-                  <div className="card-header">
+         <Card className="mt-3 px-4">
+            <CardBody id="printable-area">
+               <Card>
+                  <CardHeader>
                      <h5>Resultado da Avaliação</h5>
-                  </div>
+                  </CardHeader>
 
-                  <div className="card-body row">
+                  <CardBody className="row px-3">
                      {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
                      <div className="col-6">
                         <p>
@@ -173,17 +175,13 @@ function Avaliacao() {
                            <strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}
                         </p>
                      </div>
-                  </div>
-               </div>
+                  </CardBody>
+               </Card>
 
-               <div className="row g-3">
-                  <div className="col-md-6">
-                     <ComposicaoCorporal avaliacao={avaliacao} result={result} />
-                  </div>
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+                  <ComposicaoCorporal avaliacao={avaliacao} result={result} />
 
-                  <div className="col-md-6">
-                     <SimetriaMembro avaliacao={avaliacao} />
-                  </div>
+                  <SimetriaMembro avaliacao={avaliacao} />
                </div>
 
                <Accordion type="single" collapsible className="mx-3">
@@ -194,8 +192,8 @@ function Avaliacao() {
                   <Diametro avaliacao={avaliacao} />
                   <Imagens avaliacao={avaliacao} />
                </Accordion>
-            </div>
-         </div>
+            </CardBody>
+         </Card>
       </div>
    );
 }
@@ -454,12 +452,12 @@ function AreaMagraGorda({ result }) {
 
 function ComposicaoCorporal({ avaliacao, result }) {
    return (
-      <div className="card table-responsive">
-         <div className="card-header">
-            <h4>Composição corporal</h4>
-         </div>
+      <Card>
+         <CardHeader>
+            <CardTitle>Composição corporal</CardTitle>
+         </CardHeader>
 
-         <div className="card-body">
+         <CardBody className="px-3">
             <div style={{ height: "400px" }}>
                <ResponsivePie
                   enableArcLinkLabels={window.innerWidth < 900 ? false : true}
@@ -542,58 +540,58 @@ function ComposicaoCorporal({ avaliacao, result }) {
                />
             </div>
 
-            <table id="basic-datatables" className="table table-sm table-striped table-hover">
-               <thead>
-                  <tr>
-                     <th>Composição</th>
-                  </tr>
-               </thead>
+            <Table>
+               <TableHeader>
+                  <TableRow>
+                     <TableCell>Composição</TableCell>
+                  </TableRow>
+               </TableHeader>
 
-               <tbody>
-                  <tr>
-                     <th>Peso</th>
-                     <th>-</th>
-                     <th>{avaliacao.peso} KG</th>
-                  </tr>
-                  <tr>
-                     <th>Gordura</th>
-                     <th>{result?.compositionPercentage?.gordura} %</th>
-                     <th>{result?.compositionWeight?.gordura} KG</th>
-                  </tr>
+               <TableBody>
+                  <TableRow>
+                     <TableCell>Peso</TableCell>
+                     <TableCell>-</TableCell>
+                     <TableCell>{avaliacao.peso} KG</TableCell>
+                  </TableRow>
+                  <TableRow>
+                     <TableCell>Gordura</TableCell>
+                     <TableCell>{result?.compositionPercentage?.gordura} %</TableCell>
+                     <TableCell>{result?.compositionWeight?.gordura} KG</TableCell>
+                  </TableRow>
                   {avaliacao.tipo_avaliacao === "completo" ? (
                      <>
-                        <tr>
-                           <th>Musc.</th>
-                           <th>{result?.compositionPercentage?.massa_muscular} %</th>
-                           <th>{result?.compositionWeight?.massa_muscular} KG</th>
-                        </tr>
-                        <tr>
-                           <th>Óssea.</th>
-                           <th>{result?.compositionPercentage?.massa_ossea} %</th>
-                           <th>{result?.compositionWeight?.massa_ossea} KG</th>
-                        </tr>
-                        <tr>
-                           <th>Resi.</th>
-                           <th>{result?.compositionPercentage?.massa_residual} %</th>
-                           <th>{result?.compositionWeight?.massa_residual} KG</th>
-                        </tr>
-                        <tr>
-                           <th>MCM</th>
-                           <th>{result?.compositionPercentage?.mcm} %</th>
-                           <th>{result?.compositionWeight?.mcm} KG</th>
-                        </tr>
+                        <TableRow>
+                           <TableCell>Musc.</TableCell>
+                           <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
+                        </TableRow>
+                        <TableRow>
+                           <TableCell>Óssea.</TableCell>
+                           <TableCell>{result?.compositionPercentage?.massa_ossea} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.massa_ossea} KG</TableCell>
+                        </TableRow>
+                        <TableRow>
+                           <TableCell>Resi.</TableCell>
+                           <TableCell>{result?.compositionPercentage?.massa_residual} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.massa_residual} KG</TableCell>
+                        </TableRow>
+                        <TableRow>
+                           <TableCell>MCM</TableCell>
+                           <TableCell>{result?.compositionPercentage?.mcm} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.mcm} KG</TableCell>
+                        </TableRow>
                      </>
                   ) : (
-                     <tr>
-                        <th>Massa Magra</th>
-                        <th>{result?.compositionPercentage?.massa_magra} %</th>
-                        <th>{result?.compositionWeight?.massa_magra} KG</th>
-                     </tr>
+                     <TableRow>
+                        <TableCell>Massa Magra</TableCell>
+                        <TableCell>{result?.compositionPercentage?.massa_magra} %</TableCell>
+                        <TableCell>{result?.compositionWeight?.massa_magra} KG</TableCell>
+                     </TableRow>
                   )}
-               </tbody>
-            </table>
-         </div>
-      </div>
+               </TableBody>
+            </Table>
+         </CardBody>
+      </Card>
    );
 }
 
@@ -632,15 +630,15 @@ function SimetriaMembro({ avaliacao }) {
    );
 
    return (
-      <div className="card table-responsive">
-         <div className="card-header d-flex justify-between">
-            <h4>Simetria dos membros (cm)</h4>
+      <Card>
+         <CardHeader>
+            <CardTitle>Simetria dos membros (cm)</CardTitle>
             <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
                <i className="bi bi-question-circle text-danger ms-2"></i>
             </OverlayTrigger>
-         </div>
+         </CardHeader>
 
-         <div className="card-body">
+         <CardBody className="px-3">
             <div style={{ height: "400px" }}>
                <ResponsiveBar
                   data={data}
@@ -683,63 +681,65 @@ function SimetriaMembro({ avaliacao }) {
                />
             </div>
 
-            <table id="basic-datatables" className="table table-sm table-striped table-hover">
-               <thead>
-                  <tr>
-                     <th>Membro</th>
-                     <th>Direito</th>
-                     <th>Diferença</th>
-                     <th>Esquerdo</th>
-                  </tr>
-               </thead>
+            <Table>
+               <TableHeader>
+                  <TableRow>
+                     <TableCell>Membro</TableCell>
+                     <TableCell>Direito</TableCell>
+                     <TableCell>Diferença</TableCell>
+                     <TableCell>Esquerdo</TableCell>
+                  </TableRow>
+               </TableHeader>
 
-               <tbody>
-                  <tr>
-                     <th>Braço</th>
-                     <td>{avaliacao.braco_relaxado_direito || "-"}</td>
-                     <th
+               <TableBody>
+                  <TableRow>
+                     <TableCell>Braço</TableCell>
+                     <TableCell>{avaliacao.braco_relaxado_direito || "-"}</TableCell>
+                     <TableCell
                         className={getDifferenceClass(
                            avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito
                         )}
                      >
                         {Math.abs(avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito).toFixed(2) ||
                            "-"}
-                     </th>
-                     <td>{avaliacao.braco_relaxado_esquerdo || "-"}</td>
-                  </tr>
-                  <tr>
-                     <th>Braço contraido</th>
-                     <td>{avaliacao.braco_contraido_direito || "-"}</td>
-                     <th
+                     </TableCell>
+                     <TableCell>{avaliacao.braco_relaxado_esquerdo || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                     <TableCell>Braço contraido</TableCell>
+                     <TableCell>{avaliacao.braco_contraido_direito || "-"}</TableCell>
+                     <TableCell
                         className={getDifferenceClass(
                            avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo
                         )}
                      >
                         {Math.abs(avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo).toFixed(2) ||
                            "-"}
-                     </th>
-                     <td>{avaliacao.braco_contraido_esquerdo || "-"}</td>
-                  </tr>
-                  <tr>
-                     <th>Antebraço</th>
-                     <td>{avaliacao.antebraco_direito || "-"}</td>
-                     <th className={getDifferenceClass(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo)}>
+                     </TableCell>
+                     <TableCell>{avaliacao.braco_contraido_esquerdo || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                     <TableCell>Antebraço</TableCell>
+                     <TableCell>{avaliacao.antebraco_direito || "-"}</TableCell>
+                     <TableCell
+                        className={getDifferenceClass(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo)}
+                     >
                         {Math.abs(avaliacao.antebraco_direito - avaliacao.antebraco_esquerdo).toFixed(2) || "-"}
-                     </th>
-                     <td>{avaliacao.antebraco_esquerdo || "-"}</td>
-                  </tr>
-                  <tr>
-                     <th>Coxa</th>
-                     <td>{avaliacao.coxa_direita || "-"}</td>
-                     <th className={getDifferenceClass(avaliacao.coxa_direita - avaliacao.coxa_esquerda)}>
+                     </TableCell>
+                     <TableCell>{avaliacao.antebraco_esquerdo || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                     <TableCell>Coxa</TableCell>
+                     <TableCell>{avaliacao.coxa_direita || "-"}</TableCell>
+                     <TableCell className={getDifferenceClass(avaliacao.coxa_direita - avaliacao.coxa_esquerda)}>
                         {Math.abs(avaliacao.coxa_direita - avaliacao.coxa_esquerda).toFixed(2) || "-"}
-                     </th>
-                     <td>{avaliacao.coxa_esquerda || "-"}</td>
-                  </tr>
-               </tbody>
-            </table>
-         </div>
-      </div>
+                     </TableCell>
+                     <TableCell>{avaliacao.coxa_esquerda || "-"}</TableCell>
+                  </TableRow>
+               </TableBody>
+            </Table>
+         </CardBody>
+      </Card>
    );
 }
 
