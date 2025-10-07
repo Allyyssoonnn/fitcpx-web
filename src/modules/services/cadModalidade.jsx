@@ -1,6 +1,7 @@
+import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
@@ -9,16 +10,28 @@ import { getUsers } from "../../api/user";
 import FitInputCurrency from "../../components/baseComponents/FitInputCurrency";
 import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { stateEmpresa, stateUsuario, useNotificacao } from "../../states/states";
 import { formatarMoeda } from "../../utils";
 
 function CadModalidade() {
+   const location = useLocation();
+   const modalidadeRecebido = location.state?.modalidade;
    const { nSuccess } = useNotificacao();
    const [empresa] = useRecoilState(stateEmpresa);
    const [usuario] = useRecoilState(stateUsuario);
-   const { register, handleSubmit, control, setValue } = useForm();
+   const form = useForm({ defaultValues: modalidadeRecebido });
+   const {
+      register,
+      handleSubmit,
+      control,
+      setValue,
+      formState: { errors },
+   } = form;
    const navigate = useNavigate();
-   const location = useLocation();
    const [modalVariacao, setModalVariacao] = useState(false);
    const [modalSubVariacao, setModalSubVariacao] = useState(false);
    const [modalComissao, setModalComissao] = useState(false);
@@ -27,7 +40,6 @@ function CadModalidade() {
    const [comissao, setComissao] = useState({});
 
    useEffect(() => {
-      const modalidadeRecebido = location.state?.modalidade;
       if (modalidadeRecebido?.variacoes) setVariacoes(modalidadeRecebido?.variacoes);
       if (modalidadeRecebido?.comissao_modalidade) setComissao(JSON.parse(modalidadeRecebido.comissao_modalidade));
       if (modalidadeRecebido) {
@@ -104,189 +116,142 @@ function CadModalidade() {
 
    return (
       <div className="container-fluid">
+         <BackBoxUI />
+
          <ModalVariacao show={modalVariacao} setShow={setModalVariacao} newVariacao={newVariacao} />
          <ModalSubVariacao show={modalSubVariacao} setShow={setModalSubVariacao} newDescont={newDescont} />
          <ModalComissao show={modalComissao} setShow={setModalComissao} newComissao={newComissao} />
 
-         <form onSubmit={handleSubmit(confirma)}>
-            <div className="card">
-               <div className="card-header">
-                  <button
-                     onClick={(e) => {
-                        e.stopPropagation();
-                        navigate("/modalidades");
-                     }}
-                     className="btn btn-danger mb-3 me-3"
-                  >
-                     <i className="bi bi-backspace me-2"></i>
-                     Voltar
-                  </button>
-               </div>
+         <FormProvider {...form}>
+            <form onSubmit={handleSubmit(confirma)}>
+               <Card>
+                  <CardContent>
+                     <FitFormUI
+                        errors={errors}
+                        fields={[
+                           {
+                              title: "Informações",
+                              fields: [
+                                 {
+                                    id: "name",
+                                    label: "Nome",
+                                    fieldName: "nome_modalidade",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    id: "value",
+                                    label: "Valor",
+                                    fieldName: "valor_modalidade",
+                                    type: "currency",
+                                 },
+                              ],
+                           },
+                           {
+                              separator: true,
+                              cols: 2,
+                              fields: [
+                                 {
+                                    label: "Descrição",
+                                    fieldName: "descricao_modalidade",
+                                 },
+                              ],
+                           },
+                        ]}
+                     />
+                  </CardContent>
+               </Card>
 
-               <div className="card-body">
-                  <h5 className="card-title fw-semibold mb-4">Informações</h5>
-
-                  <div className="row g-3">
-                     <div className="col-md-5">
-                        <label className="form-label fw-bold">Nome *</label>
-                        <input
-                           id="name"
-                           {...register("nome_modalidade", { required: "O nome é obrigatório" })}
-                           className="form-control"
-                        />
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Valor sessão</label>
-                        <FitInputCurrency id="value" name="valor_modalidade" control={control} />
-                     </div>
-                  </div>
-
-                  <div className="row g-3 mt-2">
-                     <div className="col-md-6">
-                        <label className="form-label fw-bold">Descrição *</label>
-                        <input id="description" {...register("descricao_modalidade")} className="form-control" />
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            <div className="card border border-success">
-               <div className="card-body">
-                  <div>
-                     <h5 className="card-title fw-semibold">Comissão</h5>
-                     <h5 className="card-subtitle fw-semibold">Selecione quem recebe por essa modalidade</h5>
-                     <h5 className="card-subtitle fs-2 mb-4">
+               <Card className="mt-3">
+                  <CardHeader>
+                     <CardTitle>Comissão</CardTitle>
+                     <CardDescription>Selecione quem recebe por essa modalidade</CardDescription>
+                     <CardDescription>
                         (Na confirmação do pagamento referente a modalidade é feito o repasse automaticamente)
-                     </h5>
-                  </div>
+                     </CardDescription>
+                  </CardHeader>
 
-                  <button className="btn btn-outline-success" onClick={addComissao}>
-                     Adicionar
-                  </button>
+                  <CardContent>
+                     <Button className="mb-3" variant="outline" onClick={addComissao}>
+                        <PlusCircle />
+                        Adicionar
+                     </Button>
 
-                  <div className="table-responsive">
-                     <table className="table table-striped">
-                        <thead>
-                           <tr>
-                              <th>Nome</th>
-                              <th>Porcentagem</th>
-                           </tr>
-                        </thead>
-
-                        <tbody>
-                           <tr>
-                              <td>{empresa?.nome_empresa}</td>
-                              <td>{100 - (comissao?.porcentagem_usuario || 0)}%</td>
-                           </tr>
-                           {comissao?.cod_usuario && (
+                     <div className="table-responsive">
+                        <table className="table table-striped">
+                           <thead>
                               <tr>
-                                 <td>{comissao.nome_usuario}</td>
-                                 <td>{comissao.porcentagem_usuario}%</td>
-                                 <td>
-                                    <button
-                                       className="btn btn-sm btn-outline-danger ms-2"
-                                       onClick={(e) => removeComissao(e)}
-                                    >
-                                       <i className="bi bi-trash" />
-                                    </button>
-                                 </td>
+                                 <th>Nome</th>
+                                 <th>Porcentagem</th>
                               </tr>
-                           )}
-                        </tbody>
-                     </table>
-                  </div>
+                           </thead>
 
-                  <p className="text-danger fs-2">[Atenção] - Mudanças em quem recebe afetarão contratos vigentes</p>
-               </div>
-            </div>
-
-            <div className="row">
-               <div className="col-md-6">
-                  <div className="card">
-                     <div className="card-body">
-                        <h5 className="card-title">Variações da modalidade (Valor mensal)</h5>
-
-                        <button id="newVarService" className="btn btn-outline-success mt-3" onClick={addPreco}>
-                           Adicionar
-                        </button>
-
-                        <div className="table-responsive">
-                           <table className="table table-striped">
-                              <thead>
+                           <tbody>
+                              <tr>
+                                 <td>{empresa?.nome_empresa}</td>
+                                 <td>{100 - (comissao?.porcentagem_usuario || 0)}%</td>
+                              </tr>
+                              {comissao?.cod_usuario && (
                                  <tr>
-                                    <th>Nome</th>
-                                    <th>Valor</th>
+                                    <td>{comissao.nome_usuario}</td>
+                                    <td>{comissao.porcentagem_usuario}%</td>
+                                    <td>
+                                       <button
+                                          className="btn btn-sm btn-outline-danger ms-2"
+                                          onClick={(e) => removeComissao(e)}
+                                       >
+                                          <i className="bi bi-trash" />
+                                       </button>
+                                    </td>
                                  </tr>
-                              </thead>
-
-                              <tbody>
-                                 {variacoes.map((variacao, index) => (
-                                    <tr key={index}>
-                                       <td>{variacao.nome_modalidade_variacao}</td>
-                                       <td>{formatarMoeda(variacao?.valor_modalidade_variacao || 0)}</td>
-                                       <td>
-                                          <button
-                                             className="btn btn-sm btn-outline-success"
-                                             onClick={(e) => applyDescont(e, index)}
-                                          >
-                                             <span className="me-2">Valores</span>
-                                             <i className="bi bi-cash" />
-                                          </button>
-                                          <button
-                                             className="btn btn-sm btn-outline-danger ms-2"
-                                             onClick={(e) => removeVariacao(e, index)}
-                                          >
-                                             <i className="bi bi-trash" />
-                                          </button>
-                                       </td>
-                                    </tr>
-                                 ))}
-                              </tbody>
-                           </table>
-                        </div>
+                              )}
+                           </tbody>
+                        </table>
                      </div>
 
-                     <div className="card-footer">
-                        <button id="submit" type="submit" className="btn btn-success">
-                           Confirmar
-                        </button>
-                     </div>
-                  </div>
-               </div>
+                     <p className="text-danger fs-2">[Atenção] - Mudanças em quem recebe afetarão contratos vigentes</p>
+                  </CardContent>
+               </Card>
 
-               <div className="col-md-6">
-                  {indexVariacao >= 0 && (
-                     <div className="card">
-                        <div className="card-body">
-                           <h5 className="card-title">Valores escalonados</h5>
-                           <h5 className="card-subtitle">Valores a partir da duração de plano</h5>
-                           <h6>Variação: {variacoes[indexVariacao]?.nome_variacao}</h6>
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <div>
+                     <Card className="mt-3">
+                        <CardHeader>
+                           <CardTitle>Variações da modalidade (Valor mensal)</CardTitle>
+                        </CardHeader>
 
-                           <button className="btn btn-outline-success mt-3" onClick={addSubVariacao}>
+                        <CardContent>
+                           <Button className="mb-3" id="newVarService" variant="outline" onClick={addPreco}>
+                              <PlusCircle />
                               Adicionar
-                           </button>
+                           </Button>
 
                            <div className="table-responsive">
                               <table className="table table-striped">
                                  <thead>
                                     <tr>
                                        <th>Nome</th>
-                                       <th>Duração</th>
                                        <th>Valor</th>
                                     </tr>
                                  </thead>
 
                                  <tbody>
-                                    {variacoes[indexVariacao]?.valores?.map((valor, index) => (
+                                    {variacoes.map((variacao, index) => (
                                        <tr key={index}>
-                                          <td>{valor.nome_modalidade_variacao_valor}</td>
-                                          <td>{valor.quantidade_modalidade_variacao_valor}</td>
-                                          <td>{formatarMoeda(valor?.valor_modalidade_variacao_valor || 0)}</td>
+                                          <td>{variacao.nome_modalidade_variacao}</td>
+                                          <td>{formatarMoeda(variacao?.valor_modalidade_variacao || 0)}</td>
                                           <td>
                                              <button
-                                                className="btn btn-sm btn-outline-danger"
-                                                onClick={(e) => removeSubVariacao(e, index)}
+                                                className="btn btn-sm btn-outline-success"
+                                                onClick={(e) => applyDescont(e, index)}
+                                             >
+                                                <span className="me-2">Valores</span>
+                                                <i className="bi bi-cash" />
+                                             </button>
+                                             <button
+                                                className="btn btn-sm btn-outline-danger ms-2"
+                                                onClick={(e) => removeVariacao(e, index)}
                                              >
                                                 <i className="bi bi-trash" />
                                              </button>
@@ -296,12 +261,67 @@ function CadModalidade() {
                                  </tbody>
                               </table>
                            </div>
-                        </div>
-                     </div>
-                  )}
+                        </CardContent>
+
+                        <CardFooter>
+                           <Button id="submit" type="submit">
+                              Confirmar
+                           </Button>
+                        </CardFooter>
+                     </Card>
+                  </div>
+
+                  <div>
+                     {indexVariacao >= 0 && (
+                        <Card className="mt-3">
+                           <CardHeader>
+                              <CardTitle>Valores escalonados</CardTitle>
+                              <h5 className="card-subtitle">Valores a partir da duração de plano</h5>
+                              <h6>Variação: {variacoes[indexVariacao]?.nome_variacao}</h6>
+                           </CardHeader>
+
+                           <CardContent>
+                              <Button className="mb-3" variant="outline" onClick={addSubVariacao}>
+                                 <PlusCircle />
+                                 Adicionar
+                              </Button>
+
+                              <div className="table-responsive">
+                                 <table className="table table-striped">
+                                    <thead>
+                                       <tr>
+                                          <th>Nome</th>
+                                          <th>Duração</th>
+                                          <th>Valor</th>
+                                       </tr>
+                                    </thead>
+
+                                    <tbody>
+                                       {variacoes[indexVariacao]?.valores?.map((valor, index) => (
+                                          <tr key={index}>
+                                             <td>{valor.nome_modalidade_variacao_valor}</td>
+                                             <td>{valor.quantidade_modalidade_variacao_valor}</td>
+                                             <td>{formatarMoeda(valor?.valor_modalidade_variacao_valor || 0)}</td>
+                                             <td>
+                                                <button
+                                                   className="btn btn-sm btn-outline-danger"
+                                                   onClick={(e) => removeSubVariacao(e, index)}
+                                                >
+                                                   <i className="bi bi-trash" />
+                                                </button>
+                                             </td>
+                                          </tr>
+                                       ))}
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </CardContent>
+                        </Card>
+                     )}
+                  </div>
                </div>
-            </div>
-         </form>
+            </form>
+         </FormProvider>
       </div>
    );
 }

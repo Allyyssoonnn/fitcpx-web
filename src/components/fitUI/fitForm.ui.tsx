@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { Field, FieldDescription, FieldError, FieldLabel, FieldLegend, FieldSeparator, FieldSet } from "../ui/field";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import CurrencyInput from "./currencyInput.ui";
 import { PhoneInput } from "./phoneInput.ui";
 
 type BackBoxUIType = {
@@ -16,7 +17,7 @@ type BackBoxUIFieldType = {
    description?: string;
    options?: Options;
    fieldName: string;
-   type?: "input" | "select" | "phone";
+   type?: "input" | "select" | "phone" | "currency";
    format?: "documentId" | "CEP";
    selectOptions?: SelectOption[] | string[];
    inputType?: React.ComponentProps<"input">["type"];
@@ -48,7 +49,7 @@ export const getNestedError = (obj: any, path: string) => {
 };
 
 function FitFormUI({ fields, errors }: BackBoxUIType) {
-   const { setValue, register, watch } = useFormContext?.() ?? {};
+   const { setValue, register, watch, control } = useFormContext?.() ?? {};
 
    return (
       <FieldSet className="d-flex g-3">
@@ -68,6 +69,17 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                   {grid.title && <FieldLegend>{grid.title}</FieldLegend>}
                   <div className={`grid grid-cols-1 ${lgClass} gap-4`}>
                      {grid.fields.map((field) => {
+                        if (field.type === "currency")
+                           return (
+                              <Field>
+                                 <FieldLabel htmlFor={field.label}>
+                                    {field.label} {field.options?.required && "*"}
+                                 </FieldLabel>
+
+                                 <CurrencyInput id={field.id} name={field.fieldName} control={control} />
+                              </Field>
+                           );
+
                         if (field.type === "phone") {
                            const value = watch(field.fieldName as string) || "";
 
