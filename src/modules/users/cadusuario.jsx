@@ -125,6 +125,7 @@ function CadUsuario() {
                                     inputType: "email",
                                     options: {
                                        required: true,
+                                       disabled: !!usuarioRecebido,
                                     },
                                  },
                                  {

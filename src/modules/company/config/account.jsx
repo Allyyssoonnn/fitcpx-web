@@ -180,6 +180,9 @@ function Account({ usuario, setusuario }) {
                                        label: "E-mail",
                                        inputType: "email",
                                        fieldName: "email_usuario",
+                                       options: {
+                                          disabled: true,
+                                       },
                                     },
                                     {
                                        label: "CEP",
