@@ -14,29 +14,7 @@ function Perimetros({
    getValues,
    watch,
 }) {
-   const onDragEnd = (result) => {
-      // const { destination, source } = result;
-      // if (!destination) return;
-      // if (source.droppableId === "perimetros") {
-      //     const updatedPerimetros = Array.from(perimetros);
-      //     const [removed] = updatedPerimetros.splice(source.index, 1);
-      //     updatedPerimetros.splice(destination.index, 0, removed);
-      //     setPerimetros(updatedPerimetros);
-      //     localStorage.setItem("perimetros", JSON.stringify(updatedPerimetros));
-      // } else if (source.droppableId === "perimetrosDireito") {
-      //     const updatedPerimetros = Array.from(perimetrosDireito);
-      //     const [removed] = updatedPerimetros.splice(source.index, 1);
-      //     updatedPerimetros.splice(destination.index, 0, removed);
-      //     setPerimetrosDireito(updatedPerimetros);
-      //     localStorage.setItem("perimetrosDireito", JSON.stringify(updatedPerimetros));
-      // } else if (source.droppableId === "perimetrosEsquerdo") {
-      //     const updatedPerimetros = Array.from(perimetrosEsquerdo);
-      //     const [removed] = updatedPerimetros.splice(source.index, 1);
-      //     updatedPerimetros.splice(destination.index, 0, removed);
-      //     setPerimetrosEsquerdo(updatedPerimetros);
-      //     localStorage.setItem("perimetrosEsquerdo", JSON.stringify(updatedPerimetros));
-      // }
-   };
+   const onDragEnd = (result) => {};
 
    return (
       <div className="row g-3">
@@ -111,7 +89,7 @@ function Perimetros({
                )}
             </Droppable>
 
-            <h5 className="text-muted">Lado direito</h5>
+            <h5 className="text-muted">Lado Direito</h5>
 
             <Droppable droppableId="perimetrosDireito" isDropDisabled={!isEditingEnabled}>
                {(provided) => (
@@ -164,7 +142,7 @@ function Perimetros({
                )}
             </Droppable>
 
-            <h5 className="text-muted">Lado esquerdo</h5>
+            <h5 className="text-muted">Lado Esquerdo</h5>
 
             <Droppable droppableId="perimetrosEsquerdo" isDropDisabled={!isEditingEnabled}>
                {(provided) => (
@@ -248,19 +226,19 @@ const perimetros = [
 ];
 
 const perimetrosDireito = [
-   { name: "braco_relaxado_direito", label: "Braço relaxado direito (cm)", icon: "bi bi-body" },
-   { name: "braco_contraido_direito", label: "Braço contraído direito (cm)", icon: "bi bi-body" },
-   { name: "antebraco_direito", label: "Antebraço direito (cm)", icon: "bi bi-rulers" },
-   { name: "coxa_direita", label: "Coxa direita (cm)", icon: "bi bi-shoe-prints" },
-   { name: "panturrilha_direita", label: "Panturrilha direita (cm)", icon: "bi bi-shoe-prints" },
+   { name: "braco_relaxado_direito", label: "Braço Relaxado Direito (cm)", icon: "bi bi-body" },
+   { name: "braco_contraido_direito", label: "Braço Contraído Direito (cm)", icon: "bi bi-body" },
+   { name: "antebraco_direito", label: "Antebraço Direito (cm)", icon: "bi bi-rulers" },
+   { name: "coxa_direita", label: "Coxa Direita (cm)", icon: "bi bi-shoe-prints" },
+   { name: "panturrilha_direita", label: "Panturrilha Direita (cm)", icon: "bi bi-shoe-prints" },
 ];
 
 const perimetrosEsquerdo = [
-   { name: "braco_relaxado_esquerdo", label: "Braço relaxado esquerdo (cm)", icon: "bi bi-body" },
-   { name: "braco_contraido_esquerdo", label: "Braço contraído esquerdo (cm)", icon: "bi bi-body" },
-   { name: "antebraco_esquerdo", label: "Antebraço esquerdo (cm)", icon: "bi bi-rulers" },
-   { name: "coxa_esquerda", label: "Coxa esquerda (cm)", icon: "bi bi-shoe-prints" },
-   { name: "panturrilha_esquerda", label: "Panturrilha esquerda (cm)", icon: "bi bi-shoe-prints" },
+   { name: "braco_relaxado_esquerdo", label: "Braço Relaxado Esquerdo (cm)", icon: "bi bi-body" },
+   { name: "braco_contraido_esquerdo", label: "Braço Contraído Esquerdo (cm)", icon: "bi bi-body" },
+   { name: "antebraco_esquerdo", label: "Antebraço Esquerdo (cm)", icon: "bi bi-rulers" },
+   { name: "coxa_esquerda", label: "Coxa Esquerda (cm)", icon: "bi bi-shoe-prints" },
+   { name: "panturrilha_esquerda", label: "Panturrilha Esquerda (cm)", icon: "bi bi-shoe-prints" },
 ];
 
 export default Perimetros;

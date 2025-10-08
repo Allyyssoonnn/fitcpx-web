@@ -2,7 +2,7 @@ function Bioimpedancia({ tipoAvaliacao, ocultarCampos, register, startSpeechReco
    return (
       <div className="row g-3">
          <div className="col-md-4">
-            <label className="form-label">Gordura visceral</label>
+            <label className="form-label">Gordura Visceral</label>
             <div className="input-group">
                <input
                   id="gordura_viceral"

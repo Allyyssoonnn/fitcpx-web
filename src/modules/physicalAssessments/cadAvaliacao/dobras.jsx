@@ -1,6 +1,6 @@
+import { useMemo } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import MediaInput from "../../../components/mediaInput";
-import { useMemo } from "react";
 import { protocolosCampos } from "../../../utils";
 
 function Dobras({
@@ -95,8 +95,8 @@ const DobrasCampos = ({
                   return (
                      <div className="col-md-4" key={campo}>
                         <label className={`form-label ${hasAsterisk ? "fw-bold" : ""}`}>
-                           {campo.replace("_", " ").replace(/^./, (char) => char.toUpperCase())}{" "}
-                           {hasAsterisk ? " *" : ""} (mm)
+                           {campo.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())} {hasAsterisk ? " *" : ""}{" "}
+                           (mm)
                         </label>
                         <MediaInput
                            id={campo}
