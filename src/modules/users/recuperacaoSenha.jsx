@@ -1,11 +1,20 @@
+import { GalleryVerticalEnd } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { updatePassword } from "../../api/user";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Button } from "../../components/ui/button";
+import { Field, FieldGroup } from "../../components/ui/field";
 
 function RecuperacaoSenha() {
-   const { register, handleSubmit } = useForm();
+   const form = useForm();
+   const {
+      register,
+      handleSubmit,
+      formState: { errors },
+   } = form;
    const location = useLocation();
    const [token, setToken] = useState("");
    const [senhaAlterada, setSenhaAlterada] = useState(false);
@@ -28,62 +37,95 @@ function RecuperacaoSenha() {
    }
 
    return (
-      <div className="page-wrapper p-0 bg-success" id="main-wrapper" style={{ marginLeft: "0" }}>
-         <div className="position-relative overflow-hidden radial-gradient min-vh-100 d-flex justify-content-center align-items-center">
-            <div className="d-flex align-items-center justify-content-center w-100">
-               <div className="row justify-content-center w-100">
-                  <div className="col-md-8 col-lg-6 col-xxl-3">
-                     <div className="card mb-0 shadow-lg">
+      <div className="grid min-h-svh lg:grid-cols-2">
+         <div className="flex flex-col gap-4 p-6 md:p-10">
+            <div className="flex justify-center gap-2 md:justify-start">
+               <a href="#" className="flex items-center gap-2 font-medium">
+                  <div className="bg-secondary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+                     <GalleryVerticalEnd className="size-4" />
+                     <img src="../assets/images/logos/logo.png" />
+                  </div>
+                  FitCpx
+               </a>
+            </div>
+            <div className="flex flex-1 items-center justify-center">
+               <div className="w-full max-w-xs">
+                  <FormProvider {...form}>
+                     <form onSubmit={handleSubmit(submit)}>
                         {!senhaAlterada && (
-                           <form onSubmit={handleSubmit(submit)} className="card-body">
-                              <div className="text-nowrap logo-img d-flex py-2 d-flex justify-content-center align-items-center">
-                                 <img src="../assets/images/logos/logo.png" width="60" alt="" />
-                                 <h1 className="mb-0 ms-3">Fit Cpx</h1>
+                           <FieldGroup>
+                              <div className="flex flex-col items-center gap-1 text-center">
+                                 <h1 className="text-2xl font-bold">Recuperar conta</h1>
+                                 <p className="text-muted-foreground text-sm text-balance">
+                                    Enviaremos um link de recuperação para o e-mail informado caso exista conta.
+                                 </p>
                               </div>
 
-                              <h5 className="text-center">Recuperar senha</h5>
+                              <FitFormUI
+                                 errors={errors}
+                                 fields={[
+                                    {
+                                       cols: 1,
+                                       fields: [
+                                          {
+                                             label: "Nova Senha",
+                                             fieldName: "nova_senha",
+                                             inputType: "password",
+                                             options: {
+                                                required: true,
+                                                minLength: 5,
+                                             },
+                                          },
+                                          {
+                                             label: "Repetir Nova Senha",
+                                             fieldName: "repete_nova_senha",
+                                             inputType: "password",
+                                             options: {
+                                                required: true,
+                                                minLength: 5,
+                                             },
+                                          },
+                                       ],
+                                    },
+                                 ]}
+                              />
 
-                              <div className="border mb-3" />
-
-                              <div className="mb-3">
-                                 <label className="form-label">Nova senha</label>
-                                 <input
-                                    type="password"
-                                    {...register("nova_senha", { required: "Nova senha obrigarória!" })}
-                                    className="form-control"
-                                 />
-                              </div>
-
-                              <div className="mb-3">
-                                 <label className="form-label">Repetir nova senha</label>
-                                 <input
-                                    type="password"
-                                    {...register("repete_nova_senha", { required: "Repetir nova senha obrigarória!" })}
-                                    className="form-control"
-                                 />
-                              </div>
-
-                              <button type="submit" className="btn btn-success w-100">
-                                 Confirmar
-                              </button>
-                           </form>
+                              <Field>
+                                 <Button type="submit">Confirmar senha</Button>
+                              </Field>
+                           </FieldGroup>
                         )}
 
                         {senhaAlterada && (
-                           <div className="card-body text-center d-flex flex-column gap-3">
-                              <i className="bi bi-check-circle fs-10 text-success" />
+                           <FieldGroup>
+                              <div className="flex flex-col items-center gap-1 text-center">
+                                 <h1 className="text-2xl font-bold">Senha alterada!</h1>
+                                 <p className="text-muted-foreground text-sm text-balance">
+                                    Agora você já pode acessar sua conta com a nova senha.
+                                 </p>
+                              </div>
 
-                              <h5 className="card-title">Senha alterada!</h5>
-
-                              <a href="https://fitcpx.com" className="btn btn-success rounded">
-                                 Voltar ao site
-                              </a>
-                           </div>
+                              <Field className="text-center">
+                                 <a href="/entrar">
+                                    <Button type="button">Ir para o login</Button>
+                                 </a>
+                              </Field>
+                           </FieldGroup>
                         )}
-                     </div>
-                  </div>
+                     </form>
+                  </FormProvider>
                </div>
             </div>
+         </div>
+
+         <div className="bg-muted relative hidden lg:block">
+            <img
+               src="https://fitcpx.com/assets/imagens/app-pt.png"
+               // src="../assets/images/logos/logo.png"
+               alt="Image"
+               // className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+               className="absolute inset-0 h-full w-full object-cover"
+            />
          </div>
       </div>
    );

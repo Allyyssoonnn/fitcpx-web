@@ -180,10 +180,10 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                          })
                                        : {})}
                                     value={value}
-                                    // onChange={(e) => setValue(field.fieldName, e.target.value)}
-                                    onChange={(e) =>
-                                       setValue(field.fieldName, formatValue(e.target.value, field.format))
-                                    }
+                                    onChange={(e) => setValue(field.fieldName, e.target.value)}
+                                    // onChange={(e) =>
+                                    //    setValue(field.fieldName, formatValue(e.target.value, field.format))
+                                    // }
                                     disabled={field.options?.disabled}
                                     type={field.inputType ?? "text"}
                                     id={field.label}

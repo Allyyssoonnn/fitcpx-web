@@ -1,5 +1,9 @@
+import { CreditCard } from "lucide-react";
 import { useQuery } from "react-query";
 import { getCompaniesLicenses } from "../../../api/companies";
+import { Button } from "../../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/Card";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../../components/ui/table";
 import { formatarData, formatarMoeda } from "../../../utils";
 
 function Payments() {
@@ -10,11 +14,13 @@ function Payments() {
    });
 
    return (
-      <div className="container-fluid px-0">
+      <div className="container-fluid">
+         <p className="text-center text-muted">Seus pagamentos serão listados aqui</p>
+
          {licenses.map((license, i) => (
-            <div key={i} className="card mb-4 border-0 shadow-sm">
-               <div className="card-body">
-                  <h5 className="mb-3 fw-semibold text-dark">
+            <Card key={i}>
+               <CardHeader>
+                  <CardTitle className="mb-3 fw-semibold text-dark">
                      Plano: {license?.licenca?.nome_licenca}
                      {license.status_empresa_licenca === "Active" && (
                         <span className="badge bg-success-subtle text-success ms-2">Ativa</span>
@@ -26,80 +32,76 @@ function Payments() {
                      {license.status_empresa_licenca === "Canceled" && (
                         <span className="badge bg-danger-subtle text-danger ms-2">Cancelado</span>
                      )}
-                  </h5>
+                  </CardTitle>
+               </CardHeader>
 
+               <CardContent>
                   {license?.payments?.length < 1 ? (
                      <p className="text-muted">Nenhum registro de pagamento</p>
                   ) : (
-                     <div className="table-responsive">
-                        <table className="table table-borderless align-middle">
-                           <thead className="text-secondary small text-uppercase">
-                              <tr>
-                                 <th>Vencimento</th>
-                                 <th>Status</th>
-                                 <th>Expiração período</th>
-                                 <th>Valor</th>
-                                 <th>Forma</th>
-                                 <th className="text-end">Ações</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              {license.payments.map((payment, index) => (
-                                 <tr key={index} className="border-top">
-                                    <td>{formatarData(payment.data_empresa_licenca_pagamento)}</td>
-                                    <td>
-                                       {payment.status_empresa_licenca_pagamento === "succeeded" && (
-                                          <span className="badge bg-success-subtle text-success">Pago</span>
+                     <Table>
+                        <TableHeader>
+                           <TableRow>
+                              <TableCell>Vencimento</TableCell>
+                              <TableCell>Status</TableCell>
+                              <TableCell>Data Encerramento</TableCell>
+                              <TableCell>Valor</TableCell>
+                              <TableCell></TableCell>
+                           </TableRow>
+                        </TableHeader>
+
+                        <TableBody>
+                           {license.payments.map((payment, index) => (
+                              <TableRow key={index} className="border-top">
+                                 <TableCell>{formatarData(payment.data_empresa_licenca_pagamento)}</TableCell>
+                                 <TableCell>
+                                    {payment.status_empresa_licenca_pagamento === "succeeded" && (
+                                       <span className="badge bg-success-subtle text-success">Pago</span>
+                                    )}
+                                    {(payment.status_empresa_licenca_pagamento === "Pendente" ||
+                                       payment.status_empresa_licenca_pagamento === "Pending") && (
+                                       <span className="badge bg-warning-subtle text-warning">Pendente</span>
+                                    )}
+                                    {payment.status_empresa_licenca_pagamento === "refund" && (
+                                       <span className="badge bg-danger-subtle text-danger">Reembolsado</span>
+                                    )}
+                                    {payment.status_empresa_licenca_pagamento === "Canceled" && (
+                                       <span className="badge bg-danger-subtle text-danger">Cancelado</span>
+                                    )}
+                                 </TableCell>
+                                 <TableCell>
+                                    <span className="badge bg-light text-dark">
+                                       {formatarData(payment.expiracao_empresa_licenca_pagamento)}
+                                    </span>
+                                 </TableCell>
+                                 <TableCell>
+                                    <span className="text-muted">
+                                       {formatarMoeda(payment.valor_empresa_licenca_pagamento)}
+                                    </span>
+                                 </TableCell>
+
+                                 <TableCell className="text-end">
+                                    {payment.status_empresa_licenca_pagamento !== "succeeded" &&
+                                       payment.status_empresa_licenca_pagamento !== "confirmed" &&
+                                       payment.status_empresa_licenca_pagamento !== "Canceled" && (
+                                          <Button
+                                             onClick={() =>
+                                                window.open(payment?.asaas_url, "_blank", "noopener,noreferrer")
+                                             }
+                                             className="btn btn-sm btn-outline-success"
+                                          >
+                                             <CreditCard />
+                                             Pagar
+                                          </Button>
                                        )}
-                                       {(payment.status_empresa_licenca_pagamento === "Pendente" ||
-                                          payment.status_empresa_licenca_pagamento === "Pending") && (
-                                          <span className="badge bg-warning-subtle text-warning">Pendente</span>
-                                       )}
-                                       {payment.status_empresa_licenca_pagamento === "refund" && (
-                                          <span className="badge bg-danger-subtle text-danger">Reembolsado</span>
-                                       )}
-                                       {payment.status_empresa_licenca_pagamento === "Canceled" && (
-                                          <span className="badge bg-danger-subtle text-danger">Cancelado</span>
-                                       )}
-                                    </td>
-                                    <td>
-                                       <span className="badge bg-light text-dark">
-                                          {formatarData(payment.expiracao_empresa_licenca_pagamento)}
-                                       </span>
-                                    </td>
-                                    <td>
-                                       <span className="text-muted">
-                                          {formatarMoeda(payment.valor_empresa_licenca_pagamento)}
-                                       </span>
-                                    </td>
-                                    <td>
-                                       <span className="badge bg-warning-subtle text-dark">
-                                          {payment.forma_empresa_licenca_pagamento}
-                                       </span>
-                                    </td>
-                                    <td className="text-end">
-                                       {payment.status_empresa_licenca_pagamento !== "succeeded" &&
-                                          payment.status_empresa_licenca_pagamento !== "confirmed" &&
-                                          payment.status_empresa_licenca_pagamento !== "Canceled" && (
-                                             <button
-                                                onClick={() =>
-                                                   window.open(payment?.asaas_url, "_blank", "noopener,noreferrer")
-                                                }
-                                                className="btn btn-sm btn-outline-success"
-                                             >
-                                                <i className="bi bi-credit-card me-1" />
-                                                Pagar
-                                             </button>
-                                          )}
-                                    </td>
-                                 </tr>
-                              ))}
-                           </tbody>
-                        </table>
-                     </div>
+                                 </TableCell>
+                              </TableRow>
+                           ))}
+                        </TableBody>
+                     </Table>
                   )}
-               </div>
-            </div>
+               </CardContent>
+            </Card>
          ))}
       </div>
    );

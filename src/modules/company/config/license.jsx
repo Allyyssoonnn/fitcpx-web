@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
 import { cancelCompanyLicense, getCompanyLicense } from "../../../api/companies";
 import { buyLicense, getLicensesAvaliable } from "../../../api/licenses";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
 import { formatarMoeda } from "../../../utils";
 
@@ -41,44 +42,50 @@ function License() {
       <div className="row">
          <div className="col-md-6">
             <div className="card border shadow-none">
-               <div className="card-body p-4">
-                  <h4 className="card-title">Planos disponíveis</h4>
-                  <p className="card-subtitle">
-                     Aqui você pode contratar um plano para mais limites e opções de trabalho.
-                  </p>
+               <Card>
+                  <CardHeader>
+                     <CardTitle>Planos disponíveis</CardTitle>
+                     <CardDescription>
+                        Aqui você pode contratar um plano para mais limites e opções de trabalho.
+                     </CardDescription>
+                  </CardHeader>
 
-                  {licencas.map((licenca, index) => (
-                     <CardLicenca
-                        key={index}
-                        licenca={licenca}
-                        onBuy={licenca ? onBuy : null}
-                        atual={licencaAtual?.nome_licenca == licenca?.nome_licenca}
-                        isVIP={licencaAtual?.cod_licenca == 5}
-                     />
-                  ))}
-               </div>
+                  <CardContent>
+                     {licencas.map((licenca, index) => (
+                        <CardLicenca
+                           key={index}
+                           licenca={licenca}
+                           onBuy={licenca ? onBuy : null}
+                           atual={licencaAtual?.nome_licenca == licenca?.nome_licenca}
+                           isVIP={licencaAtual?.cod_licenca == 5}
+                        />
+                     ))}
+                  </CardContent>
+               </Card>
             </div>
          </div>
 
          <div className="col-md-6">
-            <div className="card border shadow-none">
-               <div className="card-body p-4">
-                  <h4 className="card-title">
+            <Card>
+               <CardHeader>
+                  <CardTitle>
                      Plano atual :{" "}
                      <span className="text-success">{licencaAtual.nome_licenca ?? "Período de teste"}</span>
-                  </h4>
-                  <p className="card-subtitle">Pagamento e verificação de licença.</p>
+                  </CardTitle>
+                  <CardDescription>Pagamento e verificação de licença.</CardDescription>
+               </CardHeader>
 
+               <CardContent>
                   <CardLicenca
                      licenca={licencaAtual}
                      onCancel={onCancel}
                      refetch={refetch}
                      isVIP={licencaAtual?.cod_licenca == 5}
                   />
-               </div>
-            </div>
+               </CardContent>
+            </Card>
 
-            <div className="bg-light p-3 rounded-md">
+            <div className="bg-secondary p-3 rounded-md mt-3">
                <h5>Importante</h5>
 
                <p className="fs-2">
