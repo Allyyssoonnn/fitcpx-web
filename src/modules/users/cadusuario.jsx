@@ -103,6 +103,12 @@ function CadUsuario() {
                                     },
                                  },
                                  {
+                                    label: "Chave PIX",
+                                    id: "pix",
+                                    fieldName: "pix_usuario",
+                                    description: "Enviaremos os repasses para essa conta",
+                                 },
+                                 {
                                     type: "phone",
                                     id: "cellphone",
                                     label: "Celular",
