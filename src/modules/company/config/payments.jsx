@@ -2,7 +2,7 @@ import { CreditCard } from "lucide-react";
 import { useQuery } from "react-query";
 import { getCompaniesLicenses } from "../../../api/companies";
 import { Button } from "../../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../../components/ui/table";
 import { formatarData, formatarMoeda } from "../../../utils";
 
