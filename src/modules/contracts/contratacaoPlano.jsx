@@ -57,18 +57,30 @@ function ContratacaoPlano() {
       if (!aluno?.estado_aluno) tempErrors.push("[Cadastro do aluno incompleto] - UF do aluno não informado.");
       if (!aluno?.cep_aluno) tempErrors.push("[Cadastro do aluno incompleto] - CEP do aluno não informado.");
 
-      if (!empresa?.doc_empresa) tempErrors.push("[Cadastro da empresa incompleto] - CNPJ da empresa não informado");
+      if (!empresa?.doc_empresa)
+         tempErrors.push("[Cadastro dos dados profissionasi incompleto] - CNPJ dos dados profissionasi não informado");
       if (!empresa?.email_empresa)
-         tempErrors.push("[Cadastro da empresa incompleto] - E-mail da empresa não informado");
+         tempErrors.push(
+            "[Cadastro dos dados profissionasi incompleto] - E-mail dos dados profissionasi não informado"
+         );
       if (!empresa?.telefone_empresa)
-         tempErrors.push("[Cadastro da empresa incompleto] - Telefone da empresa não informado");
-      if (!empresa?.nome_empresa) tempErrors.push("[Cadastro da empresa incompleto] - Nome da empresa não informado");
+         tempErrors.push(
+            "[Cadastro dos dados profissionasi incompleto] - Telefone dos dados profissionasi não informado"
+         );
+      if (!empresa?.nome_empresa)
+         tempErrors.push("[Cadastro dos dados profissionasi incompleto] - Nome dos dados profissionasi não informado");
       if (!empresa?.endereco_empresa)
-         tempErrors.push("[Cadastro da empresa incompleto] - Endereço da empresa não informado");
+         tempErrors.push(
+            "[Cadastro dos dados profissionasi incompleto] - Endereço dos dados profissionasi não informado"
+         );
       if (!empresa?.numero_empresa)
-         tempErrors.push("[Cadastro da empresa incompleto] - Endereço (Número) da empresa não informado");
+         tempErrors.push(
+            "[Cadastro dos dados profissionasi incompleto] - Endereço (Número) dos dados profissionasi não informado"
+         );
       if (!empresa?.cidade_empresa)
-         tempErrors.push("[Cadastro da empresa incompleto] - Cidade da empresa não informado");
+         tempErrors.push(
+            "[Cadastro dos dados profissionasi incompleto] - Cidade dos dados profissionasi não informado"
+         );
       setErrors(tempErrors);
    }, [aluno, empresa]);
 
@@ -324,7 +336,7 @@ function ContratacaoPlano() {
 
                {errors.length > 0 && (
                   <div className="d-flex justify-content-center">
-                     <div className="bg-danger-subtle rounded p-2 col-md-6 mt-3">
+                     <div className="bg-destructive rounded p-2 col-md-6 mt-3">
                         <label className="text-center w-100 mb-2">
                            Alertas - (Solucionar pendências para avançar na contratação)
                         </label>
@@ -335,12 +347,13 @@ function ContratacaoPlano() {
                         ))}
 
                         <div className="d-flex justify-content-center mt-3 gap-3">
-                           <button className="btn btn-sm btn-outline-info" onClick={() => navigate("/configuracao")}>
+                           <Button size="sm" variant="outline" onClick={() => navigate("/configuracao")}>
                               Ir para configurações
-                           </button>
+                           </Button>
 
-                           <button
-                              className="btn btn-sm btn-outline-info"
+                           <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() =>
                                  navigate("/cadaluno", {
                                     state: { aluno },
@@ -348,7 +361,7 @@ function ContratacaoPlano() {
                               }
                            >
                               Cadastro do aluno
-                           </button>
+                           </Button>
                         </div>
                      </div>
                   </div>

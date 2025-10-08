@@ -29,7 +29,7 @@ function Configuracao() {
 
    const tabs = [
       { id: "account", label: "Conta", icon: "bi-person" },
-      { id: "business", label: "Empresa", icon: "bi-building" },
+      { id: "business", label: "Dados profissionais", icon: "bi-building" },
       { id: "security", label: "Licença", icon: "bi-unlock" },
       { id: "bills", label: "Pagamentos", icon: "bi-cash" },
    ];
