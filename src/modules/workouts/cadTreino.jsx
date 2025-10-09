@@ -24,7 +24,6 @@ function CadTreino() {
    const form = useForm({ defaultValues: { ...treinoRecebido, sexo_treino: alunoRecebido?.sexo_aluno || "M" } });
    const {
       handleSubmit,
-      register,
       setValue,
       getValues,
       watch,

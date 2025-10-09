@@ -18,7 +18,7 @@ function Payments() {
          <p className="text-center text-muted">Seus pagamentos serão listados aqui</p>
 
          {licenses.map((license, i) => (
-            <Card key={i}>
+            <Card key={i} className="mt-3">
                <CardHeader>
                   <CardTitle className="mb-3 fw-semibold text-dark">
                      Plano: {license?.licenca?.nome_licenca}
