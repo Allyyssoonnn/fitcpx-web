@@ -587,6 +587,8 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    const desc = modalidades && modalidades.length > 0 ? modalidades.map((m) => m.nome_modalidade).join(", ") : "";
    var preenchido = decodeHtml(contrato);
 
+   preenchido = preenchido.replaceAll("background: aqua", "");
+
    preenchido = preenchido.replaceAll(/<tempo_contrato>/g, plano?.duracao_plano || "Não definido");
    preenchido = preenchido.replaceAll(
       /<valor_total_plano>/g,
