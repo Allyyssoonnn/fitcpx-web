@@ -574,12 +574,17 @@ function Aluno() {
                                        name: "status_aluno_contrato",
                                        header: "Status",
                                        className: "fw-bold text-black",
-                                       getValue: (row) =>
-                                          row.status_aluno_contrato == "Ativo" ? (
-                                             <div className="badge bg-success">Ativo</div>
-                                          ) : (
-                                             <div className="badge bg-danger">Inativo</div>
-                                          ),
+                                       getValue: (row) => {
+                                          if (new Date(row.expiracao_aluno_contrato) < new Date())
+                                             return <div className="badge bg-danger">Expirado</div>;
+                                          if (row.status_aluno_contrato == "Ativo")
+                                             return <div className="badge bg-success">Ativo</div>;
+                                          if (row.status_aluno_contrato == "Inative")
+                                             return <div className="badge bg-danger">Inativo</div>;
+                                          if (row.status_aluno_contrato == "Canceled")
+                                             return <div className="badge bg-danger">Cancelado</div>;
+                                          return <div className="badge bg-warning text-dark">Pendente</div>;
+                                       },
                                     },
                                     {
                                        name: "Ver contrato",

@@ -101,59 +101,98 @@ function ContratacaoPlano() {
 
    useEffect(() => {
       if (!plano?.duracao_plano) return;
-      var planoAtt = atualizarModalidadesComSubvariacoes(plano);
-      planoAtt = calculaValoresDoPlano(planoAtt);
+      var planoAtt = aplicarSubvariacoes(plano);
+      planoAtt = calcularValores(planoAtt);
       setPlano(planoAtt);
    }, [plano?.duracao_plano]);
 
-   function calculaValoresDoPlano(plano) {
-      let total = 0;
-      plano?.modalidades?.forEach((mod) => {
-         total += mod.valor_modalidade;
-      });
-      total = plano.duracao_plano * total;
+   // --- Funções otimizadas para modalidades e valores --- //
 
-      const parcelas = dividirParcelas(plano.duracao_plano, total);
+   function calcularValores(plano) {
+      if (!plano?.modalidades?.length) return { ...plano, valor_plano: 0, parcela_plano: "[]" };
 
-      return {
-         ...plano,
-         valor_plano: total,
-         parcela_plano: JSON.stringify(parcelas),
-      };
+      const totalBase = plano.modalidades.reduce((soma, m) => soma + (m.valor_modalidade || 0), 0);
+      const valorTotal = totalBase * (plano.duracao_plano || 1);
+      const parcelas = dividirParcelas(plano.duracao_plano, valorTotal);
+
+      return { ...plano, valor_plano: valorTotal, parcela_plano: JSON.stringify(parcelas) };
    }
 
-   function atualizarModalidadesComSubvariacoes(planoAtual) {
-      if (!planoAtual?.modalidades) return planoAtual;
+   // substituir aplicarSubvariacoes
+   function aplicarSubvariacoes(plano) {
+      if (!plano?.modalidades?.length) return plano;
+      const duracao = Number(plano.duracao_plano) || 0;
 
-      const modalidadesAtualizadas = planoAtual.modalidades.map((mod) => {
-         const novaModalidade = { ...mod };
+      const modalidades = plano.modalidades.map((m) => {
+         // se o usuário já ajustou manualmente, não sobrescrever
+         if (m.valor_modalidade_alterado != null) return { ...m };
 
-         const subVariacoes = mod?.valores;
-         if (!subVariacoes?.length) return novaModalidade;
+         const sub = (m.valores || []).filter((v) => duracao >= Number(v.quantidade_modalidade_variacao_valor || 0));
 
-         const subVariacao = subVariacoes.filter(
-            (v) => planoAtual.duracao_plano >= v.quantidade_modalidade_variacao_valor
-         );
-
-         if (!subVariacao.length) {
-            novaModalidade.valor_modalidade = mod.valor_modalidade_original;
-            novaModalidade.nome_modalidade = mod.nome_modalidade_original;
-         } else {
-            const ultima = subVariacao[subVariacao.length - 1];
-            novaModalidade.cod_modalidade_variacao_valor = ultima.cod_modalidade_variacao_valor;
-            novaModalidade.valor_modalidade = ultima.valor_modalidade_variacao_valor;
-            novaModalidade.nome_modalidade = `${mod.nome_modalidade_original} - ${String(
-               ultima.nome_modalidade_variacao_valor
-            )}`;
+         if (!sub.length) {
+            return {
+               ...m,
+               valor_modalidade: m.valor_modalidade_original ?? (m.valor_modalidade || 0),
+               nome_modalidade: m.nome_modalidade_original ?? m.nome_modalidade,
+            };
          }
 
-         return novaModalidade;
+         const ultima = sub[sub.length - 1];
+         return {
+            ...m,
+            cod_modalidade_variacao_valor: ultima.cod_modalidade_variacao_valor,
+            valor_modalidade: Number(ultima.valor_modalidade_variacao_valor || 0),
+            nome_modalidade: `${m.nome_modalidade_original} - ${ultima.nome_modalidade_variacao_valor}`,
+         };
       });
 
-      return {
-         ...planoAtual,
-         modalidades: modalidadesAtualizadas,
-      };
+      return { ...plano, modalidades };
+   }
+
+   // substituir attValue
+   function attValue(valor, index) {
+      setPlano((prev) => {
+         if (!prev) return prev;
+
+         const idx = Number(index);
+         if (Number.isNaN(idx)) return prev;
+
+         const parsed =
+            typeof valor === "number"
+               ? valor
+               : parseFloat(
+                    String(valor)
+                       .replace(/\./g, "")
+                       .replace(",", ".")
+                       .replace(/[^\d.-]/g, "")
+                 );
+
+         if (isNaN(parsed)) return prev;
+
+         const modalidades = (prev.modalidades || []).map((m, i) =>
+            i === idx ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m
+         );
+
+         // usar atualizarPlano (aplicarSubvariacoes agora respeita overrides manuais)
+         return atualizarPlano({ ...prev, modalidades });
+      });
+   }
+
+   function atualizarPlano(plano) {
+      return calcularValores(aplicarSubvariacoes(plano));
+   }
+
+   function addModalidade(modalidade) {
+      setPlano((prev) => atualizarPlano({ ...prev, modalidades: [...(prev?.modalidades || []), modalidade] }));
+   }
+
+   function removeModalidade(index) {
+      setPlano((prev) =>
+         atualizarPlano({
+            ...prev,
+            modalidades: prev.modalidades?.filter((_, i) => i !== index),
+         })
+      );
    }
 
    useMemo(() => {
@@ -189,45 +228,8 @@ function ContratacaoPlano() {
       setPagando(true);
    }
 
-   function addModalidade(modalidade) {
-      const planoTemp = { ...plano };
-      const modalidades = [...(planoTemp?.modalidades || []), modalidade];
-
-      var planoAtualizado = atualizarModalidadesComSubvariacoes({
-         ...planoTemp,
-         modalidades,
-      });
-      planoAtualizado = calculaValoresDoPlano(planoAtualizado);
-      setPlano(planoAtualizado);
-   }
-
-   function removeModalidade(index) {
-      setPlano((prev) => ({
-         ...prev,
-         modalidades: prev?.modalidades.filter((m, i) => index !== i),
-      }));
-   }
-
    function updatePlano(field, value) {
       setPlano((prev) => ({ ...prev, [field]: value }));
-   }
-
-   function attValue(v, i) {
-      const planoTemp = { ...plano };
-      const modalidades = planoTemp?.modalidades.map((m, index) =>
-         index == i
-            ? {
-                 ...m,
-                 valor_modalidade: v,
-                 valor_modalidade_alterado: v,
-              }
-            : m
-      );
-      var planoAtualizado = calculaValoresDoPlano({
-         ...planoTemp,
-         modalidades,
-      });
-      setPlano(planoAtualizado);
    }
 
    async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard, typePayment) {
@@ -236,7 +238,7 @@ function ContratacaoPlano() {
             ...plano,
             pagamentoInicial,
             formaPagamento,
-            contrato: contratoPreenchido,
+            contrato: geraContrato ? contratoPreenchido : null,
             cod_aluno: aluno?.cod_aluno,
             cod_usuario: usuario?.cod_usuario,
             cod_empresa: usuario?.cod_empresa,
@@ -277,7 +279,7 @@ function ContratacaoPlano() {
                      <Label className="fs-4 mb-2">{aluno?.nome_aluno}</Label>
 
                      <Label>
-                        CEP: <strong>{aluno?.cep_aluno}</strong>
+                        CEP: <strong>{formatarCEP(aluno?.cep_aluno)}</strong>
                      </Label>
 
                      <Label>
@@ -304,12 +306,12 @@ function ContratacaoPlano() {
                   </div>
 
                   <div className="grid grid-cols-1 gap-2">
-                     <CardTitle>Empresa</CardTitle>
+                     <CardTitle>Profissonal</CardTitle>
 
                      <Label className="fs-4 mb-2">{empresa?.nome_empresa}</Label>
 
                      <Label className="mb-1">
-                        CEP: <strong>{empresa?.cep_empresa}</strong>
+                        CEP: <strong>{formatarCEP(empresa?.cep_empresa)}</strong>
                      </Label>
 
                      <Label className="mb-1">
@@ -327,7 +329,7 @@ function ContratacaoPlano() {
                      </Label>
 
                      <Label className="mb-1">
-                        CPF: <strong>{formatarCNPJ(empresa?.doc_empresa)}</strong>
+                        CNPJ/CPF :<strong>{getDoc(empresa?.doc_empresa)}</strong>
                      </Label>
                   </div>
                </div>
@@ -564,6 +566,13 @@ function ContratacaoPlano() {
    );
 }
 
+const getDoc = (doc) => {
+   if (!doc) return "";
+   if (doc.length == 11) return formatarCPF(doc);
+   if (doc.length == 14) return formatarCNPJ(doc);
+   return doc;
+};
+
 function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataInicio = new Date()) {
    // Função para decodificar entidades HTML (como &lt; e &gt;)
    function decodeHtml(html) {
@@ -577,10 +586,9 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    const descMensalidades = `${parcelas
       .map(
          (parcela, i) =>
-            `<p style="margin-left: 20px;">${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(
-               dataInicio,
-               i
-            )}</p>`
+            `<p style="margin-left: 20px;">${i + 1}. ${convertNumberToTextWithDecimals(
+               parcela
+            )} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`
       )
       .join("")}`;
 
@@ -612,13 +620,6 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    //juros_percentagem
    //percentagem_multa
 
-   const getDoc = (doc) => {
-      if (!doc) return "";
-      if (doc.length == 11) return formatarCPF(doc);
-      if (doc.length == 14) return formatarCNPJ(doc);
-      return doc;
-   };
-
    // Substituições de variáveis do aluno
    preenchido = preenchido.replaceAll(/<nome_aluno>/g, aluno.nome_aluno || "");
    preenchido = preenchido.replaceAll(/<cpf_aluno>/g, aluno?.cpf_aluno ? formatarCPF(aluno.cpf_aluno) : "");
@@ -643,7 +644,7 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    preenchido = preenchido.replaceAll(/<modalidade>/g, desc);
 
    // Substituições de variáveis de valores
-   preenchido = preenchido.replaceAll(/<valor_total>/g, formatarMoeda(plano?.valor_plano ?? 0));
+   preenchido = preenchido.replaceAll(/<valor_total>/g, convertNumberToTextWithDecimals(plano?.valor_plano ?? 0));
    preenchido = preenchido.replaceAll(/<valor_mensal>/g, descMensalidades);
 
    return preenchido;

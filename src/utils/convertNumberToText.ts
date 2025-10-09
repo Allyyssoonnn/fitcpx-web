@@ -288,7 +288,7 @@ export function convertNumberToTextWithDecimals(
             const ten = Math.floor(n / 10);
             const unit = n % 10;
             if (unit === 0) return lang.tens[ten];
-            const separator = locale === "en" ? "-" : lang.conjunction.trim();
+            const separator = locale === "en" ? "-" : lang.conjunction;
             return `${lang.tens[ten]}${separator}${lang.units[unit]}`;
          }
          const hundred = Math.floor(n / 100);

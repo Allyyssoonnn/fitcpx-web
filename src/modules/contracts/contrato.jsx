@@ -105,7 +105,20 @@ function Contrato() {
                   </Label>
 
                   <Label>
-                     Status do contrato: <strong>{alunoContrato?.status_aluno_contrato}</strong>
+                     Status do contrato:{" "}
+                     <strong>
+                        {(() => {
+                           if (new Date(alunoContrato.expiracao_aluno_contrato) < new Date())
+                              return <div className="badge bg-danger">Expirado</div>;
+                           if (alunoContrato.status_aluno_contrato == "Ativo")
+                              return <div className="badge bg-success">Ativo</div>;
+                           if (alunoContrato.status_aluno_contrato == "Inative")
+                              return <div className="badge bg-danger">Inativo</div>;
+                           if (alunoContrato.status_aluno_contrato == "Canceled")
+                              return <div className="badge bg-danger">Cancelado</div>;
+                           return <div className="badge bg-warning text-dark">Pendente</div>;
+                        })()}
+                     </strong>
                   </Label>
                </div>
 
@@ -145,7 +158,7 @@ function Contrato() {
                         <TableRow>
                            <TableCell>Data</TableCell>
                            <TableCell>Status</TableCell>
-                           <TableCell>Expiração</TableCell>
+                           <TableCell>Vencimento</TableCell>
                            <TableCell>Valor</TableCell>
                            <TableCell>Identificação</TableCell>
                            <TableCell></TableCell>
