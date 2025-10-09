@@ -188,7 +188,7 @@ function CadTreino() {
                                  ],
                                  options: {
                                     required: true,
-                                    disabled: !!nome_aluno,
+                                    // disabled: !!nome_aluno,
                                  },
                               },
                               {

@@ -17,7 +17,7 @@ import {
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { stateUsuario, useNotificacao } from "../../states/states";
 
 function CadExercicio() {
@@ -90,6 +90,7 @@ function CadExercicio() {
       if (cleanedData.base_exercicio === "S") {
          await createOrUpdateExercise({
             cod_exercicio: cleanedData.cod_exercicio,
+            base_exercicio: cleanedData.base_exercicio,
             url_exercicio_empresa: cleanedData?.url_exercicio_empresa,
          });
       } else {
@@ -109,6 +110,13 @@ function CadExercicio() {
          <BackBoxUI />
 
          <Card>
+            {exercicioRecebido?.base_exercicio === "S" && (
+               <CardHeader>
+                  <CardTitle className="text-destructive">Exercícios base não podem ser modificados</CardTitle>
+                  <CardDescription>Mas você pode adicionar seu próprio vídeo autoral ao exercício</CardDescription>
+               </CardHeader>
+            )}
+
             <CardContent>
                <FormProvider {...form}>
                   <form onSubmit={handleSubmit(confirma)}>
@@ -124,11 +132,22 @@ function CadExercicio() {
                                     fieldName: "nome_exercicio",
                                     options: {
                                        required: true,
+                                       disabled: exercicioRecebido?.base_exercicio === "S",
                                     },
                                  },
                                  {
                                     label: "URL (Vídeo exercício)",
                                     fieldName: "url_exercicio",
+                                    options: {
+                                       disabled: exercicioRecebido?.base_exercicio === "S",
+                                    },
+                                 },
+                                 {
+                                    label: "URL (Vídeo exercício autoral)",
+                                    fieldName: "url_exercicio_empresa",
+                                    options: {
+                                       disabled: exercicioRecebido?.base_exercicio !== "S",
+                                    },
                                  },
                               ],
                            },
@@ -144,6 +163,9 @@ function CadExercicio() {
                                        label: v.nome_tipo_exercicio,
                                        value: v.cod_tipo_exercicio,
                                     })),
+                                    options: {
+                                       disabled: exercicioRecebido?.base_exercicio === "S",
+                                    },
                                  },
                                  {
                                     label: "Exercício resistência",
@@ -153,6 +175,9 @@ function CadExercicio() {
                                        label: v.nome_exercicio_resistencia,
                                        value: v.cod_exercicio_resistencia,
                                     })),
+                                    options: {
+                                       disabled: exercicioRecebido?.base_exercicio === "S",
+                                    },
                                  },
                                  {
                                     label: "Indicação",
@@ -162,6 +187,9 @@ function CadExercicio() {
                                        label: v.nome_indicacao,
                                        value: v.cod_indicacao,
                                     })),
+                                    options: {
+                                       disabled: exercicioRecebido?.base_exercicio === "S",
+                                    },
                                  },
                                  {
                                     label: "Padrão movimento",
@@ -171,6 +199,9 @@ function CadExercicio() {
                                        label: v.nome_padrao_movimento,
                                        value: v.cod_padrao_movimento,
                                     })),
+                                    options: {
+                                       disabled: exercicioRecebido?.base_exercicio === "S",
+                                    },
                                  },
                               ],
                            },
@@ -186,6 +217,9 @@ function CadExercicio() {
                                     label: v.nome_grupo_exercicio,
                                     value: v.cod_grupo_exercicio,
                                  })),
+                                 options: {
+                                    disabled: exercicioRecebido?.base_exercicio === "S",
+                                 },
                               })),
                            },
                            {
@@ -200,6 +234,9 @@ function CadExercicio() {
                                     label: v.nome_grupo_exercicio,
                                     value: v.cod_grupo_exercicio,
                                  })),
+                                 options: {
+                                    disabled: exercicioRecebido?.base_exercicio === "S",
+                                 },
                               })),
                            },
                            {
@@ -214,6 +251,9 @@ function CadExercicio() {
                                     label: v.nome_equipamento,
                                     value: v.cod_equipamento,
                                  })),
+                                 options: {
+                                    disabled: exercicioRecebido?.base_exercicio === "S",
+                                 },
                               })),
                            },
                            {
@@ -228,6 +268,9 @@ function CadExercicio() {
                                     label: v.nome_articulacao,
                                     value: v.cod_articulacao,
                                  })),
+                                 options: {
+                                    disabled: exercicioRecebido?.base_exercicio === "S",
+                                 },
                               })),
                            },
                         ]}
