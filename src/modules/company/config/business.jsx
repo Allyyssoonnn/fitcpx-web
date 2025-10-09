@@ -215,6 +215,12 @@ function Business({ empresa, setempresa, usuario }) {
                                        fieldName: "numero_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },
+                                    {
+                                       label: "Bairro",
+                                       id: "number",
+                                       fieldName: "bairro_empresa",
+                                       disabled: usuario.admin_usuario !== "S",
+                                    },
                                  ],
                               },
                            ]}

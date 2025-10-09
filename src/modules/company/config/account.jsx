@@ -204,6 +204,10 @@ function Account({ usuario, setusuario }) {
                                        label: "Número",
                                        fieldName: "numero_usuario",
                                     },
+                                    {
+                                       label: "Bairro",
+                                       fieldName: "bairro_usuario",
+                                    },
                                  ],
                               },
                            ]}

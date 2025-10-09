@@ -57,6 +57,10 @@ function CadContrato() {
       } else setContratohtml(modelo);
    }
 
+   function insertTagEditor(editor, tag) {
+      return editor.selection.insertHTML(`<span style="background: aqua">${tag}</span>`);
+   }
+
    return (
       <FormProvider {...form}>
          <form onSubmit={handleSubmit(confirma)} className="container-fluid">
@@ -140,75 +144,157 @@ function CadContrato() {
                         // buttons: "bold,italic,underline,|,ul,ol,|,font,fontsize,brush,|,link,align,undo,redo",
                         // buttons: "source,|,bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall,cut,copy,paste,|",
                         buttons:
-                           "bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall",
+                           "source, bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall",
                         extraButtons: [
+                           {
+                              name: "Tempo de contrato",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;tempo_contrato&gt;"),
+                              tooltip: "Inserir tempo de contrato",
+                           },
+                           {
+                              name: "Valor total do plano",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;valor_total_plano&gt;"),
+                              tooltip: "Inserir valor total do plano",
+                           },
+                           {
+                              name: "Valor mensal",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;valor_mensal_unitario&gt;"),
+                              tooltip: "Inserir Valor mensal",
+                           },
+                           {
+                              name: "Multa moratória %",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;multa_percentagem&gt;"),
+                              tooltip: "Inserir % de multa moratória",
+                           },
+                           {
+                              name: "Juros ao mês % (Atraso)",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;juros_percentagem&gt;"),
+                              tooltip: "Inserir % de juros ao mês (atraso)",
+                           },
+                           {
+                              name: "Multa compensatória %",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;percentagem_multa&gt;"),
+                              tooltip: "Inserir % de multa compensatória",
+                           },
                            {
                               name: "Nome do aluno",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;nome_aluno&gt;"),
+                              exec: (editor) => insertTagEditor(editor, "&lt;nome_aluno&gt;"),
                               tooltip: "Inserir nome do aluno",
-                           },
-                           {
-                              name: "RG do aluno",
-                              icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;rg_aluno&gt;"),
-                              tooltip: "Inserir RG do aluno",
                            },
                            {
                               name: "CPF do aluno",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;cpf_aluno&gt;"),
+                              exec: (editor) => insertTagEditor(editor, "&lt;cpf_aluno&gt;"),
                               tooltip: "Inserir CPF do aluno",
+                           },
+                           {
+                              name: "RG do aluno",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;rg_aluno&gt;"),
+                              tooltip: "Inserir RG do aluno",
+                           },
+                           {
+                              name: "E-mail do aluno",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;email_aluno&gt;"),
+                              tooltip: "Inserir E-mail do aluno",
                            },
                            {
                               name: "Endereço do aluno",
                               icon: "user",
-                              exec: (editor) => {
-                                 editor.selection.insertHTML(
-                                    "&lt;endereco_aluno&gt;, nº &lt;numero_aluno&gt;, bairro &lt;bairro_aluno&gt;, CEP &lt;cep_aluno&gt;, na cidade &lt;cidade_aluno&gt;, estado &lt;estado_aluno&gt;"
-                                 );
-                              },
-                              tooltip: "Inserir endereço do aluno",
+                              exec: (editor) => insertTagEditor(editor, "&lt;endereco_aluno&gt;"),
+                              tooltip: "Inserir Endereço do aluno",
                            },
                            {
-                              name: "Nome da empresa",
+                              name: "Cidade do aluno",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;nome_empresa&gt;"),
-                              tooltip: "Inserir nome do aluno",
+                              exec: (editor) => insertTagEditor(editor, "&lt;cidade_aluno&gt;"),
+                              tooltip: "Inserir Cidade do aluno",
                            },
                            {
-                              name: "Razão social da empresa",
+                              name: "Estado do aluno",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;razao_social_empresa&gt;"),
-                              tooltip: "Inserir RG do aluno",
+                              exec: (editor) => insertTagEditor(editor, "&lt;estado_aluno&gt;"),
+                              tooltip: "Inserir Estado do aluno",
                            },
                            {
-                              name: "CNPJ/CPF da empresa",
+                              name: "Número (endereço) do aluno",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;doc_empresa&gt;"),
-                              tooltip: "Inserir CPF do aluno",
+                              exec: (editor) => insertTagEditor(editor, "&lt;numero_aluno&gt;"),
+                              tooltip: "Inserir número do endereço do aluno",
                            },
                            {
-                              name: "Endereço da empresa",
+                              name: "CEP do aluno",
                               icon: "user",
-                              exec: (editor) => {
-                                 editor.selection.insertHTML(
-                                    "&lt;endereco_empresa&gt;, nº &lt;numero_empresa&gt;, bairro &lt;bairro_empresa&gt;, CEP &lt;cep_empresa&gt;, na cidade &lt;cidade_empresa&gt;, estado &lt;estado_empresa&gt;"
-                                 );
-                              },
-                              tooltip: "Inserir endereço do aluno",
+                              exec: (editor) => insertTagEditor(editor, "&lt;cep_aluno&gt;"),
+                              tooltip: "Inserir CEP do aluno",
                            },
                            {
-                              name: "R$ contrato",
+                              name: "Bairro do aluno",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;valor_total&gt;"),
-                              tooltip: "Inserir valor total do contrato",
+                              exec: (editor) => insertTagEditor(editor, "&lt;bairro_aluno&gt;"),
+                              tooltip: "Inserir Bairro do aluno",
                            },
                            {
-                              name: "R$ mensal",
+                              name: "Nome do profissional",
                               icon: "user",
-                              exec: (editor) => editor.selection.insertHTML("&lt;valor_mensal&gt;"),
-                              tooltip: "Inserir valores mensais do contrato",
+                              exec: (editor) => insertTagEditor(editor, "&lt;nome_empresa&gt;"),
+                              tooltip: "Inserir nome do profissional",
+                           },
+                           {
+                              name: "CNPJ/CPF do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;doc_empresa&gt;"),
+                              tooltip: "Inserir CNPJ/CPF do profissional",
+                           },
+                           {
+                              name: "Endereço do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;endereco_empresa&gt;"),
+                              tooltip: "Inserir Endereço do profissional",
+                           },
+                           {
+                              name: "Cidade do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;cidade_empresa&gt;"),
+                              tooltip: "Inserir Cidade do profissional",
+                           },
+                           {
+                              name: "Estado do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;estado_empresa&gt;"),
+                              tooltip: "Inserir Estado do profissional",
+                           },
+                           {
+                              name: "Número (endereço) do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;numero_empresa&gt;"),
+                              tooltip: "Inserir número do endereço do profissional",
+                           },
+                           {
+                              name: "CEP do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;cep_empresa&gt;"),
+                              tooltip: "Inserir CEP do profissional",
+                           },
+                           {
+                              name: "Bairro do profissional",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;bairro_empresa&gt;"),
+                              tooltip: "Inserir Bairro do profissional",
+                           },
+                           {
+                              name: "Modalidades/Serviços do plano",
+                              icon: "user",
+                              exec: (editor) => insertTagEditor(editor, "&lt;modalidade&gt;"),
+                              tooltip: "Inserir modalidades/serviços do plano",
                            },
                         ],
                      }}
