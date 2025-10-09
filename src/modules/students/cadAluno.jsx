@@ -144,7 +144,9 @@ function CadAluno() {
                                     label: "Data de nascimento",
                                     fieldName: "data_nascimento_aluno",
                                     inputType: "date",
-                                    required: true,
+                                    options: {
+                                       required: true,
+                                    },
                                  },
                                  {
                                     id: "gender",

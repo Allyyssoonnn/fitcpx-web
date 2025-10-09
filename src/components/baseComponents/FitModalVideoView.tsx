@@ -1,3 +1,5 @@
+import { Camera } from "lucide-react";
+import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 function FitModalViewVideo({ url, name }: { url: string; name: string }) {
@@ -8,9 +10,9 @@ function FitModalViewVideo({ url, name }: { url: string; name: string }) {
    return (
       <Dialog>
          <DialogTrigger asChild>
-            <button className="btn btn-success">
-               <i className="bi bi-camera" />
-            </button>
+            <Button className="btn btn-success">
+               <Camera />
+            </Button>
          </DialogTrigger>
 
          <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
