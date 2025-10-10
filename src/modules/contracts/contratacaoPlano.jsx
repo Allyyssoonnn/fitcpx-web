@@ -1,5 +1,6 @@
 import JoditEditor from "jodit-react";
 import { AlertTriangle, Check } from "lucide-react";
+import moment from "moment/moment";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -597,6 +598,14 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
 
    preenchido = preenchido.replaceAll("background: aqua", "");
 
+   preenchido = preenchido.replaceAll(/<data_de_inicio>/g, moment(dataInicio).format("DD/MM/YYYY") || "Não definido");
+   preenchido = preenchido.replaceAll(
+      /<data_de_termino>/g,
+      moment(dataInicio)
+         .add(plano?.duracao_plano || 1, "M")
+         .format("DD/MM/YYYY") || "Não definido"
+   );
+   preenchido = preenchido.replaceAll(/<data_vencimento>/g, moment(dataInicio).format("DD") || "Não definido");
    preenchido = preenchido.replaceAll(/<tempo_contrato>/g, plano?.duracao_plano || "Não definido");
    preenchido = preenchido.replaceAll(
       /<valor_total_plano>/g,
@@ -635,6 +644,7 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    // Substituições de variáveis da empresa
    preenchido = preenchido.replaceAll(/<nome_empresa>/g, empresa.nome_empresa || "");
    preenchido = preenchido.replaceAll(/<doc_empresa>/g, empresa?.doc_empresa ? getDoc(empresa.doc_empresa) : "");
+   preenchido = preenchido.replaceAll(/<email_empresa>/g, aluno.email_empresa || "");
    preenchido = preenchido.replaceAll(/<endereco_empresa>/g, empresa.endereco_empresa || " - ");
    preenchido = preenchido.replaceAll(/<cidade_empresa>/g, empresa.cidade_empresa || " - ");
    preenchido = preenchido.replaceAll(/<estado_empresa>/g, empresa.estado_empresa || " - ");
