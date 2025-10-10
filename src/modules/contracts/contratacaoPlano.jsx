@@ -644,7 +644,7 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    // Substituições de variáveis da empresa
    preenchido = preenchido.replaceAll(/<nome_empresa>/g, empresa.nome_empresa || "");
    preenchido = preenchido.replaceAll(/<doc_empresa>/g, empresa?.doc_empresa ? getDoc(empresa.doc_empresa) : "");
-   preenchido = preenchido.replaceAll(/<email_empresa>/g, aluno.email_empresa || "");
+   preenchido = preenchido.replaceAll(/<email_empresa>/g, empresa?.email_empresa || "");
    preenchido = preenchido.replaceAll(/<endereco_empresa>/g, empresa.endereco_empresa || " - ");
    preenchido = preenchido.replaceAll(/<cidade_empresa>/g, empresa.cidade_empresa || " - ");
    preenchido = preenchido.replaceAll(/<estado_empresa>/g, empresa.estado_empresa || " - ");
