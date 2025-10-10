@@ -56,7 +56,7 @@ function ModContratos() {
                      header: "",
                      type: "option",
                      visible: (row) => !row?.deletedAt,
-                     onClick: (row) => delPlano(row),
+                     onClick: (row) => delPlano(row.cod_contrato),
                      Icon: Trash,
                   },
                   {
@@ -64,7 +64,7 @@ function ModContratos() {
                      header: "",
                      type: "option",
                      visible: (row) => row?.deletedAt,
-                     onClick: (row) => recoveryPlan(row.cod_contrato),
+                     onClick: (row) => recoveryPlan(row),
                      Icon: ArrowLeftCircle,
                   },
                ]}
