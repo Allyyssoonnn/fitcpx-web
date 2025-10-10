@@ -53,6 +53,7 @@ export function AddTreino({ aluno, treinosAluno }: AddTreinoProps) {
          ...sessao,
          exercicios: exercicios.map(({ cod_sessao_exercicio, ...exercicio }) => exercicio),
       }));
+      treinoLimpo.status_treino = "A";
 
       navigate("/cadtreino", { state: { aluno, treino: treinoLimpo } });
    };
