@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import MediaInput from "../../../components/mediaInput";
-import { protocolosCampos } from "../../../utils";
 
 function Dobras({
    metodoDobras,
@@ -130,5 +129,23 @@ const tooltipMetodo = (
       </div>
    </Tooltip>
 );
+
+export const protocolosCampos = {
+   1: [],
+   2: [
+      "subescapular",
+      "triciptal",
+      "peitoral",
+      "axilar_media",
+      "supra_iliaca",
+      "coxa",
+      "supra_iliaca",
+      "abdominal",
+      "coxa",
+   ],
+   3: ["supra_iliaca", "peitoral", "coxa"],
+   4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
+   5: ["triciptal", "coxa", "panturrilha"],
+};
 
 export default Dobras;

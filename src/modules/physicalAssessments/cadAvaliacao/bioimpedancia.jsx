@@ -1,4 +1,4 @@
-function Bioimpedancia({ tipoAvaliacao, ocultarCampos, register, startSpeechRecognition }) {
+function Bioimpedancia({ register, startSpeechRecognition }) {
    return (
       <div className="row g-3">
          <div className="col-md-4">

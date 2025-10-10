@@ -390,12 +390,7 @@ function CadAvaliacao() {
                      </TabsList>
 
                      <TabsContent value="bioimpedancia" className="mt-3">
-                        <Bioimpedancia
-                           ocultarCampos={ocultarCampos}
-                           register={register}
-                           startSpeechRecognition={startSpeechRecognition}
-                           tipoAvaliacao={tipoAvaliacao}
-                        />
+                        <Bioimpedancia register={register} startSpeechRecognition={startSpeechRecognition} />
                      </TabsContent>
 
                      <TabsContent value="diametros" className="mt-3">
