@@ -645,7 +645,7 @@ function SimetriaMembro({ avaliacao }) {
                   axisBottom={null}
                   keys={["direito", "esquerdo"]}
                   indexBy="membro"
-                  margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+                  margin={{ top: 50, right: 130, bottom: 50, left: 90 }}
                   padding={0.5}
                   groupMode="grouped"
                   layout="horizontal"
