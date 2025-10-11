@@ -75,7 +75,13 @@ function SelectModalidades({
                      )}
                      {!disableControls && (
                         <TableCell>
-                           <button className="btn btn-sm btn-outline-danger" onClick={() => removeModalidade(index)}>
+                           <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={(e) => {
+                                 e.preventDefault();
+                                 removeModalidade(index);
+                              }}
+                           >
                               <i className="bi bi-trash" />
                            </button>
                         </TableCell>

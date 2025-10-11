@@ -252,6 +252,23 @@ function ContratacaoPlano() {
       }
    }
 
+   function selectPlan(v) {
+      const planoSelecionado = planos.find((e) => e.cod_plano == v);
+      if (!planoSelecionado) return;
+
+      const modalidadesAtualizadas = (planoSelecionado.modalidades || []).map((m) => ({
+         ...m,
+         valor_modalidade: m.valor_modalidade_alterado ?? m.valor_modalidade,
+         nome_modalidade: m.nome_plano_modalidade,
+      }));
+
+      setPlano((prev) => ({
+         ...prev,
+         ...planoSelecionado,
+         modalidades: modalidadesAtualizadas,
+      }));
+   }
+
    return (
       <div className="container-fluid">
          <BackBoxUI />
@@ -410,11 +427,7 @@ function ContratacaoPlano() {
                      {!montandoPlano && (
                         <Field className="w-[50%]">
                            <FieldLabel>Selecione o plano</FieldLabel>
-                           <Select
-                              onValueChange={(v) =>
-                                 setPlano((prev) => ({ ...prev, ...(planos.find((e) => e.cod_plano == v) || null) }))
-                              }
-                           >
+                           <Select onValueChange={(v) => selectPlan(v)}>
                               <SelectTrigger>
                                  <SelectValue placeholder="Selecione o plano" />
                               </SelectTrigger>
@@ -430,24 +443,26 @@ function ContratacaoPlano() {
                         </Field>
                      )}
 
-                     {montandoPlano && (
-                        <Field className="w-[50%]">
-                           <FieldLabel>Duração plano</FieldLabel>
-                           <Select onValueChange={(v) => updatePlano("duracao_plano", v)}>
-                              <SelectTrigger>
-                                 <SelectValue placeholder="Selecione a duração" />
-                              </SelectTrigger>
+                     <Field className="w-[50%]">
+                        <FieldLabel>Duração plano</FieldLabel>
+                        <Select
+                           disabled={!montandoPlano}
+                           value={plano?.duracao_plano}
+                           onValueChange={(v) => updatePlano("duracao_plano", v)}
+                        >
+                           <SelectTrigger>
+                              <SelectValue placeholder="Selecione a duração" />
+                           </SelectTrigger>
 
-                              <SelectContent>
-                                 {[...Array(12).keys()].map((i) => (
-                                    <SelectItem value={i + 1} key={i}>
-                                       {i + 1}
-                                    </SelectItem>
-                                 ))}
-                              </SelectContent>
-                           </Select>
-                        </Field>
-                     )}
+                           <SelectContent>
+                              {[...Array(12).keys()].map((i) => (
+                                 <SelectItem value={i + 1} key={i}>
+                                    {i + 1}
+                                 </SelectItem>
+                              ))}
+                           </SelectContent>
+                        </Select>
+                     </Field>
 
                      <Field className="w-[50%] mt-3">
                         <FieldLabel>Primeira cobrança</FieldLabel>
