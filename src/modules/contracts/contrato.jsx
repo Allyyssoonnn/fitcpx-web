@@ -186,7 +186,7 @@ function Contrato() {
                                  {pagamento.status_aluno_contrato_pagamento === "paid" && (
                                     <span className="badge bg-success-subtle text-success mt-1">Repassado</span>
                                  )}
-                                 {pagamento.status_aluno_contrato_pagamento === "recievedCash" && (
+                                 {pagamento.status_aluno_contrato_pagamento === "receivedCash" && (
                                     <span className="badge bg-success-subtle text-success mt-1">Recebido manual</span>
                                  )}
                                  {(pagamento.status_aluno_contrato_pagamento === "Pendente" ||
