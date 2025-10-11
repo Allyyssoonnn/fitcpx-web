@@ -30,7 +30,7 @@ function PlanilhaTreino() {
          const alunosCache = JSON.parse(localStorage.getItem("planilhatreino"));
          for (const aluno of alunosCache) {
             const treinos = await getWorkouts(false, aluno.cod_aluno);
-            aluno.treinos = treinos;
+            aluno.treinos = treinos?.filter((v) => v.status_treino == "A");
          }
          setAlunos(alunosCache.map((aluno) => ({ ...aluno, indexTreino: 0, indexSessao: 0 })));
       })();
