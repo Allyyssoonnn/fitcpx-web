@@ -4,51 +4,23 @@ import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { useEffect, useRef, useState } from "react";
-import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getCalendar, newEvent } from "../../api/calendar";
-import FitInputForm from "../../components/baseComponents/FitInputForm";
-import FitSelectForm from "../../components/baseComponents/FitSelectForm";
-import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { getServices } from "../../api/services";
+import { getStudents } from "../../api/student";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { formatDateToLocalInput } from "../../utils";
 
 function Agenda() {
-   const [usuario] = useRecoilState(stateUsuario);
-
    return (
       <div className="container-fluid">
          <Card>
-            <CardHeader className="card-header d-flex justify-between">
-               <div className="col-3 mb-2 mb-sm-0">
-                  {/* <button
-                            disabled
-                            // disabled={usuario?.google?.email_google}
-                            onClick={conect}
-                            className={`${usuario?.google?.email_google && 'd-none'} btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`} role="button"
-                        >
-                            <img src="../assets/images/svgs/google-icon.svg" className="img-fluid me-2" width="18" height="18" />
-                            <span className="flex-shrink-0">Conectar Google agenda</span>
-                        </button> */}
-
-                  <button
-                     className={`${
-                        !usuario?.google?.email_google && "d-none"
-                     } btn text-dark border fw-normal d-flex align-items-center justify-content-center py-8`}
-                  >
-                     <img
-                        src="../assets/images/svgs/google-icon.svg"
-                        className="img-fluid me-2"
-                        width="18"
-                        height="18"
-                     />
-                     <span className="flex-shrink-0">{usuario?.google?.email_google}</span>
-                  </button>
-               </div>
-            </CardHeader>
-
             <CardContent className="calender-sidebar app-calendar">
                <Calendario />
             </CardContent>
@@ -60,14 +32,13 @@ function Agenda() {
 function Calendario() {
    const [empresa] = useRecoilState(stateEmpresa);
    const [usuario] = useRecoilState(stateUsuario);
+   const form = useForm({ defaultValues: { tipo_evento: "Agendamento" } });
    const {
       handleSubmit,
-      register,
       setValue,
       formState: { errors },
       reset,
-      control,
-   } = useForm();
+   } = form;
 
    const { data: alunos } = useQuery({
       queryKey: ["alunos"],
@@ -82,7 +53,7 @@ function Calendario() {
       initialData: [],
    });
 
-   const { data: agenda } = useQuery({
+   const { data: agenda, refetch } = useQuery({
       queryKey: ["agenda", usuario.cod_usuario],
       queryFn: async () => {
          const resp = await getCalendar();
@@ -154,27 +125,58 @@ function Calendario() {
 
    // Função para mostrar o modal e preencher a data de início
    const handleAddEvent = async (data) => {
-      await newEvent({ ...data, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa });
+      const payload = {
+         ...data,
+         cod_usuario: usuario.cod_usuario,
+         cod_empresa: usuario.cod_empresa,
+      };
+
+      // Corrige selects vazios
+      Object.keys(payload).forEach((key) => {
+         if (payload[key] === "") payload[key] = null;
+      });
+
+      // Converte datetime-local -> ISO string (ou UTC se preferir)
+      if (payload.data_inicio) payload.data_inicio = new Date(payload.data_inicio).toISOString();
+      if (payload.data_fim) payload.data_fim = new Date(payload.data_fim).toISOString();
+
+      await newEvent(payload);
       setShowModal(false);
+      refetch();
    };
 
    const handleDateClick = (info) => {
       reset();
-      const clickedDate = new Date(info.start);
-      const start = new Date(clickedDate);
-      const end = new Date(clickedDate.getTime() + 60 * 60 * 3000); // +1 hora
+      let start;
 
-      setValue("data_inicio", formatDateToLocalInput(start));
-      setValue("data_fim", formatDateToLocalInput(end));
+      if (info.allDay) {
+         // Dia inteiro: usar o dia clicado + hora atual
+         const now = new Date();
+         start = new Date(
+            info.start.getFullYear(),
+            info.start.getMonth(),
+            info.start.getDate(),
+            now.getHours(),
+            now.getMinutes()
+         );
+      } else {
+         // Clicou em horário específico: usar exatamente o horário clicado
+         start = new Date(info.start);
+      }
+
+      // Fim do evento: +1 hora
+      const end = new Date(start.getTime() + 60 * 60 * 1000);
 
       // Verifica se a data formatada é válida
       if (isNaN(new Date(start).getTime()) || isNaN(new Date(end).getTime())) {
          console.error("Datas formatadas inválidas:", start, end);
          return;
       }
+      const formattedStart = formatDateToLocalInput(start);
+      const formattedEnd = formatDateToLocalInput(end);
 
-      setValue("data_inicio", start);
-      setValue("data_fim", end);
+      setValue("data_inicio", formattedStart);
+      setValue("data_fim", formattedEnd);
       setShowModal(true);
    };
 
@@ -183,6 +185,7 @@ function Calendario() {
 
       // Preenche os campos do formulário com os dados do evento
       if (event.cod_evento) setValue("cod_evento", event.cod_evento);
+      if (event.cod_modalidade) setValue("cod_modalidade", event.cod_modalidade);
       setValue("cod_empresa", empresa.cod_empresa);
       setValue("nome_evento", event.title);
       setValue("descricao_evento", event.extendedProps.descricao_evento);
@@ -195,22 +198,68 @@ function Calendario() {
       setShowModal(true);
    };
 
-   const tooltip = (
-      <Tooltip id="tooltip">
-         <div>
-            <strong>Evento:</strong> Crie e gerencie eventos para notificações e controle interno.
-         </div>
-         <p></p>
-         <div>
-            <strong>Disponibilidade:</strong> Defina horários disponíveis para que seus alunos possam agendar
-            diretamente pelo app.
-         </div>
-      </Tooltip>
-   );
-
    return (
       <div style={{ height: "900px" }}>
          <FullCalendar
+            eventContent={(arg) => {
+               const tipo = arg.event.extendedProps.tipo_evento;
+
+               // Cor da marca-texto
+               let highlightColor = "rgba(200,200,200,0.3)"; // cinza claro
+               if (tipo === "Disponibilidade") highlightColor = "rgba(0,200,0,0.3)"; // verde
+
+               return (
+                  <div
+                     style={{
+                        position: "relative",
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                     }}
+                  >
+                     {/* Marca-texto completa */}
+                     <div
+                        style={{
+                           position: "absolute",
+                           inset: 0,
+                           background: highlightColor,
+                           zIndex: 0,
+                           borderRadius: "4px",
+                        }}
+                     ></div>
+
+                     {/* Conteúdo do evento */}
+                     <div
+                        style={{
+                           position: "relative",
+                           zIndex: 1,
+                           display: "flex",
+                           alignItems: "center",
+                           padding: "2px 4px",
+                        }}
+                     >
+                        {/* Bolinha com cor do evento */}
+                        <span
+                           style={{
+                              display: "inline-block",
+                              width: "8px",
+                              height: "8px",
+                              borderRadius: "50%",
+                              backgroundColor: arg.event.backgroundColor,
+                              marginRight: "4px",
+                           }}
+                        ></span>
+
+                        {/* Hora */}
+                        {arg.timeText && <strong>{arg.timeText} </strong>}
+
+                        {/* Título */}
+                        <span style={{ marginLeft: "2px" }}>{arg.event.title}</span>
+                     </div>
+                  </div>
+               );
+            }}
             locale={ptBrLocale}
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -235,163 +284,101 @@ function Calendario() {
             height={900}
          />
 
-         <Modal
-            show={showModal}
-            className="modal-fade"
-            id="eventModal"
-            aria-labelledby="eventModalLabel"
-            aria-hidden="true"
-         >
-            <div className="modal-dialog-scrollable modal-lg">
-               <form onSubmit={handleSubmit(handleAddEvent)} className="modal-content">
-                  <div className="modal-header">
-                     <h5 className="modal-title" id="eventModalLabel">
-                        Evento
-                     </h5>
-                     <button
-                        type="button"
-                        className="btn-close"
-                        onClick={() => setShowModal(false)}
-                        aria-label="Close"
-                     ></button>
-                  </div>
+         <Dialog open={showModal} onOpenChange={(open) => setShowModal(open)}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
+               <FormProvider {...form}>
+                  <form onSubmit={handleSubmit(handleAddEvent)} className="modal-content">
+                     <DialogHeader>
+                        <DialogTitle>Novo evento</DialogTitle>
+                     </DialogHeader>
 
-                  <div className="modal-body">
-                     <div className="row">
-                        <div className="d-flex gap-2 mt-6">
-                           <OverlayTrigger placement="bottom" overlay={tooltip}>
-                              <i className="bi bi-question-circle text-danger ms-2"></i>
-                           </OverlayTrigger>
+                     <FitFormUI
+                        errors={errors}
+                        fields={[
+                           {
+                              cols: 1,
+                              fields: [
+                                 {
+                                    label: "Tipo",
+                                    selectOptions: ["Agendamento", "Disponibilidade"],
+                                    type: "toggle",
+                                    fieldName: "tipo_evento",
+                                 },
+                                 {
+                                    label: "Modalidade/Serviço",
+                                    fieldName: "cod_modalidade",
+                                    type: "select",
+                                    selectOptions: modalidades.map((modalidade) => ({
+                                       label: modalidade.nome_modalidade,
+                                       value: modalidade.cod_modalidade,
+                                    })),
+                                    clearSelectButton: true,
+                                 },
+                                 {
+                                    label: "Aluno",
+                                    fieldName: "cod_aluno",
+                                    type: "select",
+                                    selectOptions: alunos.map((aluno) => ({
+                                       label: aluno.nome_aluno,
+                                       value: aluno.cod_aluno,
+                                    })),
+                                    clearSelectButton: true,
+                                 },
+                                 {
+                                    label: "Nome",
+                                    fieldName: "nome_evento",
+                                    hideField: (data) => !!data?.cod_modalidade,
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    label: "Descrição",
+                                    fieldName: "descricao_evento",
+                                    hideField: (data) => !!data?.cod_modalidade,
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    label: "Cor",
+                                    fieldName: "cor_evento",
+                                    hideField: (data) => !!data?.cod_modalidade,
+                                    type: "color",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    label: "Início",
+                                    fieldName: "data_inicio",
+                                    inputType: "datetime-local",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                                 {
+                                    label: "Fim",
+                                    fieldName: "data_fim",
+                                    inputType: "datetime-local",
+                                    options: {
+                                       required: true,
+                                    },
+                                 },
+                              ],
+                           },
+                        ]}
+                     />
 
-                           <FitSelectForm
-                              classNameContainer="w-100"
-                              nameField="Tipo de Evento"
-                              errors={errors}
-                              {...register("tipo_evento", { value: "E" })}
-                           >
-                              <option value="Evento">Evento</option>
-                              <option value="Disponibilidade">Disponibilidade</option>
-                           </FitSelectForm>
-                        </div>
-
-                        <FitInputForm
-                           classNameContainer="col-md-12 mt-6"
-                           nameField="Nome do evento"
-                           errors={errors}
-                           {...register("nome_evento", { required: true })}
-                        />
-
-                        <FitInputForm
-                           classNameContainer="col-md-12 mt-6"
-                           nameField="Descrição do evento"
-                           errors={errors}
-                           {...register("descricao_evento")}
-                        />
-
-                        <CorEventoPreset register={register} control={control} errors={errors} />
-
-                        <FitSelectForm
-                           classNameContainer="col-md-12 mt-6"
-                           nameField="Modalidade (opcional)"
-                           errors={errors}
-                           {...register("cod_modalidade", { value: null })}
-                        >
-                           <option value={null}></option>
-                           {modalidades.map((modalidade, index) => (
-                              <option key={index} value={modalidade.cod_modalidade}>
-                                 {modalidade.nome_modalidade}
-                              </option>
-                           ))}
-                        </FitSelectForm>
-
-                        <FitSelectForm
-                           classNameContainer="col-md-12 mt-6"
-                           nameField="Aluno (opcional)"
-                           errors={errors}
-                           {...register("cod_aluno", { value: null })}
-                        >
-                           <option value={null}></option>
-                           {alunos.map((aluno, index) => (
-                              <option key={index} value={aluno.cod_aluno}>
-                                 {aluno.nome_aluno}
-                              </option>
-                           ))}
-                        </FitSelectForm>
-
-                        <FitInputForm
-                           classNameContainer="col-md-12 mt-6"
-                           nameField="Inicio"
-                           errors={errors}
-                           type="datetime-local"
-                           {...register("data_inicio", { required: true })}
-                        />
-
-                        <FitInputForm
-                           classNameContainer="col-md-12 mt-6"
-                           nameField="Fim"
-                           errors={errors}
-                           type="datetime-local"
-                           {...register("data_fim", { required: true })}
-                        />
-                     </div>
-                  </div>
-
-                  <div className="modal-footer">
-                     <button
-                        className="btn bg-danger-subtle text-danger"
-                        type="button"
-                        onClick={() => setShowModal(false)}
-                     >
-                        Fechar
-                     </button>
-                     <button className="btn btn-success" type="submit">
-                        Confirmar
-                     </button>
-                  </div>
-               </form>
-            </div>
-         </Modal>
+                     <DialogFooter className="mt-3">
+                        <Button type="submit">Confirmar</Button>
+                     </DialogFooter>
+                  </form>
+               </FormProvider>
+            </DialogContent>
+         </Dialog>
       </div>
    );
 }
-
-import { useWatch } from "react-hook-form";
-import { getServices } from "../../api/services";
-import { getStudents } from "../../api/student";
-
-const CorEventoPreset = ({ register, control, errors }) => {
-   const selectedColor = useWatch({ control, name: "cor_evento" });
-
-   const cores = ["#28a745", "#007bff", "#ffc107", "#dc3545", "#6f42c1"];
-
-   return (
-      <div className="col-md-12 mt-6">
-         <label className="form-label">Cor</label>
-         <div className="d-flex gap-2 flex-wrap">
-            {cores.map((color) => (
-               <label key={color} style={{ cursor: "pointer" }}>
-                  <input
-                     type="radio"
-                     value={color}
-                     {...register("cor_evento", { required: true })}
-                     className="d-none"
-                  />
-                  <div
-                     style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        backgroundColor: color,
-                        border: selectedColor === color ? "3px solid black" : "2px solid #ccc",
-                        transition: "border 0.2s",
-                     }}
-                  />
-               </label>
-            ))}
-         </div>
-         {errors.cor_evento && <p className="text-danger mt-1">Selecione uma cor</p>}
-      </div>
-   );
-};
 
 export default Agenda;

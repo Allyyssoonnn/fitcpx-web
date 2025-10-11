@@ -25,9 +25,7 @@ function CadModalidade() {
    const [usuario] = useRecoilState(stateUsuario);
    const form = useForm({ defaultValues: modalidadeRecebido });
    const {
-      register,
       handleSubmit,
-      control,
       setValue,
       formState: { errors },
    } = form;
@@ -150,11 +148,18 @@ function CadModalidade() {
                            },
                            {
                               separator: true,
-                              cols: 2,
+                              cols: 5,
                               fields: [
+                                 {
+                                    label: "Cor",
+                                    fieldName: "cor_modalidade",
+                                    type: "color",
+                                    description: "Marcação da agenda",
+                                 },
                                  {
                                     label: "Descrição",
                                     fieldName: "descricao_modalidade",
+                                    colSpan: 3,
                                  },
                               ],
                            },
