@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { updatePasswordStudent } from "../../api/student";
 import { updatePassword } from "../../api/user";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import { Button } from "../../components/ui/button";
@@ -11,17 +12,19 @@ import { Field, FieldGroup } from "../../components/ui/field";
 function RecuperacaoSenha() {
    const form = useForm();
    const {
-      register,
       handleSubmit,
       formState: { errors },
    } = form;
    const location = useLocation();
    const [token, setToken] = useState("");
+   const [student, setStudent] = useState(false);
    const [senhaAlterada, setSenhaAlterada] = useState(false);
 
    useEffect(() => {
       (async function load() {
          const token = new URLSearchParams(location.search).get("token");
+         const student = new URLSearchParams(location.search).get("student");
+         if (student) setStudent(true);
          setToken(token);
       })();
    }, []);
@@ -32,7 +35,12 @@ function RecuperacaoSenha() {
          return;
       }
 
-      const resp = await updatePassword(token, data.nova_senha);
+      let resp;
+      if (student) {
+         resp = await updatePasswordStudent(token, data.nova_senha);
+      } else {
+         resp = await updatePassword(token, data.nova_senha);
+      }
       if (resp) setSenhaAlterada(true);
    }
 
@@ -104,12 +112,13 @@ function RecuperacaoSenha() {
                                     Agora você já pode acessar sua conta com a nova senha.
                                  </p>
                               </div>
-
-                              <Field className="text-center">
-                                 <a href="/entrar">
-                                    <Button type="button">Ir para o login</Button>
-                                 </a>
-                              </Field>
+                              {!student && (
+                                 <Field className="text-center">
+                                    <a href="/entrar">
+                                       <Button type="button">Ir para o login</Button>
+                                    </a>
+                                 </Field>
+                              )}
                            </FieldGroup>
                         )}
                      </form>

@@ -6,3 +6,5 @@ export const createOrUpdateStudent = async (data: any) => await post("/students"
 export const deleteStudent = async (id: number) => await deleteAPI(`/students/${id}`);
 export const updateImageStudent = async (img: any, data: any) =>
    await postImage("/students/updateImageStudent", img, data);
+export const updatePasswordStudent = async (token: string, password: string) =>
+   await post("/students/updatePassword", { token, password });
