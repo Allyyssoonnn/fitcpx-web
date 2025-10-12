@@ -62,8 +62,11 @@ function Payments() {
                                        payment.status_empresa_licenca_pagamento === "Pending") && (
                                        <span className="badge bg-warning-subtle text-warning">Pendente</span>
                                     )}
-                                    {payment.status_empresa_licenca_pagamento === "refund" && (
-                                       <span className="badge bg-danger-subtle text-danger">Reembolsado</span>
+                                    {payment.status_empresa_licenca_pagamento === "refunded" && (
+                                       <span className="badge bg-warning-subtle text-warning">Reembolsado</span>
+                                    )}
+                                    {payment.status_empresa_licenca_pagamento === "deleted" && (
+                                       <span className="badge bg-danger-subtle text-danger">Removida</span>
                                     )}
                                     {payment.status_empresa_licenca_pagamento === "Canceled" && (
                                        <span className="badge bg-danger-subtle text-danger">Cancelado</span>

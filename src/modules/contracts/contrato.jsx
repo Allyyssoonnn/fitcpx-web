@@ -174,6 +174,12 @@ function Contrato() {
                                     {pagamento.statustexto_aluno_contrato_pagamento}
                                  </span>
 
+                                 {pagamento.status_aluno_contrato_pagamento === "refunded" && (
+                                    <span className="badge bg-warning-subtle text-warning mt-1">Reembolsada</span>
+                                 )}
+                                 {pagamento.status_aluno_contrato_pagamento === "deleted" && (
+                                    <span className="badge bg-danger-subtle text-danger mt-1">Removida</span>
+                                 )}
                                  {pagamento.status_aluno_contrato_pagamento === "overdue" && (
                                     <span className="badge bg-danger-subtle text-danger mt-1">Vencido</span>
                                  )}

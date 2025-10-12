@@ -282,6 +282,8 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
                   <option value="Pending">Pendente</option>
                   <option value="overdue">Vencido</option>
                   <option value="succeeded">Disponível</option>
+                  <option value="deleted">Removida</option>
+                  <option value="refunded">Reembolsada</option>
                   <option value="paid">Repassado</option>
                   <option value="receivedCash">Recebido Manual</option>
                </select>
@@ -414,6 +416,32 @@ const getPaymentColumns = (navigate, onRecieved) => [
                   </TooltipTrigger>
 
                   <TooltipContent>Valor já disponível em sua conta.</TooltipContent>
+               </Tooltip>
+            );
+         if (status === "deleted")
+            return (
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-check-circle-fill text-success" />
+                        Removida
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Cobraça cancelada e removida.</TooltipContent>
+               </Tooltip>
+            );
+         if (status === "refunded")
+            return (
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Badge variant="outline">
+                        <i className="bi bi-check-circle-fill text-success" />
+                        Reembolsada
+                     </Badge>
+                  </TooltipTrigger>
+
+                  <TooltipContent>Cobrança reembolsada para o cliente.</TooltipContent>
                </Tooltip>
             );
       },
