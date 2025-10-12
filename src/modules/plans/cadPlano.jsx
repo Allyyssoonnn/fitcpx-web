@@ -232,6 +232,11 @@ function CadPlano() {
 
                <div className="d-flex justify-end items-end gap-3 px-3">
                   <Field className="col-2">
+                     <FieldLabel>Valor mensal</FieldLabel>
+                     <Input disabled value={formatarMoeda(valorTotal / duracaoPlano || 0)} />
+                  </Field>
+
+                  <Field className="col-2">
                      <FieldLabel>Valor total</FieldLabel>
                      <Input disabled value={formatarMoeda(valorTotal)} />
                   </Field>
