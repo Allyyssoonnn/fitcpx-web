@@ -491,9 +491,15 @@ function ContratacaoPlano() {
                            Adesão - <strong>{formatarMoeda(plano?.valor_adesao || 0)}</strong>
                         </p>
 
-                        <p>
-                           Total - <strong>{formatarMoeda(plano?.valor_plano || 0)}</strong>
-                        </p>
+                        <div>
+                           <p className={`${montandoPlano && "d-none"} m-0 text-end`}>
+                              Mensal - <strong>{formatarMoeda(plano?.valor_plano / plano.duracao_plano || 0)}</strong>
+                           </p>
+                           <p className="m-0 text-end">
+                              Total -{" "}
+                              <strong>{formatarMoeda(plano?.valor_plano + (plano?.valor_adesao || 0) || 0)}</strong>
+                           </p>
+                        </div>
                      </div>
                   </CardContent>
                </Card>
