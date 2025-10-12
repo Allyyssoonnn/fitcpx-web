@@ -1,14 +1,14 @@
 import { PlusCircle } from "lucide-react";
-import { useState } from "react";
-import { Modal } from "react-bootstrap";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getServices } from "../api/services";
 import { stateUsuario } from "../states/states";
 import { formatarMoeda } from "../utils";
-import Select from "./baseComponents/select";
 import EditableCurrency from "./editableCurrency";
 import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
 
 function SelectModalidades({
@@ -93,92 +93,107 @@ function SelectModalidades({
       </div>
    );
 }
+function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
+   const [modalidade, setModalidade] = useState(undefined);
+   const [codModalidade, setCodModalidade] = useState("");
+   const [codVariacao, setCodVariacao] = useState("");
 
-function ModalModalidades({ show, setShow, modalidades, addModalidade, allowSubVariacao }) {
-   const [modalidade, setModalidade] = useState(null);
-   const [variacao, setVariacao] = useState();
-   const [quantidade, setQuantidade] = useState(1);
+   // Atualiza a modalidade selecionada
+   useEffect(() => {
+      if (codModalidade) {
+         const mod = modalidades?.find((m) => String(m.cod_modalidade) === codModalidade);
+         setModalidade(mod);
+         setCodVariacao(""); // resetar variação ao trocar modalidade
+      } else {
+         setModalidade(undefined);
+      }
+   }, [codModalidade, modalidades]);
+
+   // Obtém a variação selecionada
+   const variacao = modalidade?.variacoes?.find((v) => String(v.cod_modalidade_variacao) === codVariacao);
 
    function confirmar() {
+      if (!modalidade) return;
+
       addModalidade({
          ...modalidade,
-         quantidade_modalidade: quantidade,
-         cod_modalidade_variacao: variacao ? variacao.cod_modalidade_variacao : 1,
-         valor_modalidade: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
-         valor_modalidade_original: variacao ? variacao.valor_modalidade_variacao : modalidade.valor_modalidade,
-         nome_modalidade: `${modalidade.nome_modalidade} ${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ""}`,
-         nome_modalidade_original: `${modalidade.nome_modalidade} ${
+         quantidade_modalidade: 1,
+         cod_modalidade_variacao: variacao?.cod_modalidade_variacao,
+         valor_modalidade: variacao?.valor_modalidade_variacao ?? modalidade.valor_modalidade ?? 0,
+         valor_modalidade_original: variacao?.valor_modalidade_variacao ?? modalidade.valor_modalidade ?? 0,
+         nome_modalidade: `${modalidade.nome_modalidade}${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ""}`,
+         nome_modalidade_original: `${modalidade.nome_modalidade}${
             variacao ? ` - ${variacao.nome_modalidade_variacao}` : ""
          }`,
          valores: variacao?.valores ?? [],
       });
-      setShow(false);
+
+      fechar();
    }
 
    function fechar() {
-      setModalidade(null);
-      setVariacao(null);
+      setModalidade(undefined);
+      setCodModalidade("");
+      setCodVariacao("");
       setShow(false);
    }
 
+   // Valor a ser exibido
+   const valorExibicao = variacao?.valor_modalidade_variacao ?? modalidade?.valor_modalidade ?? 0;
+
    return (
-      <Modal show={show}>
-         <div className="card">
-            <div className="card-header">
-               <h5 className="card-title">Incluir modalidade</h5>
-            </div>
+      <Dialog open={show} onOpenChange={fechar}>
+         <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+               <DialogTitle>Incluir Modalidade</DialogTitle>
+            </DialogHeader>
 
-            <div className="card-body">
-               <Select
-                  options={modalidades}
-                  value={modalidade?.cod_modalidade}
-                  fieldName="nome_modalidade"
-                  fieldValue="cod_modalidade"
-                  label="Selecionar modalidade"
-                  onChange={(value) => setModalidade(value)}
-               />
+            <div className="space-y-4 mt-2">
+               {/* Seleção da modalidade */}
+               <Select value={codModalidade} onValueChange={setCodModalidade}>
+                  <SelectTrigger className="w-100 mb-3">
+                     <SelectValue placeholder="Selecione a modalidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                     {modalidades?.map((m) => (
+                        <SelectItem value={String(m.cod_modalidade)} key={m.cod_modalidade}>
+                           {m.nome_modalidade}
+                        </SelectItem>
+                     ))}
+                  </SelectContent>
+               </Select>
 
-               {!allowSubVariacao && (
-                  <div className="mt-3">
-                     <label className="form-label">Quantidade</label>
-                     <input
-                        className="form-control"
-                        type="number"
-                        value={quantidade}
-                        onChange={(e) => setQuantidade(e.target.value)}
-                     />
-                  </div>
+               {/* Seleção da variação */}
+               {modalidade?.variacoes?.length > 0 && (
+                  <Select value={codVariacao} onValueChange={setCodVariacao}>
+                     <SelectTrigger className="w-100 mb-3">
+                        <SelectValue placeholder="Selecione a variação" />
+                     </SelectTrigger>
+                     <SelectContent>
+                        {modalidade.variacoes.map((v) => (
+                           <SelectItem value={String(v.cod_modalidade_variacao)} key={v.cod_modalidade_variacao}>
+                              {v.nome_modalidade_variacao}
+                           </SelectItem>
+                        ))}
+                     </SelectContent>
+                  </Select>
                )}
 
-               <div className="mt-3">
-                  {modalidade?.variacoes && allowSubVariacao && (
-                     <Select
-                        options={modalidade?.variacoes}
-                        fieldName="nome_modalidade_variacao"
-                        fieldValue="nome_modalidade_variacao"
-                        label="Selecionar variação"
-                        onChange={(value) => setVariacao(value)}
-                     />
-                  )}
-               </div>
-
-               <div className="d-flex justify-content-center mt-3">
-                  <label className="badge bg-info w-100 fs-5">
-                     {formatarMoeda((variacao?.valor_modalidade_variacao ?? modalidade?.valor_modalidade) || 0)}
-                  </label>
+               {/* Exibição do valor */}
+               <div className="flex justify-center">
+                  <span className="bg-gray-200 text-gray-900 text-lg px-4 py-2 rounded w-full text-center">
+                     {formatarMoeda(valorExibicao)}
+                  </span>
                </div>
             </div>
 
-            <div className="card-footer d-flex justify-content-between">
-               <button className="btn btn-danger rounded" onClick={fechar}>
-                  Fechar
-               </button>
-               <button className="btn btn-success rounded" onClick={confirmar} disabled={!modalidade}>
+            <DialogFooter>
+               <Button onClick={confirmar} disabled={!modalidade}>
                   Confirmar
-               </button>
-            </div>
-         </div>
-      </Modal>
+               </Button>
+            </DialogFooter>
+         </DialogContent>
+      </Dialog>
    );
 }
 

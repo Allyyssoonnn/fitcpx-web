@@ -23,6 +23,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { adicionarMesData, dividirParcelas, formatarCEP, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
 import { convertNumberToTextWithDecimals } from "../../utils/convertNumberToText";
+import { processaPlano } from "../../utils/utilsPlan";
 
 function ContratacaoPlano() {
    const [usuario] = useRecoilState(stateUsuario);
@@ -102,9 +103,8 @@ function ContratacaoPlano() {
 
    useEffect(() => {
       if (!plano?.duracao_plano) return;
-      var planoAtt = aplicarSubvariacoes(plano);
-      planoAtt = calcularValores(planoAtt);
-      setPlano(planoAtt);
+      const { planoAtualizado, valorTotal } = processaPlano(plano, plano?.duracao_plano, plano?.valor_adesao);
+      setPlano({ ...planoAtualizado, valor_plano: valorTotal });
    }, [plano?.duracao_plano]);
 
    // --- Funções otimizadas para modalidades e valores --- //
@@ -256,16 +256,17 @@ function ContratacaoPlano() {
       const planoSelecionado = planos.find((e) => e.cod_plano == v);
       if (!planoSelecionado) return;
 
-      const modalidadesAtualizadas = (planoSelecionado.modalidades || []).map((m) => ({
-         ...m,
-         valor_modalidade: m.valor_modalidade_alterado ?? m.valor_modalidade,
-         nome_modalidade: m.nome_plano_modalidade,
-      }));
+      const { planoAtualizado, valorTotal } = processaPlano(
+         planoSelecionado,
+         planoSelecionado?.duracao_plano,
+         planoSelecionado?.valor_adesao
+      );
 
       setPlano((prev) => ({
          ...prev,
-         ...planoSelecionado,
-         modalidades: modalidadesAtualizadas,
+         ...planoAtualizado,
+         valor_plano: valorTotal,
+         modalidades: planoAtualizado.modalidades,
       }));
    }
 
@@ -493,7 +494,7 @@ function ContratacaoPlano() {
 
                         <div>
                            <p className={`${montandoPlano && "d-none"} m-0 text-end`}>
-                              Mensal - <strong>{formatarMoeda(plano?.valor_plano / plano.duracao_plano || 0)}</strong>
+                              Mensal - <strong>{formatarMoeda(plano?.valor_plano / plano?.duracao_plano || 0)}</strong>
                            </p>
                            <p className="m-0 text-end">
                               Total -{" "}
