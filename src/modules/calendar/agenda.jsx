@@ -201,6 +201,7 @@ function Calendario() {
    return (
       <div style={{ height: "900px" }}>
          <FullCalendar
+            height={900}
             eventContent={(arg) => {
                const tipo = arg.event.extendedProps.tipo_evento;
 
@@ -259,6 +260,16 @@ function Calendario() {
                      </div>
                   </div>
                );
+            }}
+            eventDidMount={(info) => {
+               const tipo = info.event.extendedProps.tipo_evento;
+
+               let highlightColor = "rgba(200,200,200,1)"; // cinza para Agendamento
+               if (tipo === "Disponibilidade") highlightColor = "rgba(0,200,0,1)"; // verde
+
+               // Aplica o background no container do evento (timeGrid usa isso)
+               info.el.style.backgroundColor = highlightColor;
+               info.el.style.borderColor = highlightColor;
             }}
             locale={ptBrLocale}
             ref={calendarRef}
@@ -336,9 +347,6 @@ function Calendario() {
                                     label: "Descrição",
                                     fieldName: "descricao_evento",
                                     hideField: (data) => !!data?.cod_modalidade,
-                                    options: {
-                                       required: true,
-                                    },
                                  },
                                  {
                                     label: "Cor",
