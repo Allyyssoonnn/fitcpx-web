@@ -492,12 +492,13 @@ function SimetriaMembro({ avaliacoes }) {
                      </tr>
                   </thead>
                   <tbody>
-                     {["Braço", "Braço contraído", "Antebraço", "Coxa"].map((membro, idx) => {
+                     {["Braço", "Braço contraído", "Antebraço", "Coxa", "Panturrilha"].map((membro, idx) => {
                         const keys = [
                            ["braco_relaxado_direito", "braco_relaxado_esquerdo"],
                            ["braco_contraido_direito", "braco_contraido_esquerdo"],
                            ["antebraco_direito", "antebraco_esquerdo"],
                            ["coxa_direita", "coxa_esquerda"],
+                           ["panturrilha_direita", "panturrilha_esquerda"],
                         ];
                         return (
                            <tr key={idx}>

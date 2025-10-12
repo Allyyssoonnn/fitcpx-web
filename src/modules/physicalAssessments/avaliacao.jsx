@@ -602,6 +602,11 @@ function SimetriaMembro({ avaliacao }) {
 
    const data = [
       {
+         membro: "Panturrilha",
+         direito: avaliacao.panturrilha_direita,
+         esquerdo: avaliacao.panturrilha_esquerda,
+      },
+      {
          membro: "Braço",
          direito: avaliacao.braco_relaxado_direito,
          esquerdo: avaliacao.braco_relaxado_esquerdo,
@@ -735,6 +740,16 @@ function SimetriaMembro({ avaliacao }) {
                         {Math.abs(avaliacao.coxa_direita - avaliacao.coxa_esquerda).toFixed(2) || "-"}
                      </TableCell>
                      <TableCell>{avaliacao.coxa_esquerda || "-"}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                     <TableCell>Panturrilha</TableCell>
+                     <TableCell>{avaliacao.panturrilha_direita || "-"}</TableCell>
+                     <TableCell
+                        className={getDifferenceClass(avaliacao.panturrilha_esquerda - avaliacao.panturrilha_direita)}
+                     >
+                        {Math.abs(avaliacao.panturrilha_esquerda - avaliacao.panturrilha_direita).toFixed(2) || "-"}
+                     </TableCell>
+                     <TableCell>{avaliacao.panturrilha_esquerda || "-"}</TableCell>
                   </TableRow>
                </TableBody>
             </Table>
