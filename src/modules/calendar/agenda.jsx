@@ -292,7 +292,6 @@ function Calendario() {
                center: "title",
                right: "dayGridMonth,timeGridWeek,timeGridDay",
             }}
-            height={900}
          />
 
          <Dialog open={showModal} onOpenChange={(open) => setShowModal(open)}>
