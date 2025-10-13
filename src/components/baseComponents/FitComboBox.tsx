@@ -39,7 +39,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
 
    return (
       <Popover open={open} onOpenChange={setOpen}>
-         <PopoverTrigger asChild>
+         <PopoverTrigger asChild id={name}>
             <Button
                name={name}
                variant="outline"

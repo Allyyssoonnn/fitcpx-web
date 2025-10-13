@@ -229,7 +229,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
          <div className="d-flex flex-column gap-2">
             {exercicios.map((exercicio, index) => (
                <Card
-                  key={exercicio.cod_exercicio}
+                  key={`exercise-${index}`}
                   className={`d-flex flex-row shadow-sm align-items-center border-start border-primary p-2 gap-2 rounded ${
                      exercicio.sets?.length > 0 ? arrayBorders[index] : ""
                   }`}
@@ -276,6 +276,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                               {/* Combo responsivo */}
                               <div className="form-floating flex-grow-1 min-w-200px">
                                  <FitComboBox
+                                    key={`exercise-combobox-${indexSessao}-${index}-set-null`}
                                     name={`exercise-${index}-session-${indexSessao}-set-null`}
                                     options={(exercicio?.exerciciosFiltros ?? exerciciosLista).map((e) => ({
                                        label: e.nome_exercicio,
@@ -388,13 +389,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                         ?.slice()
                         .sort((a, b) => new Date(a.createdAt) + new Date(b.createdAt))
                         .map((set, idx) => (
-                           <div key={set.cod_exercicio} className="mt-2">
+                           <div key={`exercise-set-${idx}`} className="mt-2">
                               <div className="py-2 px-3 mb-3">
                                  <CardHeader className="mb-2 w-100">
                                     <div className="d-flex flex-wrap align-items-center gap-2 w-100">
                                        {/* Combo ocupa todo espaço disponível */}
                                        <div className="form-floating flex-grow-1 min-w-200px">
                                           <FitComboBox
+                                             key={`exercise-combobox-${indexSessao}-${index}-set-${idx}`}
                                              name={`exercise-${index}-session-${indexSessao}-set-${idx}`}
                                              options={(set?.exerciciosFiltros ?? exerciciosLista).map((e) => ({
                                                 label: e.nome_exercicio,
