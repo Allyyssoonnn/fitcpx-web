@@ -2,40 +2,37 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import {
-   generateWorkout,
-   getExerciseResistences,
-   getExerciseTypes,
-   getJoints,
-   getMovementPatterns,
-   getMuscleGroups,
-} from "../../api/workouts";
+import { generateWorkout, getMuscleGroups } from "../../api/workouts";
 import { stateUsuario, useNotificacao } from "../../states/states";
+import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
 import MultipleSelector from "../ui/multiselect";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
-function GerarTreino({ setSessoes, indexSessao, cod_aluno, volume_treino, nivel_treino, desenvolvimento_treino }) {
+function GerarTreino({ setSessoes, indexSessao, nivel_treino, desenvolvimento_treino }) {
    const [open, setOpen] = useState(false);
 
    function adicionarSessaoGerada(sessao) {
       setSessoes((prevSessoes) => prevSessoes.map((s, i) => (i == indexSessao ? { ...s, exercicios: sessao } : s)));
-      // setShow(false);
    }
 
    return (
       <Dialog open={open} onOpenChange={setOpen}>
-         <DialogTrigger disabled={!volume_treino || !nivel_treino || !desenvolvimento_treino}>
+         <DialogTrigger disabled={!desenvolvimento_treino || !nivel_treino}>
             {screen.width > 766 ? (
                <button
-                  disabled={!volume_treino || !nivel_treino || !desenvolvimento_treino}
+                  disabled={!desenvolvimento_treino || !nivel_treino}
                   type="button"
                   className="btn btn btn-info rounded mx-2"
                >
                   <i className="bi bi-lightbulb" />
                </button>
             ) : (
-               <a type="button" className="d-flex align-items-center gap-2 btn btn-sm btn-outline-info rounded mb-1">
+               <a
+                  disabled={!desenvolvimento_treino || !nivel_treino}
+                  type="button"
+                  className="d-flex align-items-center gap-2 btn btn-sm btn-outline-info rounded mb-1"
+               >
                   <i className="bi bi-lightbulb" />
                   <p className="mb-0">Treino inteligente</p>
                </a>
@@ -49,9 +46,7 @@ function GerarTreino({ setSessoes, indexSessao, cod_aluno, volume_treino, nivel_
 
             <Filters
                adicionarSessaoGerada={adicionarSessaoGerada}
-               cod_aluno={cod_aluno}
                closeDialog={() => setOpen(false)}
-               volume_treino={volume_treino}
                nivel_treino={nivel_treino}
                desenvolvimento_treino={desenvolvimento_treino}
             />
@@ -63,9 +58,6 @@ function GerarTreino({ setSessoes, indexSessao, cod_aluno, volume_treino, nivel_
                   Nível: <strong>{nivel_treino}</strong>
                </label>
                <label>
-                  Volume: <strong>{volume_treino}</strong>
-               </label>
-               <label>
                   Desenvolvimento: <strong>{desenvolvimento_treino}</strong>
                </label>
             </div>
@@ -74,74 +66,18 @@ function GerarTreino({ setSessoes, indexSessao, cod_aluno, volume_treino, nivel_
    );
 }
 
-function Filters({
-   adicionarSessaoGerada,
-   cod_aluno,
-   closeDialog,
-   volume_treino,
-   nivel_treino,
-   desenvolvimento_treino,
-}) {
+function Filters({ adicionarSessaoGerada, closeDialog, nivel_treino, desenvolvimento_treino }) {
    const { nLoading, endLoading } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
 
-   const [pageShow, setPageShow] = useState("Grupos");
-   const [aquecimento, setAquecimento] = useState([
-      {
-         label: "Aquecimento",
-         cod_padrao_movimento: 2,
-         cod_tipo_exercicio: 2,
-         cod_exercicio_resistencia: 2,
-         cod_indicacao: 2,
-         cod_articulacao: 2,
-         volume: 2,
-         qtd_exercicios: 2,
-      },
-   ]);
+   const [volume_treino, setVolumeTreino] = useState("Baixo");
    const [gruposSelecionados, setGruposSelecionados] = useState([]);
-   const [indicacoesSelecionadas, setIndicacoesSelecionadas] = useState([]);
 
    const { data: grupos } = useQuery({
       queryKey: ["grupos", usuario.cod_empresa],
       queryFn: getMuscleGroups,
       initialData: [],
    });
-
-   const { data: articulacoes } = useQuery({
-      queryKey: ["articulacoes", usuario.cod_empresa],
-      queryFn: getJoints,
-      initialData: [],
-   });
-
-   const { data: padraoMovimentos } = useQuery({
-      queryKey: ["padraoMovimentos", usuario.cod_empresa],
-      queryFn: getMovementPatterns,
-      initialData: [],
-   });
-
-   const { data: resistencias } = useQuery({
-      queryKey: ["resistencias", usuario.cod_empresa],
-      queryFn: getExerciseResistences,
-      initialData: [],
-   });
-
-   const { data: tipo_exercicios } = useQuery({
-      queryKey: ["tipo_exercicios", usuario.cod_empresa],
-      queryFn: getExerciseTypes,
-      initialData: [],
-   });
-
-   function updateGroup(obj, field, value) {
-      setGruposSelecionados((prevState) =>
-         prevState.map((group) => (group.value === obj.value ? { ...group, [field]: value } : group))
-      );
-   }
-
-   function updateAquecimento(obj, field, value) {
-      setAquecimento((prevState) =>
-         prevState.map((group) => (group.value === obj.value ? { ...group, [field]: value } : group))
-      );
-   }
 
    async function submitWorkout() {
       if (!gruposSelecionados.length) {
@@ -153,9 +89,6 @@ function Filters({
 
       const sessao = await generateWorkout({
          gruposSelecionados,
-         indicacoesSelecionadas,
-         aquecimento,
-         cod_aluno,
          volume_treino,
          nivel_treino,
          desenvolvimento_treino,
@@ -174,6 +107,7 @@ function Filters({
          </div>
 
          <MultipleSelector
+            className="mb-3"
             value={gruposSelecionados}
             options={grupos.map((grupo, index) => ({
                label: grupo.nome_grupo_exercicio,
@@ -203,47 +137,20 @@ function Filters({
             onMaxSelected={() => toast.error("Máximo de 3 grupos selecionados")}
          />
 
-         <ToggleGroup
-            type="single"
-            variant="outline"
-            size="lg"
-            value={pageShow}
-            onValueChange={setPageShow}
-            className="mt-3 d-none"
-         >
-            <ToggleGroupItem value="Aquecimento" className="px-3">
-               Aquecimento
-            </ToggleGroupItem>
-            <ToggleGroupItem value="Grupos" className="px-3">
-               Grupos
-            </ToggleGroupItem>
-         </ToggleGroup>
+         <Select value={volume_treino} onValueChange={setVolumeTreino}>
+            <SelectTrigger className="w-full mb-3">
+               <SelectValue placeholder="Volume" />
+            </SelectTrigger>
 
-         {pageShow === "Grupos1" && (
-            <CardEditor
-               gruposSelecionados={gruposSelecionados}
-               updateGroup={updateGroup}
-               // articulacoes={articulacoes}
-               padraoMovimentos={padraoMovimentos}
-               resistencias={resistencias}
-               tipo_exercicios={tipo_exercicios}
-            />
-         )}
-         {pageShow === "Aquecimento1" && (
-            <CardEditor
-               gruposSelecionados={aquecimento}
-               updateGroup={updateAquecimento}
-               articulacoes={articulacoes}
-               padraoMovimentos={padraoMovimentos}
-               resistencias={resistencias}
-               tipo_exercicios={tipo_exercicios}
-            />
-         )}
+            <SelectContent>
+               <SelectItem value="Baixo">Baixo</SelectItem>
+               <SelectItem value="Médio">Médio</SelectItem>
+               <SelectItem value="Alto">Alto</SelectItem>
+            </SelectContent>
+         </Select>
 
-         <DialogFooter className="mt-3 justify-content-end d-flex">
-            <button onClick={submitWorkout} className="btn btn-success">
-               Gerar Treino
-            </button>
+         <DialogFooter>
+            <Button onClick={submitWorkout}>Gerar Treino</Button>
          </DialogFooter>
       </div>
    );

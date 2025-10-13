@@ -213,9 +213,6 @@ function TreinoInteligente({
                                                 <GerarTreino
                                                    setSessoes={setSessoes}
                                                    indexSessao={index}
-                                                   button={false}
-                                                   cod_aluno={cod_aluno}
-                                                   volume_treino={volume_treino}
                                                    nivel_treino={nivel_treino}
                                                    desenvolvimento_treino={desenvolvimento_treino}
                                                 />
