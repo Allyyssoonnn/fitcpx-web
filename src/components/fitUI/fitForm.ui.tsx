@@ -29,7 +29,7 @@ type BackBoxUIFieldType = {
    description?: string;
    options?: Options;
    fieldName: string;
-   type?: "input" | "select" | "phone" | "currency" | "color" | "toggle";
+   type?: "input" | "select" | "phone" | "currency" | "color" | "toggle" | "number";
    selectOptions?: SelectOption[] | string[];
    clearSelectButton?: boolean;
    inputType?: React.ComponentProps<"input">["type"];
@@ -167,6 +167,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                  </FieldLabel>
 
                                  <PhoneInput
+                                    id={field.id}
                                     value={value}
                                     onChange={(v) => setValue(field.fieldName, v)}
                                     focusInputOnCountrySelection={false}
@@ -270,10 +271,14 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                        </SelectTrigger>
 
                                        <SelectContent>
-                                          {field.selectOptions?.map((option) => {
+                                          {field.selectOptions?.map((option, index) => {
                                              const value = typeof option === "string" ? option : String(option.value);
                                              const label = typeof option === "string" ? option : option.label;
-                                             return <SelectItem value={value}>{label}</SelectItem>;
+                                             return (
+                                                <SelectItem id={`${field.id}-${index}`} value={value}>
+                                                   {label}
+                                                </SelectItem>
+                                             );
                                           })}
                                        </SelectContent>
                                     </Select>
@@ -298,6 +303,48 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                          })
                                        : {})}
                                     value={value}
+                                 />
+
+                                 {getNestedError(errors, field.fieldName)?.type === "required" && (
+                                    <FieldError>{field.label} obrigatório</FieldError>
+                                 )}
+
+                                 {getNestedError(errors, field.fieldName)?.type === "minLength" && (
+                                    <FieldError>{field.label} muito curto</FieldError>
+                                 )}
+
+                                 {!getNestedError(errors, field.fieldName) && field.description && (
+                                    <FieldDescription>{field.description || "ㅤㅤ"}</FieldDescription>
+                                 )}
+                              </Field>
+                           );
+                        }
+
+                        if (!field.type || field.type === "number") {
+                           const value = watch(field.fieldName as string);
+
+                           return (
+                              <Field className={fieldClassName}>
+                                 <FieldLabel htmlFor={field.label}>
+                                    {field.label} {fieldRequerid && "*"}
+                                 </FieldLabel>
+
+                                 <Input
+                                    {...(register
+                                       ? register(field.fieldName as string, {
+                                            required: fieldRequerid,
+                                            maxLength: field.options?.maxLength,
+                                            minLength: field.options?.minLength,
+                                         })
+                                       : {})}
+                                    value={value}
+                                    onChange={(e) =>
+                                       setValue(field.fieldName, e.target.value.replace(/\D/g, "").trim())
+                                    }
+                                    disabled={field.options?.disabled}
+                                    id={field.id}
+                                    placeholder={field.label}
+                                    type={field.inputType ?? "text"}
                                  />
 
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
