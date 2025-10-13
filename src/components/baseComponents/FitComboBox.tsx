@@ -56,6 +56,12 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
          <PopoverContent className="w-[100%] p-0">
             <Command
                filter={(value, search) => {
+                  const normalize = (str: string) =>
+                     str
+                        .normalize("NFD") // separa acentos
+                        .replace(/[\u0300-\u036f]/g, "") // remove acentos
+                        .toLowerCase(); // deixa minúsculo pra comparar melhor
+
                   const normalizedValue = normalize(value);
                   const normalizedSearch = normalize(search);
 

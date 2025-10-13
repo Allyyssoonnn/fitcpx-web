@@ -320,7 +320,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                            );
                         }
 
-                        if (!field.type || field.type === "number") {
+                        if (field.type === "number") {
                            const value = watch(field.fieldName as string);
 
                            return (
