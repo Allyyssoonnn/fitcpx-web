@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("register", async ({ page }) => {
    await page.goto("http://localhost:5173/entrar");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
@@ -16,12 +16,14 @@ test("test", async ({ page }) => {
    await page.locator("#rg").click();
    await page.locator("#rg").fill("12345");
    await page.locator("#phone").click();
-   await page.locator("#phone").fill("44988084028");
+   await page.locator("#phone").fill("+5544988084028");
    await page.locator("#birthdate").fill("2001-09-11");
+   await page.locator("#gender").click();
+   await page.locator("#gender-0").click();
+   await page.locator("#ethnicity").click();
+   await page.locator("#ethnicity-0").click();
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
-   await page.locator("#password").click();
-   await page.locator("#password").fill("12345");
    await page.locator("#cep").click();
    await page.locator("#cep").fill("87707050");
    await page.waitForTimeout(5000);
@@ -29,6 +31,6 @@ test("test", async ({ page }) => {
    await page.locator("#number").fill("688");
    await page.locator("#address2").click();
    await page.locator("#address2").fill("Complement");
-   await page.getByRole("button", { name: " Confirmar" }).click();
+   await page.locator("#submit").click();
    await page.getByRole("button", { name: "OK" }).click();
 });

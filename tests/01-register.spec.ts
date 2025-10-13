@@ -12,7 +12,6 @@ test("test", async ({ page }) => {
    await page.locator("#password").fill("12345");
    await page.locator("#confirm-password").click();
    await page.locator("#confirm-password").fill("12345");
-   await page.getByRole("checkbox", { name: "Eu li e aceito os termos e" }).check();
    await page.getByRole("button", { name: "Registrar" }).click();
    await expect(page).toHaveURL(/.*\/dashboard/);
 });

@@ -123,7 +123,7 @@ function Login() {
                            />
 
                            <Field>
-                              <Button type="submit">Login</Button>
+                              <Button type="submit">Entrar</Button>
                            </Field>
 
                            <FieldSeparator>Ou continue com</FieldSeparator>
