@@ -264,12 +264,27 @@ function Calendario() {
             eventDidMount={(info) => {
                const tipo = info.event.extendedProps.tipo_evento;
 
-               let highlightColor = "rgba(200,200,200,1)"; // cinza para Agendamento
-               if (tipo === "Disponibilidade") highlightColor = "rgba(0,200,0,1)"; // verde
+               let highlightColor = "rgba(200,200,200,0.4)"; // cinza para Agendamento
+               if (tipo === "Disponibilidade") highlightColor = "rgba(0,200,0,0.4)"; // verde
 
                // Aplica o background no container do evento (timeGrid usa isso)
                info.el.style.backgroundColor = highlightColor;
                info.el.style.borderColor = highlightColor;
+               info.el.style.setProperty("color", "black", "important");
+
+               // Garante que elementos internos (hora, título, spans, strong, etc.) também fiquem pretos
+               const innerSelectors = "span, div, strong, em, .fc-event-title, .fc-event-time, .fc-event-main";
+               info.el.querySelectorAll(innerSelectors).forEach((node) => {
+                  node.style.setProperty("color", "black", "important");
+               });
+
+               // Em alguns themes o texto fica em um elemento filho com inline-style ou classes; força o texto em todos os nós de texto
+               info.el.querySelectorAll("*").forEach((node) => {
+                  // evita alterar elementos que sejam imagens/inputs
+                  if (node instanceof HTMLElement) {
+                     node.style.setProperty("color", "black", "important");
+                  }
+               });
             }}
             locale={ptBrLocale}
             ref={calendarRef}
