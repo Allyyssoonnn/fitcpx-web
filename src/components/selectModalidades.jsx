@@ -122,9 +122,7 @@ function ModalModalidades({ show, setShow, modalidades, addModalidade }) {
          valor_modalidade: variacao?.valor_modalidade_variacao ?? modalidade.valor_modalidade ?? 0,
          valor_modalidade_original: variacao?.valor_modalidade_variacao ?? modalidade.valor_modalidade ?? 0,
          nome_modalidade: `${modalidade.nome_modalidade}${variacao ? ` - ${variacao.nome_modalidade_variacao}` : ""}`,
-         nome_modalidade_original: `${modalidade.nome_modalidade}${
-            variacao ? ` - ${variacao.nome_modalidade_variacao}` : ""
-         }`,
+         nome_modalidade_original: modalidade.nome_modalidade,
          valores: variacao?.valores ?? [],
       });
 
