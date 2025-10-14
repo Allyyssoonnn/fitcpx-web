@@ -54,4 +54,50 @@ test("Verify Stundent Created", async ({ page }) => {
    await expect(page.locator("#student-email")).toHaveText("fitcomplex@fitcpx.com");
    await expect(page.locator("#student-phone")).toHaveText("+5544988084028");
    await expect(page.locator("#student-gender")).toHaveText("Masculino");
+   await expect(page.locator("#student-birthday")).toHaveText("11/09/2001");
+});
+
+test("Test Status Handle Stundent Created", async ({ page }) => {
+   await page.goto("http://localhost:5173/entrar");
+   await page.locator("#email").click();
+   await page.locator("#email").fill("fitcomplex@fitcpx.com");
+   await page.locator("#password").click();
+   await page.locator("#password").fill("12345");
+   await page.getByRole("button", { name: "Entrar" }).click();
+
+   await page.locator("#clients").click();
+   await page.locator("#clients-0").click();
+
+   await expect(page).toHaveURL(/.*\/aluno/);
+
+   await expect(page.locator("#student-status")).toHaveText("Ativo");
+   await page.locator("#student-handlestatus").click();
+   await expect(page.locator("#student-status")).toHaveText("Inativo");
+   await page.locator("#student-handlestatus").click();
+   await expect(page.locator("#student-status")).toHaveText("Ativo");
+});
+
+test("Test Edit Stundent Created", async ({ page }) => {
+   await page.goto("http://localhost:5173/entrar");
+   await page.locator("#email").click();
+   await page.locator("#email").fill("fitcomplex@fitcpx.com");
+   await page.locator("#password").click();
+   await page.locator("#password").fill("12345");
+   await page.getByRole("button", { name: "Entrar" }).click();
+
+   await page.locator("#clients").click();
+   await page.locator("#clients-0").click();
+
+   await expect(page).toHaveURL(/.*\/aluno/);
+
+   await page.locator("#student-edit").click();
+   await expect(page).toHaveURL(/.*\/cadaluno/);
+
+   await page.locator("#name").click();
+   await page.locator("#name").fill("Fit Student");
+   await page.locator("#submit").click();
+   await page.getByRole("button", { name: "OK" }).click();
+
+   await expect(page).toHaveURL(/.*\/aluno/);
+   await expect(page.locator("#student-name")).toHaveText("Fit Student");
 });

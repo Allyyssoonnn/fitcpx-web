@@ -223,7 +223,8 @@ function Aluno() {
                                     <i className="bi bi-calendar3 me-1"></i>
                                     {calcularIdade(aluno?.data_nascimento_aluno)} anos
                                  </span>
-                                 {getStatusBadge(aluno?.status_aluno)}
+
+                                 <span id="student-status">{getStatusBadge(aluno?.status_aluno)}</span>
                               </div>
                            </div>
 
@@ -236,6 +237,7 @@ function Aluno() {
 
                            <div className="d-flex gap-3 flex-wrap">
                               <Button
+                                 id="student-edit"
                                  size="sm"
                                  variant="outline"
                                  onClick={() =>
@@ -249,6 +251,7 @@ function Aluno() {
                               </Button>
 
                               <Button
+                                 id="student-handlestatus"
                                  size="sm"
                                  variant={aluno?.status_aluno == "A" ? "destructive" : "default"}
                                  onClick={changeStatusAluno}
@@ -293,7 +296,7 @@ function Aluno() {
                                        </div>
                                        <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                                           <span className="text-muted">Data de Nascimento:</span>
-                                          <span className="fw-semibold">
+                                          <span className="fw-semibold" id="student-birthday">
                                              {formatarData(aluno?.data_nascimento_aluno) || "Não informado"}
                                           </span>
                                        </div>

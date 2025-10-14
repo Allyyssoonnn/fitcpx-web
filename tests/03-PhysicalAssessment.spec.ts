@@ -9,11 +9,12 @@ test("Create Physical Assessments", async ({ page }) => {
    await page.locator("#password").fill("12345");
    await page.getByRole("button", { name: "Entrar" }).click();
 
-   await page.click('a[id="clients"]');
-   await page.click('tr[id="aluno-0"]');
-   await page.waitForTimeout(2000);
+   await page.locator("#clients").click();
+   await page.locator("#clients-0").click();
+
+   await expect(page).toHaveURL(/.*\/aluno/);
+
    await page.getByRole("tab", { name: "Avaliações Físicas" }).click();
-   await page.pause();
    await page.click('button[id="addPhysicalAssessment"]');
 
    await expect(page).toHaveURL(/.*\/cadavaliacao/);
@@ -25,20 +26,20 @@ test("Create Physical Assessments", async ({ page }) => {
    await page.fill('input[id="weight"]', "80");
    await page.fill('input[id="height"]', "1.73");
 
-   await page.click('button[id$="tab-diametros"]');
+   await page.getByRole("tab", { name: "Diâmetros" }).click();
 
    await page.fill('input[id="biestiloide_punho"]', "4.70");
    await page.fill('input[id="biepicondilo_umeral"]', "7");
    await page.fill('input[id="biepicondilo_femoral"]', "9.40");
 
-   await page.click('button[id$="tab-bioimpedancia"]');
+   await page.getByRole("tab", { name: "Bioimpedância" }).click();
 
    await page.fill('input[id="gordura_viceral"]', "8");
    await page.fill('input[id="bioimpedancia_gordura"]', "20");
    await page.fill('input[id="bioimpedancia_muscular"]', "50");
    await page.fill('input[id="bioimpedancia_idade"]', "30");
 
-   await page.click('button[id$="tab-dobras"]');
+   await page.getByRole("tab", { name: "Dobras cutâneas" }).click();
 
    await page.fill('input[id="subescapular"]', "15.40");
    await page.fill('input[id="triciptal"]', "7");
@@ -51,7 +52,7 @@ test("Create Physical Assessments", async ({ page }) => {
    await page.fill('input[id="coxa"]', "18.60");
    await page.fill('input[id="panturrilha"]', "7.30");
 
-   await page.click('button[id$="tab-perimetros"]');
+   await page.getByRole("tab", { name: "Perímetros" }).click();
 
    await page.fill('input[id="pescoco"]', "36.90");
    await page.fill('input[id="ombro"]', "121.70");
@@ -74,6 +75,20 @@ test("Create Physical Assessments", async ({ page }) => {
    await page.fill('input[id="panturrilha_esquerda"]', "35.60");
 
    await page.click('button[id="submit"]');
+
+   await expect(page).toHaveURL(/.*\/aluno/);
+});
+
+test("Verify Physical Assessment Created", async ({ page }) => {
+   await page.goto("http://localhost:5173/entrar");
+   await page.locator("#email").click();
+   await page.locator("#email").fill("fitcomplex@fitcpx.com");
+   await page.locator("#password").click();
+   await page.locator("#password").fill("12345");
+   await page.getByRole("button", { name: "Entrar" }).click();
+
+   await page.locator("#clients").click();
+   await page.locator("#clients-0").click();
 
    await expect(page).toHaveURL(/.*\/aluno/);
 });
