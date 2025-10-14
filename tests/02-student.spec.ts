@@ -1,12 +1,13 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-test("register", async ({ page }) => {
+test("Create Student", async ({ page }) => {
    await page.goto("http://localhost:5173/entrar");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
    await page.locator("#password").click();
    await page.locator("#password").fill("12345");
    await page.getByRole("button", { name: "Entrar" }).click();
+
    await page.locator("#clients").click();
    await page.locator("#newClient").click();
    await page.locator("#name").click();
@@ -33,4 +34,24 @@ test("register", async ({ page }) => {
    await page.locator("#address2").fill("Complement");
    await page.locator("#submit").click();
    await page.getByRole("button", { name: "OK" }).click();
+});
+
+test("Verify Stundent Created", async ({ page }) => {
+   await page.goto("http://localhost:5173/entrar");
+   await page.locator("#email").click();
+   await page.locator("#email").fill("fitcomplex@fitcpx.com");
+   await page.locator("#password").click();
+   await page.locator("#password").fill("12345");
+   await page.getByRole("button", { name: "Entrar" }).click();
+
+   await page.locator("#clients").click();
+   await page.locator("#clients-0").click();
+
+   await expect(page).toHaveURL(/.*\/aluno/);
+
+   await page.waitForSelector("#student-name", { timeout: 10000 });
+   await expect(page.locator("#student-name")).toHaveText("Fit Student Test");
+   await expect(page.locator("#student-email")).toHaveText("fitcomplex@fitcpx.com");
+   await expect(page.locator("#student-phone")).toHaveText("+5544988084028");
+   await expect(page.locator("#student-gender")).toHaveText("Masculino");
 });

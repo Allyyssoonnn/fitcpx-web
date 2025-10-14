@@ -49,7 +49,7 @@ function Alunos() {
          <div className="row">
             <div className="col-md-12">
                <FitTable.Root
-                  rowId="aluno-"
+                  rowId="clients-"
                   list={filteredAlunos}
                   title={t("listName")}
                   description={`${filteredAlunos?.length} ${filteredAlunos?.length > 1 ? "Alunos" : "Aluno"}`}

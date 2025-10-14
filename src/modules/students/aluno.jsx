@@ -215,7 +215,9 @@ function Aluno() {
                      <div className="col-lg-9 col-md-8">
                         <div className="d-flex flex-column h-100 justify-content-center">
                            <div className="mb-3">
-                              <h1 className="fw-bold text-dark mb-2">{aluno?.nome_aluno}</h1>
+                              <h1 className="fw-bold text-dark mb-2" id="student-name">
+                                 {aluno?.nome_aluno}
+                              </h1>
                               <div className="d-flex align-items-center gap-3 flex-wrap">
                                  <span className="text-muted">
                                     <i className="bi bi-calendar3 me-1"></i>
@@ -226,7 +228,7 @@ function Aluno() {
                            </div>
 
                            <div className="mb-4">
-                              <p className="text-muted mb-1">
+                              <p className="text-muted mb-1" id="student-email">
                                  <i className="bi bi-envelope me-2"></i>
                                  {aluno?.email_aluno}
                               </p>
@@ -285,7 +287,7 @@ function Aluno() {
                                     <div className="space-y-3">
                                        <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
                                           <span className="text-muted">Telefone:</span>
-                                          <span className="fw-semibold">
+                                          <span className="fw-semibold" id="student-phone">
                                              {aluno?.telefone_aluno || "Não informado"}
                                           </span>
                                        </div>
@@ -297,7 +299,7 @@ function Aluno() {
                                        </div>
                                        <div className="d-flex justify-content-between align-items-center py-2">
                                           <span className="text-muted">Sexo:</span>
-                                          <span className="fw-semibold">
+                                          <span className="fw-semibold" id="student-gender">
                                              {aluno?.sexo_aluno === "M" ? "Masculino" : "Feminino"}
                                           </span>
                                        </div>
