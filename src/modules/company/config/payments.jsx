@@ -44,16 +44,24 @@ function Payments() {
                            <TableRow>
                               <TableCell>Vencimento</TableCell>
                               <TableCell>Status</TableCell>
-                              <TableCell>Data Encerramento</TableCell>
+                              {/* <TableCell>Data Encerramento</TableCell> */}
                               <TableCell>Valor</TableCell>
                               <TableCell></TableCell>
                            </TableRow>
                         </TableHeader>
 
                         <TableBody>
+                           {console.log(license.payments)}
                            {license.payments.map((payment, index) => (
                               <TableRow key={index} className="border-top">
-                                 <TableCell>{formatarData(payment.data_empresa_licenca_pagamento)}</TableCell>
+                                 <TableCell>
+                                    {(() => {
+                                       const json = JSON.parse(payment.json_empresa_licenca_pagamento);
+                                       console.log(json);
+
+                                       return formatarData(json?.dueDate ?? payment.data_empresa_licenca_pagamento);
+                                    })()}
+                                 </TableCell>
                                  <TableCell>
                                     {payment.status_empresa_licenca_pagamento === "succeeded" && (
                                        <span className="badge bg-success-subtle text-success">Pago</span>
@@ -71,12 +79,15 @@ function Payments() {
                                     {payment.status_empresa_licenca_pagamento === "Canceled" && (
                                        <span className="badge bg-danger-subtle text-danger">Cancelado</span>
                                     )}
+                                    {payment.status_empresa_licenca_pagamento === "overdue" && (
+                                       <span className="badge bg-danger-subtle text-danger">Vencido</span>
+                                    )}
                                  </TableCell>
-                                 <TableCell>
+                                 {/* <TableCell>
                                     <span className="badge bg-light text-dark">
                                        {formatarData(payment.expiracao_empresa_licenca_pagamento)}
                                     </span>
-                                 </TableCell>
+                                 </TableCell> */}
                                  <TableCell>
                                     <span className="text-muted">
                                        {formatarMoeda(payment.valor_empresa_licenca_pagamento)}
@@ -91,7 +102,6 @@ function Payments() {
                                              onClick={() =>
                                                 window.open(payment?.asaas_url, "_blank", "noopener,noreferrer")
                                              }
-                                             className="btn btn-sm btn-outline-success"
                                           >
                                              <CreditCard />
                                              Pagar

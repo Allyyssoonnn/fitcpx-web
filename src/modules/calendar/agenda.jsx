@@ -205,6 +205,8 @@ function Calendario() {
             eventContent={(arg) => {
                const tipo = arg.event.extendedProps.tipo_evento;
 
+               const isMonthView = arg.view.type === "dayGridMonth";
+
                // Cor da marca-texto
                let highlightColor = "rgba(200,200,200,0.3)"; // cinza claro
                if (tipo === "Disponibilidade") highlightColor = "rgba(0,200,0,0.3)"; // verde
@@ -253,7 +255,9 @@ function Calendario() {
                         ></span>
 
                         {/* Hora */}
-                        {arg.timeText && <strong>{arg.timeText} </strong>}
+                        {/* {arg.timeText && <strong>{arg.timeText} </strong>} */}
+                        {/* Exibe hora apenas na visualização de mês */}
+                        {isMonthView && arg.timeText && <strong style={{ marginRight: "4px" }}>{arg.timeText}h</strong>}
 
                         {/* Título */}
                         <span style={{ marginLeft: "2px" }}>{arg.event.title}</span>
