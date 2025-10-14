@@ -82,7 +82,7 @@ function Imagens({
             };
          };
          reader.readAsDataURL(file);
-      });\
+      });
    };
 
    const handleDragOver = (event) => {
