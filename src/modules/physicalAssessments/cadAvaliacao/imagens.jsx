@@ -37,94 +37,52 @@ function Imagens({
    // Função para lidar com arrastar e soltar
    const handleDrop = (event, option) => {
       event.preventDefault();
-
-      //Preenche várias opções para multiplos arquivos
-      if (event.dataTransfer.files.length > 1) {
-         //Novo array de opções sem as vazias
-         var newOptions = [...options];
-         for (let i = 0; i < options.length; i++) {
-            const opt = options[i];
-            if (!capturedImages[opt]) newOptions.splice(i);
-         }
-         //Array de opções que serão inseridos as imagens carregadas
-         const optionFill = Array.from(
-            { length: event.dataTransfer.files.length },
-            (_, i) => i + newOptions.length + 1
-         );
-         //Seta as opções com todas que há imagens
-         setOptions([...newOptions, ...optionFill]);
-
-         for (let i = 0; i < event.dataTransfer.files.length; i++) {
-            const file = event.dataTransfer.files[i];
-
-            if (file && file.type.startsWith("image/")) {
-               const reader = new FileReader();
-               reader.onload = (e) => {
-                  const imageData = e.target.result;
-
-                  const img = new Image();
-                  img.src = imageData;
-                  var croppedImage;
-
-                  img.onload = () => {
-                     const height = img.height;
-                     const width = img.height / 2;
-
-                     // Criar o canvas com as novas dimensões
-                     const canvas = document.createElement("canvas");
-                     const ctx = canvas.getContext("2d");
-                     canvas.width = width;
-                     canvas.height = height;
-
-                     // Calcular a posição de corte para centralizar
-                     const sx = (img.width - width) / 2; // Início do corte na horizontal (centro)
-                     const sy = 0; // Mantém o topo da imagem
-
-                     // Desenhar a imagem cortada no canvas
-                     ctx.drawImage(img, sx, sy, width, height, 0, 0, width, height);
-
-                     // Gerar a imagem final
-                     croppedImage = canvas.toDataURL("image/jpeg", 0.8);
-
-                     setEditImages((prevImages) => ({
-                        ...prevImages,
-                        [optionFill[i]]: imageData,
-                     }));
-                     setCapturedImages((prevImages) => ({
-                        ...prevImages,
-                        [optionFill[i]]: croppedImage,
-                     }));
-                     setImageDescriptions((prevDescriptions) => ({
-                        ...prevDescriptions,
-                        [optionFill[i]]: file.name.split(".")[0],
-                     }));
-                  };
-               };
-               reader.readAsDataURL(file);
-            }
-         }
+      const files = Array.from(event.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+      if (!files.length) {
+         console.error("Nenhuma imagem válida encontrada.");
          return;
       }
-      //Segue preenchendo apenas a imagem enviada para a opção
-      const file = event.dataTransfer.files[0];
 
-      if (file && file.type.startsWith("image/")) {
+      if (files.length > 20) {
+         alert("Selecione no máximo 20 imagens de uma vez.");
+         return;
+      }
+
+      setOptions((prevOptions) => {
+         // Começa do último índice existente + 1
+         const lastIndex = prevOptions.length ? Math.max(...prevOptions) : 0;
+         const newOptions = files.map((_, i) => lastIndex + i + 1);
+         return [...prevOptions, ...newOptions];
+      });
+
+      files.forEach((file, i) => {
          const reader = new FileReader();
          reader.onload = (e) => {
             const imageData = e.target.result;
-            // Enviar imagem para o modal de corte
-            setCurrentOption(option);
-            setImageToCrop(imageData);
-            setShowCropModal(true);
-            setImageDescriptions((prevDescriptions) => ({
-               ...prevDescriptions,
-               [option]: file.name.split(".")[0],
-            }));
+
+            const img = new Image();
+            img.src = imageData;
+            img.onload = () => {
+               const height = img.height;
+               const width = img.height / 2;
+               const canvas = document.createElement("canvas");
+               canvas.width = width;
+               canvas.height = height;
+               const ctx = canvas.getContext("2d");
+               const sx = (img.width - width) / 2;
+               ctx.drawImage(img, sx, 0, width, height, 0, 0, width, height);
+               const croppedImage = canvas.toDataURL("image/jpeg", 0.8);
+
+               setEditImages((prev) => ({ ...prev, [option + i]: imageData }));
+               setCapturedImages((prev) => ({ ...prev, [option + i]: croppedImage }));
+               setImageDescriptions((prev) => ({
+                  ...prev,
+                  [option + i]: file.name.split(".")[0],
+               }));
+            };
          };
          reader.readAsDataURL(file);
-      } else {
-         console.error("O arquivo arrastado não é uma imagem válida.");
-      }
+      });\
    };
 
    const handleDragOver = (event) => {
