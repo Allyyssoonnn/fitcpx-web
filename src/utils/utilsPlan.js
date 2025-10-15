@@ -56,7 +56,6 @@ export function processaPlano(plano, duracaoPlano, valorAdesao = 0) {
    const totalBase = modalidades.reduce((sum, m) => sum + (m.valor_modalidade || 0), 0);
    const valorTotal = totalBase * duracaoPlano;
    const parcelas = dividirParcelas(duracaoPlano, valorTotal);
-   parcelas[0] += valorAdesao;
 
    const planoAtualizado = {
       ...plano,
