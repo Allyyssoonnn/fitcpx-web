@@ -7,7 +7,7 @@ import FitFormUI from "../../../components/fitUI/fitForm.ui";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
-import { dataURLToBlob } from "../../../utils";
+import { dataURLToBlob, states } from "../../../utils";
 
 function Business({ empresa, setempresa, usuario }) {
    const { nSuccess } = useNotificacao();
@@ -161,6 +161,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "CNPJ/CPF",
                                        id: "cnpj",
+                                       type: "number",
                                        fieldName: "doc_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },
@@ -188,6 +189,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "CEP",
                                        id: "cep",
+                                       type: "number",
                                        fieldName: "cep_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },
@@ -202,6 +204,8 @@ function Business({ empresa, setempresa, usuario }) {
                                        id: "state",
                                        fieldName: "estado_empresa",
                                        disabled: usuario.admin_usuario !== "S",
+                                       type: "select",
+                                       selectOptions: states,
                                     },
                                     {
                                        label: "Endereço",
@@ -212,6 +216,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "Número",
                                        id: "number",
+                                       type: "number",
                                        fieldName: "numero_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },

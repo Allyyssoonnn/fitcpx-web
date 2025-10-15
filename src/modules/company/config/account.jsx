@@ -7,7 +7,7 @@ import FitFormUI from "../../../components/fitUI/fitForm.ui";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
-import { dataURLToBlob } from "../../../utils";
+import { dataURLToBlob, states } from "../../../utils";
 
 function Account({ usuario, setusuario }) {
    const { nSuccess } = useNotificacao();
@@ -160,6 +160,7 @@ function Account({ usuario, setusuario }) {
                                     {
                                        label: "CPF",
                                        fieldName: "cpf_usuario",
+                                       type: "number",
                                     },
                                     {
                                        label: "Chave PIX",
@@ -187,6 +188,7 @@ function Account({ usuario, setusuario }) {
                                     {
                                        label: "CEP",
                                        fieldName: "cep_usuario",
+                                       type: "number",
                                     },
                                     {
                                        label: "Cidade",
@@ -195,6 +197,8 @@ function Account({ usuario, setusuario }) {
                                     {
                                        label: "Estado",
                                        fieldName: "estado_usuario",
+                                       type: "select",
+                                       selectOptions: states,
                                     },
                                     {
                                        label: "Endereço",
@@ -203,6 +207,7 @@ function Account({ usuario, setusuario }) {
                                     {
                                        label: "Número",
                                        fieldName: "numero_usuario",
+                                       type: "number",
                                     },
                                     {
                                        label: "Bairro",
