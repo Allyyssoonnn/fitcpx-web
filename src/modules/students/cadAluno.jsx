@@ -213,6 +213,7 @@ function CadAluno() {
                                     format: "CEP",
                                     id: "cep",
                                     label: "CEP",
+                                    type: "number",
                                     fieldName: "cep_aluno",
                                  },
                                  {
@@ -252,7 +253,7 @@ function CadAluno() {
                                     id: "number",
                                     label: "Número",
                                     fieldName: "numero_aluno",
-                                    inputType: "number",
+                                    type: "number",
                                  },
                               ],
                            },
