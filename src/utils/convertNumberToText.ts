@@ -234,9 +234,9 @@ export function convertNumberToTextWithDecimals(
    if (isNaN(numero) || numero < 0 || numero > 100000) {
       throw new Error("O número deve ser um valor numérico entre 0 e 100.000.");
    }
-   if (Math.round(numero * 100) / 100 !== numero) {
-      throw new Error("O número pode ter no máximo 2 casas decimais.");
-   }
+   // if (Math.round(numero * 100) / 100 !== numero) {
+   //    throw new Error("O número pode ter no máximo 2 casas decimais.");
+   // }
 
    // --- Opções de Moeda Padrão ---
    const defaultOptions: Record<Locale, CurrencyOptions> = {
