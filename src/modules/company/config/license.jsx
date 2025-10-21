@@ -136,15 +136,22 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
             <CardDescription className="text-sm mt-2">{licenca?.descricao_licenca}</CardDescription>
 
             <div className="mt-2">
-               <span className="text-2xl font-semibold">{formatarMoeda(licenca?.valor_licenca ?? 0)}</span>
-               <span className="text-sm opacity-70 ms-1">{licenca?.prefix_licenca}</span>
+               <span className="text-2xl font-semibold">
+                  {formatarMoeda(licenca?.mensal_licenca ?? licenca?.valor_licenca ?? 0)}
+               </span>
+               <span className="text-sm opacity-70 ms-1">\Mês</span>
             </div>
+
+            {!!licenca?.mensal_licenca && (
+               <span className="text-sm opacity-70 ms-1">{formatarMoeda(licenca?.valor_licenca)}</span>
+            )}
 
             {/* BADGES */}
             <div className="mt-2">
                {isFree && <Badge variant="outline">Plano Gratuito</Badge>}
                {atual && !isFree && <Badge variant="default">Licença Atual</Badge>}
                {isVIP && <Badge className="bg-purple-600">VIP</Badge>}
+               {licenca?.prefix_licenca && <Badge className="bg-purple-600">{licenca?.prefix_licenca}</Badge>}
             </div>
          </CardHeader>
 
