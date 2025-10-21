@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, MessageSquareMore } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
@@ -10,6 +10,7 @@ import { arrayBorders } from "../../utils";
 import FitModalViewVideo from "../baseComponents/FitModalVideoView";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
@@ -349,6 +350,30 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                     </a>
                                  </div>
                               </div>
+
+                              <Dialog>
+                                 <DialogTrigger>
+                                    <Button type="button" size="icon">
+                                       <MessageSquareMore />
+                                    </Button>
+                                 </DialogTrigger>
+
+                                 <DialogContent>
+                                    <label className="text-sm font-medium">Observação</label>
+                                    <Textarea
+                                       placeholder="Digite uma observação..."
+                                       value={exercicio.observacao_sessao_exercicio}
+                                       onChange={(e) =>
+                                          updateField(index, "observacao_sessao_exercicio", e.target.value)
+                                       }
+                                    />
+                                    <DialogFooter>
+                                       <DialogClose>
+                                          <Button type="button">Fechar</Button>
+                                       </DialogClose>
+                                    </DialogFooter>
+                                 </DialogContent>
+                              </Dialog>
                            </div>
                         </CardHeader>
 
@@ -370,15 +395,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                     />
                                  </div>
                               ))}
-                           </div>
-
-                           <div>
-                              <label className="text-sm font-medium">Observação</label>
-                              <Textarea
-                                 placeholder="Digite uma observação..."
-                                 value={exercicio.observacao_sessao_exercicio}
-                                 onChange={(e) => updateField(index, "observacao_sessao_exercicio", e.target.value)}
-                              />
                            </div>
                         </CardContent>
                      </div>
@@ -423,6 +439,30 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                        >
                                           <i className="bi bi-trash"></i>
                                        </button>
+
+                                       <Dialog>
+                                          <DialogTrigger>
+                                             <Button type="button" size="icon">
+                                                <MessageSquareMore />
+                                             </Button>
+                                          </DialogTrigger>
+
+                                          <DialogContent>
+                                             <label className="text-sm font-medium">Observação</label>
+                                             <Textarea
+                                                placeholder="Digite uma observação..."
+                                                value={exercicio.observacao_sessao_exercicio}
+                                                onChange={(e) =>
+                                                   updateField(index, "observacao_sessao_exercicio", e.target.value)
+                                                }
+                                             />
+                                             <DialogFooter>
+                                                <DialogClose>
+                                                   <Button type="button">Fechar</Button>
+                                                </DialogClose>
+                                             </DialogFooter>
+                                          </DialogContent>
+                                       </Dialog>
                                     </div>
                                  </CardHeader>
 
@@ -447,17 +487,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                              />
                                           </div>
                                        ))}
-                                    </div>
-
-                                    <div>
-                                       <label className="text-sm font-medium">Observação</label>
-                                       <Textarea
-                                          placeholder="Digite uma observação..."
-                                          value={set.observacao_sessao_exercicio}
-                                          onChange={(e) =>
-                                             updateField(index, "observacao_sessao_exercicio", e.target.value, idx)
-                                          }
-                                       />
                                     </div>
                                  </CardContent>
                               </div>
