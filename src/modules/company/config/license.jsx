@@ -134,7 +134,7 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
                   <p className="mb-0 fs-3">{licenca.descricao_licenca}</p>
                   <h5 className="fs-4 fw-semibold mb-0">
                      {formatarMoeda(licenca.valor_licenca ?? 0)}
-                     /Mês
+                     {licenca.prefix_licenca}
                   </h5>
                </div>
             </div>
