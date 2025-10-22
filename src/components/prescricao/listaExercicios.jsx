@@ -451,9 +451,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                                              <label className="text-sm font-medium">Observação</label>
                                              <Textarea
                                                 placeholder="Digite uma observação..."
-                                                value={exercicio.observacao_sessao_exercicio}
+                                                value={set.observacao_sessao_exercicio}
                                                 onChange={(e) =>
-                                                   updateField(index, "observacao_sessao_exercicio", e.target.value)
+                                                   updateField(
+                                                      index,
+                                                      "observacao_sessao_exercicio",
+                                                      e.target.value,
+                                                      idx
+                                                   )
                                                 }
                                              />
                                              <DialogFooter>
