@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { getDashboardInfo } from "../../api/companies";
 import { formatarData } from "../../utils";
+import TourDash from "./dashboard/tour.dash";
 
 type DashboardProps = {
    lengths: {
@@ -34,7 +35,8 @@ function Dashboard() {
    return (
       <div className="container-fluid">
          <div className="grid lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
+            <div className="flex flex-col lg:col-span-2 gap-4">
+               <TourDash />
                <UltimasAvaliacoes lastPhysicalAssessments={dashboard?.lastPhysicalAssessments} />
             </div>
 
@@ -54,6 +56,7 @@ function InfoTotais({ lengths }: DashboardProps) {
          <CardHeader>
             <CardTitle>{t("overview")}</CardTitle>
          </CardHeader>
+
          <CardContent>
             <div className="d-flex flex-column">
                <div className="d-flex border-bottom py-3">

@@ -8,6 +8,7 @@ export const getCompanyLicense = async () => await get("/companies/getCompanyLic
 export const cancelCompanyLicense = async (licenseId: string) =>
    await post("/companies/cancelCompanyLicense", { licenseId });
 export const getDashboardInfo = async () => await get("/companies/getDashboardInfo");
+export const getToursInfo = async () => await get("/companies/getToursInfo");
 export const sendFeedback = async (type: string, message: string) =>
    await post("/companies/sendFeedback", { type, message });
 export const getNotifications = async () => await get("/companies/getNotifications");

@@ -13,9 +13,9 @@ function Business({ empresa, setempresa, usuario }) {
    const { nSuccess } = useNotificacao();
    const form = useForm({ defaultValues: empresa });
    const {
-      register,
       setValue,
       handleSubmit,
+      watch,
       formState: { errors },
    } = form;
    const [showModal, setShowModal] = useState(false);
@@ -29,6 +29,36 @@ function Business({ empresa, setempresa, usuario }) {
          });
       }
    }, [empresa]);
+
+   let cepAtual = "";
+
+   useEffect(() => {
+      watch((value) => {
+         const { cep_empresa } = value;
+
+         if (cep_empresa?.length === 8) {
+            if (cepAtual === cep_empresa) return;
+            cepAtual = cep_empresa;
+            fetch(`https://viacep.com.br/ws/${cep_empresa}/json/`)
+               .then((resp) => {
+                  if (!resp.ok) {
+                     throw new Error("Erro ao buscar informações do CEP.");
+                  }
+                  return resp.json(); // Extrai o corpo da resposta em formato JSON
+               })
+               .then((data) => {
+                  if (data.logradouro) setValue("endereco_empresa", data.logradouro);
+                  if (data.uf) setValue("estado_empresa", data.uf);
+                  if (data.localidade) setValue("cidade_empresa", data.localidade);
+                  if (data.bairro) setValue("bairro_empresa", data.bairro);
+                  if (data.complemento) setValue("complemento_empresa", data.complemento);
+               })
+               .catch((error) => {
+                  console.error("Erro:", error.message);
+               });
+         }
+      });
+   }, [watch]);
 
    const handleFileChange = async (e) => {
       const file = e.target.files[0];
@@ -150,7 +180,14 @@ function Business({ empresa, setempresa, usuario }) {
 
                <CardContent>
                   <FormProvider {...form}>
-                     <form onSubmit={handleSubmit(HandleConfirm)}>
+                     <form
+                        onSubmit={handleSubmit(HandleConfirm)}
+                        onKeyDown={(e) => {
+                           if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+                              e.preventDefault();
+                           }
+                        }}
+                     >
                         <FitFormUI
                            errors={errors}
                            fields={[
@@ -181,6 +218,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "Telefone",
                                        id: "phone",
+                                       containerId: "phoneField",
                                        type: "phone",
                                        fieldName: "telefone_empresa",
                                        disabled: usuario.admin_usuario !== "S",

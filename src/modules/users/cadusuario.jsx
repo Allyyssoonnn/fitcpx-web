@@ -47,7 +47,7 @@ function CadUsuario() {
                   if (!resp.ok) {
                      throw new Error("Erro ao buscar informações do CEP.");
                   }
-                  return resp.json(); // Extrai o corpo da resposta em formato JSON
+                  return resp.json();
                })
                .then((data) => {
                   if (data.logradouro) setValue("endereco_usuario", data.logradouro);
