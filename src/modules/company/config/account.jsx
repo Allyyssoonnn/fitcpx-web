@@ -13,7 +13,7 @@ function Account({ usuario, setusuario }) {
    const { nSuccess } = useNotificacao();
    const form = useForm({ defaultValues: usuario });
    const {
-      register,
+      watch,
       setValue,
       handleSubmit,
       formState: { errors },
@@ -29,6 +29,36 @@ function Account({ usuario, setusuario }) {
          });
       }
    }, [usuario]);
+
+   let cepAtual = "";
+
+   useEffect(() => {
+      watch((value) => {
+         const { cep_usuario } = value;
+
+         if (cep_usuario?.length === 8) {
+            if (cepAtual === cep_usuario) return;
+            cepAtual = cep_usuario;
+            fetch(`https://viacep.com.br/ws/${cep_usuario}/json/`)
+               .then((resp) => {
+                  if (!resp.ok) {
+                     throw new Error("Erro ao buscar informações do CEP.");
+                  }
+                  return resp.json(); // Extrai o corpo da resposta em formato JSON
+               })
+               .then((data) => {
+                  if (data.logradouro) setValue("endereco_usuario", data.logradouro);
+                  if (data.uf) setValue("estado_usuario", data.uf);
+                  if (data.localidade) setValue("cidade_usuario", data.localidade);
+                  if (data.bairro) setValue("bairro_usuario", data.bairro);
+                  if (data.complemento) setValue("complemento_usuario", data.complemento);
+               })
+               .catch((error) => {
+                  console.error("Erro:", error.message);
+               });
+         }
+      });
+   }, [watch]);
 
    const handleFileChange = async (e) => {
       const file = e.target.files[0];
@@ -149,7 +179,14 @@ function Account({ usuario, setusuario }) {
 
                <CardContent>
                   <FormProvider {...form}>
-                     <form onSubmit={handleSubmit(HandleConfirm)}>
+                     <form
+                        onSubmit={handleSubmit(HandleConfirm)}
+                        onKeyDown={(e) => {
+                           if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+                              e.preventDefault();
+                           }
+                        }}
+                     >
                         <FitFormUI
                            errors={errors}
                            fields={[
@@ -159,6 +196,7 @@ function Account({ usuario, setusuario }) {
                                  fields: [
                                     {
                                        label: "CPF",
+                                       id: "personalId",
                                        fieldName: "cpf_usuario",
                                        type: "number",
                                     },

@@ -25,6 +25,7 @@ type BackBoxUIType = {
 
 type BackBoxUIFieldType = {
    id?: string;
+   containerId?: string;
    label: string;
    description?: string;
    options?: Options;
@@ -161,7 +162,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                            const value = watch(field.fieldName as string) || "";
 
                            return (
-                              <Field className={fieldClassName}>
+                              <Field className={fieldClassName} id={field.containerId}>
                                  <FieldLabel htmlFor={field.label}>
                                     {field.label} {fieldRequerid && "*"}
                                  </FieldLabel>
