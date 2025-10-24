@@ -61,7 +61,6 @@ function License() {
                         licenca={licenca}
                         onBuy={licenca ? onBuy : null}
                         atual={licencaAtual?.nome_licenca == licenca?.nome_licenca}
-                        isVIP={licencaAtual?.cod_licenca == 5}
                      />
                   ))}
                </div>
