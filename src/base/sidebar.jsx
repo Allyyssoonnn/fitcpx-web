@@ -9,6 +9,8 @@ import {
    Coins,
    Dumbbell,
    Home,
+   MessageCircle,
+   MessageSquareMore,
    PenIcon,
    User,
    User2,
@@ -17,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { PRODUCAO } from "../api/api";
 import { sendFeedback } from "../api/companies";
+import { Button } from "../components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../components/ui/collapsible";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
@@ -231,20 +234,18 @@ function Footer() {
    }
 
    return (
-      <div className="d-flex items-center justify-around w-100">
-         <button
-            className="btn btn-sm btn-outline-warning"
-            onClick={() => window.open("https://wa.me/55449991654044", "_blank")}
-         >
+      <div className="d-flex items-center justify-around w-100 border-t-1 pt-2">
+         <Button size="sm" onClick={() => window.open("https://wa.me/55449991654044", "_blank")}>
+            <MessageCircle />
             Suporte
-            <i className="bi bi-chat-right-text ms-2"></i>
-         </button>
+         </Button>
+
          <Dialog>
             <DialogTrigger>
-               <button className="btn btn-sm btn-outline-info">
-                  Enviar feedback
-                  <i className="bi bi-chat-right-text ms-2"></i>
-               </button>
+               <Button size="sm">
+                  <MessageSquareMore />
+                  Feedback
+               </Button>
             </DialogTrigger>
 
             <DialogContent>
@@ -278,6 +279,7 @@ function Footer() {
                         <button type="button" className="btn btn-danger rounded">
                            Fechar
                         </button>
+
                         <button type="submit" className="btn btn-success rounded">
                            Enviar
                         </button>

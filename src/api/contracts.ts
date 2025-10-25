@@ -11,3 +11,4 @@ export const getContracts = async (studentId?: string) =>
       }`
    );
 export const getContract = async (id: number) => await get(`/contracts/${id}`);
+export const getDuePayments = async () => await get("/contracts/getDuePayments");

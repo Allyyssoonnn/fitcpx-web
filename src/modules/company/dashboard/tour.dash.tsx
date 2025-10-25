@@ -3,7 +3,7 @@ import { getToursInfo } from "@/api/companies";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { useQuery } from "react-query";
@@ -28,13 +28,15 @@ export default function TourDash() {
             <Accordion type="multiple">
                <AccordionItem value="item-1">
                   <AccordionTrigger className="w-full" type="button">
-                     <Label className="font-bold text-black">
+                     <Label>
                         {tours.filter((t) => !t.complete).length > 0 && (
                            <Badge variant="destructive" className="mr-2">
                               {tours.filter((t) => !t.complete).length}
                            </Badge>
                         )}
-                        Conclua as etapas
+                        <CardDescription>
+                           Conclua as etapas e conheça o <span className="text-primary">FitCpx</span>
+                        </CardDescription>
                      </Label>
                   </AccordionTrigger>
 

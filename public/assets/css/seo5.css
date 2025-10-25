@@ -9737,22 +9737,22 @@ table{
     caption-side:bottom;
     border-collapse:collapse
 }
-caption{
+/* caption{
     padding-top:17px;
     padding-bottom:17px;
     color:var(--bs-secondary-color);
     text-align:left
-}
+} */
 th{
     font-weight:600;
     text-align:inherit;
     text-align:-webkit-match-parent
 }
-tbody,td,tfoot,th,thead,tr{
+/* tbody,td,tfoot,th,thead,tr{
     border-color:inherit;
     border-style:solid;
     border-width:0
-}
+} */
 label{
     display:inline-block
 }
@@ -16779,9 +16779,9 @@ textarea.form-control-lg{
 .mt-3{
     margin-top:1rem!important
 }
-.mt-4{
+/* .mt-4{
     margin-top:1.5rem!important
-}
+} */
 .mt-5{
     margin-top:3rem!important
 }
@@ -29821,9 +29821,9 @@ a{
 .app-checklist input:checked+.form-check-label .text-line{
     text-decoration:line-through
 }
-.table-custom-hover tbody tr:hover{
+/* .table-custom-hover tbody tr:hover{
     box-shadow:0 4px 29px -20px rgba(0,0,0,.6)
-}
+} */
 .chart-round{
     border:2px solid #fff
 }
@@ -29938,7 +29938,7 @@ a{
 .comment-footer .action-icons a.active,.comment-footer .action-icons a:hover{
     color:var(--bs-info)
 }
-.stylish-table tbody tr{
+/* .stylish-table tbody tr{
     border-left:4px solid transparent
 }
 .stylish-table tbody tr.active,.stylish-table tbody tr:hover{
@@ -29946,7 +29946,7 @@ a{
 }
 .stylish-table tbody td .small,.stylish-table tbody td small{
     line-height:12px
-}
+} */
 @media (max-width:991.98px){
     .w-xs-100{
         width:100%!important

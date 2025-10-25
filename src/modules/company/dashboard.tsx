@@ -1,175 +1,94 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
-import { PhysicalAssessmentType } from "@/types/physicalAssessment";
-import { useTranslation } from "react-i18next";
-import { useQuery } from "react-query";
-import { getDashboardInfo } from "../../api/companies";
-import { formatarData } from "../../utils";
+import { Button } from "@/components/ui/button";
+import {
+   DropdownMenu,
+   DropdownMenuCheckboxItem,
+   DropdownMenuContent,
+   DropdownMenuLabel,
+   DropdownMenuSeparator,
+   DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Eye } from "lucide-react";
+import { useEffect, useState } from "react";
+import AppMarketingDash from "./dashboard/AppMarketing.dash";
+import DuePaymentsDash from "./dashboard/duePayments.dash";
+import OlderPhysicalDash from "./dashboard/olderPhysical.dash";
+import OverviewDash from "./dashboard/overview.dash";
 import TourDash from "./dashboard/tour.dash";
 
-type DashboardProps = {
-   lengths: {
-      users: number;
-      workouts: number;
-      physicalAssessments: number;
-      clients: number;
-   };
-   lastPhysicalAssessments: PhysicalAssessmentType[];
-};
+const fields = [
+   { key: "overview", label: "Totais" },
+   { key: "tours", label: "Tutoriais" },
+   { key: "duepayments", label: "Pagamentos" },
+   { key: "physical", label: "Avaliações" },
+   { key: "apps", label: "Aplicativos" },
+];
 
 function Dashboard() {
-   const { data: dashboard } = useQuery<DashboardProps>({
-      queryKey: ["dashboard"],
-      queryFn: getDashboardInfo,
-      initialData: {
-         lengths: {
-            users: 0,
-            workouts: 0,
-            physicalAssessments: 0,
-            clients: 0,
-         },
-         lastPhysicalAssessments: [],
-      },
+   // Inicializa o estado com base no localStorage
+   const [visibleFields, setVisibleFields] = useState(() => {
+      const saved: Record<string, boolean> = {};
+      fields.forEach((field) => {
+         saved[field.key] = localStorage.getItem(`hidden-${field.key}`) ? false : true;
+      });
+      return saved;
    });
+
+   // Atualiza localStorage sempre que visibleFields mudar
+   useEffect(() => {
+      fields.forEach((field) => {
+         if (visibleFields[field.key]) {
+            localStorage.removeItem(`hidden-${field.key}`);
+         } else {
+            localStorage.setItem(`hidden-${field.key}`, "true");
+         }
+      });
+   }, [visibleFields]);
+
+   const handleCheckboxChange = (key: string, checked: boolean) => {
+      setVisibleFields((prev) => ({ ...prev, [key]: checked }));
+   };
 
    return (
       <div className="container-fluid">
-         <div className="grid lg:grid-cols-3 gap-4">
+         <div className="d-flex justify-end mb-3">
+            <DropdownMenu>
+               <DropdownMenuTrigger>
+                  <Button variant="outline">
+                     <Eye />
+                     Exibir campos
+                  </Button>
+               </DropdownMenuTrigger>
+
+               <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel>Campos</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {fields.map((field) => (
+                     <DropdownMenuCheckboxItem
+                        key={field.key}
+                        checked={visibleFields[field.key]}
+                        onCheckedChange={(checked) => handleCheckboxChange(field.key, checked as boolean)}
+                     >
+                        {field.label}
+                     </DropdownMenuCheckboxItem>
+                  ))}
+               </DropdownMenuContent>
+            </DropdownMenu>
+         </div>
+
+         {visibleFields.overview && <OverviewDash />}
+
+         <div className="grid lg:grid-cols-4 gap-4">
             <div className="flex flex-col lg:col-span-2 gap-4">
-               <TourDash />
-               <UltimasAvaliacoes lastPhysicalAssessments={dashboard?.lastPhysicalAssessments} />
+               {visibleFields.tours && <TourDash />}
+               {visibleFields.apps && <AppMarketingDash />}
             </div>
 
-            <div>
-               <InfoTotais lengths={dashboard?.lengths} />
+            <div className="flex flex-col lg:col-span-2 gap-4">
+               {visibleFields.duepayments && <DuePaymentsDash />}
+               {visibleFields.physical && <OlderPhysicalDash />}
             </div>
          </div>
       </div>
-   );
-}
-
-function InfoTotais({ lengths }: DashboardProps) {
-   const { t } = useTranslation("dashboard");
-
-   return (
-      <Card>
-         <CardHeader>
-            <CardTitle>{t("overview")}</CardTitle>
-         </CardHeader>
-
-         <CardContent>
-            <div className="d-flex flex-column">
-               <div className="d-flex border-bottom py-3">
-                  <span className="rounded-circle round-48 mb-4 bg-success-subtle text-success d-flex align-items-center justify-content-center">
-                     <i className="bi bi-person"></i>
-                  </span>
-
-                  <div className="ms-3">
-                     <h6>{t("clientsOverview")}</h6>
-                     <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{lengths?.clients}</h3>
-                     </div>
-                  </div>
-               </div>
-
-               <div className="d-flex border-bottom py-3">
-                  <span className="rounded-circle round-48 mb-4 bg-info-subtle text-info d-flex align-items-center justify-content-center">
-                     <i className="bi bi-bar-chart"></i>
-                  </span>
-
-                  <div className="ms-3">
-                     <h6>{t("physicalAssessamentsOverview")}</h6>
-
-                     <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{lengths?.physicalAssessments}</h3>
-                     </div>
-                  </div>
-               </div>
-
-               <div className="d-flex border-bottom py-3">
-                  <span className="rounded-circle round-48 mb-4 bg-primary-subtle text-primary d-flex align-items-center justify-content-center">
-                     <i className="bi bi-card-checklist"></i>
-                  </span>
-
-                  <div className="ms-3">
-                     <h6>{t("workoutsOverview")}</h6>
-
-                     <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{lengths.workouts}</h3>
-                     </div>
-                  </div>
-               </div>
-
-               <div className="d-flex border-bottom py-3">
-                  <span className="rounded-circle round-48 mb-4 bg-secondary-subtle text-secondary d-flex align-items-center justify-content-center">
-                     <i className="bi bi-person-gear"></i>
-                  </span>
-
-                  <div className="ms-3">
-                     <h6>{t("usersOverview")}</h6>
-
-                     <div className="d-flex align-items-center gap-2">
-                        <h3 className="mb-0">{lengths.users}</h3>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </CardContent>
-      </Card>
-   );
-}
-
-function UltimasAvaliacoes({ lastPhysicalAssessments }) {
-   const { t } = useTranslation("dashboard");
-
-   return (
-      <Card>
-         <CardHeader>
-            <CardTitle>{t("recentPhysicalAssessament")}</CardTitle>
-         </CardHeader>
-
-         <CardContent>
-            <Table>
-               <TableHeader>
-                  <TableRow className="border-2 border-bottom border-primary border-0">
-                     <TableCell scope="col" className="ps-0">
-                        {t("student")}
-                     </TableCell>
-                     <TableCell scope="col" className="ps-0">
-                        {t("date")}
-                     </TableCell>
-                     <TableCell scope="col">{t("heigth")}</TableCell>
-                     <TableCell scope="col" className="text-center">
-                        {t("weight")}
-                     </TableCell>
-                  </TableRow>
-               </TableHeader>
-
-               <TableBody className="table-group-divider">
-                  {!lastPhysicalAssessments.length && (
-                     <TableRow>
-                        <td colSpan={4} className="text-center py-5">
-                           {t("noPhysicalAssessaments")}
-                        </td>
-                     </TableRow>
-                  )}
-                  {lastPhysicalAssessments.map((physicalAssessment: LastPhysicalAssessment) => (
-                     // eslint-disable-next-line react/jsx-key
-                     <TableRow>
-                        <TableCell scope="row" className="ps-0 fw-medium">
-                           {physicalAssessment?.aluno?.nome_aluno}
-                        </TableCell>
-                        <TableCell scope="row" className="ps-0 fw-medium">
-                           {formatarData(physicalAssessment?.data_avaliacao)}
-                        </TableCell>
-                        <TableCell>{physicalAssessment?.altura} M</TableCell>
-                        <TableCell className="text-center fw-medium">{physicalAssessment?.peso} KG</TableCell>
-                     </TableRow>
-                  ))}
-               </TableBody>
-            </Table>
-         </CardContent>
-      </Card>
    );
 }
 
