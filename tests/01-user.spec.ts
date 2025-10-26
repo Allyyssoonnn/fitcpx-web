@@ -8,6 +8,8 @@ test("Register New User", async ({ page }) => {
    await page.locator("#name").fill("Fit Test");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
+   await page.locator("#phone").click();
+   await page.locator("#phone").fill("+5544988084028");
    await page.locator("#password").click();
    await page.locator("#password").fill("12345");
    await page.locator("#confirm-password").click();

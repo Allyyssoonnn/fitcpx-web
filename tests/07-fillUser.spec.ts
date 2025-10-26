@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Fill User Info", async ({ page }) => {
+test("Fill User Info - User Form", async ({ page }) => {
    await page.goto("http://localhost:5173/entrar");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
@@ -13,11 +13,10 @@ test("Fill User Info", async ({ page }) => {
    await page.click('tr[id="user-0"]');
 
    await page.fill('input[id="idnumber"]', "10940113988");
-   await page.fill('input[id="phone"]', "44988084028");
-   await page.fill('input[id="cellphone"]', "44988084028");
+   await page.fill('input[id="cellphone"]', "+5544988084028");
 
    await page.fill('input[id="cep"]', "87707050");
-   await page.waitForTimeout(7000);
+   await page.waitForTimeout(3000);
    await page.fill('input[id="number"]', "688");
 
    await page.click('button[id="submit"]');

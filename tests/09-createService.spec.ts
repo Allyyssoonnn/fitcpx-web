@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("Create Service", async ({ page }) => {
    await page.goto("http://localhost:5173/entrar");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
@@ -17,8 +17,8 @@ test("test", async ({ page }) => {
    await page.locator("#name").fill("Fit Plan Test");
    await page.getByRole("textbox", { name: "R$" }).click();
    await page.getByRole("textbox", { name: "R$" }).fill("R$ 10,00");
-   await page.locator("#description").click();
-   await page.locator("#description").fill("Testing Plan");
+   // await page.locator("#description").click();
+   // await page.locator("#description").fill("Testing Plan");
    await page.getByRole("button", { name: "Adicionar" }).first().click();
    await page.getByRole("spinbutton").click();
    await page.getByRole("spinbutton").fill("20");
