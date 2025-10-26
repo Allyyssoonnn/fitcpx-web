@@ -172,6 +172,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     value={value}
                                     onChange={(v) => setValue(field.fieldName, v)}
                                     focusInputOnCountrySelection={false}
+                                    required={fieldRequerid}
                                  />
 
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
