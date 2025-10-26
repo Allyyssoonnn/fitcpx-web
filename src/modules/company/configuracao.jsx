@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import Account from "./config/account";
 import Business from "./config/business";
@@ -36,27 +37,26 @@ function Configuracao() {
 
    return (
       <div className="container-fluid">
-         <Card>
-            <CardHeader>
-               <ul className="nav nav-pills user-profile-tab" id="pills-tab" role="tablist">
-                  {tabs.map((tab) => (
-                     <li key={tab.id} className="nav-item" role="presentation">
-                        <button
-                           id={`tab-${tab.id}`}
-                           className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3 ${
-                              tabAtiva === tab.id ? "active" : ""
-                           }`}
-                           type="button"
-                           onClick={() => setTabAtiva(tab.id)}
-                        >
-                           <i className={`bi ${tab.icon} me-2`}></i>
-                           <span className="d-none d-md-block">{tab.label}</span>
-                        </button>
-                     </li>
-                  ))}
-               </ul>
-            </CardHeader>
+         <ul className="nav nav-pills flex gap-3 mb-3">
+            {tabs.map((tab) => (
+               <li key={tab.id} className="nav-item" role="presentation">
+                  <Button
+                     variant={tabAtiva === tab.id ? "default" : "outline"}
+                     id={`tab-${tab.id}`}
+                     // className={`nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-3 ${
+                     //    tabAtiva === tab.id ? "active" : ""
+                     // }`}
+                     type="button"
+                     onClick={() => setTabAtiva(tab.id)}
+                  >
+                     <i className={`bi ${tab.icon} me-2`}></i>
+                     <span className="d-none d-md-block">{tab.label}</span>
+                  </Button>
+               </li>
+            ))}
+         </ul>
 
+         <Card>
             <CardContent>
                <div className="tab-content" id="pills-tabContent">
                   {tabAtiva === "account" && (

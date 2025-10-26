@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("Create Workout Pattern", async ({ page }) => {
    await page.goto("http://localhost:5173/entrar");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
@@ -16,12 +16,15 @@ test("test", async ({ page }) => {
    await page.locator("#name").fill("Workout Pattern");
    await page.locator("#periodicity").click();
    await page.locator("#periodicity").fill("3");
-   await page.locator("#gender").selectOption("F");
-   await page.locator("#difficulty").selectOption("Intermediário");
+
+   await page.locator("#gender").click();
+   await page.locator("#gender-1").click();
+   await page.locator("#difficulty").click();
+   await page.locator("#difficulty-1").click();
    await page.locator("#observation").click();
    await page.locator("#observation").fill("Observation Test");
-   await page.locator("#development").selectOption("Hipertrofia");
-   await page.locator("#volume").selectOption("Médio");
+   await page.locator("#development").click();
+   await page.locator("#development-1").click();
 
    await page.locator("#addSessions").click();
 

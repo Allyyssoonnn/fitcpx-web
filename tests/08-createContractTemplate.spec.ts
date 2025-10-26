@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("Create Contract Pattern", async ({ page }) => {
    await page.goto("http://localhost:5173/entrar");
    await page.locator("#email").click();
    await page.locator("#email").fill("fitcomplex@fitcpx.com");
@@ -13,8 +13,10 @@ test("test", async ({ page }) => {
 
    await page.click('button[id="newContractTemplate"]');
 
-   await page.getByRole("textbox").click();
-   await page.getByRole("textbox").fill("Fit Contract Test");
-   await page.getByRole("button", { name: "Modelo consultoria" }).click();
-   await page.getByRole("button", { name: "Confirmar" }).click();
+   await page.locator("#name").fill("Fit Contract Test");
+
+   await page.locator("#templatesDropdown").click();
+   await page.locator("#templatesDropdown-0").click();
+
+   await page.click('button[id="submit"]');
 });

@@ -76,6 +76,7 @@ function CadContrato() {
                            cols: 4,
                            fields: [
                               {
+                                 id: "name",
                                  label: "Nome",
                                  fieldName: "nome_contrato",
                                  options: {
@@ -114,7 +115,7 @@ function CadContrato() {
                   </div>
 
                   <DropdownMenu>
-                     <DropdownMenuTrigger>
+                     <DropdownMenuTrigger id="templatesDropdown">
                         <Button variant="outline">Modelos prontos</Button>
                      </DropdownMenuTrigger>
 
@@ -125,7 +126,11 @@ function CadContrato() {
                            { label: "Personal Presencial", template: personalPresencial },
                            { label: "Personal Online", template: personalOnline },
                         ].map((m, index) => (
-                           <DropdownMenuItem key={index} onClick={(e) => setModeloContrato(e, m.template)}>
+                           <DropdownMenuItem
+                              key={index}
+                              id={`templatesDropdown-${index}`}
+                              onClick={(e) => setModeloContrato(e, m.template)}
+                           >
                               {m.label}
                            </DropdownMenuItem>
                         ))}

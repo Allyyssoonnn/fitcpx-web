@@ -7,6 +7,7 @@ import { getStudents } from "../../api/student";
 import { getWorkouts } from "../../api/workouts";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { Table, TableBody, TableCell, TableRow } from "../../components/ui/table";
 import { stateUsuario } from "../../states/states";
 import { calcularIdade } from "../../utils";
 
@@ -92,41 +93,43 @@ function Planilha() {
             </CardHeader>
 
             <CardContent>
-               <div className="table-responsive">
-                  <table id="basic-datatables" className="display table table-striped table-hover">
-                     <tbody>
-                        {filteredAlunos.map((aluno, index) => {
-                           let idade = calcularIdade(aluno.data_nascimento_aluno);
-                           return (
-                              <tr key={aluno.cod_aluno} onClick={() => toggleSelecao(aluno.cod_aluno)}>
-                                 <th scope="row" className="d-flex align-items-center">
-                                    <input
-                                       checked={selecionados.includes(aluno.cod_aluno)}
-                                       className="me-3"
-                                       type="checkbox"
-                                    />
-                                    <img
-                                       src={
-                                          aluno.imagem_aluno
-                                             ? `${aluno.imagem_aluno}`
-                                             : "https://placehold.co/150x150?text=img"
-                                       }
-                                       alt="Foto do Aluno"
-                                       className="img-fluid rounded-circle me-3"
-                                       style={{ width: "50px", height: "50px" }}
-                                       loading="lazy"
-                                    />
-                                    <div className="col-md-3 d-flex flex-column">
-                                       <label>{aluno.nome_aluno}</label>
-                                       <label className="text-muted">{idade > 0 ? `${idade} anos` : "-"}</label>
-                                    </div>
-                                 </th>
-                              </tr>
-                           );
-                        })}
-                     </tbody>
-                  </table>
-               </div>
+               <Table>
+                  <TableBody>
+                     {filteredAlunos.map((aluno, index) => {
+                        let idade = calcularIdade(aluno.data_nascimento_aluno);
+                        return (
+                           <TableRow
+                              className="cursor-pointer odd:bg-muted/50"
+                              key={aluno.cod_aluno}
+                              onClick={() => toggleSelecao(aluno.cod_aluno)}
+                           >
+                              <TableCell className="d-flex items-center">
+                                 <input
+                                    checked={selecionados.includes(aluno.cod_aluno)}
+                                    className="me-3"
+                                    type="checkbox"
+                                 />
+                                 <img
+                                    src={
+                                       aluno.imagem_aluno
+                                          ? `${aluno.imagem_aluno}`
+                                          : "https://placehold.co/150x150?text=img"
+                                    }
+                                    alt="Foto do Aluno"
+                                    className="img-fluid rounded-circle me-3"
+                                    style={{ width: "50px", height: "50px" }}
+                                    loading="lazy"
+                                 />
+                                 <div className="col-md-3 d-flex flex-column">
+                                    <label>{aluno.nome_aluno}</label>
+                                    <label className="text-muted">{idade > 0 ? `${idade} anos` : "-"}</label>
+                                 </div>
+                              </TableCell>
+                           </TableRow>
+                        );
+                     })}
+                  </TableBody>
+               </Table>
             </CardContent>
          </Card>
       </div>
