@@ -19,6 +19,7 @@ import Configuracao from "../modules/company/configuracao";
 import Dashboard from "../modules/company/dashboard";
 import FinanceOverview from "../modules/company/financeOverview";
 import CadContrato from "../modules/contracts/cadContrato";
+import ContratacaoPlano from "../modules/contracts/contratacaoPlano";
 import Contrato from "../modules/contracts/contrato";
 import CadExercicio from "../modules/exercises/cadExercicio";
 import Avaliacao from "../modules/physicalAssessments/avaliacao";
@@ -30,7 +31,6 @@ import Aluno from "../modules/students/aluno";
 import CadAluno from "../modules/students/cadAluno";
 import CadUsuario from "../modules/users/cadusuario";
 import CadTreino from "../modules/workouts/cadTreino";
-import ContratacaoPlano from "../modules/contracts/contratacaoPlano";
 
 const routes = [
    //Base
@@ -52,11 +52,26 @@ const routes = [
    { path: "/cadexercicio", name: "Licença", element: CadExercicio },
    { path: "/cadaluno", name: "Alunos", element: CadAluno },
    { path: "/cadusuario", name: "Alunos", element: CadUsuario },
-   { path: "/cadavaliacao", name: "Alunos", element: CadAvaliacao },
-   { path: "/cadtreino", name: "Alunos", element: CadTreino },
-   { path: "/cadplano", name: "Alunos", element: CadPlano },
-   { path: "/cadmodalidade", name: "Alunos", element: CadModalidade },
-   { path: "/cadcontrato", name: "Alunos", element: CadContrato },
+   {
+      path: "/cadavaliacao",
+      name: "Avaliação Física",
+      element: CadAvaliacao,
+      videoHelp: "https://www.youtube.com/watch?v=af9KQc01PIc",
+   },
+   { path: "/cadtreino", name: "Treino", element: CadTreino, videoHelp: "https://www.youtube.com/watch?v=IlzzBbDAFXA" },
+   { path: "/cadplano", name: "Plano", element: CadPlano, videoHelp: "https://www.youtube.com/watch?v=5dLuERhCn_Q" },
+   {
+      path: "/cadmodalidade",
+      name: "Modalidade",
+      element: CadModalidade,
+      videoHelp: "https://www.youtube.com/watch?v=UAoQjPAkWdg",
+   },
+   {
+      path: "/cadcontrato",
+      name: "Contrato",
+      element: CadContrato,
+      videoHelp: "https://www.youtube.com/watch?v=ADdIX7HgSOo",
+   },
    { path: "/contratacaoplano", name: "Alunos", element: ContratacaoPlano },
 
    //Informações

@@ -43,6 +43,12 @@ function Treinos() {
             <FitTable.Root
                list={treinos}
                title="Treinos"
+               subHeader={
+                  <p className="text-muted text-center">
+                     Todos os treinos criados aqui ficarão disponíveis para você importar e atribuir a qualquer aluno de
+                     forma rápida e prática.
+                  </p>
+               }
                description={`${treinos?.length} ${treinos?.length > 1 ? "Treinos" : "Treino"}`}
                fieldSearch="nome_treino"
                buttonOnClick={() => navigate("/cadtreino")}

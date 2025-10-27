@@ -38,6 +38,12 @@ function Modalidades() {
             <FitTable.Root
                list={modalidades}
                title="Modalidades"
+               subHeader={
+                  <p className="text-muted text-center">
+                     Adicione aqui todos os serviços que seu estabelecimento oferece. Cada item poderá ser vendido de
+                     forma avulsa ou agrupado em planos.
+                  </p>
+               }
                description={`${modalidades?.length} ${modalidades?.length > 1 ? "Modalidades" : "Modalidade"}`}
                fieldSearch="nome_modalidade"
                buttonOnClick={() => navigate("/cadmodalidade")}

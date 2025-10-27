@@ -41,6 +41,11 @@ function Exercicios() {
             <FitTable.Root
                list={exercicios}
                title="Exercícios"
+               subHeader={
+                  <p className="text-muted text-center">
+                     Esta página centraliza todos os exercícios disponíveis no sistema.
+                  </p>
+               }
                description={`${exercicios?.length} ${exercicios?.length > 1 ? "Exercícios" : "Exercício"}`}
                fieldSearch="nome_exercicio"
                columns={[

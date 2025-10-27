@@ -1,14 +1,23 @@
-import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed } from "lucide-react";
+import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed, HelpCircle } from "lucide-react";
 import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { imgProfile, PRODUCAO } from "../api/api";
 import Notificacoes from "../components/notificacoes";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
+import {
+   Dialog,
+   DialogClose,
+   DialogContent,
+   DialogFooter,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from "../components/ui/dialog";
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -19,9 +28,22 @@ import {
 import { Separator } from "../components/ui/separator";
 import { SidebarTrigger } from "../components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../components/ui/tooltip";
+import routes from "../routes/routes";
 import { stateUsuario, useStateApp } from "../states/states";
+import { getYouTubeEmbedUrl } from "../utils";
 
 function Header() {
+   const { pathname } = useLocation();
+
+   // busca a primeira rota cujo padrão case com a URL atual
+   const matched = routes.find((r) => {
+      // matchPath retorna não-null se casar
+      return matchPath({ path: r.path, end: r.exact ?? true }, pathname);
+   });
+
+   const pageName = matched?.name ?? "";
+   const videoHelp = matched?.videoHelp ?? "";
+
    const cookies = parseCookies(null);
    const navigate = useNavigate();
    const [usuario, setusuario] = useRecoilState(stateUsuario);
@@ -102,8 +124,44 @@ function Header() {
    return (
       <div className="mb-3">
          <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between items-center w-100 shadow-sm min-h-[70px] bg-sidebar">
-            <div className="d-flex items-center ms-3">
+            <div className="d-flex items-center ms-3 gap-3">
                <SidebarTrigger />
+
+               {!!videoHelp && (
+                  <Dialog>
+                     <DialogTrigger>
+                        <Button size="sm" variant="outline">
+                           <HelpCircle />
+                           {pageName}
+                        </Button>
+                     </DialogTrigger>
+
+                     <DialogContent>
+                        <DialogHeader>
+                           <DialogTitle>Vídeo de ajuda</DialogTitle>
+                        </DialogHeader>
+
+                        <div className="relative w-full h-0 pb-[56.25%]">
+                           <iframe
+                              src={getYouTubeEmbedUrl(videoHelp)}
+                              title={name}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              className="absolute top-0 left-0 w-full h-full"
+                           ></iframe>
+                        </div>
+
+                        <DialogFooter>
+                           <DialogClose>
+                              <Button size="sm" variant="destructive">
+                                 Fechar
+                              </Button>
+                           </DialogClose>
+                        </DialogFooter>
+                     </DialogContent>
+                  </Dialog>
+               )}
             </div>
 
             <div className="justify-content-end px-0" id="navbarNav">
