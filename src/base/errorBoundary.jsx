@@ -1,6 +1,9 @@
+import { MessageCircle, MoveLeft } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { sendError } from "../api/error";
+import { sendErrorUser } from "../api/user";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardFooter } from "../components/ui/card";
 
 function ErrorBoundaryWrapper({ children }) {
    const [hasError, setHasError] = useState(false);
@@ -25,9 +28,9 @@ const ErrorScreen = () => {
    }
 
    return (
-      <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-light">
-         <div className="card shadow-lg p-5" style={{ maxWidth: "500px", width: "100%" }}>
-            <div className="text-center">
+      <div className="d-flex flex-column justify-content-center align-items-center bg-accent vh-100 text-light">
+         <Card style={{ maxWidth: "500px", width: "100%" }}>
+            <CardContent className="text-center">
                <h1 className="text-danger mb-4">
                   <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: "3rem" }}></i>
                </h1>
@@ -35,15 +38,29 @@ const ErrorScreen = () => {
                <p className="lead text-muted">
                   Encontramos um problema inesperado. Estamos trabalhando para corrigir isso.
                </p>
-            </div>
+            </CardContent>
 
-            <div className="text-center mt-4">
-               <button className="btn btn-primary btn-lg px-5 py-3" onClick={reload} style={{ fontSize: "1.1rem" }}>
-                  <i className="bi bi-arrow-right-circle me-2" />
+            <CardFooter className="justify-between">
+               <Button onClick={reload}>
+                  <MoveLeft />
                   Voltar ao app
-               </button>
-            </div>
-         </div>
+               </Button>
+
+               <Button
+                  onClick={() =>
+                     window.open(
+                        `https://wa.me/55449991654044?text=${encodeURIComponent(
+                           "Olá, estou com problemas no FitCpx.\n Pode me ajudar?"
+                        )}`,
+                        "_blank"
+                     )
+                  }
+               >
+                  <MessageCircle />
+                  Suporte
+               </Button>
+            </CardFooter>
+         </Card>
       </div>
    );
 };
@@ -58,7 +75,7 @@ class ErrorBoundary extends React.Component {
       this.props.setError(error);
 
       // Enviar erro para um servidor
-      // sendError(error.toString(), errorInfo.componentStack);
+      sendErrorUser(error.toString(), JSON.stringify(errorInfo));
    }
 
    render() {
