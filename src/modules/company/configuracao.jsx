@@ -49,8 +49,8 @@ function Configuracao() {
                      type="button"
                      onClick={() => setTabAtiva(tab.id)}
                   >
-                     <i className={`bi ${tab.icon} me-2`}></i>
-                     <span className="d-none d-md-block">{tab.label}</span>
+                     <i className={`bi ${tab.icon}`}></i>
+                     <span className="d-none d-md-block ms-2">{tab.label}</span>
                   </Button>
                </li>
             ))}
