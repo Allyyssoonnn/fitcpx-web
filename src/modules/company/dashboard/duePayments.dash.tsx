@@ -5,6 +5,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Clipboard, MessageCircle } from "lucide-react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { formatarData } from "../../../utils/utils";
 
 export default function DuePaymentsDash() {
    const navigate = useNavigate();
@@ -42,9 +43,9 @@ export default function DuePaymentsDash() {
                   {duePayments.map((p: any) => {
                      const text = `Olá ${
                         p?.contract?.aluno?.nome_aluno
-                     }, identificamos um pagamento pendente com vencimento em ${new Date(
-                        p?.data_aluno_contrato_pagamento
-                     ).toLocaleDateString()}. referente ao seu contrato ${
+                     }, identificamos um pagamento pendente com vencimento em ${formatarData(
+                        p?.expiracao_aluno_contrato_pagamento
+                     )}. referente ao seu contrato ${
                         p?.contract?.descricao_aluno_contrato
                      }. Estou encaminhando o link de pagamento.\n\n${p?.asaas_url}`;
                      // Codifica o texto para URL
@@ -55,7 +56,7 @@ export default function DuePaymentsDash() {
                            <TableCell className="w-2/3">{p?.contract?.aluno?.nome_aluno}</TableCell>
                            <TableCell>
                               {!!p?.expiracao_aluno_contrato_pagamento &&
-                                 new Date(p?.expiracao_aluno_contrato_pagamento).toLocaleDateString()}
+                                 formatarData(p?.expiracao_aluno_contrato_pagamento)}
                            </TableCell>
                            <TableCell className="d-flex gap-3">
                               <Button
