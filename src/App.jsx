@@ -10,7 +10,7 @@ import Register from "./modules/users/register";
 import PlanilhaTreino from "./modules/workouts/planilhaTreino";
 
 import { parseCookies } from "nookies";
-// import ErrorBoundaryWrapper from "./base/errorBoundary";
+import ErrorBoundaryWrapper from "./base/errorBoundary";
 import PrivateRoute from "./routes/PrivateRoute";
 import routes from "./routes/routes";
 
@@ -27,42 +27,42 @@ function App() {
             }
          >
             <ToastContainer theme="colored" />
-            {/* <ErrorBoundaryWrapper> */}
-            <Routes>
-               <Route
-                  name="Inicio"
-                  path="/"
-                  element={
-                     <PrivateRoute isAuthenticated={!!cookies.refreshToken}>
-                        <Layout />
-                     </PrivateRoute>
-                  }
-               >
-                  <>
-                     {routes.map((route, idx) => {
-                        return (
-                           route.element && (
-                              <Route
-                                 key={idx}
-                                 path={route.path}
-                                 exact={route.exact}
-                                 name={route.name}
-                                 element={<route.element />}
-                              />
-                           )
-                        );
-                     })}
-                     <Route path="/" element={<Navigate to="dashboard" replace />} />
-                  </>
-               </Route>
+            <ErrorBoundaryWrapper>
+               <Routes>
+                  <Route
+                     name="Inicio"
+                     path="/"
+                     element={
+                        <PrivateRoute isAuthenticated={!!cookies.refreshToken}>
+                           <Layout />
+                        </PrivateRoute>
+                     }
+                  >
+                     <>
+                        {routes.map((route, idx) => {
+                           return (
+                              route.element && (
+                                 <Route
+                                    key={idx}
+                                    path={route.path}
+                                    exact={route.exact}
+                                    name={route.name}
+                                    element={<route.element />}
+                                 />
+                              )
+                           );
+                        })}
+                        <Route path="/" element={<Navigate to="dashboard" replace />} />
+                     </>
+                  </Route>
 
-               <Route path="/entrar" element={<Login />} />
-               <Route path="/registrar" element={<Register />} />
-               <Route path="/recuperar" element={<Recovery />} />
-               <Route path="/recoveryPassword" element={<RecuperacaoSenha />} />
-               <Route path="/planilhatreino" element={<PlanilhaTreino />} />
-            </Routes>
-            {/* </ErrorBoundaryWrapper> */}
+                  <Route path="/entrar" element={<Login />} />
+                  <Route path="/registrar" element={<Register />} />
+                  <Route path="/recuperar" element={<Recovery />} />
+                  <Route path="/recoveryPassword" element={<RecuperacaoSenha />} />
+                  <Route path="/planilhatreino" element={<PlanilhaTreino />} />
+               </Routes>
+            </ErrorBoundaryWrapper>
          </Suspense>
       </BrowserRouter>
    );
