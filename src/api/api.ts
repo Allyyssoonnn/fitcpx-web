@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export const PRODUCAO = import.meta.env.MODE === "production";
 export const imgProfile = "https://media.fitcpx.com/Alyson.PNG";
@@ -18,16 +18,12 @@ api.interceptors.response.use(
       const originalRequest = error.config;
 
       if (error.response?.data?.message) {
-         toast.error(error.response.data.message, {
-            toastId: "api-error",
-         });
+         toast(error.response.data.message);
       }
 
       if (error.response?.status === 403) {
          const msg = error.response.data?.message || "Você não tem permissão para acessar este recurso.";
-         toast.error(msg, {
-            toastId: "no-permission",
-         });
+         toast.error(msg);
       }
 
       if (error.response?.status === 401 && !originalRequest._retry && !(originalRequest?.url == "/users/login")) {

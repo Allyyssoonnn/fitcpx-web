@@ -1,7 +1,7 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { recoveryAccount } from "../../api/user";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import { Button } from "../../components/ui/button";

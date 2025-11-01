@@ -1,8 +1,8 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import { setCookie } from "nookies";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
+import { toast } from "sonner";
 import { userRegister } from "../../api/user";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import { Button } from "../../components/ui/button";

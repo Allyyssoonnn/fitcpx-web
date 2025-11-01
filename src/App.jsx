@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Layout from "./base/layout";
 import Login from "./modules/users/login";
 import Recovery from "./modules/users/recovery";
@@ -10,12 +8,15 @@ import Register from "./modules/users/register";
 import PlanilhaTreino from "./modules/workouts/planilhaTreino";
 
 import { parseCookies } from "nookies";
+import { Toaster } from "sonner";
 import ErrorBoundaryWrapper from "./base/errorBoundary";
 import PrivateRoute from "./routes/PrivateRoute";
 import routes from "./routes/routes";
+import { useStateApp } from "./states/states";
 
 function App() {
    const cookies = parseCookies(null);
+   const { theme } = useStateApp();
 
    return (
       <BrowserRouter>
@@ -26,7 +27,7 @@ function App() {
                </div>
             }
          >
-            <ToastContainer theme="colored" />
+            <Toaster position="top-center" theme={theme} richColors />
             <ErrorBoundaryWrapper>
                <Routes>
                   <Route

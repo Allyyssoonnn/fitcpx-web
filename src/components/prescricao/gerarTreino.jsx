@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
+import { toast } from "sonner";
 import { generateWorkout, getMuscleGroups } from "../../api/workouts";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { Button } from "../ui/button";

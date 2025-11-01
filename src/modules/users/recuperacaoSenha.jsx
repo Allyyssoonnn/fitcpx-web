@@ -2,7 +2,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { updatePasswordStudent } from "../../api/student";
 import { updatePassword } from "../../api/user";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
