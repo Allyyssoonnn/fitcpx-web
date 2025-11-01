@@ -1,4 +1,4 @@
-import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed, HelpCircle } from "lucide-react";
+import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed, HelpCircle, Moon, Sun } from "lucide-react";
 import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -223,12 +223,9 @@ function Header() {
                      </Tooltip>
                   )}
 
-                  <button
-                     onClick={alteraTema}
-                     className="nav-link moon dark-layout nav-icon-hover-bg rounded-circle d-flex mx-2"
-                  >
-                     {theme == "light" ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-sun-fill"></i>}
-                  </button>
+                  <Button size="sm" variant="ghost" onClick={alteraTema}>
+                     {theme == "light" ? <Moon /> : <Sun />}
+                  </Button>
 
                   <Notificacoes />
 
