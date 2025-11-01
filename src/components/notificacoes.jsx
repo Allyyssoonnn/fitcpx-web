@@ -34,6 +34,11 @@ function Notificacoes() {
          </DropdownMenuTrigger>
 
          <DropdownMenuContent>
+            {!notifications.length && (
+               <DropdownMenuItem disabled className="w-[300px]">
+                  Sem notificações
+               </DropdownMenuItem>
+            )}
             {notifications.map((notificacao, i) => (
                <DropdownMenuItem key={i} onClick={clickNotify}>
                   <Item className="w-[300px] p-3 pb-2">
