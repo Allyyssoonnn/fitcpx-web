@@ -18,7 +18,7 @@ api.interceptors.response.use(
       const originalRequest = error.config;
 
       if (error.response?.data?.message) {
-         toast(error.response.data.message);
+         toast.error(error.response.data.message);
       }
 
       if (error.response?.status === 403) {
