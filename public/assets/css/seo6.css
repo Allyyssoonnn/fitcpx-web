@@ -24026,9 +24026,9 @@ html[data-card=border] .card{
 .nav-tabs,.nav-tabs .nav-link{
     border-radius:10px
 }
-label{
+/* label{
     color:var(--bs-heading-color)
-}
+} */
 .attendance .form-select{
     max-width:120px
 }

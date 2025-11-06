@@ -7,6 +7,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { baseURL } from "../api/api";
 import BackToTop from "../components/backToTop";
+import ChatUI from "../components/fitUI/chat.ui";
 import { SidebarProvider } from "../components/ui/sidebar";
 import { stateEmpresa, stateUsuario } from "../states/states";
 import Header from "./header";
@@ -69,6 +70,7 @@ function Layout() {
       <SidebarProvider>
          <Sidebar />
          <BackToTop />
+         <ChatUI />
 
          <main className="w-[100%] bg-secondary">
             <Header />
