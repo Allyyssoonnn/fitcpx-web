@@ -1,5 +1,15 @@
 import { getMessages, getPreviewMessages, sendMessage } from "@/api/chat";
-import { ArrowDown, ArrowLeft, ArrowUp, Check, CheckCheck, MessageCircle, SendHorizonal } from "lucide-react";
+import { getStudents } from "@/api/student";
+import {
+   ArrowDown,
+   ArrowLeft,
+   ArrowUp,
+   Check,
+   CheckCheck,
+   MessageCircle,
+   MessageCirclePlus,
+   SendHorizonal,
+} from "lucide-react";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { Button } from "../ui/button";
@@ -19,7 +29,8 @@ interface ChatMessagesProps {
 }
 
 interface ChatContactsProps {
-   openChat: (id: number) => void;
+   startNewChat: () => void;
+   openChat: (id: number, name?: string) => void;
    recentContacts: Message[];
 }
 
@@ -39,12 +50,13 @@ interface ChatContactProps {
    openChat: () => void;
    name: string;
    message: string;
-   date: string;
+   date?: string;
 }
 
 export default function ChatUI() {
    const containerRef = useRef<HTMLDivElement>(null);
    const [show, setShow] = useState(false);
+   const [showNewChat, setShowNewChat] = useState(false);
    const [studentId, setStudentId] = useState(0);
    const [activeChat, setActiveChat] = useState<ActiveChat>();
 
@@ -60,12 +72,13 @@ export default function ChatUI() {
       }
    }, [show, studentId, activeChat]);
 
-   const openChat = async (id: number) => {
+   const openChat = async (id: number, name?: string) => {
+      setShowNewChat(false);
       const resp = await getMessages(String(id));
       setActiveChat({
          messages: resp,
          studentId: id,
-         studentName: resp[0]?.studentName ?? "",
+         studentName: resp[0]?.studentName ?? name ?? "",
       });
       setStudentId(id);
    };
@@ -92,9 +105,14 @@ export default function ChatUI() {
          {studentId > 0 && <ChatBackBar show={show} setShow={setShow} openChat={openChat} activeChat={activeChat} />}
          {studentId <= 0 && <ChatBar show={show} setShow={setShow} />}
 
-         {show && !activeChat?.studentId && <ChatContacts openChat={openChat} recentContacts={data} />}
-         {show && !!activeChat?.studentId && activeChat?.studentId > 0 && (
+         {show && !showNewChat && !activeChat?.studentId && (
+            <ChatContacts openChat={openChat} recentContacts={data} startNewChat={() => setShowNewChat(true)} />
+         )}
+         {show && !showNewChat && !!activeChat?.studentId && activeChat?.studentId > 0 && (
             <ChatMessages activeChat={activeChat} ref={containerRef} sendMessageChat={sendMessageChat} />
+         )}
+         {show && showNewChat && !activeChat?.studentId && (
+            <NewChat openChat={openChat} closeNewChat={() => setShowNewChat(false)} />
          )}
       </div>
    );
@@ -148,7 +166,7 @@ function ChatBackBar({
 const ChatMessages = forwardRef<HTMLDivElement, ChatMessagesProps>(({ activeChat, sendMessageChat }, ref) => {
    return (
       <>
-         <div ref={ref} className="bg-gray-200 p-3 gap-3 flex flex-col overflow-auto">
+         <div ref={ref} className="bg-gray-200 p-3 gap-3 flex flex-col overflow-auto h-full">
             {activeChat?.messages.map((v) => (
                <ChatMessage
                   status={v.status}
@@ -163,7 +181,7 @@ const ChatMessages = forwardRef<HTMLDivElement, ChatMessagesProps>(({ activeChat
    );
 });
 
-function ChatContacts({ openChat, recentContacts }: ChatContactsProps) {
+function ChatContacts({ openChat, recentContacts, startNewChat }: ChatContactsProps) {
    const [search, setSearch] = useState("");
 
    function normalizeText(text: string) {
@@ -176,12 +194,19 @@ function ChatContacts({ openChat, recentContacts }: ChatContactsProps) {
 
    return (
       <>
-         <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Pesquise"
-            className="bg-white"
-         />
+         <div className="flex justify-center items-center py-2 px-1 gap-2 bg-white">
+            <Input
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+               placeholder="Pesquise"
+               className="bg-white"
+            />
+
+            <Button size="sm" onClick={startNewChat}>
+               <MessageCirclePlus />
+               Nova <span className="d-none d-lg-block">conversa</span>
+            </Button>
+         </div>
 
          <Command className="bg-white flex flex-col overflow-auto">
             {recentContacts.map((v) => {
@@ -191,7 +216,7 @@ function ChatContacts({ openChat, recentContacts }: ChatContactsProps) {
                      name={v.studentName}
                      date={v.createdAt}
                      message={v.message}
-                     openChat={() => openChat(1)}
+                     openChat={() => openChat(v.studentId)}
                   />
                );
             })}
@@ -210,7 +235,7 @@ function ChatContact({ name, openChat, message, date }: ChatContactProps) {
             {/* Nome em negrito para destaque */}
             <label className="font-semibold text-gray-800">{name}</label>
             {/* Data menor e em cor de destaque */}
-            <label className="text-xs text-gray-500">{new Date(date).toLocaleString()}</label>
+            {date && <label className="text-xs text-gray-500">{new Date(date).toLocaleString()}</label>}
          </div>
          {/* Última mensagem mais clara e truncada */}
          <label className="text-sm text-gray-600 truncate w-full">{message}</label>
@@ -279,5 +304,60 @@ function ChatSend({ sendMessageChat }: { sendMessageChat: (text: string) => void
             <SendHorizonal />
          </Button>
       </div>
+   );
+}
+
+function NewChat({
+   openChat,
+   closeNewChat,
+}: {
+   openChat: (id: number, name?: string) => void;
+   closeNewChat: () => void;
+}) {
+   const { data: students, refetch } = useQuery({
+      queryKey: ["students"],
+      queryFn: () => getStudents(false),
+      initialData: [],
+   });
+
+   const [search, setSearch] = useState("");
+
+   function normalizeText(text: string) {
+      return text
+         ?.toString()
+         .normalize("NFD") // separa acentos
+         .replace(/[\u0300-\u036f]/g, "") // remove acentos
+         .toLowerCase(); // deixa minúsculo
+   }
+
+   return (
+      <>
+         <div className="flex justify-center items-center py-2 px-1 gap-2 bg-white">
+            <Input
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+               placeholder="Pesquise"
+               className="bg-white"
+            />
+
+            <Button size="sm" onClick={closeNewChat}>
+               <MessageCircle />
+               Conversas
+            </Button>
+         </div>
+
+         <Command className="bg-white flex flex-col overflow-auto">
+            {students.map((v: any) => {
+               if (!normalizeText(v.nome_aluno).includes(normalizeText(search))) return;
+               return (
+                  <ChatContact
+                     name={v.nome_aluno}
+                     message="Iniciar uma conversa"
+                     openChat={() => openChat(v.cod_aluno, v.nome_aluno)}
+                  />
+               );
+            })}
+         </Command>
+      </>
    );
 }
