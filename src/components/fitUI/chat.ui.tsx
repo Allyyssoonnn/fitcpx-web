@@ -64,6 +64,7 @@ export default function ChatUI() {
       queryKey: ["chat"],
       queryFn: getPreviewMessages,
       initialData: [],
+      refetchInterval: 20000,
    });
 
    useEffect(() => {
@@ -94,9 +95,11 @@ export default function ChatUI() {
    return (
       <div
          className={`
-            lg:w-96 lg:end-10 lg:bottom-0 lg:top-auto lg:h-[550px] lg:shadow-xl
-            right-0 bottom-5
-            ${show ? "w-full" : "w-10"}
+            lg:w-25 lg:end-3 lg:bottom-3 lg:top-auto lg:h-[550px]
+            
+            right-3 bottom-3
+
+            ${show ? "w-full lg:w-96" : "w-10"}
             fixed rounded-lg flex flex-col justify-between shadow-xl overflow-hidden transition-all duration-300
          `}
          // style={{ zIndex: 1000 }}
@@ -120,13 +123,15 @@ export default function ChatUI() {
 
 function ChatBar({ show, setShow }: { show: boolean; setShow: (status: boolean) => void }) {
    return (
-      <Button className="bg-green-400 bottom-0 p-2 lg:flex lg:justify-between shadow-md" onClick={() => setShow(!show)}>
+      <Button className="p-2 lg:flex lg:justify-between shadow-md" onClick={() => setShow(!show)}>
          <div className="flex items-center">
             <MessageCircle className="text-white size-5" />
             <label className="text-white flex-nowrap flex cursor-pointer d-none d-lg-block ms-1">Conversas</label>
          </div>
 
-         <div className="flex justify-end items-center d-none d-lg-block">{show ? <ArrowDown /> : <ArrowUp />}</div>
+         {show && (
+            <div className="flex justify-end items-center d-none d-lg-block">{show ? <ArrowDown /> : <ArrowUp />}</div>
+         )}
       </Button>
    );
 }
@@ -148,13 +153,19 @@ function ChatBackBar({
       openChat(0);
    }
    return (
-      <Button className="bg-green-400 bottom-0 p-2 flex justify-between shadow-md" onClick={() => setShow(!show)}>
-         <Button size="sm" variant="ghost" onClick={back}>
-            <ArrowLeft />
-         </Button>
+      <Button className="bottom-0 p-2 flex justify-between shadow-md" onClick={() => setShow(!show)}>
+         {show ? (
+            <Button size="sm" variant="ghost" onClick={back}>
+               <ArrowLeft />
+            </Button>
+         ) : (
+            <MessageCircle />
+         )}
 
          <div className="flex gap-1 items-center">
-            <label className="text-white flex-nowrap flex font-semibold">{activeChat?.studentName}</label>
+            <label className="text-white flex-nowrap flex font-semibold cursor-pointer">
+               {show ? activeChat?.studentName : `${String(activeChat?.studentName).substring(0, 3)}...`}
+            </label>
             <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-700">
                {activeChat?.studentName ? String(activeChat?.studentName).substring(0, 1) : ""}
             </div>
