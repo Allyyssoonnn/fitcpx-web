@@ -1,0 +1,61 @@
+name: Bump Version & Deploy Frontend
+
+on:
+   push:
+      branches:
+         - test
+
+jobs:
+   bump-build-and-deploy:
+      if: github.actor != 'github-actions'
+      runs-on: ubuntu-latest
+
+      steps:
+         # 1️⃣ Checkout
+         - name: Checkout code
+           uses: actions/checkout@v3
+           with:
+              token: ${{ secrets.TOKEN }}
+
+         # 2️⃣ Setup Node.js
+         - name: Setup Node.js
+           uses: actions/setup-node@v3
+           with:
+              node-version: 18
+
+         # 3️⃣ Incrementar versão patch
+         - name: Increment version patch and commit
+           run: |
+              npm version patch --no-git-tag-version
+              git config user.name "github-actions"
+              git config user.email "github-actions@github.com"
+              git add package.json
+              git commit -m "chore: bump version [skip ci]" || echo "No changes to commit"
+              git push
+
+         # 4️⃣ Instalar dependências e build
+         - name: Install dependencies
+           run: npm ci
+
+         - name: Build Vite frontend
+           run: npm run build -- --mode test
+
+         # 5️⃣ Deploy para S3
+         - name: Sync dist to S3
+           uses: jakejarvis/s3-sync-action@v0.5.1
+           with:
+              args: --delete
+           env:
+              AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_TEST }}
+              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              AWS_REGION: ${{ secrets.AWS_REGION }}
+              SOURCE_DIR: "dist"
+
+         # 6️⃣ Purge Cloudflare cache
+         - name: Purge Cloudflare cache
+           run: |
+              curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+                -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+                -H "Content-Type: application/json" \
+                --data '{"purge_everything":true}'
