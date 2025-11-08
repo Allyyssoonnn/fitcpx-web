@@ -12,7 +12,6 @@ import {
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
-import { imgProfile, PRODUCAO } from "../../api/api";
 import { getContracts } from "../../api/contracts";
 import { deletePhysicalAssessment, getPhysicalAssessments } from "../../api/physicalAssessments";
 import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api/student";
@@ -185,8 +184,6 @@ function Aluno() {
                               src={
                                  aluno?.imagem_aluno
                                     ? `${aluno?.imagem_aluno}?&t=${new Date().getTime()}`
-                                    : !PRODUCAO
-                                    ? imgProfile
                                     : "https://placehold.co/150x150?text=img"
                               }
                               alt="Foto do Aluno"

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { imgProfile, PRODUCAO } from "../api/api";
 import Notificacoes from "../components/notificacoes";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
@@ -237,8 +236,6 @@ function Header() {
                               src={
                                  usuario.imagem_usuario
                                     ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
-                                    : !PRODUCAO
-                                    ? imgProfile
                                     : "https://placehold.co/150x150?text=img"
                               }
                            />
@@ -258,8 +255,6 @@ function Header() {
                                  src={
                                     usuario.imagem_usuario
                                        ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
-                                       : !PRODUCAO
-                                       ? imgProfile
                                        : "https://placehold.co/150x150?text=img"
                                  }
                               />
