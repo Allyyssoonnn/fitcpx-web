@@ -7,7 +7,7 @@ on:
 
 jobs:
    bump-build-and-deploy:
-      if: github.actor != 'github-actions'
+      # if: github.actor != 'github-actions'
       runs-on: ubuntu-latest
 
       steps:
@@ -24,14 +24,14 @@ jobs:
               node-version: 18
 
          # 3️⃣ Incrementar versão patch
-         - name: Increment version patch and commit
-           run: |
-              npm version patch --no-git-tag-version
-              git config user.name "github-actions"
-              git config user.email "github-actions@github.com"
-              git add package.json
-              git commit -m "chore: bump version [skip ci]" || echo "No changes to commit"
-              git push
+         # - name: Increment version patch and commit
+         #   run: |
+         #   npm version patch --no-git-tag-version
+         #   git config user.name "github-actions"
+         #   git config user.email "github-actions@github.com"
+         #   git add package.json
+         #   git commit -m "chore: bump version [skip ci]" || echo "No changes to commit"
+         #   git push
 
          # 4️⃣ Instalar dependências e build
          - name: Install dependencies
