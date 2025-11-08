@@ -188,7 +188,7 @@ function CadAvaliacao() {
 
       try {
          const resp = await updateImagePhysicalAssessment(formData, {
-            cod_avaliacao,
+            cod_avaliacao: String(cod_avaliacao),
             deletedImages: JSON.stringify(deletedImages),
          });
          resp ? console.log("Imagens enviadas com sucesso!") : console.error("Erro ao enviar as imagens:", resp.msg);
