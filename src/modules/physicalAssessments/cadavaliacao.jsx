@@ -187,10 +187,14 @@ function CadAvaliacao() {
       });
 
       try {
-         const resp = await updateImagePhysicalAssessment(formData, {
-            cod_avaliacao,
-            deletedImages: JSON.stringify(deletedImages),
-         });
+         const resp = await updateImagePhysicalAssessment(
+            formData,
+            {
+               cod_avaliacao: String(cod_avaliacao),
+               deletedImages: JSON.stringify(deletedImages),
+            },
+            cod_avaliacao
+         );
          resp ? console.log("Imagens enviadas com sucesso!") : console.error("Erro ao enviar as imagens:", resp.msg);
       } catch (error) {
          console.error("Erro na requisição:", error);
