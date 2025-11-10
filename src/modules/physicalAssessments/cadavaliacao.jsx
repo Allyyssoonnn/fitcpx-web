@@ -43,29 +43,29 @@ function CadAvaliacao() {
             categoria_protocolo: "Geral",
          },
       ],
-      Masculino: [
+      Feminino: [
          {
             cod_protocolo: 2,
-            nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
-            categoria_protocolo: "Masculino",
+            nome_protocolo: "18 a 51 anos - Petroski - (1995)",
+            categoria_protocolo: "Feminino",
          },
          {
             cod_protocolo: 3,
             nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
-            categoria_protocolo: "Masculino",
+            categoria_protocolo: "Feminino",
          },
       ],
-      Feminino: [
+      Masculino: [
          {
             cod_protocolo: 4,
             nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
-            categoria_protocolo: "Feminino",
+            categoria_protocolo: "Masculino",
          },
-         {
-            cod_protocolo: 5,
-            nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
-            categoria_protocolo: "Feminino",
-         },
+         // {
+         //    cod_protocolo: 5,
+         //    nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+         //    categoria_protocolo: "Masculino",
+         // },
       ],
    });
 

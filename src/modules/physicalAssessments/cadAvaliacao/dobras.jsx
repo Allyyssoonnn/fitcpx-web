@@ -132,17 +132,7 @@ const tooltipMetodo = (
 
 export const protocolosCampos = {
    1: [],
-   2: [
-      "subescapular",
-      "triciptal",
-      "peitoral",
-      "axilar_media",
-      "supra_iliaca",
-      "coxa",
-      "supra_iliaca",
-      "abdominal",
-      "coxa",
-   ],
+   2: ["subescapular", "triciptal", "supra_iliaca", "coxa"],
    3: ["supra_iliaca", "peitoral", "coxa"],
    4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
    5: ["triciptal", "coxa", "panturrilha"],
