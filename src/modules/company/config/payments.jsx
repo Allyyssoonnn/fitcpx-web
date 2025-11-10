@@ -63,10 +63,10 @@ function Payments() {
                                     })()}
                                  </TableCell>
                                  <TableCell>
-                                    {payment.status_empresa_licenca_pagamento === "succeeded" &&
-                                       payment.status_empresa_licenca_pagamento === "confirmed" && (
-                                          <span className="badge bg-success-subtle text-success">Pago</span>
-                                       )}
+                                    {(payment.status_empresa_licenca_pagamento === "succeeded" ||
+                                       payment.status_empresa_licenca_pagamento === "confirmed") && (
+                                       <span className="badge bg-success-subtle text-success">Pago</span>
+                                    )}
                                     {(payment.status_empresa_licenca_pagamento === "Pendente" ||
                                        payment.status_empresa_licenca_pagamento === "Pending") && (
                                        <span className="badge bg-warning-subtle text-warning">Pendente</span>
