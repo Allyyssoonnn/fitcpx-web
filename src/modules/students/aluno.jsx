@@ -367,6 +367,14 @@ function Aluno() {
                                     (a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao)
                                  )}
                                  fieldSearch="data_avaliacao"
+                                 onClickItem={(row) =>
+                                    navigate("/avaliacao", {
+                                       state: {
+                                          avaliacao: row,
+                                          aluno,
+                                       },
+                                    })
+                                 }
                                  columns={[
                                     {
                                        name: "data_avaliacao",

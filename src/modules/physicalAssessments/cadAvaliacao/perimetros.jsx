@@ -199,7 +199,13 @@ function Perimetros({
    );
 }
 
-const perimetrosRequired = ["braco_relaxado_direito", "coxa_direita", "panturrilha_direita"];
+const perimetrosRequired = [
+   "braco_relaxado_direito",
+   "coxa_direita",
+   "panturrilha_direita",
+   "antebraco_direito",
+   "abdomen",
+];
 
 const tooltipMetodo = (
    <Tooltip id="tooltip">
