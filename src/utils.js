@@ -324,25 +324,6 @@ export const arrayBorders = [
    "border-pink-500",
 ];
 
-export const arrayBackgrounds = [
-   "bg-success-subtle",
-   "bg-info-subtle",
-   "bg-danger-subtle",
-   "bg-primary-subtle",
-   "bg-secondary-subtle",
-   // Tailwind (alternativas suaves)
-   "bg-green-50",
-   "bg-blue-50",
-   "bg-red-50",
-   "bg-yellow-50",
-   "bg-indigo-50",
-   "bg-purple-50",
-   "bg-pink-50",
-   "bg-gray-100",
-   "bg-slate-50",
-   "bg-emerald-50",
-];
-
 export function getSexo(s) {
    if (!s) return "Sem sexo informado";
    return s === "M" ? "Masculino" : "Feminino";
