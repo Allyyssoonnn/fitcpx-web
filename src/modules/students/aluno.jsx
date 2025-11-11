@@ -351,7 +351,7 @@ function Aluno() {
                                  navigate("/cadavaliacao", {
                                     state: {
                                        aluno,
-                                       ultimaAvaliacao: avaliacoes[avaliacoes.length - 1],
+                                       ultimaAvaliacao: avaliacoes[0],
                                     },
                                  })
                               }
