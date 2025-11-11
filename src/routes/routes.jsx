@@ -31,6 +31,7 @@ import Aluno from "../modules/students/aluno";
 import CadAluno from "../modules/students/cadAluno";
 import CadUsuario from "../modules/users/cadusuario";
 import CadTreino from "../modules/workouts/cadTreino";
+import WorkoutView from "../modules/workouts/workout.view";
 
 const routes = [
    //Base
@@ -77,6 +78,7 @@ const routes = [
    //Informações
    { path: "/aluno", name: "Aluno", element: Aluno },
    { path: "/avaliacao", name: "Avaliação", element: Avaliacao },
+   { path: "/treino", name: "Avaliação", element: WorkoutView },
    { path: "/compareavaliacao", name: "Avaliação", element: CompareAvaliacao },
    { path: "/agenda", name: "Agenda", element: Agenda },
    { path: "/planilha", name: "Licença", element: Planilha },

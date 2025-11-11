@@ -383,9 +383,9 @@ function PlanilhaTreino() {
                                                 <div
                                                    key={indexSet}
                                                    className={`${exc.sets?.length > 0 ? arrayBorders[indexExc] : ""}
-                                    border-start border-end
-                                    p-2 d-flex flex-col gap-2
-                                `}
+                                                      border-start border-end
+                                                      p-2 d-flex flex-col gap-2
+                                                   `}
                                                 >
                                                    <div className="col-12 d-flex gap-2 justify-content-between items-center">
                                                       <label className="text-muted">

@@ -475,6 +475,7 @@ function Aluno() {
                                  hideHeader
                                  list={treinos.sort((a, b) => b.cod_treino - a.cod_treino)}
                                  fieldSearch="nome_treino"
+                                 onClickItem={(row) => navigate("/treino", { state: { workoutId: row.cod_treino } })}
                                  columns={[
                                     {
                                        name: "nome_treino",

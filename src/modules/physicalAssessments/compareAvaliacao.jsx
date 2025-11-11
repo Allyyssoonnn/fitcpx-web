@@ -4,7 +4,9 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
+import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
+import { Card, CardContent } from "../../components/ui/card";
 import { calcularIdade, formatarData, ordenaAvalicaoData } from "../../utils";
 
 function CompareAvaliacao() {
@@ -38,16 +40,10 @@ function CompareAvaliacao() {
 
    return (
       <div className="container-fluid">
-         <div className="card">
-            <div className="card-header">
-               <div className="d-flex justify-content-between align-items-center">
-                  <button onClick={() => navigate(-1)} className="btn btn-danger mb-3 me-3">
-                     <i className="bi bi-arrow-left-circle me-2"></i> Voltar
-                  </button>
-               </div>
-            </div>
+         <BackBoxUI />
 
-            <div className="card-body px-0 px-sm-4">
+         <Card>
+            <CardContent>
                <div className="row g-3 mb-5 justify-content-center align-items-center">
                   <div className="col-md-3">
                      <label className="form-label">Avaliação 1</label>
@@ -191,8 +187,8 @@ function CompareAvaliacao() {
                   <Diametro avaliacoes={[physical1, physical2, physical3]} />
                   <Imagens avaliacoes={[physical1, physical2, physical3]} />
                </Accordion>
-            </div>
-         </div>
+            </CardContent>
+         </Card>
       </div>
    );
 }

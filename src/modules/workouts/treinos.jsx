@@ -54,6 +54,7 @@ function Treinos() {
                buttonOnClick={() => navigate("/cadtreino")}
                buttonText="Novo treino"
                buttonId="newWorkout"
+               onClickItem={(row) => navigate("/treino", { state: { workoutId: row.cod_treino } })}
                columns={[
                   {
                      name: "nome_treino",

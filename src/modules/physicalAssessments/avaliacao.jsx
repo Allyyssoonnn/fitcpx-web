@@ -3,7 +3,7 @@ import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import printJS from "print-js";
 import { useEffect, useState } from "react";
-import { CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudent } from "../../api/student";
@@ -12,8 +12,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { stateEmpresa } from "../../states/states";
 
-import { Button } from "../../components/ui/button";
-import { Card, CardHeader, CardTitle } from "../../components/ui/card";
+import { ChartArea, Pen, Share } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import {
    calculaKGMCMMeta,
    calculaKGMusculoMeta,
@@ -92,50 +92,41 @@ function Avaliacao() {
 
    return (
       <div className="container-fluid">
-         <BackBoxUI />
+         <BackBoxUI
+            actions={[
+               {
+                  Icon: Pen,
+                  label: "Editar",
+                  action: () => {
+                     navigate("/cadavaliacao", {
+                        state: {
+                           avaliacao,
+                           aluno,
+                        },
+                     });
+                  },
+               },
+               {
+                  Icon: ChartArea,
+                  label: "Comparar",
+                  action: () => navigate("/compareavaliacao", { state: { avaliacao, aluno } }),
+               },
+               {
+                  Icon: Share,
+                  label: "Exportar",
+                  action: shareResult,
+               },
+            ]}
+         />
 
-         <Card>
-            <CardBody>
-               <div className="d-flex gap-2 items-center mx-3">
-                  <Button
-                     variant="outline"
-                     onClick={() =>
-                        navigate("/cadavaliacao", {
-                           state: {
-                              avaliacao,
-                              aluno,
-                           },
-                        })
-                     }
-                  >
-                     <i className="bi bi-pen"></i>
-                     <span className="d-none d-md-inline-block ms-2">Editar</span>
-                  </Button>
-
-                  <Button
-                     variant="outline"
-                     onClick={() => navigate("/compareavaliacao", { state: { avaliacao, aluno } })}
-                  >
-                     <i className="bi bi-graph-up-arrow"></i>
-                     <span className="d-none d-md-inline-block ms-2">Comparar</span>
-                  </Button>
-
-                  <Button variant="outline" onClick={shareResult}>
-                     <i className="bi bi-share"></i>
-                     <span className="d-none d-md-inline-block ms-2">Exportar</span>
-                  </Button>
-               </div>
-            </CardBody>
-         </Card>
-
-         <Card className="mt-3 px-4">
-            <CardBody id="printable-area">
+         <Card className="mt-3">
+            <CardContent id="printable-area">
                <Card>
                   <CardHeader>
                      <h5>Resultado da Avaliação</h5>
                   </CardHeader>
 
-                  <CardBody className="row px-3">
+                  <CardContent className="row px-3">
                      {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
                      <div className="col-6">
                         <p>
@@ -175,7 +166,7 @@ function Avaliacao() {
                            <strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}
                         </p>
                      </div>
-                  </CardBody>
+                  </CardContent>
                </Card>
 
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
@@ -192,7 +183,7 @@ function Avaliacao() {
                   <Diametro avaliacao={avaliacao} />
                   <Imagens avaliacao={avaliacao} />
                </Accordion>
-            </CardBody>
+            </CardContent>
          </Card>
       </div>
    );
@@ -457,7 +448,7 @@ function ComposicaoCorporal({ avaliacao, result }) {
             <CardTitle>Composição corporal</CardTitle>
          </CardHeader>
 
-         <CardBody className="px-3">
+         <CardContent className="px-3">
             <div style={{ height: "400px" }}>
                <ResponsivePie
                   enableArcLinkLabels={window.innerWidth < 900 ? false : true}
@@ -590,7 +581,7 @@ function ComposicaoCorporal({ avaliacao, result }) {
                   )}
                </TableBody>
             </Table>
-         </CardBody>
+         </CardContent>
       </Card>
    );
 }
@@ -643,7 +634,7 @@ function SimetriaMembro({ avaliacao }) {
             </OverlayTrigger>
          </CardHeader>
 
-         <CardBody className="px-3">
+         <CardContent className="px-3">
             <div style={{ height: "400px" }}>
                <ResponsiveBar
                   data={data}
@@ -753,7 +744,7 @@ function SimetriaMembro({ avaliacao }) {
                   </TableRow>
                </TableBody>
             </Table>
-         </CardBody>
+         </CardContent>
       </Card>
    );
 }
