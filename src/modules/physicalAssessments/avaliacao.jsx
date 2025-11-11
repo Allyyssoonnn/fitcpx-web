@@ -9,30 +9,13 @@ import { useRecoilState } from "recoil";
 import { getStudent } from "../../api/student";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
+import { Label } from "../../components/ui/label";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { stateEmpresa } from "../../states/states";
 
 import { ChartArea, Pen, Share } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import {
-   calculaKGMCMMeta,
-   calculaKGMusculoMeta,
-   calculaKGOsseoMeta,
-   calculaKGResidualMeta,
-   calculaPorcentagemMCMMeta,
-   calculaPorcentagemMusculoMeta,
-   calculaPorcentagemOsseoMeta,
-   calculaPorcentagemResidualMeta,
-   calcularIdade,
-   formatarData,
-   getFitnessAssessmentPDF,
-   getIMC,
-   getPesoIMCMeta,
-   getReferenciaIMC,
-   getReferenciaIMCMetas,
-   getReferenciaKGGordura,
-   getReferenciaPorcentagemGordura,
-} from "../../utils";
+import { calcularIdade, formatarData, getFitnessAssessmentPDF, getIMC, getReferenciaIMC } from "../../utils";
 
 function Avaliacao() {
    const navigate = useNavigate();
@@ -175,8 +158,7 @@ function Avaliacao() {
                   <SimetriaMembro avaliacao={avaliacao} />
                </div>
 
-               <Accordion type="single" collapsible className="mx-3">
-                  <Metas aluno={aluno} avaliacao={avaliacao} result={result} />
+               <Accordion type="single" collapsible className="mx-3 mt-3">
                   <AreaMagraGorda result={result} />
                   <Perimetro avaliacao={avaliacao} />
                   <Dobras avaliacao={avaliacao} />
@@ -189,165 +171,11 @@ function Avaliacao() {
    );
 }
 
-function Metas({ aluno, avaliacao, result }) {
-   const [meta, setMeta] = useState("Magro");
-   const [gordura, setGordura] = useState(15);
-   const [imc, setImc] = useState(24);
-
-   return (
-      <AccordionItem value="item-1">
-         <AccordionTrigger>
-            <h4>Metas</h4>
-         </AccordionTrigger>
-
-         <AccordionContent>
-            <div className="card-body">
-               <div className="col-md-3">
-                  <label className="form-label">Meta</label>
-                  <select className="form-control" value={meta} onChange={(e) => setMeta(e.target.value)}>
-                     <option value="Saúde -1">Saúde -1</option>
-                     <option value="Saúde 0">Saúde 0</option>
-                     <option value="Saúde +1">Saúde +1</option>
-                     <option value="Magro">Magro</option>
-                     <option value="Atlético">Atlético</option>
-                     <option value="Musculoso">Musculoso</option>
-                     <option value="Personalizado">Personalizado</option>
-                  </select>
-               </div>
-               <div className="row g-3">
-                  <div className="col-md-4 table-responsive">
-                     <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                           <tr>
-                              <th>Medidas básicas</th>
-                              <th>Atual</th>
-                              <th>Meta</th>
-                           </tr>
-                        </thead>
-
-                        <tbody>
-                           <tr>
-                              <th>IMC</th>
-                              <th>{getIMC(avaliacao)}</th>
-                              <th>{getReferenciaIMCMetas(aluno, avaliacao, meta)}</th>
-                           </tr>
-                           <tr>
-                              <th>Peso</th>
-                              <th>{avaliacao.peso}</th>
-                              <th>{getPesoIMCMeta(aluno, avaliacao, meta, imc)}</th>
-                              <th className="text-muted">
-                                 -{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta, imc)).toFixed(1)}
-                              </th>
-                           </tr>
-                        </tbody>
-                     </table>
-
-                     <div className={`${meta === "Personalizado" ? "" : "d-none"} mt-3`}>
-                        <div>
-                           <label className="form-label">% Gordura</label>
-                           <input
-                              className="form-control"
-                              value={gordura}
-                              onChange={(e) => setGordura(e.target.value)}
-                           />
-                        </div>
-                        <div>
-                           <label className="form-label">IMC</label>
-                           <input className="form-control" value={imc} onChange={(e) => setImc(e.target.value)} />
-                        </div>
-                     </div>
-                  </div>
-
-                  <div className="col-md-7 table-responsive">
-                     <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                           <tr>
-                              <th>Composição - Metas</th>
-                              <th>Atual</th>
-                              <th></th>
-                              <th></th>
-                              <th>Meta</th>
-                           </tr>
-                        </thead>
-
-                        <tbody>
-                           <tr>
-                              <th>Gordura</th>
-                              <th>{result?.compositionWeight?.gordura} KG</th>
-                              <th>{result?.compositionPercentage?.gordura} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{getReferenciaKGGordura(aluno, avaliacao, meta, gordura)} KG</th>
-                              <th>{getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gordura)} %</th>
-                              <th className="text-muted">
-                                 {(
-                                    getReferenciaKGGordura(aluno, avaliacao, meta, gordura) -
-                                    result?.compositionWeight?.gordura
-                                 ).toFixed(1)}
-                              </th>
-                           </tr>
-                           <tr>
-                              <th>Musc.</th>
-                              <th>{result?.compositionWeight?.massa_muscular} KG</th>
-                              <th>{result?.compositionPercentage?.massa_muscular} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                              <th>{calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                              <th className="text-muted">
-                                 {(
-                                    calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) -
-                                    result?.compositionWeight?.massa_muscular
-                                 ).toFixed(1)}
-                              </th>
-                           </tr>
-                           <tr>
-                              <th>Osséa</th>
-                              <th>{result?.compositionWeight?.massa_ossea} KG</th>
-                              <th>{result?.compositionPercentage?.massa_ossea} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGOsseoMeta(aluno, avaliacao, meta, imc)} KG</th>
-                              <th>{calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc)} %</th>
-                           </tr>
-                           <tr>
-                              <th>Resi.</th>
-                              <th>{result?.compositionWeight?.massa_residual} KG</th>
-                              <th>{result?.compositionPercentage?.massa_residual} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGResidualMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                              <th>{calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                           </tr>
-                           <tr>
-                              <th>MCM</th>
-                              <th>{result?.compositionWeight?.mcm} KG</th>
-                              <th>{result?.compositionPercentage?.mcm} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGMCMMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                              <th>{calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc)} %</th>
-                           </tr>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-            </div>
-         </AccordionContent>
-      </AccordionItem>
-   );
-}
-
 function Imagens({ avaliacao }) {
    return (
       <AccordionItem value="item-6">
          <AccordionTrigger>
-            <h4>Imagens</h4>
+            <Label>Imagens</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -370,7 +198,7 @@ function AreaMagraGorda({ result }) {
    return (
       <AccordionItem value="item-2">
          <AccordionTrigger>
-            <h4>Área Magra/Gorda</h4>
+            <Label>Área Magra/Gorda</Label>
          </AccordionTrigger>
 
          <AccordionContent className="d-flex">
@@ -753,7 +581,7 @@ function Perimetro({ avaliacao }) {
    return (
       <AccordionItem value="item-3">
          <AccordionTrigger>
-            <h4>Perimetria (cm)</h4>
+            <Label>Perimetria (cm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -839,7 +667,7 @@ function Diametro({ avaliacao }) {
    return (
       <AccordionItem value="item-5">
          <AccordionTrigger>
-            <h4>Diamêtros Osséos</h4>
+            <Label>Diamêtros Osséos</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -865,7 +693,7 @@ function Dobras({ avaliacao }) {
    return (
       <AccordionItem value="item-4">
          <AccordionTrigger>
-            <h4>Dobras Cutâneas (cm)</h4>
+            <Label>Dobras Cutâneas (cm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>

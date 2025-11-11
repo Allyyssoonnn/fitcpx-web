@@ -1,12 +1,14 @@
+import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import { Card, CardContent } from "../../components/ui/card";
+import { Label } from "../../components/ui/label";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { calcularIdade, formatarData, ordenaAvalicaoData } from "../../utils";
 
 function CompareAvaliacao() {
@@ -204,7 +206,7 @@ function Imagens({ avaliacoes }) {
    return (
       <AccordionItem value="item-5">
          <AccordionTrigger>
-            <h4>Comparação visual</h4>
+            <Label>Comparação visual</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -310,7 +312,7 @@ function AreaMagraGorda({ avaliacoes }) {
    return (
       <AccordionItem value="item-1">
          <AccordionTrigger>
-            <h4>Área Magra/Gorda</h4>
+            <Label>Área Magra/Gorda</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -439,20 +441,20 @@ function AreaMagraGorda({ avaliacoes }) {
 }
 
 function SimetriaMembro({ avaliacoes }) {
-   const tooltipAssimetria = (
-      <Tooltip id="tooltip">
-         <div>O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.</div>
-      </Tooltip>
-   );
-
    return (
       <AccordionItem value="item-2">
          <AccordionTrigger>
             <div className="d-flex justify-between items-center w-100">
-               <h4>Simetria dos membros (cm)</h4>
-               <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
-                  <i className="bi bi-question-circle text-danger ms-2 me-5"></i>
-               </OverlayTrigger>
+               <Label>Simetria dos membros (cm)</Label>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Info />
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                     O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.
+                  </TooltipContent>
+               </Tooltip>
             </div>
          </AccordionTrigger>
 
@@ -536,7 +538,7 @@ function Dobras({ avaliacoes }) {
    return (
       <AccordionItem value="item-3">
          <AccordionTrigger>
-            <h4>Dobras Cutâneas (cm)</h4>
+            <Label>Dobras Cutâneas (cm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -614,7 +616,7 @@ function Diametro({ avaliacoes }) {
    return (
       <AccordionItem value="item-4">
          <AccordionTrigger>
-            <h4>Diamêtros Osséos</h4>
+            <Label>Diamêtros Osséos</Label>
          </AccordionTrigger>
 
          <AccordionContent>
