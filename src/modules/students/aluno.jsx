@@ -409,17 +409,6 @@ function Aluno() {
                                        ),
                                     },
                                     {
-                                       name: "musculo",
-                                       header: "M. Muscular",
-                                       className: "fw-bold text-black",
-                                       getValue: (row) => (
-                                          <div className="text-muted">
-                                             {row?.result?.compositionWeight?.massa_muscular} kg /{" "}
-                                             {row?.result?.compositionPercentage?.massa_muscular}%
-                                          </div>
-                                       ),
-                                    },
-                                    {
                                        name: "mcm",
                                        header: "MCM",
                                        className: "fw-bold text-black",
