@@ -36,3 +36,16 @@ export const arrayBackgrounds = [
    "bg-slate-400",
    "bg-emerald-400",
 ];
+
+export const arrayBorders = [
+   "border-amber-400",
+   "border-blue-400",
+   "border-green-400",
+   "border-yellow-400",
+   "border-indigo-400",
+   "border-purple-400",
+   "border-pink-400",
+   "border-gray-100",
+   "border-slate-400",
+   "border-emerald-400",
+];

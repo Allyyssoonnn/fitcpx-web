@@ -306,16 +306,6 @@ export function filtrarExerciciosFunc(exerciciosFiltrados, filtrosAtuais) {
 }
 
 export const arrayBorders = [
-   "border-primary",
-   "border-secondary",
-   "border-success",
-   "border-danger",
-   "border-warning",
-   "border-info",
-   "border-light",
-   "border-dark",
-   "border-white",
-   // Tailwind (fallback / alternativas se Tailwind estiver presente)
    "border-green-500",
    "border-blue-500",
    "border-red-500",

@@ -10,7 +10,7 @@ function FitModalViewVideo({ url, name }: { url: string; name: string }) {
    return (
       <Dialog>
          <DialogTrigger asChild>
-            <Button size="sm">
+            <Button size="icon">
                <Camera />
             </Button>
          </DialogTrigger>

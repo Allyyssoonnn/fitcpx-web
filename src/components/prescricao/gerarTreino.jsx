@@ -1,3 +1,4 @@
+import { Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
@@ -20,13 +21,9 @@ function GerarTreino({ setSessoes, indexSessao, nivel_treino, desenvolvimento_tr
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger disabled={!desenvolvimento_treino || !nivel_treino}>
             {screen.width > 766 ? (
-               <button
-                  disabled={!desenvolvimento_treino || !nivel_treino}
-                  type="button"
-                  className="btn btn btn-info rounded mx-2"
-               >
-                  <i className="bi bi-lightbulb" />
-               </button>
+               <Button type="button" size="icon" disabled={!desenvolvimento_treino || !nivel_treino}>
+                  <Lightbulb />
+               </Button>
             ) : (
                <a
                   disabled={!desenvolvimento_treino || !nivel_treino}
@@ -75,7 +72,7 @@ function Filters({ adicionarSessaoGerada, closeDialog, nivel_treino, desenvolvim
 
    const { data: grupos } = useQuery({
       queryKey: ["grupos", usuario.cod_empresa],
-      queryFn: getMuscleGroups,
+      queryFn: () => getMuscleGroups("pt"),
       initialData: [],
    });
 
@@ -109,7 +106,7 @@ function Filters({ adicionarSessaoGerada, closeDialog, nivel_treino, desenvolvim
          <MultipleSelector
             className="mb-3"
             value={gruposSelecionados}
-            options={grupos.map((grupo, index) => ({
+            options={grupos?.map((grupo, index) => ({
                label: grupo.nome_grupo_exercicio,
                value: grupo.cod_grupo_exercicio,
             }))}

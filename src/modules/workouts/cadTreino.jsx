@@ -119,6 +119,17 @@ function CadTreino() {
                podeConfirmar = false;
                toast.error(`Exercício vazio na sessão ${sessao.nome_sessao}`);
             }
+
+            if (exercicio?.sets) {
+               for (const set of exercicio.sets) {
+                  if (!set?.cod_exercicio) {
+                     podeConfirmar = false;
+                     toast.error(
+                        `Exercício de super-set vazio na sessão ${sessao.nome_sessao} do exercício ${exercicio.nome_exercicio}`
+                     );
+                  }
+               }
+            }
          }
       }
 
@@ -228,7 +239,7 @@ function CadTreino() {
                   <label>{sessoes?.length}/15</label>
                </CardHeader>
 
-               <CardContent>
+               <CardContent className="px-0">
                   <TreinoInteligente
                      cod_aluno={codAluno}
                      sessoes={sessoes}
@@ -243,7 +254,7 @@ function CadTreino() {
 
                   <Separator className="mt-3" />
 
-                  <div className="d-flex justify-end mt-3">
+                  <div className="d-flex justify-end mt-3 px-3">
                      <Button id="submit" type="submit" disabled={isSubmitting}>
                         <Check />
                         Confirmar
