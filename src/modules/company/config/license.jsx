@@ -15,7 +15,7 @@ import { formatarMoeda } from "../../../utils";
 
 function License() {
    const { register, handleSubmit, setValue } = useForm();
-   const { nConfirm } = useNotificacao();
+   const { nConfirm, nLoading, endLoading } = useNotificacao();
    const [coupon, setCoupon] = useState(null);
 
    const { data: licencas, refetch: refetchLicenses } = useQuery({
@@ -38,8 +38,10 @@ function License() {
 
    async function onCancel() {
       nConfirm(null, "Tem certeza que deseja cancelar o plano?", async () => {
+         nLoading();
          await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
          refetch();
+         endLoading();
       });
    }
 
@@ -48,9 +50,11 @@ function License() {
          `${formatarMoeda(licenca?.valor_licenca)}`,
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
+            nLoading();
             const url = await buyLicense(licenca.cod_licenca);
             refetch();
             if (url) window.open(url, "_blank", "noopener,noreferrer");
+            endLoading();
          }
       );
    }
