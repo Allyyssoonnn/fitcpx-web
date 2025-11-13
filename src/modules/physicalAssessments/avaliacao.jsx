@@ -1,9 +1,6 @@
 /* eslint-disable react/prop-types */
-import { ResponsiveBar } from "@nivo/bar";
-import { ResponsivePie } from "@nivo/pie";
 import printJS from "print-js";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudent } from "../../api/student";
@@ -13,9 +10,12 @@ import { Label } from "../../components/ui/label";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { stateEmpresa } from "../../states/states";
 
-import { ChartArea, Pen, Share } from "lucide-react";
+import { ChartArea, Info, Pen, Share } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { calcularIdade, formatarData, getFitnessAssessmentPDF, getIMC, getReferenciaIMC } from "../../utils";
+import { ChartBarLabelCustom } from "./chart";
+import { ChartPieLabel } from "./pieChart";
 
 function Avaliacao() {
    const navigate = useNavigate();
@@ -271,95 +271,59 @@ function AreaMagraGorda({ result }) {
 
 function ComposicaoCorporal({ avaliacao, result }) {
    return (
-      <Card>
+      <Card className="bg-accent">
          <CardHeader>
             <CardTitle>Composição corporal</CardTitle>
          </CardHeader>
 
          <CardContent className="px-3">
-            <div style={{ height: "400px" }}>
-               <ResponsivePie
-                  enableArcLinkLabels={window.innerWidth < 900 ? false : true}
-                  data={
-                     avaliacao.tipo_avaliacao === "completo"
-                        ? [
-                             {
-                                id: "Gordura",
-                                label: "Gordura",
-                                value: result?.compositionPercentage?.gordura,
-                                color: "#FF9999",
-                             },
-                             {
-                                id: "Músculo",
-                                label: "Músculo",
-                                value: result?.compositionPercentage?.massa_muscular,
-                                color: "#99FF99",
-                             },
-                             {
-                                id: "Osso",
-                                label: "Osso",
-                                value: result?.compositionPercentage?.massa_ossea,
-                                color: "#CCCCCC",
-                             },
-                             {
-                                id: "Residual",
-                                label: "Residual",
-                                value: result?.compositionPercentage?.massa_residual,
-                                color: "#99CCFF",
-                             },
-                          ]
-                        : [
-                             {
-                                id: "Gordura",
-                                label: "Gordura",
-                                value: result?.compositionPercentage?.gordura,
-                                color: "#FF9999",
-                             },
-                             {
-                                id: "Massa magra",
-                                label: "Massa magra",
-                                value: result?.compositionPercentage?.massa_magra,
-                                color: "#99FF99",
-                             },
-                          ]
-                  }
-                  margin={window.innerWidth > 900 ? { top: 40, right: 80, bottom: 80, left: 80 } : {}}
-                  innerRadius={0.5}
-                  padAngle={0.7}
-                  cornerRadius={3}
-                  // colors={{ scheme: 'nivo' }}
-                  colors={(d) => d.data.color}
-                  borderWidth={1}
-                  borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
-                  enableRadialLabels={true}
-                  radialLabel="id"
-                  radialLabelsLinkDiagonalLength={10}
-                  radialLabelsTextColor="#333333"
-                  // valueFormat={value => `${Number(value)} %`}
-                  activeOuterRadiusOffset={8}
-                  legends={
-                     window.innerWidth < 900
-                        ? [
-                             {
-                                anchor: "top-left",
-                                direction: "column",
-                                justify: false,
-                                translateX: 0,
-                                translateY: 0,
-                                itemWidth: 100,
-                                itemHeight: 20,
-                                itemsSpacing: 0,
-                                symbolSize: 20,
-                                itemDirection: "left-to-right",
-                             },
-                          ]
-                        : []
-                  }
-                  valueFormat={(value) => `${Number(value)}%`}
-               />
-            </div>
+            <ChartPieLabel
+               data={
+                  avaliacao.tipo_avaliacao === "completo"
+                     ? [
+                          {
+                             id: "gordura",
+                             label: "Gordura",
+                             value: result?.compositionPercentage?.gordura,
+                             fill: "var(--color-chrome)",
+                          },
+                          {
+                             id: "Músculo",
+                             label: "Músculo",
+                             value: result?.compositionPercentage?.massa_muscular,
+                             fill: "var(--color-safari)",
+                          },
+                          {
+                             id: "Osso",
+                             label: "Osso",
+                             value: result?.compositionPercentage?.massa_ossea,
+                             fill: "var(--color-firefox)",
+                          },
+                          {
+                             id: "Residual",
+                             label: "Residual",
+                             value: result?.compositionPercentage?.massa_residual,
+                             fill: "var(--color-edge)",
+                          },
+                       ]
+                     : [
+                          {
+                             id: "Gordura",
+                             label: "Gordura",
+                             value: result?.compositionPercentage?.gordura,
+                             fill: "var(--color-chrome)",
+                          },
+                          {
+                             id: "Massa magra",
+                             label: "Massa magra",
+                             value: result?.compositionPercentage?.massa_magra,
+                             fill: "var(--color-safari)",
+                          },
+                       ]
+               }
+            />
 
-            <Table>
+            <Table className="mt-3">
                <TableHeader>
                   <TableRow>
                      <TableCell>Composição</TableCell>
@@ -422,90 +386,50 @@ function SimetriaMembro({ avaliacao }) {
    const data = [
       {
          membro: "Panturrilha",
-         direito: avaliacao.panturrilha_direita,
-         esquerdo: avaliacao.panturrilha_esquerda,
+         direito: parseFloat(avaliacao.panturrilha_direita) || 0,
+         esquerdo: parseFloat(avaliacao.panturrilha_esquerda) || 0,
       },
       {
          membro: "Braço",
-         direito: avaliacao.braco_relaxado_direito,
-         esquerdo: avaliacao.braco_relaxado_esquerdo,
+         direito: parseFloat(avaliacao.braco_relaxado_direito) || 0,
+         esquerdo: parseFloat(avaliacao.braco_relaxado_esquerdo) || 0,
       },
       {
          membro: "Braço cont.",
-         direito: avaliacao.braco_contraido_direito,
-         esquerdo: avaliacao.braco_contraido_esquerdo,
+         direito: parseFloat(avaliacao.braco_contraido_direito) || 0,
+         esquerdo: parseFloat(avaliacao.braco_contraido_esquerdo) || 0,
       },
       {
          membro: "Antebraço",
-         direito: avaliacao.antebraco_direito,
-         esquerdo: avaliacao.antebraco_esquerdo,
+         direito: parseFloat(avaliacao.antebraco_direito) || 0,
+         esquerdo: parseFloat(avaliacao.antebraco_esquerdo) || 0,
       },
       {
          membro: "Coxa",
-         direito: avaliacao.coxa_direita,
-         esquerdo: avaliacao.coxa_esquerda,
+         direito: parseFloat(avaliacao.coxa_direita) || 0,
+         esquerdo: parseFloat(avaliacao.coxa_esquerda) || 0,
       },
    ];
 
-   const tooltipAssimetria = (
-      <Tooltip id="tooltip">
-         <div>O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.</div>
-      </Tooltip>
-   );
-
    return (
-      <Card>
-         <CardHeader>
+      <Card className="bg-accent">
+         <CardHeader className="flex">
+            <Tooltip>
+               <TooltipTrigger>
+                  <Info size={15} />
+               </TooltipTrigger>
+
+               <TooltipContent>
+                  O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.
+               </TooltipContent>
+            </Tooltip>
             <CardTitle>Simetria dos membros (cm)</CardTitle>
-            <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
-               <i className="bi bi-question-circle text-danger ms-2"></i>
-            </OverlayTrigger>
          </CardHeader>
 
          <CardContent className="px-3">
-            <div style={{ height: "400px" }}>
-               <ResponsiveBar
-                  data={data}
-                  axisBottom={null}
-                  keys={["direito", "esquerdo"]}
-                  indexBy="membro"
-                  margin={{ top: 50, right: 130, bottom: 50, left: 90 }}
-                  padding={0.5}
-                  groupMode="grouped"
-                  layout="horizontal"
-                  valueScale={{ type: "linear" }}
-                  indexScale={{ type: "band", round: true }}
-                  borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-                  labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-                  legends={[
-                     {
-                        dataFrom: "keys",
-                        anchor: "bottom-right",
-                        direction: "column",
-                        justify: false,
-                        translateX: 120,
-                        translateY: 0,
-                        itemsSpacing: 2,
-                        itemWidth: 100,
-                        itemHeight: 20,
-                        itemDirection: "left-to-right",
-                        itemOpacity: 0.85,
-                        symbolSize: 20,
-                        effects: [
-                           {
-                              on: "hover",
-                              style: {
-                                 itemOpacity: 1,
-                              },
-                           },
-                        ],
-                     },
-                  ]}
-                  role="application"
-               />
-            </div>
+            <ChartBarLabelCustom data={data} />
 
-            <Table>
+            <Table className="mt-3">
                <TableHeader>
                   <TableRow>
                      <TableCell>Membro</TableCell>
