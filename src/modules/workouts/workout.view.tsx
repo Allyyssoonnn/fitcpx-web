@@ -97,9 +97,9 @@ export default function WorkoutView() {
 
                   <CardContent className="flex flex-col">
                      {workout?.sessoes?.map((session: any, index: number) => (
-                        <Accordion type="multiple" className="border-b-1">
+                        <Accordion type="multiple">
                            <AccordionItem value={`item-${index}`}>
-                              <AccordionTrigger>
+                              <AccordionTrigger className="border-1 p-3">
                                  <Label>
                                     {session?.sequencia_sessao}
                                     {" - "}

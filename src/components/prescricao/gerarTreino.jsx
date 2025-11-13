@@ -20,20 +20,9 @@ function GerarTreino({ setSessoes, indexSessao, nivel_treino, desenvolvimento_tr
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger disabled={!desenvolvimento_treino || !nivel_treino}>
-            {screen.width > 766 ? (
-               <Button type="button" size="icon" disabled={!desenvolvimento_treino || !nivel_treino}>
-                  <Lightbulb />
-               </Button>
-            ) : (
-               <a
-                  disabled={!desenvolvimento_treino || !nivel_treino}
-                  type="button"
-                  className="d-flex align-items-center gap-2 btn btn-sm btn-outline-info rounded mb-1"
-               >
-                  <i className="bi bi-lightbulb" />
-                  <p className="mb-0">Treino inteligente</p>
-               </a>
-            )}
+            <Button type="button" size="icon" disabled={!desenvolvimento_treino || !nivel_treino}>
+               <Lightbulb />
+            </Button>
          </DialogTrigger>
 
          <DialogContent className="!max-w-[800px] sm:!max-w-[30vw] w-full">

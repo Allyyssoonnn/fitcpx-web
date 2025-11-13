@@ -7,13 +7,10 @@ import {
    RefreshCcw,
    Trash,
 } from "lucide-react";
-import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
-import { getExercises } from "../../api/exercises";
 import FitComboBox from "../../components/baseComponents/FitComboBox";
 import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
-import { stateUsuario } from "../../states/states";
+import { cn } from "../../lib/utils";
 import { arrayBackgrounds, arrayBorders } from "../../utils/utils";
 import FitModalViewVideo from "../baseComponents/FitModalVideoView";
 import FiltroTreino from "../fitUI/filtroExercicio.ui";
@@ -26,15 +23,7 @@ import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) {
-   const [usuario] = useRecoilState(stateUsuario);
-
-   const { data: exerciciosLista } = useQuery({
-      queryKey: ["exercicios", usuario.cod_usuario],
-      queryFn: getExercises,
-      initialData: [],
-   });
-
+function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, exerciciosLista }) {
    const changeSequence = (e, index, nextIndex) => {
       e.preventDefault();
       if (nextIndex < 0 || nextIndex >= exercicios.length) return;
@@ -275,7 +264,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                   exercicio.sets?.length > 0 ? arrayBorders[index] : ""
                }`}
             >
-               <div className="d-flex flex-column align-items-center" style={{ cursor: "grab" }}>
+               <div className="hidden md:flex flex-column align-items-center sm:none" style={{ cursor: "grab" }}>
                   <Button
                      variant="outline"
                      size="sm"
@@ -330,7 +319,9 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
 
                            {/* Badge */}
                            {exercicio?.sets.length > 0 && (
-                              <Badge className={arrayBackgrounds[index]}>1/{exercicio?.sets.length + 1}</Badge>
+                              <Badge className={cn("hidden md:flex", arrayBackgrounds[index])}>
+                                 1/{exercicio?.sets.length + 1}
+                              </Badge>
                            )}
 
                            {/* Combo responsivo */}
@@ -405,7 +396,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                      </CardHeader>
 
                      <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                            {[
                               { label: "Séries", index: "serie_sessao_exercicio" },
                               { label: "Repetições", index: "repeticao_sessao_exercicio" },
@@ -474,7 +465,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
 
                                     {/* Badge */}
                                     {exercicio?.sets.length > 0 && (
-                                       <Badge className={arrayBackgrounds[index]}>
+                                       <Badge className={cn("hidden md:flex", arrayBackgrounds[index])}>
                                           {idx + 2}/{exercicio?.sets.length + 1}
                                        </Badge>
                                     )}
@@ -545,7 +536,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet }) 
                               </CardHeader>
 
                               <CardContent className="grid gap-4">
-                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     {[
                                        { label: "Séries", index: "serie_sessao_exercicio" },
                                        { label: "Repetições", index: "repeticao_sessao_exercicio" },

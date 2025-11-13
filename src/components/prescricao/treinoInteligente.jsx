@@ -1,7 +1,7 @@
-import { PlusCircle } from "lucide-react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { ArrowDown, ArrowUp, PlusCircle, Trash } from "lucide-react";
 import Swal from "sweetalert2";
 import EditableText from "../editableText";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { Button } from "../ui/button";
 import GerarTreino from "./gerarTreino";
 import ListaExercicios from "./listaExercicios";
@@ -16,6 +16,7 @@ function TreinoInteligente({
    desenvolvimento_treino,
    volume_treino,
    nivel_treino,
+   exercicios,
 }) {
    const updateNomeSessao = (index, newName) => {
       setSessoes((prevWorkouts) =>
@@ -114,121 +115,112 @@ function TreinoInteligente({
       });
    }
 
-   const handleDragEnd = (result) => {
-      const { source, destination } = result;
+   const changeSequence = (e, index, nextIndex) => {
+      e.preventDefault();
+      if (nextIndex < 0 || nextIndex >= sessoes.length) return;
 
-      // Se não houver destino válido, sai da função
-      if (!destination) return;
-
-      // Rearranjar a lista
-      const reorderedSessoes = Array.from(sessoes);
-      const [removed] = reorderedSessoes.splice(source.index, 1);
-      reorderedSessoes.splice(destination.index, 0, removed);
-
-      // Atualizar o campo `sequencia_sessao` de acordo com a nova ordem
-      const updatedSessoes = reorderedSessoes.map((item, index) => ({
-         ...item,
-         sequencia_sessao: index + 1,
+      // Clona profundamente os exercícios
+      const reorderedExercicios = sessoes.map((ex) => ({
+         ...ex,
+         exercicios: ex.exercicios?.map((s) => ({ ...s })) || [],
       }));
 
-      setSessoes(updatedSessoes);
+      const [removed] = reorderedExercicios.splice(index, 1);
+      reorderedExercicios.splice(nextIndex, 0, removed);
+
+      // Atualiza a sequência
+      const updatedSessions = reorderedExercicios.map((item, idx) => ({
+         ...item,
+         sequencia_sessao: idx + 1,
+      }));
+
+      setSessoes(updatedSessions);
    };
 
    return (
       <div className="container-fluid">
-         <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="SessoesList">
-               {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef}>
-                     {sessoes.map((sessao, index) => (
-                        <Draggable key={index} draggableId={String(index)} index={index}>
-                           {(provided) => (
-                              <div
-                                 ref={provided.innerRef}
-                                 {...provided.draggableProps}
-                                 // {...provided.dragHandleProps}
-                                 key={index}
-                                 className={`accordion rounded-2 mb-1`}
-                              >
-                                 <div className="accordion-item p-3">
-                                    <div className="card-header accordion-header d-flex justify-content-between align-items-center">
-                                       <div
-                                          {...provided.dragHandleProps}
-                                          className="me-2 d-flex flex-column align-items-center"
-                                          style={{ cursor: "grab" }}
-                                       >
-                                          <i className="bi bi-arrow-bar-up fs-1"></i>
-                                          <i className="bi bi-grip-horizontal"></i>
-                                          <label className="fs-1">{sessao.sequencia_sessao}</label>
-                                       </div>
-
-                                       <GerarTreino
-                                          setSessoes={setSessoes}
-                                          indexSessao={index}
-                                          cod_aluno={cod_aluno}
-                                          volume_treino={volume_treino}
-                                          nivel_treino={nivel_treino}
-                                          desenvolvimento_treino={desenvolvimento_treino}
-                                       />
-
-                                       <button
-                                          id={`btnSession-${index}`}
-                                          className="accordion-button"
-                                          type="button"
-                                          data-bs-toggle="collapse"
-                                          data-bs-target={`#panelsStayOpen-collapse${index}`}
-                                          aria-expanded="true"
-                                          aria-controls={`panelsStayOpen-collapse${index}`}
-                                       >
-                                          <EditableText
-                                             title={true}
-                                             key={index}
-                                             text={sessao.nome_sessao}
-                                             onUpdate={(newName) => updateNomeSessao(index, newName)}
-                                          />
-                                       </button>
-
-                                       <div className={`${screen.width < 766 ? "d-none" : ""}`}>
-                                          <a
-                                             href="#"
-                                             className="text-danger"
-                                             onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}
-                                          >
-                                             <i className="bi bi-trash me-2"></i>
-                                          </a>
-                                       </div>
-                                    </div>
-
-                                    <div id={`panelsStayOpen-collapse${index}`} className="accordion-collapse collapse">
-                                       <div className="accordion-body px-0">
-                                          <ListaExercicios
-                                             exercicios={sessao?.exercicios ?? []}
-                                             setSessoes={setSessoes}
-                                             indexSessao={index}
-                                             adicionarSet={adicionarSet}
-                                          />
-
-                                          <div className="w-100 d-flex justify-center mt-3">
-                                             <Button
-                                                id={`addExercise-${index}`}
-                                                variant="outline"
-                                                onClick={(e) => adicionarExercicio(e, index)}
-                                             >
-                                                <i className="bi bi-plus me-2" />
-                                                Adicionar exercício
-                                             </Button>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
+         <div>
+            {sessoes.map((sessao, index) => (
+               <Accordion key={index} type="multiple">
+                  <AccordionItem value={`session-${index}`}>
+                     <AccordionTrigger className="border-1 items-center p-3">
+                        <div className="flex w-full justify-between items-center">
+                           <div className="flex gap-3">
+                              <div className="flex flex-col justify-center items-center">
+                                 <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="px-1"
+                                    onClick={(e) => changeSequence(e, index, index - 1)}
+                                 >
+                                    <ArrowUp />
+                                 </Button>
+                                 <label className="fs-1">{sessao.sequencia_sessao}</label>
+                                 <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="px-1"
+                                    onClick={(e) => changeSequence(e, index, index + 1)}
+                                 >
+                                    <ArrowDown />
+                                 </Button>
                               </div>
-                           )}
-                        </Draggable>
-                     ))}
-                  </div>
-               )}
-            </Droppable>
-         </DragDropContext>
+
+                              <GerarTreino
+                                 setSessoes={setSessoes}
+                                 indexSessao={index}
+                                 cod_aluno={cod_aluno}
+                                 volume_treino={volume_treino}
+                                 nivel_treino={nivel_treino}
+                                 desenvolvimento_treino={desenvolvimento_treino}
+                              />
+
+                              <button id={`btnSession-${index}`} type="button">
+                                 <EditableText
+                                    title={true}
+                                    key={index}
+                                    text={sessao.nome_sessao}
+                                    onUpdate={(newName) => updateNomeSessao(index, newName)}
+                                 />
+                              </button>
+                           </div>
+
+                           <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}
+                           >
+                              <Trash />
+                           </Button>
+                        </div>
+                     </AccordionTrigger>
+
+                     <AccordionContent>
+                        <ListaExercicios
+                           exerciciosLista={exercicios}
+                           exercicios={sessao?.exercicios ?? []}
+                           setSessoes={setSessoes}
+                           indexSessao={index}
+                           adicionarSet={adicionarSet}
+                        />
+
+                        <div className="w-100 d-flex justify-center mt-3">
+                           <Button
+                              id={`addExercise-${index}`}
+                              variant="outline"
+                              onClick={(e) => adicionarExercicio(e, index)}
+                           >
+                              <i className="bi bi-plus me-2" />
+                              Adicionar exercício
+                           </Button>
+                        </div>
+                     </AccordionContent>
+                  </AccordionItem>
+               </Accordion>
+            ))}
+         </div>
 
          <Button variant="outline" className="w-[100%] mt-3" id="addSessions" onClick={adicionarSessao}>
             <PlusCircle />

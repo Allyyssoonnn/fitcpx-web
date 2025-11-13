@@ -1,9 +1,11 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
+import { getExercises } from "../../api/exercises";
 import { createOrUpdateWorkout } from "../../api/workouts";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
@@ -31,6 +33,12 @@ function CadTreino() {
       formState: { isSubmitting, errors },
    } = form;
    const navigate = useNavigate();
+
+   const { data: exerciciosLista } = useQuery({
+      queryKey: ["exercicios"],
+      queryFn: () => getExercises(false, "pt"),
+      initialData: [],
+   });
 
    const [usuario] = useRecoilState(stateUsuario);
    const [sessoes, setSessoes] = useState([]);
@@ -250,6 +258,7 @@ function CadTreino() {
                      nivel_treino={nivel_treino}
                      volume_treino={volume_treino}
                      desenvolvimento_treino={desenvolvimento_treino}
+                     exercicios={exerciciosLista}
                   />
 
                   <Separator className="mt-3" />
