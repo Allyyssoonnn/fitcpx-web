@@ -30,7 +30,7 @@ export const useNotificacao = () => {
    const nSuccess = (title, message) => Swal.fire(title || "Sucesso!", message || "", "success");
    const nError = (title, message) => Swal.fire(title || "Erro!", message || "", "error");
 
-   const nConfirm = (title, message, func) => {
+   const nConfirm = (title, message, func, onError) => {
       Swal.fire({
          title: title ?? "Tem certeza?",
          text: message ?? "",
@@ -39,11 +39,15 @@ export const useNotificacao = () => {
          cancelButtonText: "Cancelar",
          confirmButtonText: "Confirmar",
          reverseButtons: true,
-      }).then(async (result) => {
-         if (result.isConfirmed && func) {
-            func();
-         }
-      });
+      })
+         .then(async (result) => {
+            if (result.isConfirmed && func) {
+               func();
+            }
+         })
+         .catch(() => {
+            if (onError) onError();
+         });
    };
 
    const nLoading = (title, message) => {

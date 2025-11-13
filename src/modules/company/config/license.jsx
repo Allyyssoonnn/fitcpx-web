@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Box, Check, HelpCircle } from "lucide-react";
+import { setCookie } from "nookies";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
@@ -37,12 +38,23 @@ function License() {
    });
 
    async function onCancel() {
-      nConfirm(null, "Tem certeza que deseja cancelar o plano?", async () => {
-         nLoading();
-         await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
-         refetch();
-         endLoading();
-      });
+      nConfirm(
+         null,
+         "Tem certeza que deseja cancelar o plano?",
+         async () => {
+            nLoading();
+            const response = await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
+            if (response?.token) {
+               setCookie(null, "token", response.token, { maxAge: 60 * 60 * 7 });
+               setCookie(null, "refreshToken", response.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseStatus", response.license.status, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseTrialDaysLeft", response.license.trialDaysLeft, { maxAge: 60 * 60 * 24 * 7 });
+            }
+            refetch();
+            endLoading();
+         },
+         () => endLoading()
+      );
    }
 
    async function onBuy(licenca) {
@@ -51,11 +63,18 @@ function License() {
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
             nLoading();
-            const url = await buyLicense(licenca.cod_licenca);
+            const response = await buyLicense(licenca.cod_licenca);
             refetch();
-            if (url) window.open(url, "_blank", "noopener,noreferrer");
+            if (response?.url) window.open(response.url, "_blank", "noopener,noreferrer");
+            if (response?.token) {
+               setCookie(null, "token", response.token, { maxAge: 60 * 60 * 7 });
+               setCookie(null, "refreshToken", response.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseStatus", response.license.status, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseTrialDaysLeft", response.license.trialDaysLeft, { maxAge: 60 * 60 * 24 * 7 });
+            }
             endLoading();
-         }
+         },
+         () => endLoading()
       );
    }
 
