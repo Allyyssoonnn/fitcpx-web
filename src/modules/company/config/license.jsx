@@ -48,8 +48,9 @@ function License() {
          `${formatarMoeda(licenca?.valor_licenca)}`,
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
-            await buyLicense(licenca.cod_licenca);
+            const url = await buyLicense(licenca.cod_licenca);
             refetch();
+            if (url) window.open(url, "_blank", "noopener,noreferrer");
          }
       );
    }
