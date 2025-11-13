@@ -100,7 +100,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
 
       const updatedSets = reorderedSets.map((item, idx) => ({
          ...item,
-         sequencia_sessao_exercicio: idx + 1,
+         // sequencia_sessao_exercicio: idx + 1,
       }));
 
       reorderedExercicios[indexExercicio].sets = updatedSets;
