@@ -4,3 +4,5 @@ export const getPreviewMessages = async () => await get("/chat/getPreviewMessage
 export const getMessages = async (studentId: string) => await get(`/chat/getMessages?studentId=${studentId}`);
 export const sendMessage = async (message: string, studentId: string) =>
    await post("/chat/sendUserMessage", { message, studentId });
+export const getUnreadMessages = async (studentId?: string) =>
+   await get(`/chat/getUnreadMessages${studentId ? `?studentId=${studentId}` : ""}`);

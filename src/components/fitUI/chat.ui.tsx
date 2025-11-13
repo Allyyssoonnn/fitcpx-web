@@ -1,4 +1,4 @@
-import { getMessages, getPreviewMessages, sendMessage } from "@/api/chat";
+import { getMessages, getPreviewMessages, getUnreadMessages, sendMessage } from "@/api/chat";
 import { getStudents } from "@/api/student";
 import {
    ArrowDown,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Command, CommandItem } from "../ui/command";
 import { Input } from "../ui/input";
@@ -41,6 +42,7 @@ interface Message {
    userName: string;
    userId: number | null;
    companyId: number;
+   unreadCount?: number;
    createdAt: string;
    from: string;
    status: string;
@@ -51,6 +53,7 @@ interface ChatContactProps {
    name: string;
    message: string;
    date?: string;
+   unreadCount?: number;
 }
 
 export default function ChatUI() {
@@ -105,7 +108,9 @@ export default function ChatUI() {
          // style={{ zIndex: 1000 }}
          style={{ zIndex: 1000, height: show ? "550px" : "40px" }}
       >
-         {studentId > 0 && <ChatBackBar show={show} setShow={setShow} openChat={openChat} activeChat={activeChat} />}
+         {studentId > 0 && (
+            <ChatBackBar refetch={refetch} show={show} setShow={setShow} openChat={openChat} activeChat={activeChat} />
+         )}
          {studentId <= 0 && <ChatBar show={show} setShow={setShow} />}
 
          {show && !showNewChat && !activeChat?.studentId && (
@@ -122,10 +127,17 @@ export default function ChatUI() {
 }
 
 function ChatBar({ show, setShow }: { show: boolean; setShow: (status: boolean) => void }) {
+   const { data: unread } = useQuery({
+      queryKey: ["unreadMessages"],
+      queryFn: () => getUnreadMessages(),
+      initialData: 0,
+      refetchInterval: 20000,
+   });
+
    return (
       <Button className="p-2 lg:flex lg:justify-between shadow-md" onClick={() => setShow(!show)}>
          <div className="flex items-center">
-            <MessageCircle className="text-white size-5" />
+            {unread ? <Badge className="size-5">{unread}</Badge> : <MessageCircle className="text-white size-5" />}
             <label className="text-white flex-nowrap flex cursor-pointer d-none d-lg-block ms-1">Conversas</label>
          </div>
 
@@ -141,13 +153,16 @@ function ChatBackBar({
    setShow,
    openChat,
    activeChat,
+   refetch,
 }: {
    show: boolean;
    setShow: (status: boolean) => void;
    openChat: (id: number) => void;
    activeChat: ActiveChat | undefined;
+   refetch: () => void;
 }) {
    function back(e: any) {
+      refetch();
       e.preventDefault();
       e.stopPropagation();
       openChat(0);
@@ -228,6 +243,7 @@ function ChatContacts({ openChat, recentContacts, startNewChat }: ChatContactsPr
                      date={v.createdAt}
                      message={v.message}
                      openChat={() => openChat(v.studentId)}
+                     unreadCount={v.unreadCount}
                   />
                );
             })}
@@ -236,7 +252,7 @@ function ChatContacts({ openChat, recentContacts, startNewChat }: ChatContactsPr
    );
 }
 
-function ChatContact({ name, openChat, message, date }: ChatContactProps) {
+function ChatContact({ name, openChat, message, date, unreadCount }: ChatContactProps) {
    return (
       <CommandItem
          className="flex flex-col justify-start items-start p-3 border-b hover:bg-gray-100 cursor-pointer"
@@ -244,7 +260,10 @@ function ChatContact({ name, openChat, message, date }: ChatContactProps) {
       >
          <div className="w-full flex justify-between items-center">
             {/* Nome em negrito para destaque */}
-            <label className="font-semibold text-gray-800">{name}</label>
+            <label className="font-semibold text-gray-800">
+               {!!unreadCount && <Badge className="me-1">{unreadCount}</Badge>}
+               {name}
+            </label>
             {/* Data menor e em cor de destaque */}
             {date && <label className="text-xs text-gray-500">{new Date(date).toLocaleString()}</label>}
          </div>
