@@ -195,7 +195,7 @@ function CardExercise({
                </TooltipTrigger>
 
                <TooltipContent>
-                  <div className="flex flex-col text-white">
+                  <div className="flex flex-col text-accent">
                      <label>
                         Criação: <strong>{new Date(createdAt).toLocaleString()}</strong>
                      </label>
