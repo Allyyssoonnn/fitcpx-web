@@ -51,14 +51,11 @@ function Payments() {
                         </TableHeader>
 
                         <TableBody>
-                           {console.log(license.payments)}
                            {license.payments.map((payment, index) => (
                               <TableRow key={index} className="border-top">
                                  <TableCell>
                                     {(() => {
                                        const json = JSON.parse(payment.json_empresa_licenca_pagamento);
-                                       console.log(json);
-
                                        return formatarData(json?.dueDate ?? payment.data_empresa_licenca_pagamento);
                                     })()}
                                  </TableCell>

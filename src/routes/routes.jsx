@@ -59,7 +59,7 @@ const routes = [
       element: CadAvaliacao,
       videoHelp: "https://www.youtube.com/watch?v=af9KQc01PIc",
    },
-   { path: "/cadtreino", name: "Treino", element: CadTreino, videoHelp: "https://www.youtube.com/watch?v=IlzzBbDAFXA" },
+   { path: "/cadtreino", name: "Treino", element: CadTreino, videoHelp: "https://youtu.be/Un1IDZm3dpk" },
    { path: "/cadplano", name: "Plano", element: CadPlano, videoHelp: "https://www.youtube.com/watch?v=5dLuERhCn_Q" },
    {
       path: "/cadmodalidade",
