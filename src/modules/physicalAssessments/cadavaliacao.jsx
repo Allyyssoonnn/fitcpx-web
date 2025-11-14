@@ -46,7 +46,7 @@ function CadAvaliacao() {
       Feminino: [
          {
             cod_protocolo: 2,
-            nome_protocolo: "18 a 51 anos - Petroski - (1995)",
+            nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
             categoria_protocolo: "Feminino",
          },
          {
