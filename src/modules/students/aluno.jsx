@@ -97,7 +97,7 @@ function Aluno() {
          const formData = new FormData();
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
-         updateImageStudent(formData, { cod_aluno })
+         updateImageStudent(formData, cod_aluno)
             .then((url) => {
                refetchAluno();
                setShowModal(false);
