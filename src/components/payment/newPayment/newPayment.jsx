@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
+import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { PRODUCAO } from "../../../api/api";
-import { Card, CardContent } from "../../../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
+import { NumberInputUI } from "../../fitUI/numberInput.ui";
+import { Button } from "../../ui/button";
+import { Separator } from "../../ui/separator";
 
 function NewPayment({ close, onPay, callback, atSigth }) {
    const { nLoading, endLoading, nConfirm } = useNotificacao();
@@ -41,11 +45,13 @@ function NewPayment({ close, onPay, callback, atSigth }) {
    }
 
    return (
-      <Card style={{ height: formaPagamento != "MANUAL" ? "90vh" : "" }}>
+      <Card>
          <CardContent className="px-4">
-            <h5 className="text-center">Novo pagamento</h5>
+            <CardHeader>
+               <CardTitle className="text-center">Novo pagamento</CardTitle>
+            </CardHeader>
 
-            <div className="border border-bottom-3 border-gray m-1"></div>
+            <Separator className="my-3" />
 
             <div className="form-check form-switch ms-3 mb-3 mt-3">
                <input
@@ -72,7 +78,7 @@ function NewPayment({ close, onPay, callback, atSigth }) {
                      setTypePayment={setTypePayment}
                   />
 
-                  <div className="border border-bottom-3 border-gray m-1 mt-3 mb-3"></div>
+                  <Separator className="my-3" />
                </>
             )}
 
@@ -104,14 +110,14 @@ function NewPayment({ close, onPay, callback, atSigth }) {
                      )}
                   </div>
 
-                  <div className="border border-bottom-3 border-gray m-1 mt-3 mb-3"></div>
+                  <Separator className="my-3" />
                </>
             )}
 
             {typePayment == "CREDIT" && formaPagamento == "PARCELADO" && (
                <div className="col-md-6 w-100 mt-3 border p-3 shadow rounded">
                   <label className="form-label">Parcelas</label>
-                  <input
+                  {/* <input
                      type="number"
                      max={12}
                      min={1}
@@ -119,6 +125,12 @@ function NewPayment({ close, onPay, callback, atSigth }) {
                      onChange={(e) => updateFormCard("installments", e.target.value)}
                      placeholder="Parcelas"
                      className="form-control"
+                  /> */}
+                  <NumberInputUI
+                     value={formCard.installments}
+                     max={12}
+                     min={1}
+                     onChange={(value) => updateFormCard("installments", value)}
                   />
                </div>
             )}
@@ -145,14 +157,14 @@ function NewPayment({ close, onPay, callback, atSigth }) {
          </CardContent>
 
          <div className="card-footer d-flex p-3 align-items-center justify-content-between">
-            <button className="btn btn-danger rounded" onClick={onClose}>
+            <Button type="button" variant="destructive" onClick={onClose}>
                Fechar
-            </button>
+            </Button>
 
-            <button className="btn btn-success rounded" onClick={clickPay}>
-               <i className="bi bi-cart me-2" />
+            <Button type="button" onClick={clickPay}>
+               <ShoppingBag />
                Finalizar
-            </button>
+            </Button>
          </div>
       </Card>
    );

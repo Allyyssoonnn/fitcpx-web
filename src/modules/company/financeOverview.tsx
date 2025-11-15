@@ -363,7 +363,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                      </Badge>
                   </TooltipTrigger>
 
-                  <TooltipContent>A fatura ultrapassou a data de vencimento."</TooltipContent>
+                  <TooltipContent>A fatura ultrapassou a data de vencimento.</TooltipContent>
                </Tooltip>
             );
          if (status === "Pendente" || status === "Pending")
