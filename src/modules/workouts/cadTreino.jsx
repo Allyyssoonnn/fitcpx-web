@@ -64,10 +64,10 @@ function CadTreino() {
          setNome_aluno(alunoRecebido.nome_aluno);
          setCodAluno(alunoRecebido.cod_aluno);
          setSexo_aluno(alunoRecebido.sexo_aluno);
-         setValue("sexo_aluno", alunoRecebido.sexo_aluno);
+         setValue("sexo_treino", alunoRecebido.sexo_aluno);
       } else {
          setSexo_aluno("M");
-         setValue("sexo_aluno", "M");
+         setValue("sexo_treino", "M");
       }
       var sessaoKey = treinoRecebido?.sessoes?.map((sessao, index) => ({
          ...sessao,
