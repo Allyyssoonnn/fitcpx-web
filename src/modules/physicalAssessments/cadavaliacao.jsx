@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Trash } from "lucide-react";
+import { Check, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Button } from "../../components/ui/button";
-import { Card } from "../../components/ui/card";
+import { Card, CardFooter } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
@@ -46,7 +46,7 @@ function CadAvaliacao() {
       Feminino: [
          {
             cod_protocolo: 2,
-            nome_protocolo: "18 a 51 anos - Petroski - (1995)",
+            nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
             categoria_protocolo: "Feminino",
          },
          {
@@ -450,7 +450,7 @@ function CadAvaliacao() {
                      </TabsContent>
                   </Tabs>
 
-                  <div className="d-flex align-items-center mt-4 gap-3">
+                  <CardFooter className="d-flex items-end justify-end px-0 mt-4 gap-3">
                      <OverlayTrigger placement="top" overlay={tooltipErros}>
                         <i
                            className={`bi bi-exclamation-octagon ms-2 text-danger ${
@@ -460,11 +460,11 @@ function CadAvaliacao() {
                         ></i>
                      </OverlayTrigger>
 
-                     <button id="submit" disabled={isSubmitting} type="submit" className="btn btn-success">
-                        <i className="bi bi-check me-2"></i>
+                     <Button id="submit" disabled={isSubmitting} type="submit">
+                        <Check />
                         Confirmar
-                     </button>
-                  </div>
+                     </Button>
+                  </CardFooter>
                </form>
             </CardBody>
          </Card>

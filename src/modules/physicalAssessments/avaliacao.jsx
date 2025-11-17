@@ -1,38 +1,21 @@
 /* eslint-disable react/prop-types */
-import { ResponsiveBar } from "@nivo/bar";
-import { ResponsivePie } from "@nivo/pie";
 import printJS from "print-js";
 import { useEffect, useState } from "react";
-import { CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudent } from "../../api/student";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
+import { Label } from "../../components/ui/label";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { stateEmpresa } from "../../states/states";
 
-import { Button } from "../../components/ui/button";
-import { Card, CardHeader, CardTitle } from "../../components/ui/card";
-import {
-   calculaKGMCMMeta,
-   calculaKGMusculoMeta,
-   calculaKGOsseoMeta,
-   calculaKGResidualMeta,
-   calculaPorcentagemMCMMeta,
-   calculaPorcentagemMusculoMeta,
-   calculaPorcentagemOsseoMeta,
-   calculaPorcentagemResidualMeta,
-   calcularIdade,
-   formatarData,
-   getFitnessAssessmentPDF,
-   getIMC,
-   getPesoIMCMeta,
-   getReferenciaIMC,
-   getReferenciaIMCMetas,
-   getReferenciaKGGordura,
-   getReferenciaPorcentagemGordura,
-} from "../../utils";
+import { ChartArea, Info, Pen, Share } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
+import { calcularIdade, formatarData, getFitnessAssessmentPDF, getIMC, getReferenciaIMC } from "../../utils";
+import { ChartBarLabelCustom } from "./chart";
+import { ChartPieLabel } from "./pieChart";
 
 function Avaliacao() {
    const navigate = useNavigate();
@@ -92,50 +75,41 @@ function Avaliacao() {
 
    return (
       <div className="container-fluid">
-         <BackBoxUI />
+         <BackBoxUI
+            actions={[
+               {
+                  Icon: Pen,
+                  label: "Editar",
+                  action: () => {
+                     navigate("/cadavaliacao", {
+                        state: {
+                           avaliacao,
+                           aluno,
+                        },
+                     });
+                  },
+               },
+               {
+                  Icon: ChartArea,
+                  label: "Comparar",
+                  action: () => navigate("/compareavaliacao", { state: { avaliacao, aluno } }),
+               },
+               {
+                  Icon: Share,
+                  label: "Exportar",
+                  action: shareResult,
+               },
+            ]}
+         />
 
-         <Card>
-            <CardBody>
-               <div className="d-flex gap-2 items-center mx-3">
-                  <Button
-                     variant="outline"
-                     onClick={() =>
-                        navigate("/cadavaliacao", {
-                           state: {
-                              avaliacao,
-                              aluno,
-                           },
-                        })
-                     }
-                  >
-                     <i className="bi bi-pen"></i>
-                     <span className="d-none d-md-inline-block ms-2">Editar</span>
-                  </Button>
-
-                  <Button
-                     variant="outline"
-                     onClick={() => navigate("/compareavaliacao", { state: { avaliacao, aluno } })}
-                  >
-                     <i className="bi bi-graph-up-arrow"></i>
-                     <span className="d-none d-md-inline-block ms-2">Comparar</span>
-                  </Button>
-
-                  <Button variant="outline" onClick={shareResult}>
-                     <i className="bi bi-share"></i>
-                     <span className="d-none d-md-inline-block ms-2">Exportar</span>
-                  </Button>
-               </div>
-            </CardBody>
-         </Card>
-
-         <Card className="mt-3 px-4">
-            <CardBody id="printable-area">
+         <Card className="mt-3">
+            <CardContent id="printable-area">
                <Card>
                   <CardHeader>
                      <h5>Resultado da Avaliação</h5>
                   </CardHeader>
 
-                  <CardBody className="row px-3">
+                  <CardContent className="row px-3">
                      {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
                      <div className="col-6">
                         <p>
@@ -175,7 +149,7 @@ function Avaliacao() {
                            <strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}
                         </p>
                      </div>
-                  </CardBody>
+                  </CardContent>
                </Card>
 
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
@@ -184,171 +158,16 @@ function Avaliacao() {
                   <SimetriaMembro avaliacao={avaliacao} />
                </div>
 
-               <Accordion type="single" collapsible className="mx-3">
-                  <Metas aluno={aluno} avaliacao={avaliacao} result={result} />
+               <Accordion type="single" collapsible className="mx-3 mt-3">
                   <AreaMagraGorda result={result} />
                   <Perimetro avaliacao={avaliacao} />
                   <Dobras avaliacao={avaliacao} />
                   <Diametro avaliacao={avaliacao} />
                   <Imagens avaliacao={avaliacao} />
                </Accordion>
-            </CardBody>
+            </CardContent>
          </Card>
       </div>
-   );
-}
-
-function Metas({ aluno, avaliacao, result }) {
-   const [meta, setMeta] = useState("Magro");
-   const [gordura, setGordura] = useState(15);
-   const [imc, setImc] = useState(24);
-
-   return (
-      <AccordionItem value="item-1">
-         <AccordionTrigger>
-            <h4>Metas</h4>
-         </AccordionTrigger>
-
-         <AccordionContent>
-            <div className="card-body">
-               <div className="col-md-3">
-                  <label className="form-label">Meta</label>
-                  <select className="form-control" value={meta} onChange={(e) => setMeta(e.target.value)}>
-                     <option value="Saúde -1">Saúde -1</option>
-                     <option value="Saúde 0">Saúde 0</option>
-                     <option value="Saúde +1">Saúde +1</option>
-                     <option value="Magro">Magro</option>
-                     <option value="Atlético">Atlético</option>
-                     <option value="Musculoso">Musculoso</option>
-                     <option value="Personalizado">Personalizado</option>
-                  </select>
-               </div>
-               <div className="row g-3">
-                  <div className="col-md-4 table-responsive">
-                     <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                           <tr>
-                              <th>Medidas básicas</th>
-                              <th>Atual</th>
-                              <th>Meta</th>
-                           </tr>
-                        </thead>
-
-                        <tbody>
-                           <tr>
-                              <th>IMC</th>
-                              <th>{getIMC(avaliacao)}</th>
-                              <th>{getReferenciaIMCMetas(aluno, avaliacao, meta)}</th>
-                           </tr>
-                           <tr>
-                              <th>Peso</th>
-                              <th>{avaliacao.peso}</th>
-                              <th>{getPesoIMCMeta(aluno, avaliacao, meta, imc)}</th>
-                              <th className="text-muted">
-                                 -{(avaliacao.peso - getPesoIMCMeta(aluno, avaliacao, meta, imc)).toFixed(1)}
-                              </th>
-                           </tr>
-                        </tbody>
-                     </table>
-
-                     <div className={`${meta === "Personalizado" ? "" : "d-none"} mt-3`}>
-                        <div>
-                           <label className="form-label">% Gordura</label>
-                           <input
-                              className="form-control"
-                              value={gordura}
-                              onChange={(e) => setGordura(e.target.value)}
-                           />
-                        </div>
-                        <div>
-                           <label className="form-label">IMC</label>
-                           <input className="form-control" value={imc} onChange={(e) => setImc(e.target.value)} />
-                        </div>
-                     </div>
-                  </div>
-
-                  <div className="col-md-7 table-responsive">
-                     <table id="basic-datatables" className="table table-sm table-striped table-hover">
-                        <thead>
-                           <tr>
-                              <th>Composição - Metas</th>
-                              <th>Atual</th>
-                              <th></th>
-                              <th></th>
-                              <th>Meta</th>
-                           </tr>
-                        </thead>
-
-                        <tbody>
-                           <tr>
-                              <th>Gordura</th>
-                              <th>{result?.compositionWeight?.gordura} KG</th>
-                              <th>{result?.compositionPercentage?.gordura} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{getReferenciaKGGordura(aluno, avaliacao, meta, gordura)} KG</th>
-                              <th>{getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gordura)} %</th>
-                              <th className="text-muted">
-                                 {(
-                                    getReferenciaKGGordura(aluno, avaliacao, meta, gordura) -
-                                    result?.compositionWeight?.gordura
-                                 ).toFixed(1)}
-                              </th>
-                           </tr>
-                           <tr>
-                              <th>Musc.</th>
-                              <th>{result?.compositionWeight?.massa_muscular} KG</th>
-                              <th>{result?.compositionPercentage?.massa_muscular} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                              <th>{calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                              <th className="text-muted">
-                                 {(
-                                    calculaKGMusculoMeta(aluno, avaliacao, meta, gordura, imc) -
-                                    result?.compositionWeight?.massa_muscular
-                                 ).toFixed(1)}
-                              </th>
-                           </tr>
-                           <tr>
-                              <th>Osséa</th>
-                              <th>{result?.compositionWeight?.massa_ossea} KG</th>
-                              <th>{result?.compositionPercentage?.massa_ossea} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGOsseoMeta(aluno, avaliacao, meta, imc)} KG</th>
-                              <th>{calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc)} %</th>
-                           </tr>
-                           <tr>
-                              <th>Resi.</th>
-                              <th>{result?.compositionWeight?.massa_residual} KG</th>
-                              <th>{result?.compositionPercentage?.massa_residual} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGResidualMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                              <th>{calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gordura, imc)} %</th>
-                           </tr>
-                           <tr>
-                              <th>MCM</th>
-                              <th>{result?.compositionWeight?.mcm} KG</th>
-                              <th>{result?.compositionPercentage?.mcm} %</th>
-                              <th>
-                                 <i className="bi bi-arrow-right text-success"></i>
-                              </th>
-                              <th>{calculaKGMCMMeta(aluno, avaliacao, meta, gordura, imc)} KG</th>
-                              <th>{calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc)} %</th>
-                           </tr>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-            </div>
-         </AccordionContent>
-      </AccordionItem>
    );
 }
 
@@ -356,7 +175,7 @@ function Imagens({ avaliacao }) {
    return (
       <AccordionItem value="item-6">
          <AccordionTrigger>
-            <h4>Imagens</h4>
+            <Label>Imagens</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -379,7 +198,7 @@ function AreaMagraGorda({ result }) {
    return (
       <AccordionItem value="item-2">
          <AccordionTrigger>
-            <h4>Área Magra/Gorda</h4>
+            <Label>Área Magra/Gorda</Label>
          </AccordionTrigger>
 
          <AccordionContent className="d-flex">
@@ -452,95 +271,59 @@ function AreaMagraGorda({ result }) {
 
 function ComposicaoCorporal({ avaliacao, result }) {
    return (
-      <Card>
+      <Card className="bg-accent">
          <CardHeader>
             <CardTitle>Composição corporal</CardTitle>
          </CardHeader>
 
-         <CardBody className="px-3">
-            <div style={{ height: "400px" }}>
-               <ResponsivePie
-                  enableArcLinkLabels={window.innerWidth < 900 ? false : true}
-                  data={
-                     avaliacao.tipo_avaliacao === "completo"
-                        ? [
-                             {
-                                id: "Gordura",
-                                label: "Gordura",
-                                value: result?.compositionPercentage?.gordura,
-                                color: "#FF9999",
-                             },
-                             {
-                                id: "Músculo",
-                                label: "Músculo",
-                                value: result?.compositionPercentage?.massa_muscular,
-                                color: "#99FF99",
-                             },
-                             {
-                                id: "Osso",
-                                label: "Osso",
-                                value: result?.compositionPercentage?.massa_ossea,
-                                color: "#CCCCCC",
-                             },
-                             {
-                                id: "Residual",
-                                label: "Residual",
-                                value: result?.compositionPercentage?.massa_residual,
-                                color: "#99CCFF",
-                             },
-                          ]
-                        : [
-                             {
-                                id: "Gordura",
-                                label: "Gordura",
-                                value: result?.compositionPercentage?.gordura,
-                                color: "#FF9999",
-                             },
-                             {
-                                id: "Massa magra",
-                                label: "Massa magra",
-                                value: result?.compositionPercentage?.massa_magra,
-                                color: "#99FF99",
-                             },
-                          ]
-                  }
-                  margin={window.innerWidth > 900 ? { top: 40, right: 80, bottom: 80, left: 80 } : {}}
-                  innerRadius={0.5}
-                  padAngle={0.7}
-                  cornerRadius={3}
-                  // colors={{ scheme: 'nivo' }}
-                  colors={(d) => d.data.color}
-                  borderWidth={1}
-                  borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
-                  enableRadialLabels={true}
-                  radialLabel="id"
-                  radialLabelsLinkDiagonalLength={10}
-                  radialLabelsTextColor="#333333"
-                  // valueFormat={value => `${Number(value)} %`}
-                  activeOuterRadiusOffset={8}
-                  legends={
-                     window.innerWidth < 900
-                        ? [
-                             {
-                                anchor: "top-left",
-                                direction: "column",
-                                justify: false,
-                                translateX: 0,
-                                translateY: 0,
-                                itemWidth: 100,
-                                itemHeight: 20,
-                                itemsSpacing: 0,
-                                symbolSize: 20,
-                                itemDirection: "left-to-right",
-                             },
-                          ]
-                        : []
-                  }
-                  valueFormat={(value) => `${Number(value)}%`}
-               />
-            </div>
+         <CardContent className="px-3">
+            <ChartPieLabel
+               data={
+                  avaliacao.tipo_avaliacao === "completo"
+                     ? [
+                          {
+                             id: "gordura",
+                             label: "Gordura",
+                             value: result?.compositionPercentage?.gordura,
+                             fill: "var(--color-chrome)",
+                          },
+                          {
+                             id: "Músculo",
+                             label: "Músculo",
+                             value: result?.compositionPercentage?.massa_muscular,
+                             fill: "var(--color-safari)",
+                          },
+                          {
+                             id: "Osso",
+                             label: "Osso",
+                             value: result?.compositionPercentage?.massa_ossea,
+                             fill: "var(--color-firefox)",
+                          },
+                          {
+                             id: "Residual",
+                             label: "Residual",
+                             value: result?.compositionPercentage?.massa_residual,
+                             fill: "var(--color-edge)",
+                          },
+                       ]
+                     : [
+                          {
+                             id: "Gordura",
+                             label: "Gordura",
+                             value: result?.compositionPercentage?.gordura,
+                             fill: "var(--color-chrome)",
+                          },
+                          {
+                             id: "Massa magra",
+                             label: "Massa magra",
+                             value: result?.compositionPercentage?.massa_magra,
+                             fill: "var(--color-safari)",
+                          },
+                       ]
+               }
+            />
 
-            <Table>
+            <Table className="mt-3">
                <TableHeader>
                   <TableRow>
                      <TableCell>Composição</TableCell>
@@ -590,7 +373,7 @@ function ComposicaoCorporal({ avaliacao, result }) {
                   )}
                </TableBody>
             </Table>
-         </CardBody>
+         </CardContent>
       </Card>
    );
 }
@@ -603,90 +386,50 @@ function SimetriaMembro({ avaliacao }) {
    const data = [
       {
          membro: "Panturrilha",
-         direito: avaliacao.panturrilha_direita,
-         esquerdo: avaliacao.panturrilha_esquerda,
+         direito: parseFloat(avaliacao.panturrilha_direita) || 0,
+         esquerdo: parseFloat(avaliacao.panturrilha_esquerda) || 0,
       },
       {
          membro: "Braço",
-         direito: avaliacao.braco_relaxado_direito,
-         esquerdo: avaliacao.braco_relaxado_esquerdo,
+         direito: parseFloat(avaliacao.braco_relaxado_direito) || 0,
+         esquerdo: parseFloat(avaliacao.braco_relaxado_esquerdo) || 0,
       },
       {
          membro: "Braço cont.",
-         direito: avaliacao.braco_contraido_direito,
-         esquerdo: avaliacao.braco_contraido_esquerdo,
+         direito: parseFloat(avaliacao.braco_contraido_direito) || 0,
+         esquerdo: parseFloat(avaliacao.braco_contraido_esquerdo) || 0,
       },
       {
          membro: "Antebraço",
-         direito: avaliacao.antebraco_direito,
-         esquerdo: avaliacao.antebraco_esquerdo,
+         direito: parseFloat(avaliacao.antebraco_direito) || 0,
+         esquerdo: parseFloat(avaliacao.antebraco_esquerdo) || 0,
       },
       {
          membro: "Coxa",
-         direito: avaliacao.coxa_direita,
-         esquerdo: avaliacao.coxa_esquerda,
+         direito: parseFloat(avaliacao.coxa_direita) || 0,
+         esquerdo: parseFloat(avaliacao.coxa_esquerda) || 0,
       },
    ];
 
-   const tooltipAssimetria = (
-      <Tooltip id="tooltip">
-         <div>O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.</div>
-      </Tooltip>
-   );
-
    return (
-      <Card>
-         <CardHeader>
+      <Card className="bg-accent">
+         <CardHeader className="flex">
+            <Tooltip>
+               <TooltipTrigger>
+                  <Info size={15} />
+               </TooltipTrigger>
+
+               <TooltipContent>
+                  O valor será destacado em vermelho quando ultrapassar 1 cm, sinalizando a necessidade de ajuste.
+               </TooltipContent>
+            </Tooltip>
             <CardTitle>Simetria dos membros (cm)</CardTitle>
-            <OverlayTrigger placement="bottom" overlay={tooltipAssimetria}>
-               <i className="bi bi-question-circle text-danger ms-2"></i>
-            </OverlayTrigger>
          </CardHeader>
 
-         <CardBody className="px-3">
-            <div style={{ height: "400px" }}>
-               <ResponsiveBar
-                  data={data}
-                  axisBottom={null}
-                  keys={["direito", "esquerdo"]}
-                  indexBy="membro"
-                  margin={{ top: 50, right: 130, bottom: 50, left: 90 }}
-                  padding={0.5}
-                  groupMode="grouped"
-                  layout="horizontal"
-                  valueScale={{ type: "linear" }}
-                  indexScale={{ type: "band", round: true }}
-                  borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-                  labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-                  legends={[
-                     {
-                        dataFrom: "keys",
-                        anchor: "bottom-right",
-                        direction: "column",
-                        justify: false,
-                        translateX: 120,
-                        translateY: 0,
-                        itemsSpacing: 2,
-                        itemWidth: 100,
-                        itemHeight: 20,
-                        itemDirection: "left-to-right",
-                        itemOpacity: 0.85,
-                        symbolSize: 20,
-                        effects: [
-                           {
-                              on: "hover",
-                              style: {
-                                 itemOpacity: 1,
-                              },
-                           },
-                        ],
-                     },
-                  ]}
-                  role="application"
-               />
-            </div>
+         <CardContent className="px-3">
+            <ChartBarLabelCustom data={data} />
 
-            <Table>
+            <Table className="mt-3">
                <TableHeader>
                   <TableRow>
                      <TableCell>Membro</TableCell>
@@ -753,7 +496,7 @@ function SimetriaMembro({ avaliacao }) {
                   </TableRow>
                </TableBody>
             </Table>
-         </CardBody>
+         </CardContent>
       </Card>
    );
 }
@@ -762,7 +505,7 @@ function Perimetro({ avaliacao }) {
    return (
       <AccordionItem value="item-3">
          <AccordionTrigger>
-            <h4>Perimetria (cm)</h4>
+            <Label>Perimetria (cm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -848,7 +591,7 @@ function Diametro({ avaliacao }) {
    return (
       <AccordionItem value="item-5">
          <AccordionTrigger>
-            <h4>Diamêtros Osséos</h4>
+            <Label>Diamêtros Osséos</Label>
          </AccordionTrigger>
 
          <AccordionContent>
@@ -874,7 +617,7 @@ function Dobras({ avaliacao }) {
    return (
       <AccordionItem value="item-4">
          <AccordionTrigger>
-            <h4>Dobras Cutâneas (cm)</h4>
+            <Label>Dobras Cutâneas (cm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>

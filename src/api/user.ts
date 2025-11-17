@@ -19,5 +19,6 @@ export const recoveryAccount = async (email: string) => await post("/users/recov
 export const updatePassword = async (token: string, password: string) =>
    await post("/users/updatePassword", { token, password });
 export const createOrUpdateUser = async (data: any) => await post("/users", data);
-export const updateImageUser = async (img: any, data: any) => await postImage("/users/updateImageUser", img, data);
+export const updateImageUser = async (img: any, userId: string) =>
+   await postImage(`/users/updateImageUser${userId ? `userId=${userId}` : ""}`, img);
 export const sendErrorUser = async (error: any, info: any) => await post("/users/onError", { error, info });

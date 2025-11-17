@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Box, Check, HelpCircle } from "lucide-react";
+import { setCookie } from "nookies";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
@@ -15,7 +16,7 @@ import { formatarMoeda } from "../../../utils";
 
 function License() {
    const { register, handleSubmit, setValue } = useForm();
-   const { nConfirm } = useNotificacao();
+   const { nConfirm, nLoading, endLoading } = useNotificacao();
    const [coupon, setCoupon] = useState(null);
 
    const { data: licencas, refetch: refetchLicenses } = useQuery({
@@ -37,20 +38,43 @@ function License() {
    });
 
    async function onCancel() {
-      nConfirm(null, "Tem certeza que deseja cancelar o plano?", async () => {
-         await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
-         refetch();
-      });
+      nConfirm(
+         null,
+         "Tem certeza que deseja cancelar o plano?",
+         async () => {
+            nLoading();
+            const response = await cancelCompanyLicense(licencaAtual?.cod_empresa_licenca);
+            if (response?.token) {
+               setCookie(null, "token", response.token, { maxAge: 60 * 60 * 7 });
+               setCookie(null, "refreshToken", response.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseStatus", response.license.status, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseTrialDaysLeft", response.license.trialDaysLeft, { maxAge: 60 * 60 * 24 * 7 });
+            }
+            refetch();
+            endLoading();
+         },
+         () => endLoading()
+      );
    }
 
    async function onBuy(licenca) {
       nConfirm(
-         `${formatarMoeda(licenca?.valor_licenca)}/Mês`,
+         `${formatarMoeda(licenca?.valor_licenca)}`,
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
-            await buyLicense(licenca.cod_licenca);
+            nLoading();
+            const response = await buyLicense(licenca.cod_licenca);
             refetch();
-         }
+            if (response?.url) window.open(response.url, "_blank", "noopener,noreferrer");
+            if (response?.token) {
+               setCookie(null, "token", response.token, { maxAge: 60 * 60 * 7 });
+               setCookie(null, "refreshToken", response.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseStatus", response.license.status, { maxAge: 60 * 60 * 24 * 7 });
+               setCookie(null, "licenseTrialDaysLeft", response.license.trialDaysLeft, { maxAge: 60 * 60 * 24 * 7 });
+            }
+            endLoading();
+         },
+         () => endLoading()
       );
    }
 

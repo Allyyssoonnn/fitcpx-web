@@ -1,9 +1,11 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
+import { getExercises } from "../../api/exercises";
 import { createOrUpdateWorkout } from "../../api/workouts";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
@@ -32,6 +34,12 @@ function CadTreino() {
    } = form;
    const navigate = useNavigate();
 
+   const { data: exerciciosLista } = useQuery({
+      queryKey: ["exercicios"],
+      queryFn: () => getExercises(false, "pt"),
+      initialData: [],
+   });
+
    const [usuario] = useRecoilState(stateUsuario);
    const [sessoes, setSessoes] = useState([]);
    const [nome_aluno, setNome_aluno] = useState("");
@@ -56,10 +64,10 @@ function CadTreino() {
          setNome_aluno(alunoRecebido.nome_aluno);
          setCodAluno(alunoRecebido.cod_aluno);
          setSexo_aluno(alunoRecebido.sexo_aluno);
-         setValue("sexo_aluno", alunoRecebido.sexo_aluno);
+         setValue("sexo_treino", alunoRecebido.sexo_aluno);
       } else {
          setSexo_aluno("M");
-         setValue("sexo_aluno", "M");
+         setValue("sexo_treino", "M");
       }
       var sessaoKey = treinoRecebido?.sessoes?.map((sessao, index) => ({
          ...sessao,
@@ -118,6 +126,17 @@ function CadTreino() {
             if (!exercicio?.cod_exercicio) {
                podeConfirmar = false;
                toast.error(`Exercício vazio na sessão ${sessao.nome_sessao}`);
+            }
+
+            if (exercicio?.sets) {
+               for (const set of exercicio.sets) {
+                  if (!set?.cod_exercicio) {
+                     podeConfirmar = false;
+                     toast.error(
+                        `Exercício de super-set vazio na sessão ${sessao.nome_sessao} do exercício ${exercicio.nome_exercicio}`
+                     );
+                  }
+               }
             }
          }
       }
@@ -228,7 +247,7 @@ function CadTreino() {
                   <label>{sessoes?.length}/15</label>
                </CardHeader>
 
-               <CardContent>
+               <CardContent className="px-0">
                   <TreinoInteligente
                      cod_aluno={codAluno}
                      sessoes={sessoes}
@@ -239,11 +258,12 @@ function CadTreino() {
                      nivel_treino={nivel_treino}
                      volume_treino={volume_treino}
                      desenvolvimento_treino={desenvolvimento_treino}
+                     exercicios={exerciciosLista}
                   />
 
                   <Separator className="mt-3" />
 
-                  <div className="d-flex justify-end mt-3">
+                  <div className="d-flex justify-end mt-3 px-3">
                      <Button id="submit" type="submit" disabled={isSubmitting}>
                         <Check />
                         Confirmar

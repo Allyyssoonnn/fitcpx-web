@@ -81,7 +81,7 @@ function Account({ usuario, setusuario }) {
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
          // Save the cropped image
-         updateImageUser(formData, { cod_usuario: usuario.cod_usuario })
+         updateImageUser(formData, usuario.cod_usuario)
             .then((url) => {
                if (url) setusuario({ ...usuario, imagem_usuario: url });
                setShowModal(false);

@@ -1,14 +1,24 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 
-function BackBoxUI() {
+interface BackBoxUIProps {
+   actions?: ActionBackBoxUIProps[];
+}
+
+interface ActionBackBoxUIProps {
+   label: string;
+   action: () => void;
+   Icon?: LucideIcon;
+}
+
+function BackBoxUI({ actions }: BackBoxUIProps) {
    const navigate = useNavigate();
 
    return (
       <Card className="mb-3">
-         <CardContent>
+         <CardContent className="flex justify-between">
             <Button
                variant="outline"
                onClick={(e) => {
@@ -19,6 +29,15 @@ function BackBoxUI() {
                <ArrowLeft />
                Voltar
             </Button>
+
+            <div className="flex gap-3 flex-wrap">
+               {actions?.map((ac) => (
+                  <Button variant="outline" onClick={ac.action}>
+                     {ac.Icon && <ac.Icon />}
+                     {ac.label}
+                  </Button>
+               ))}
+            </div>
          </CardContent>
       </Card>
    );

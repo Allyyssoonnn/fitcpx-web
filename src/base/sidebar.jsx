@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { PRODUCAO } from "../api/api";
 import { sendFeedback } from "../api/companies";
 import { Button } from "../components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../components/ui/collapsible";
@@ -49,7 +48,8 @@ function AppSidebar() {
    return (
       <Sidebar
          style={{
-            borderLeft: `0.30rem solid ${PRODUCAO ? "#85D446" : "#FF0000"}`,
+            // borderLeft: `0.30rem solid ${PRODUCAO ? "#85D446" : "#FF0000"}`,
+            borderLeft: `0.30rem solid #85D446`,
          }}
       >
          <SidebarHeader className="shadow-sm">

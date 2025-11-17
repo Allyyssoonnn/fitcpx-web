@@ -97,7 +97,7 @@ function Aluno() {
          const formData = new FormData();
          formData.append("image", croppedBlob, "cropped_image.jpg");
 
-         updateImageStudent(formData, { cod_aluno })
+         updateImageStudent(formData, cod_aluno)
             .then((url) => {
                refetchAluno();
                setShowModal(false);
@@ -351,7 +351,7 @@ function Aluno() {
                                  navigate("/cadavaliacao", {
                                     state: {
                                        aluno,
-                                       ultimaAvaliacao: avaliacoes[avaliacoes.length - 1],
+                                       ultimaAvaliacao: avaliacoes[0],
                                     },
                                  })
                               }
@@ -405,17 +405,6 @@ function Aluno() {
                                           <div className="text-muted">
                                              {row?.result?.compositionWeight?.gordura} kg /{" "}
                                              {row?.result?.compositionPercentage?.gordura}%
-                                          </div>
-                                       ),
-                                    },
-                                    {
-                                       name: "musculo",
-                                       header: "M. Muscular",
-                                       className: "fw-bold text-black",
-                                       getValue: (row) => (
-                                          <div className="text-muted">
-                                             {row?.result?.compositionWeight?.massa_muscular} kg /{" "}
-                                             {row?.result?.compositionPercentage?.massa_muscular}%
                                           </div>
                                        ),
                                     },
@@ -475,6 +464,7 @@ function Aluno() {
                                  hideHeader
                                  list={treinos.sort((a, b) => b.cod_treino - a.cod_treino)}
                                  fieldSearch="nome_treino"
+                                 onClickItem={(row) => navigate("/treino", { state: { workoutId: row.cod_treino } })}
                                  columns={[
                                     {
                                        name: "nome_treino",

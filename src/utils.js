@@ -306,22 +306,25 @@ export function filtrarExerciciosFunc(exerciciosFiltrados, filtrosAtuais) {
 }
 
 export const arrayBorders = [
-   "border-primary",
-   "border-secondary",
-   "border-success",
-   "border-danger",
-   "border-warning",
-   "border-info",
-   "border-light",
-   "border-dark",
-   "border-white",
-   // Tailwind (fallback / alternativas se Tailwind estiver presente)
    "border-green-500",
    "border-blue-500",
    "border-red-500",
    "border-yellow-400",
    "border-indigo-600",
    "border-pink-500",
+];
+
+export const arrayBackgrounds = [
+   "bg-green-50",
+   "bg-blue-50",
+   "bg-red-50",
+   "bg-yellow-50",
+   "bg-indigo-50",
+   "bg-purple-50",
+   "bg-pink-50",
+   "bg-gray-100",
+   "bg-slate-50",
+   "bg-emerald-50",
 ];
 
 export function getSexo(s) {
@@ -446,81 +449,6 @@ export function verificaCamposProtocolo(avaliacao, cod_protocolo) {
    return result;
 }
 
-// ========================================================================= METAS ABAIXO
-
-export function getPesoIMCMeta(aluno, avaliacao, meta, imcPersonalizado) {
-   const imc = meta !== "Personalizado" ? getReferenciaIMCMetas(aluno, avaliacao, meta) : imcPersonalizado;
-   const alturaCM = avaliacao.altura * 100;
-   return (imc * ((alturaCM * alturaCM) / 10000)).toFixed(1);
-}
-
-export function getReferenciaIMCMetas(aluno, avaliacao, meta) {
-   const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
-   var result;
-   if (idade < 60) {
-      if (meta == "Saúde -1") result = 21.5;
-      if (meta == "Saúde 0") result = 21.7;
-      if (meta == "Saúde +1") result = 25.5;
-      if (meta == "Magro") result = 22;
-      if (meta == "Atlético") result = 25;
-      if (meta == "Musculoso") result = 27;
-   } else {
-      if (meta == "Saúde -1") result = 24.5;
-      if (meta == "Saúde 0") result = 25;
-      if (meta == "Saúde +1") result = 25.8;
-      if (meta == "Magro") result = 23.5;
-      if (meta == "Atlético") result = 24.5;
-      if (meta == "Musculoso") result = 26.5;
-   }
-   return result;
-}
-
-export function getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraPersonalizado) {
-   if (meta === "Personalizado") return gorduraPersonalizado;
-   const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
-   var result;
-   if (aluno.sexo_aluno == "M") {
-      if (idade < 60) {
-         if (meta == "Saúde -1") result = 12.5;
-         if (meta == "Saúde 0") result = 14.5;
-         if (meta == "Saúde +1") result = 17.5;
-         if (meta == "Magro") result = 9.5;
-         if (meta == "Atlético") result = 12;
-         if (meta == "Musculoso") result = 14;
-      } else {
-         if (meta == "Saúde -1") result = 17.5;
-         if (meta == "Saúde 0") result = 19.5;
-         if (meta == "Saúde +1") result = 22.5;
-         if (meta == "Magro") result = 12.5;
-         if (meta == "Atlético") result = 15.5;
-         if (meta == "Musculoso") result = 18;
-      }
-   } else {
-      if (idade < 60) {
-         if (meta == "Saúde -1") result = 20.5;
-         if (meta == "Saúde 0") result = 22.5;
-         if (meta == "Saúde +1") result = 25.5;
-         if (meta == "Magro") result = 16;
-         if (meta == "Atlético") result = 19.5;
-         if (meta == "Musculoso") result = 22.5;
-      } else {
-         if (meta == "Saúde -1") result = 25;
-         if (meta == "Saúde 0") result = 28;
-         if (meta == "Saúde +1") result = 30.5;
-         if (meta == "Magro") result = 19.5;
-         if (meta == "Atlético") result = 22.5;
-         if (meta == "Musculoso") result = 24.5;
-      }
-   }
-   return result;
-}
-
-export function getReferenciaKGGordura(aluno, avaliacao, meta, gorduraPersonalizado) {
-   const gordura =
-      meta !== "Personalizado" ? getReferenciaPorcentagemGordura(aluno, avaliacao, meta) : gorduraPersonalizado;
-   return ((avaliacao.peso * gordura) / 100).toFixed(1);
-}
-
 export function getReferenciaIMC(aluno, avaliacao) {
    const idade = calcularIdadeDtAvaliacao(aluno.data_nascimento_aluno, avaliacao.data_avaliacao);
    const imc = getIMC(avaliacao);
@@ -575,56 +503,4 @@ export function getReferenciaIMC(aluno, avaliacao) {
       }
    }
    return result;
-}
-
-export function calculaKGMCMMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
-   const peso = getPesoIMCMeta(aluno, avaliacao, meta, imc);
-   const gordura = getReferenciaKGGordura(aluno, avaliacao, meta, gorduraPersonalizado);
-   return (peso - gordura).toFixed(1);
-}
-
-export function calculaPorcentagemMCMMeta(aluno, avaliacao, meta, imc) {
-   const peso = getPesoIMCMeta(aluno, avaliacao, meta, imc);
-   const mcm = avaliacao?.result?.compositionWeight?.mcm;
-   return ((mcm / peso) * 100).toFixed(1);
-}
-
-export function calculaKGMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
-   if (!avaliacao) return;
-   const mcm = calculaKGMCMMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc);
-   const osseo = avaliacao?.result?.compositionPercentage?.massa_ossea;
-   const residual = avaliacao?.result?.compositionPercentage?.massa_residual;
-   return (mcm - (avaliacao.peso * (osseo / 100) + avaliacao.peso * (residual / 100))).toFixed(1);
-}
-
-export function calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
-   const kgMusculo = calculaKGMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc);
-   return (((kgMusculo / avaliacao.peso) * 1000) / 10).toFixed(1);
-}
-
-export function calculaKGOsseoMeta(aluno, avaliacao, meta, imc) {
-   const osseo = calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc);
-   const pesoMeta = getPesoIMCMeta(aluno, avaliacao, meta, imc);
-   return ((osseo * pesoMeta) / 100).toFixed(1);
-}
-
-export function calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc) {
-   const osseo = avaliacao?.result?.compositionPercentage?.massa_ossea;
-   const pesoMeta = getPesoIMCMeta(aluno, avaliacao, meta, imc);
-   return ((osseo * avaliacao.peso) / pesoMeta).toFixed(1);
-}
-
-export function calculaKGResidualMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
-   const residual = avaliacao?.result?.compositionPercentage?.massa_residual;
-   const pesoMeta = getPesoIMCMeta(aluno, avaliacao, meta, imc);
-
-   return ((residual * pesoMeta) / 100).toFixed(1);
-}
-
-export function calculaPorcentagemResidualMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc) {
-   const gorduraMeta = getReferenciaPorcentagemGordura(aluno, avaliacao, meta, gorduraPersonalizado, imc);
-   const musculoMeta = calculaPorcentagemMusculoMeta(aluno, avaliacao, meta, gorduraPersonalizado, imc);
-   const osseoMeta = calculaPorcentagemOsseoMeta(aluno, avaliacao, meta, imc);
-
-   return (Number(gorduraMeta) + Number(musculoMeta) + Number(osseoMeta)).toFixed(1);
 }
