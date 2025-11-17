@@ -1,3 +1,4 @@
+import { Activity, ArrowLeftCircle, Moon, Pause, Play, RefreshCcw, Sun } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -8,16 +9,18 @@ import { createOrUpdateWorkout, getWorkouts } from "../../api/workouts";
 import AutoComplete from "../../components/autoComplete";
 import FitModalViewVideo from "../../components/baseComponents/FitModalVideoView";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
-import { stateUsuario } from "../../states/states";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { stateUsuario, useStateApp } from "../../states/states";
 import { arrayBorders } from "../../utils";
 
 function PlanilhaTreino() {
    const [usuario] = useRecoilState(stateUsuario);
    const navigate = useNavigate();
+   const { toggleTheme, theme } = useStateApp();
 
    const [alunos, setAlunos] = useState([]);
    const [indexAluno, setIndexAluno] = useState(0);
-   const [tema, setTema] = useState(localStorage.getItem("tema") ?? "light");
 
    const { data: exercicios } = useQuery({
       queryKey: ["exercicios", usuario.cod_usuario],
@@ -37,10 +40,14 @@ function PlanilhaTreino() {
    }, []);
 
    function alteraTema() {
-      const novoTema = tema === "light" ? "dark" : "light";
-      localStorage.setItem("tema", novoTema);
-      setTema(novoTema);
+      toggleTheme();
+      const novoTema = theme === "light" ? "dark" : "light";
       document.documentElement.setAttribute("data-bs-theme", novoTema);
+      if (novoTema == "dark") {
+         document.documentElement.classList.add("dark");
+      } else {
+         document.documentElement.classList.remove("dark");
+      }
    }
 
    async function changeField(value, indexSessao, indexExc, field, indexSet = null) {
@@ -158,23 +165,19 @@ function PlanilhaTreino() {
    }
 
    return (
-      <div className="container-fluid page-wrapper" id="main-wrapper">
+      <div className="container-fluid">
          {/* Header Section */}
-         <div className="bg-gradient-primary rounded-4 p-4 mb-4 shadow-lg">
-            <div className="d-flex justify-content-between align-items-center">
+         <Card className="mb-3">
+            <CardContent className="d-flex justify-content-between align-items-center">
                <div className="d-flex gap-2">
-                  <button className="btn btn-outline-danger rounded-pill px-4" onClick={() => navigate("/planilha")}>
-                     <i className="bi bi-arrow-left me-2"></i>
+                  <Button onClick={() => navigate("/planilha")}>
+                     <ArrowLeftCircle />
                      Voltar
-                  </button>
+                  </Button>
 
-                  <button onClick={alteraTema} className="btn btn-outline-primary rounded-pill" title="Alternar tema">
-                     {localStorage.getItem("tema") === "light" ? (
-                        <i className="bi bi-moon-fill"></i>
-                     ) : (
-                        <i className="bi bi-sun-fill"></i>
-                     )}
-                  </button>
+                  <Button variant="outline" onClick={alteraTema} title="Alternar tema">
+                     {localStorage.getItem("tema") === "light" ? <Moon /> : <Sun />}
+                  </Button>
                </div>
 
                <div>
@@ -184,13 +187,13 @@ function PlanilhaTreino() {
                   </h5>
                   <p className="mb-0 opacity-75">Gerencie os treinos dos seus alunos</p>
                </div>
-            </div>
-         </div>
+            </CardContent>
+         </Card>
 
-         <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-            <div className="card-body p-0">
+         <Card className="overflow-hidden">
+            <CardContent className="p-0">
                {/* Student Selection */}
-               <div className="bg-light p-4 border-bottom">
+               <div className="p-4 border-bottom">
                   <div className="d-flex flex-column">
                      <h5 className="text-primary mb-3">
                         <i className="bi bi-person-rolodex me-2"></i>
@@ -256,6 +259,7 @@ function PlanilhaTreino() {
                                        })}
                                     </div>
                                  </div>
+
                                  <div className="col-md-6">
                                     <h6 className="text-info mb-3">
                                        <i className="bi bi-calendar-check me-2"></i>
@@ -309,23 +313,22 @@ function PlanilhaTreino() {
                      {alunos[indexAluno]?.treinos[alunos[indexAluno].indexTreino]?.sessoes?.map((sessao, idx) => {
                         if (idx == alunos[indexAluno].indexSessao) {
                            return (
-                              <div key={idx} className="card border-0 shadow-sm rounded-4">
-                                 <div className="card-header bg-gradient-success rounded-top-4">
-                                    <h3 className="mb-0">
-                                       <i className="bi bi-activity me-2"></i>
+                              <Card key={idx}>
+                                 <CardHeader>
+                                    <CardTitle className="flex items-center gap-3">
+                                       <Activity />
                                        {sessao.nome_sessao}
-                                    </h3>
-                                 </div>
+                                    </CardTitle>
+                                 </CardHeader>
 
-                                 <div className="card-body p-0">
+                                 <CardContent className="p-0">
                                     <div className="mb-0 d-flex flex-column gap-2">
                                        {sessao?.exercicios?.map((exc, indexExc) => (
                                           <div key={indexExc} className="d-flex flex-column">
                                              <div
                                                 className={`${exc.sets?.length > 0 ? arrayBorders[indexExc] : ""}
-                                                                    border-start border-end border-top
-                                                                    p-2 d-flex flex-col gap-2 rounded-1
-                                                                `}
+                                                   p-2 d-flex flex-col gap-2 rounded-1 border-s-1 border-t-1 border-e-1
+                                                `}
                                              >
                                                 <div className="col-12 d-flex gap-2 justify-content-between items-center">
                                                    <label className="text-muted">{indexExc + 1}°</label>
@@ -383,8 +386,7 @@ function PlanilhaTreino() {
                                                 <div
                                                    key={indexSet}
                                                    className={`${exc.sets?.length > 0 ? arrayBorders[indexExc] : ""}
-                                                      border-start border-end
-                                                      p-2 d-flex flex-col gap-2
+                                                      p-2 d-flex flex-col gap-2 border-s-1 border-b-1 border-e-1
                                                    `}
                                                 >
                                                    <div className="col-12 d-flex gap-2 justify-content-between items-center">
@@ -467,16 +469,16 @@ function PlanilhaTreino() {
                                           </div>
                                        ))}
                                     </div>
-                                 </div>
-                              </div>
+                                 </CardContent>
+                              </Card>
                            );
                         }
                         return null;
                      })}
                   </div>
                </div>
-            </div>
-         </div>
+            </CardContent>
+         </Card>
       </div>
    );
 }
@@ -553,19 +555,19 @@ function Timer() {
          </div>
 
          <div className="d-flex gap-3 justify-content-center">
-            <button
-               className={`btn btn-lg rounded-pill px-4 ${isRunning ? "btn-warning" : "btn-success"}`}
+            <Button
+               variant={isRunning ? "secondary" : "default"}
                onClick={() => setIsRunning(!isRunning)}
                disabled={time === 0}
             >
-               <i className={`bi ${isRunning ? "bi-pause-fill" : "bi-play-fill"} me-2`}></i>
+               {isRunning ? <Pause /> : <Play />}
                {isRunning ? "Pausar" : "Iniciar"}
-            </button>
+            </Button>
 
-            <button className="btn btn-danger btn-lg rounded-pill px-4" onClick={resetTimer}>
-               <i className="bi bi-arrow-clockwise me-2"></i>
+            <Button variant="destructive" onClick={resetTimer}>
+               <RefreshCcw />
                Resetar
-            </button>
+            </Button>
          </div>
       </div>
    );
