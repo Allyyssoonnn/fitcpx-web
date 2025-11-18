@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 export const PRODUCAO = import.meta.env.MODE === "production";
 // export const baseURL = PRODUCAO ? "https://api.fitcpx.com" : "http://localhost:8070";
+
 export const baseURL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
