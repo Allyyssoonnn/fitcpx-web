@@ -262,39 +262,42 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     {field.label} {fieldRequerid && "*"}
                                  </FieldLabel>
 
-                                 <FieldContent className="flex flex-row items-center">
-                                    <Select
-                                       disabled={field.options?.disabled}
-                                       value={String(value)}
-                                       onValueChange={(val) => setValue(field.fieldName, val)}
-                                    >
-                                       <SelectTrigger id={field.id} className="w-[100%]">
-                                          <SelectValue placeholder={field.label} />
-                                       </SelectTrigger>
-
-                                       <SelectContent>
-                                          {field.selectOptions?.map((option, index) => {
-                                             const value = typeof option === "string" ? option : String(option.value);
-                                             const label = typeof option === "string" ? option : option.label;
-                                             return (
-                                                <SelectItem id={`${field.id}-${index}`} value={value}>
-                                                   {label}
-                                                </SelectItem>
-                                             );
-                                          })}
-                                       </SelectContent>
-                                    </Select>
-
-                                    {field.clearSelectButton && value && (
-                                       <Button
-                                          className="w-1"
-                                          variant="destructive"
-                                          size="sm"
-                                          onClick={() => setValue(field.fieldName, undefined)}
+                                 <FieldContent>
+                                    <div className="flex items-center gap-2 w-full">
+                                       <Select
+                                          disabled={field.options?.disabled}
+                                          value={String(value)}
+                                          onValueChange={(val) => setValue(field.fieldName, val)}
                                        >
-                                          <Trash />
-                                       </Button>
-                                    )}
+                                          <SelectTrigger id={field.id} className="w-[100%]">
+                                             <SelectValue placeholder={field.label} />
+                                          </SelectTrigger>
+
+                                          <SelectContent>
+                                             {field.selectOptions?.map((option, index) => {
+                                                const value =
+                                                   typeof option === "string" ? option : String(option.value);
+                                                const label = typeof option === "string" ? option : option.label;
+                                                return (
+                                                   <SelectItem id={`${field.id}-${index}`} value={value}>
+                                                      {label}
+                                                   </SelectItem>
+                                                );
+                                             })}
+                                          </SelectContent>
+                                       </Select>
+
+                                       {field.clearSelectButton && value && (
+                                          <Button
+                                             className="w-1"
+                                             variant="destructive"
+                                             size="sm"
+                                             onClick={() => setValue(field.fieldName, undefined)}
+                                          >
+                                             <Trash />
+                                          </Button>
+                                       )}
+                                    </div>
                                  </FieldContent>
 
                                  <input
