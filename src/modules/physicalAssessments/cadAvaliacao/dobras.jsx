@@ -1,6 +1,7 @@
+import { Info } from "lucide-react";
 import { useMemo } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import MediaInput from "../../../components/mediaInput";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
 
 function Dobras({
    metodoDobras,
@@ -18,11 +19,25 @@ function Dobras({
       <div className="row g-3">
          <div className="col-md-3">
             <label className="form-label">
-               Metódo
-               <OverlayTrigger placement="bottom" overlay={tooltipMetodo}>
-                  <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
-               </OverlayTrigger>
+               <Tooltip>
+                  <TooltipTrigger>
+                     <Info size={15} />
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                     <div>
+                        <strong>Normal:</strong> Apenas um campo para preencher medidas é liberado.
+                     </div>
+                     <p></p>
+                     <div>
+                        <strong>Média:</strong> É liberado 2 campos para informar 2 medidas, caso a diferença seja mais
+                        de 1mm é aberto o terceiro campo para média.
+                     </div>
+                  </TooltipContent>
+               </Tooltip>
+               <span className="ms-1">Metódo</span>
             </label>
+
             <select value={metodoDobras} onChange={(e) => setMetodoDobras(e.target.value)} className="form-control">
                <option value="normal">Normal</option>
                <option value="media">Média</option>
@@ -117,25 +132,12 @@ const DobrasCampos = ({
    );
 };
 
-const tooltipMetodo = (
-   <Tooltip id="tooltip">
-      <div>
-         <strong>Normal:</strong> Apenas um campo para preencher medidas é liberado.
-      </div>
-      <p></p>
-      <div>
-         <strong>Média:</strong> É liberado 2 campos para informar 2 medidas, caso a diferença seja mais de 1mm é aberto
-         o terceiro campo para média.
-      </div>
-   </Tooltip>
-);
-
 export const protocolosCampos = {
    1: [],
-   2: ["subescapular", "triciptal", "supra_iliaca", "coxa"],
+   2: ["subescapular", "triciptal", "supra_iliaca", "coxa", "peitoral", "axilar_media", "abdominal"],
    3: ["supra_iliaca", "peitoral", "coxa"],
    4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
-   5: ["triciptal", "coxa", "panturrilha"],
+   5: [], // *** NÃO IMPLEMENTADO ***
 };
 
 export default Dobras;

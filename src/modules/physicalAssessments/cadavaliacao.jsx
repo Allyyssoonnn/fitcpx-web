@@ -251,16 +251,7 @@ function CadAvaliacao() {
 
    return (
       <div className="container-fluid">
-         <BackBoxUI />
-         {/* Header Section */}
-         <Card className="px-4">
-            <CardBody>
-               <Button variant="outline" onClick={clear}>
-                  <Trash />
-                  Limpar
-               </Button>
-            </CardBody>
-         </Card>
+         <BackBoxUI actions={[{ action: clear, label: "Limpar", Icon: Trash }]} />
 
          <Card className="mt-3">
             <CardBody className="p-4">
@@ -426,7 +417,6 @@ function CadAvaliacao() {
                      <TabsContent value="perimetros" className="mt-3">
                         <Perimetros
                            getValues={getValues}
-                           isEditingEnabled={false}
                            metodoPerimetro={metodoPerimetro}
                            ocultarCampos={ocultarCampos}
                            register={register}
