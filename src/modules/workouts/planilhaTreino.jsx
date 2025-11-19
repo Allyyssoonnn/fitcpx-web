@@ -265,7 +265,7 @@ function PlanilhaTreino() {
                                        <i className="bi bi-calendar-check me-2"></i>
                                        Sessões do Treino
                                     </h6>
-                                    <div className="btn-group gap-3 w-100" role="group">
+                                    <div className="btn-group gap-3 w-100 overflow-auto rounded" role="group">
                                        {alunos[indexAluno]?.treinos[alunos[indexAluno].indexTreino]?.sessoes?.map(
                                           (sessao, index) => (
                                              <div key={index}>
