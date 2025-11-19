@@ -189,16 +189,16 @@ const dropdown = [
             path: "contratos",
          },
          {
-            id: "services",
-            label: "Modalidades",
-            Icon: BoxIcon,
-            path: "modalidades",
-         },
-         {
             id: "contractTemplates",
             label: "Mod. Contratos",
             Icon: BoxSelect,
             path: "modcontratos",
+         },
+         {
+            id: "services",
+            label: "Modalidades",
+            Icon: BoxIcon,
+            path: "modalidades",
          },
          {
             label: "Planos",
