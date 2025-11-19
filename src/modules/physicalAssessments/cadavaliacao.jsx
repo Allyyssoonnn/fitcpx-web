@@ -35,6 +35,7 @@ function CadAvaliacao() {
    const navigate = useNavigate();
    const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
+   const [lastPhysicalAssessments, setLastPhysicalAssessments] = useState([]);
    const [protocolos] = useState({
       Geral: [
          {
@@ -73,7 +74,6 @@ function CadAvaliacao() {
    const [imageDescriptions, setImageDescriptions] = useState({});
    const [deletedImages, setDeletedImages] = useState([]);
    const [aluno, setAluno] = useState();
-   const [ultimaAvaliacao, setUltimaAvaliacao] = useState();
    const [activeTab, setActiveTab] = useState("bioimpedancia");
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
@@ -92,12 +92,11 @@ function CadAvaliacao() {
    }, [tipo_avaliacao]);
 
    useEffect(() => {
-      const ultimaAvaliacaoRecebida = location.state?.ultimaAvaliacao;
+      setLastPhysicalAssessments(location.state?.avaliacoes ?? []);
       const avaliacaoRecebida = location.state?.avaliacao;
       const alunoRecebido = location.state?.aluno;
       setValue("cod_usuario", usuario?.cod_usuario);
       setValue("cod_aluno", alunoRecebido?.cod_aluno);
-      if (ultimaAvaliacaoRecebida) setUltimaAvaliacao(ultimaAvaliacaoRecebida);
       if (alunoRecebido) setAluno(alunoRecebido);
       if (avaliacaoRecebida) {
          Object.keys(avaliacaoRecebida).forEach((key) => {
@@ -159,7 +158,6 @@ function CadAvaliacao() {
          });
          if (cancel) return;
          nLoading();
-         console.log(limpaForm(data));
 
          const av = await createOrUpdatePhysicalAssessment(limpaForm(data));
          await enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
@@ -245,9 +243,12 @@ function CadAvaliacao() {
    }
 
    function bringLast(e, field) {
+      var lastField = null;
       e.preventDefault();
-      const value = ultimaAvaliacao[field];
-      setValue(field, value);
+      for (const physicalAssessment of lastPhysicalAssessments) {
+         if (!lastField && physicalAssessment[field]) lastField = physicalAssessment[field];
+      }
+      setValue(field, lastField);
    }
 
    return (
@@ -341,7 +342,7 @@ function CadAvaliacao() {
                               step="0.01"
                               className="form-control"
                            />
-                           {!!ultimaAvaliacao && (
+                           {!!lastPhysicalAssessments.length && (
                               <button className="btn btn-outline-dark" onClick={(e) => bringLast(e, "altura")}>
                                  <i className="bi bi-arrow-counterclockwise" />
                               </button>
@@ -396,7 +397,7 @@ function CadAvaliacao() {
                            startSpeechRecognition={startSpeechRecognition}
                            tipoAvaliacao={tipoAvaliacao}
                            bringLast={bringLast}
-                           showBringLast={!!ultimaAvaliacao}
+                           showBringLast={!!lastPhysicalAssessments.length}
                         />
                      </TabsContent>
 

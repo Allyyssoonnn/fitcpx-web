@@ -352,6 +352,7 @@ function Aluno() {
                                     state: {
                                        aluno,
                                        ultimaAvaliacao: avaliacoes[0],
+                                       avaliacoes: avaliacoes,
                                     },
                                  })
                               }
