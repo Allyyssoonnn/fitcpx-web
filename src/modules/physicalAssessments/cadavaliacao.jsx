@@ -13,7 +13,7 @@ import { Card, CardFooter } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
-import { calcularIdade, dataURLToBlob, preventForm } from "../../utils";
+import { calcularIdade, dataURLToBlob, limpaForm, preventForm } from "../../utils";
 import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
 import Diametros from "./cadAvaliacao/diametros";
 import Dobras from "./cadAvaliacao/dobras";
@@ -159,8 +159,9 @@ function CadAvaliacao() {
          });
          if (cancel) return;
          nLoading();
+         console.log(limpaForm(data));
 
-         const av = await createOrUpdatePhysicalAssessment(data);
+         const av = await createOrUpdatePhysicalAssessment(limpaForm(data));
          await enviaImagens(data?.cod_avaliacao ?? av.cod_avaliacao);
          reset();
          navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
