@@ -236,7 +236,7 @@ function PlanilhaTreino() {
                                        <i className="bi bi-list-check me-2"></i>
                                        Treinos Disponíveis
                                     </h6>
-                                    <div className="btn-group gap-3 w-100" role="group">
+                                    <div className="btn-group gap-3 w-100 overflow-auto rounded" role="group">
                                        {alunos[indexAluno]?.treinos?.map((treino, index) => {
                                           return treino.status_treino == "A" ? (
                                              <div key={index}>
