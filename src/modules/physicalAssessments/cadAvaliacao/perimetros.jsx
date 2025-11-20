@@ -161,8 +161,8 @@ const perimetrosRequired = [
    "braco_relaxado_direito",
    "coxa_direita",
    "panturrilha_direita",
-   "antebraco_direito",
-   "abdomen",
+   // "antebraco_direito",
+   // "abdomen",
 ];
 
 const perimetros = [
