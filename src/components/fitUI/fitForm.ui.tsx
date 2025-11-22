@@ -263,7 +263,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                  </FieldLabel>
 
                                  <FieldContent>
-                                    <div className="flex items-center gap-2 w-full">
+                                    <div id={field.containerId} className="flex items-center gap-2 w-full">
                                        <Select
                                           disabled={field.options?.disabled}
                                           value={String(value)}

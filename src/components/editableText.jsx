@@ -8,7 +8,8 @@ const EditableText = ({ text, onUpdate, title }) => {
    const [isEditing, setIsEditing] = useState(false);
    const [inputValue, setInputValue] = useState(text);
 
-   const handleBlur = () => {
+   const handleBlur = (e) => {
+      e.preventDefault();
       setIsEditing(false);
       if (inputValue.trim() && inputValue !== text) {
          onUpdate(inputValue.trim());
@@ -20,11 +21,10 @@ const EditableText = ({ text, onUpdate, title }) => {
          <Input
             type="text"
             style={{ width: "auto", fontSize: "13px" }}
-            onKeyDownCapture={(e) => e.stopPropagation()}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onBlur={handleBlur}
-            onKeyDown={(e) => (e.key === "Enter" ? handleBlur() : null)}
+            onKeyDown={(e) => (e.key === "Enter" ? handleBlur(e) : null)}
             autoFocus
          />
       );

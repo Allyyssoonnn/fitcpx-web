@@ -29,12 +29,12 @@ export default function TourDash() {
                <AccordionItem value="item-1">
                   <AccordionTrigger className="w-full" type="button">
                      <Label>
-                        {tours.filter((t) => !t.complete).length > 0 && (
-                           <Badge variant="destructive" className="mr-2">
-                              {tours.filter((t) => !t.complete).length}
-                           </Badge>
-                        )}
                         <CardDescription>
+                           {tours.filter((t) => !t.complete).length > 0 && (
+                              <Badge variant="destructive" className="mr-2">
+                                 {tours.filter((t) => !t.complete).length}
+                              </Badge>
+                           )}
                            Conclua as etapas e conheça o <span className="text-primary">FitCpx</span>
                         </CardDescription>
                      </Label>
@@ -56,7 +56,7 @@ export default function TourDash() {
                            </ItemContent>
 
                            <ItemActions>
-                              <Button disabled={tour.complete} size="sm" onClick={startTour}>
+                              <Button disabled={tour.complete} size="sm" onClick={() => startTour(tour.tourName)}>
                                  Iniciar tour
                               </Button>
                            </ItemActions>

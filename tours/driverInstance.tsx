@@ -6,7 +6,8 @@ import { configSteps } from "./steps/config.tour";
 let currentStepIndex = parseInt(localStorage.getItem("currentTourStepUpdate") || "0", 10);
 let tourRunning = false;
 let currentSteps = configSteps;
-// Adicione essa variável fora da função para controlar o observer
+
+// Variável de controle do observer (fora da função para persistir entre chamadas)
 let portalObserver: MutationObserver | null = null;
 
 function clearTourState() {
@@ -22,7 +23,6 @@ const driverInstance = driver({
    doneBtnText: "Feito",
 
    onDestroyed: () => {
-      // tour terminou de verdade → limpar step salvo
       localStorage.removeItem("currentTourStepUpdate");
       localStorage.removeItem("currentTourNameUpdate");
       tourRunning = false;
@@ -41,7 +41,6 @@ const driverInstance = driver({
          const currentStep = state.activeStep;
          const previousStep = state.previousStep;
          const isLastStep = currentIndex === currentSteps.length - 1;
-
          const isStepInput = (step: any) => step?.isInput === true;
 
          // BOTÃO PULAR
@@ -60,13 +59,11 @@ const driverInstance = driver({
             const prevBtn = document.createElement("button");
             prevBtn.innerText = "Voltar";
             prevBtn.classList.add("driver-button", "driver-prev-btn");
-
             prevBtn.addEventListener("click", () => {
                currentStepIndex = Math.max(currentStepIndex - 1, 0);
                localStorage.setItem("currentTourStepUpdate", String(currentStepIndex));
                driverInstance.movePrevious();
             });
-
             popover.footerButtons.appendChild(prevBtn);
          }
 
@@ -75,7 +72,6 @@ const driverInstance = driver({
             const btn = document.createElement("button");
             btn.innerText = isLastStep ? "Feito" : "Próximo";
             btn.classList.add("driver-button");
-
             btn.addEventListener("click", () => {
                currentStepIndex = Math.min(currentStepIndex + 1, currentSteps.length - 1);
                localStorage.setItem("currentTourStepUpdate", String(currentStepIndex));
@@ -87,11 +83,9 @@ const driverInstance = driver({
                   driverInstance.moveNext();
                }
             });
-
             popover.footerButtons.appendChild(btn);
          }
       };
-
       appendButtons();
    },
 
@@ -106,15 +100,12 @@ const driverInstance = driver({
    },
 });
 
-// 🔄 RESTORE AUTOMÁTICO AO ENTRAR NA PÁGINA
+// 🔄 RESTORE AUTOMÁTICO
 (async function restoreTour() {
    const savedTour = localStorage.getItem("currentTourNameUpdate");
    if (!savedTour) return;
 
-   if (savedTour === "config") {
-      currentSteps = configSteps;
-   }
-
+   if (savedTour === "config") currentSteps = configSteps;
    if (savedTour === "workout") {
       const mod = await import("./steps/workout.tour");
       currentSteps = mod.workoutSteps;
@@ -122,16 +113,7 @@ const driverInstance = driver({
 
    currentStepIndex = parseInt(localStorage.getItem("currentTourStepUpdate") || "0", 10);
 
-   driverInstance.setConfig({
-      ...driverInstance.getConfig(),
-      onHighlighted: () => setTimeout(() => driverInstance.refresh(), 250),
-      onDestroyStarted: () => {
-         detachGlobalListener();
-         window.removeEventListener("scroll", onScrollRefresh, true);
-         tourRunning = false;
-      },
-   });
-
+   configureDriver();
    driverInstance.setSteps(currentSteps);
 
    tourRunning = true;
@@ -141,27 +123,12 @@ const driverInstance = driver({
    driverInstance.drive(currentStepIndex);
 })();
 
-// 🔁 REFRESH NO SCROLL
 function onScrollRefresh() {
    if (tourRunning) driverInstance.refresh();
 }
 
-// ▶ Função para iniciar o tour
-export async function startTour(tourName: string) {
-   localStorage.setItem("currentTourNameUpdate", tourName);
-
-   if (tourName === "config") {
-      currentSteps = configSteps;
-   }
-
-   if (tourName === "workout") {
-      const mod = await import("./steps/workout.tour");
-      currentSteps = mod.workoutSteps;
-   }
-
-   currentStepIndex = 0;
-   localStorage.setItem("currentTourStepUpdate", "0");
-
+// Helper para configurar o driver (evita repetição de código)
+function configureDriver() {
    driverInstance.setConfig({
       ...driverInstance.getConfig(),
       onHighlighted: () => setTimeout(() => driverInstance.refresh(), 250),
@@ -171,7 +138,21 @@ export async function startTour(tourName: string) {
          tourRunning = false;
       },
    });
+}
 
+export async function startTour(tourName: string) {
+   localStorage.setItem("currentTourNameUpdate", tourName);
+
+   if (tourName === "config") currentSteps = configSteps;
+   if (tourName === "workout") {
+      const mod = await import("./steps/workout.tour");
+      currentSteps = mod.workoutSteps;
+   }
+
+   currentStepIndex = 0;
+   localStorage.setItem("currentTourStepUpdate", "0");
+
+   configureDriver();
    driverInstance.setSteps(currentSteps);
 
    tourRunning = true;
@@ -181,12 +162,11 @@ export async function startTour(tourName: string) {
    driverInstance.drive();
 }
 
-// pega elemento atual
 function getCurrentStepElement(): string | HTMLElement | undefined {
    return currentSteps[currentStepIndex]?.element;
 }
 
-// listener global
+// LISTENER GLOBAL DE CLIQUE
 function onGlobalClick(e: MouseEvent) {
    if (!tourRunning) return;
 
@@ -196,7 +176,7 @@ function onGlobalClick(e: MouseEvent) {
    const stepElement = getCurrentStepElement();
    const stepDomElement = typeof stepElement === "string" ? document.querySelector(stepElement) : stepElement;
 
-   if (!stepElement) return;
+   if (!stepDomElement) return;
 
    const target = e.target as HTMLElement;
    if (!target) return;
@@ -209,89 +189,93 @@ function onGlobalClick(e: MouseEvent) {
       clicked = stepElement.contains(target);
    }
 
-   // SE FOR UM PORTAL (Select, Dropdown, etc)
-   if (step.isPortal) {
-      console.log("Trigger clicado. Preparando observador de Portal...");
-
-      // 1. Limpa observador anterior se houver (segurança)
-      if (portalObserver) {
-         portalObserver.disconnect();
-         portalObserver = null;
-      }
-
-      // 2. Aguarda o React montar o Portal
-      setTimeout(() => {
-         const portalElement = document.querySelector("[data-radix-popper-content-wrapper]") as HTMLElement;
-
-         if (portalElement) {
-            // A. Move Highlight para o Menu Aberto
-            driverInstance.highlight({
-               ...step,
-               element: portalElement,
-               popover: {
-                  ...step.popover,
-                  description: "Selecione uma opção.",
-                  side: "right",
-               },
-            });
-
-            // B. Cria o Espião (MutationObserver)
-            // Ele vai vigiar o body para ver quando esse portalElement for REMOVIDO
-            portalObserver = new MutationObserver((mutations) => {
-               for (const mutation of mutations) {
-                  for (const removedNode of Array.from(mutation.removedNodes)) {
-                     // Verifica se o nó removido é o nosso portal ou contem ele
-                     if (removedNode === portalElement || removedNode.contains(portalElement)) {
-                        console.log("Portal fechou! (Seleção detectada)");
-                        // Para de espiar
-                        portalObserver?.disconnect();
-                        portalObserver = null;
-
-                        // 1. Volta o Highlight para o Trigger
-                        driverInstance.highlight({
-                           ...step,
-                           element: stepDomElement as HTMLElement,
-                           popover: {
-                              ...step.popover,
-                              description: "Opção selecionada!",
-                           },
-                        });
-
-                        // 2. Avança o Tour
-                        setTimeout(() => {
-                           // Verifica se ainda estamos no mesmo passo antes de avançar
-                           // (Evita bugs se o user fechou clicando fora muito rápido)
-                           const currentIndexCheck = parseInt(localStorage.getItem("currentTourStepUpdate") || "0", 10);
-                           if (currentIndexCheck !== currentStepIndex) return;
-
-                           const isLastStep = currentStepIndex === currentSteps.length - 1;
-
-                           currentStepIndex = Math.min(currentStepIndex + 1, currentSteps.length - 1);
-                           localStorage.setItem("currentTourStepUpdate", String(currentStepIndex));
-
-                           if (isLastStep) {
-                              clearTourState();
-                              driverInstance.destroy();
-                           } else {
-                              driverInstance.drive(currentStepIndex);
-                           }
-                        }, 600);
-                     }
-                  }
-               }
-            });
-
-            // Inicia a vigilância no body (onde os portais são montados/desmontados)
-            portalObserver.observe(document.body, { childList: true });
-         }
-      }, 100);
-   }
-
+   // SÓ EXECUTA LÓGICA SE CLICOU NO ELEMENTO DO PASSO
    if (clicked) {
       localStorage.setItem("currentTourStepUpdate", String(currentStepIndex));
 
+      // --- LÓGICA DO PORTAL (RADIX/SHADCN) ---
+      if (step.isPortal) {
+         console.log("Trigger clicado. Preparando observador de Portal...");
+
+         // 1. Limpeza de segurança
+         if (portalObserver) {
+            portalObserver.disconnect();
+            portalObserver = null;
+         }
+
+         // 2. Aguarda renderização do Portal
+         setTimeout(() => {
+            const portalElement = document.querySelector("[data-radix-popper-content-wrapper]") as HTMLElement;
+
+            if (portalElement) {
+               // A. Move Highlight para o Menu
+               driverInstance.highlight({
+                  ...step,
+                  element: portalElement,
+                  popover: {
+                     ...step.popover,
+                     description: "Selecione uma opção.",
+                     side: "right",
+                  },
+               });
+
+               // B. Inicia Espionagem (MutationObserver)
+               portalObserver = new MutationObserver((mutations) => {
+                  for (const mutation of mutations) {
+                     for (const removedNode of Array.from(mutation.removedNodes)) {
+                        // Detecta se o portal foi removido (seleção ou fechamento)
+                        if (removedNode === portalElement || removedNode.contains(portalElement)) {
+                           console.log("Portal fechou! (Seleção detectada)");
+
+                           portalObserver?.disconnect();
+                           portalObserver = null;
+
+                           // Volta Highlight para o Trigger
+                           driverInstance.highlight({
+                              ...step,
+                              element: stepDomElement as HTMLElement,
+                              popover: {
+                                 ...step.popover,
+                                 description: "Opção selecionada!",
+                              },
+                           });
+
+                           // Avança o Tour
+                           setTimeout(() => {
+                              // Checagem anti-race-condition
+                              const currentIndexCheck = parseInt(
+                                 localStorage.getItem("currentTourStepUpdate") || "0",
+                                 10
+                              );
+                              if (currentIndexCheck !== currentStepIndex) return;
+
+                              const isLastStep = currentStepIndex === currentSteps.length - 1;
+                              currentStepIndex = Math.min(currentStepIndex + 1, currentSteps.length - 1);
+                              localStorage.setItem("currentTourStepUpdate", String(currentStepIndex));
+
+                              if (isLastStep) {
+                                 clearTourState();
+                                 driverInstance.destroy();
+                              } else {
+                                 driverInstance.drive(currentStepIndex);
+                              }
+                           }, 600);
+                        }
+                     }
+                  }
+               });
+
+               // Observa o body
+               portalObserver.observe(document.body, { childList: true });
+            }
+         }, 100);
+      }
+      // -----------------------------------------
+
+      // Se for Input/Portal, o avanço é controlado acima ou manualmente.
       if (step.isInput === true) return;
 
+      // Lógica padrão para passos normais (não inputs)
       const isLastStep = currentStepIndex === currentSteps.length - 1;
 
       if (isLastStep) {
@@ -323,7 +307,7 @@ export function detachGlobalListener() {
    document.removeEventListener("click", onGlobalClick, true);
    window.removeEventListener("scroll", onScrollRefresh, true);
 
-   // 🧹 Limpeza de segurança
+   // 🧹 Limpeza do observer ao sair
    if (portalObserver) {
       portalObserver.disconnect();
       portalObserver = null;

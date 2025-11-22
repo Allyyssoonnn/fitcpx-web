@@ -145,7 +145,7 @@ function TreinoInteligente({
                   <AccordionItem value={`session-${index}`}>
                      <AccordionTrigger className="border-1 items-center p-3">
                         <div className="flex w-full justify-between items-center">
-                           <div className="flex gap-3">
+                           <div className="flex gap-3 w-full justify-start">
                               <div className="flex flex-col justify-center items-center">
                                  <Button
                                     type="button"
@@ -177,7 +177,11 @@ function TreinoInteligente({
                                  desenvolvimento_treino={desenvolvimento_treino}
                               />
 
-                              <button id={`btnSession-${index}`} type="button">
+                              <button
+                                 className="w-full flex items-center justify-start"
+                                 id={`btnSession-${index}`}
+                                 type="button"
+                              >
                                  <EditableText
                                     title={true}
                                     key={index}
