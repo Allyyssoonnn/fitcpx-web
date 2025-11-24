@@ -4,7 +4,9 @@
       <!-- Meta Pixel Code -->
       <script>
          // Supondo que você tenha uma variável global que identifica o ambiente
-         const ENV = window.location.hostname.includes("localhost") ? "dev" : "prod";
+         const ENV = ["localhost", "apptest"].some((domain) => window.location.hostname.includes(domain))
+            ? "dev"
+            : "prod";
 
          if (ENV === "prod") {
             console.log("GTM - FitCpx");
