@@ -199,7 +199,7 @@ function PlanilhaTreino() {
                         <i className="bi bi-person-rolodex me-2"></i>
                         Selecionar Aluno
                      </h5>
-                     <div className="btn-group gap-3" role="group">
+                     <div className="btn-group gap-3 overflow-auto rounded" role="group">
                         {alunos?.map((aluno, index) => (
                            <div key={index}>
                               <input

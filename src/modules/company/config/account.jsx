@@ -153,7 +153,7 @@ function Account({ usuario, setusuario }) {
 
                <CardContent className="flex justify-center">
                   <img
-                     src="/assets/images/logos/logo.png"
+                     src="/assets/images/logos/natal.png"
                      alt="Foto da Empresa"
                      className="img-fluid"
                      loading="lazy"

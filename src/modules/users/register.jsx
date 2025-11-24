@@ -50,7 +50,7 @@ function Register() {
                <a href="#" className="flex items-center gap-2 font-medium">
                   <div className="bg-secondary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                      <GalleryVerticalEnd className="size-4" />
-                     <img src="../assets/images/logos/logo.png" />
+                     <img src="../assets/images/logos/natal.png" />
                   </div>
                   FitCpx
                </a>
@@ -153,7 +153,7 @@ function Register() {
          <div className="bg-muted relative hidden lg:block">
             <img
                // src="https://ui.shadcn.com/placeholder.svg"
-               src="/assets/images/app/app-pt.png"
+               src="/assets/images/app/prancheta.jpg"
                alt="Image"
                // className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
                className="absolute inset-0 h-full w-full object-cover"
