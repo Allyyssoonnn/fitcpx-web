@@ -403,7 +403,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                               { label: "Carga (kg)", index: "carga_sessao_exercicio", prefix: "kg" },
                               { label: "Intervalo (seg)", index: "intervalo_sessao_exercicio", prefix: "seg" },
                            ].map((v, i) => (
-                              <div key={i}>
+                              <div key={i} id={`${v.index}-${index}`}>
                                  <Label className="text-muted text-[12px]">{v.label}</Label>
                                  <NumberInputUI
                                     prefix={v.prefix}

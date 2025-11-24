@@ -1,8 +1,10 @@
+import { AccordionHeader } from "@radix-ui/react-accordion";
 import { ArrowDown, ArrowUp, PlusCircle, Trash } from "lucide-react";
 import Swal from "sweetalert2";
 import EditableText from "../editableText";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 import GerarTreino from "./gerarTreino";
 import ListaExercicios from "./listaExercicios";
 
@@ -143,63 +145,62 @@ function TreinoInteligente({
             {sessoes.map((sessao, index) => (
                <Accordion key={index} type="multiple">
                   <AccordionItem value={`session-${index}`}>
-                     <AccordionTrigger className="border-1 items-center p-3">
-                        <div className="flex w-full justify-between items-center">
-                           <div className="flex gap-3 w-full justify-start">
-                              <div className="flex flex-col justify-center items-center">
-                                 <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className="px-1"
-                                    onClick={(e) => changeSequence(e, index, index - 1)}
-                                 >
-                                    <ArrowUp />
-                                 </Button>
-                                 <label className="fs-1">{sessao.sequencia_sessao}</label>
-                                 <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className="px-1"
-                                    onClick={(e) => changeSequence(e, index, index + 1)}
-                                 >
-                                    <ArrowDown />
-                                 </Button>
-                              </div>
-
-                              <GerarTreino
-                                 setSessoes={setSessoes}
-                                 indexSessao={index}
-                                 cod_aluno={cod_aluno}
-                                 volume_treino={volume_treino}
-                                 nivel_treino={nivel_treino}
-                                 desenvolvimento_treino={desenvolvimento_treino}
-                              />
-
-                              <button
-                                 className="w-full flex items-center justify-start"
-                                 id={`btnSession-${index}`}
+                     <AccordionHeader className="border-1 p-3 grid grid-cols-2 rounded-md">
+                        <div className="flex gap-3 w-full justify-start">
+                           <div className="flex flex-col justify-center items-center">
+                              <Button
                                  type="button"
+                                 variant="outline"
+                                 size="sm"
+                                 className="px-1"
+                                 onClick={(e) => changeSequence(e, index, index - 1)}
                               >
-                                 <EditableText
-                                    title={true}
-                                    key={index}
-                                    text={sessao.nome_sessao}
-                                    onUpdate={(newName) => updateNomeSessao(index, newName)}
-                                 />
-                              </button>
+                                 <ArrowUp />
+                              </Button>
+                              <label className="fs-1">{sessao.sequencia_sessao}</label>
+                              <Button
+                                 type="button"
+                                 variant="outline"
+                                 size="sm"
+                                 className="px-1"
+                                 onClick={(e) => changeSequence(e, index, index + 1)}
+                              >
+                                 <ArrowDown />
+                              </Button>
                            </div>
 
-                           <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}
-                           >
-                              <Trash />
-                           </Button>
+                           <GerarTreino
+                              setSessoes={setSessoes}
+                              indexSessao={index}
+                              cod_aluno={cod_aluno}
+                              volume_treino={volume_treino}
+                              nivel_treino={nivel_treino}
+                              desenvolvimento_treino={desenvolvimento_treino}
+                           />
+
+                           <div className="w-full flex items-center justify-start" id={`btnSessionEdit-${index}`}>
+                              <EditableText
+                                 title={true}
+                                 key={index}
+                                 text={sessao.nome_sessao}
+                                 onUpdate={(newName) => updateNomeSessao(index, newName)}
+                              />
+                           </div>
                         </div>
-                     </AccordionTrigger>
+
+                        <AccordionTrigger id={`btnSession-${index}`} className="border-1 items-center p-3 shadow-sm">
+                           <div className="flex w-full justify-between items-center">
+                              <Label>Ver exercícios</Label>
+                              <Button
+                                 variant="outline"
+                                 size="icon"
+                                 onClick={(e) => clickDelete(e, sessao.nome_sessao, index)}
+                              >
+                                 <Trash />
+                              </Button>
+                           </div>
+                        </AccordionTrigger>
+                     </AccordionHeader>
 
                      <AccordionContent>
                         <ListaExercicios

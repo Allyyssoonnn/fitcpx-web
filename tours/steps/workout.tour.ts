@@ -75,6 +75,14 @@ export const workoutSteps: any[] = [
       isInput: false,
    },
    {
+      element: "#btnSessionEdit-0",
+      popover: {
+         title: "Vamos editar o nome da sessão",
+         description: "Clique no lápis para editar o nome após preencher clique enter",
+      },
+      isInput: true,
+   },
+   {
       element: "#btnSession-0",
       popover: {
          title: "Vamos ver a sessão",
@@ -98,6 +106,38 @@ export const workoutSteps: any[] = [
       },
       isInput: true,
       isPortal: true,
+   },
+   {
+      element: "#serie_sessao_exercicio-0",
+      popover: {
+         title: "Quantidade de série",
+         description: "Você pode alterar a quantidade de séries a ser realizada para esse exercício",
+      },
+      isInput: true,
+   },
+   {
+      element: "#repeticao_sessao_exercicio-0",
+      popover: {
+         title: "Quantidade de repetições",
+         description: "Você pode alterar a quantidade de repetições a ser realizada para esse exercício",
+      },
+      isInput: true,
+   },
+   {
+      element: "#carga_sessao_exercicio-0",
+      popover: {
+         title: "Quantidade de carga",
+         description: "Você pode alterar a quantidade de carga a ser realizada para esse exercício",
+      },
+      isInput: true,
+   },
+   {
+      element: "#intervalo_sessao_exercicio-0",
+      popover: {
+         title: "Quantidade de intervalo",
+         description: "Você pode alterar a quantidade de intervalo a ser realizada para esse exercício",
+      },
+      isInput: true,
    },
    {
       element: "#submit",
