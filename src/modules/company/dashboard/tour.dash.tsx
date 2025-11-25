@@ -56,7 +56,17 @@ export default function TourDash() {
                            </ItemContent>
 
                            <ItemActions>
-                              <Button disabled={tour.complete} size="sm" onClick={() => startTour(tour.tourName)}>
+                              <Button
+                                 disabled={tour.complete}
+                                 size="sm"
+                                 onClick={() => {
+                                    document
+                                       .querySelectorAll('[data-state="open"]')
+                                       .forEach((el) => el.dispatchEvent(new Event("click", { bubbles: true })));
+
+                                    startTour(tour.tourName);
+                                 }}
+                              >
                                  Iniciar tour
                               </Button>
                            </ItemActions>
