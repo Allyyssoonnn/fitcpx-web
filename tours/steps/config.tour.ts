@@ -42,6 +42,14 @@ export const configSteps: any[] = [
       isInput: true,
    },
    {
+      element: "#name",
+      popover: {
+         title: "Nome profissional",
+         description: "Nome que aparecerá nos contratos caso queira editar",
+      },
+      isInput: true,
+   },
+   {
       element: "#phone",
       popover: {
          title: "Telefone",
