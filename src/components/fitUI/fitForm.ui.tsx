@@ -1,20 +1,15 @@
-import { Trash } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Info, Trash } from "lucide-react";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
 import { Button } from "../ui/button";
-import {
-   Field,
-   FieldContent,
-   FieldDescription,
-   FieldError,
-   FieldLabel,
-   FieldLegend,
-   FieldSeparator,
-   FieldSet,
-} from "../ui/field";
+import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldSeparator, FieldSet } from "../ui/field";
 import { Input } from "../ui/input";
+import { InputGroup } from "../ui/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import CurrencyInput from "./currencyInput.ui";
 import { PhoneInput } from "./phoneInput.ui";
 
@@ -37,6 +32,7 @@ type BackBoxUIFieldType = {
    Component?: React.Component;
    colSpan: 1 | 2 | 3 | 4;
    hideField?: (data: any) => boolean;
+   tooltipText?: string | React.Component;
 };
 
 type Options = {
@@ -81,7 +77,10 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
 
             return (
                <React.Fragment>
-                  {grid.title && <FieldLegend>{grid.title}</FieldLegend>}
+                  {/* {grid.title && <FieldLegend>{grid.title}</FieldLegend>} */}
+                  {/* REMOVIDO POIS ESTETICAMENTE O H5 FICOU MELHOR */}
+                  {grid.title && <h5>{grid.title}</h5>}
+
                   <div className={`grid grid-cols-1 ${lgClass} gap-4`}>
                      {grid.fields.map((field) => {
                         let fieldClassName = "";
@@ -259,6 +258,20 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                            return (
                               <Field className={fieldClassName}>
                                  <FieldLabel htmlFor={field.label}>
+                                    {field.tooltipText && (
+                                       <TooltipProvider>
+                                          <Tooltip>
+                                             <TooltipTrigger>
+                                                <Info className="w-4 h-4 text-primary cursor-pointer me-1" />
+                                             </TooltipTrigger>
+
+                                             <TooltipContent>
+                                                {field.tooltipText === typeof String && field.tooltipText}
+                                                {React.isValidElement(field.tooltipText) && field.tooltipText}
+                                             </TooltipContent>
+                                          </Tooltip>
+                                       </TooltipProvider>
+                                    )}
                                     {field.label} {fieldRequerid && "*"}
                                  </FieldLabel>
 
@@ -334,23 +347,27 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     {field.label} {fieldRequerid && "*"}
                                  </FieldLabel>
 
-                                 <Input
-                                    {...(register
-                                       ? register(field.fieldName as string, {
-                                            required: fieldRequerid,
-                                            maxLength: field.options?.maxLength,
-                                            minLength: field.options?.minLength,
-                                         })
-                                       : {})}
-                                    value={value}
-                                    onChange={(e) =>
-                                       setValue(field.fieldName, e.target.value.replace(/\D/g, "").trim())
-                                    }
-                                    disabled={field.options?.disabled}
-                                    id={field.id}
-                                    placeholder={field.label}
-                                    type={field.inputType ?? "text"}
-                                 />
+                                 <InputGroup>
+                                    <NumericFormat
+                                       {...(register
+                                          ? register(field.fieldName as string, {
+                                               required: fieldRequerid,
+                                               maxLength: field.options?.maxLength,
+                                               minLength: field.options?.minLength,
+                                            })
+                                          : {})}
+                                       disabled={field.options?.disabled}
+                                       id={field.id}
+                                       value={value}
+                                       className={cn(
+                                          "h-full w-full text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                       )}
+                                       onChange={(e) => {
+                                          const val = e.target.value;
+                                          setValue(field.fieldName, val === "" ? "" : Number(val));
+                                       }}
+                                    />
+                                 </InputGroup>
 
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
                                     <FieldError>{field.label} obrigatório</FieldError>

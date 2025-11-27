@@ -1,6 +1,8 @@
 import { Info } from "lucide-react";
 import { useMemo } from "react";
-import MediaInput from "../../../components/mediaInput";
+import { MediaInputUI } from "../../../components/fitUI/numberInput.ui";
+import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
 
 function Dobras({
@@ -14,11 +16,12 @@ function Dobras({
    setValue,
    startSpeechRecognition,
    watch,
+   errors,
 }) {
    return (
       <div className="row g-3">
          <div className="col-md-3">
-            <label className="form-label">
+            <label>
                <Tooltip>
                   <TooltipTrigger>
                      <Info size={15} />
@@ -38,10 +41,16 @@ function Dobras({
                <span className="ms-1">Metódo</span>
             </label>
 
-            <select value={metodoDobras} onChange={(e) => setMetodoDobras(e.target.value)} className="form-control">
-               <option value="normal">Normal</option>
-               <option value="media">Média</option>
-            </select>
+            <Select value={metodoDobras} onValueChange={(v) => setMetodoDobras(v)}>
+               <SelectTrigger>
+                  <SelectValue placeholder="Metódo" />
+               </SelectTrigger>
+
+               <SelectContent>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="media">Média</SelectItem>
+               </SelectContent>
+            </Select>
          </div>
 
          <h5 className="text-muted">Dobras</h5>
@@ -56,6 +65,7 @@ function Dobras({
             setValue={setValue}
             startSpeechRecognition={startSpeechRecognition}
             watch={watch}
+            errors={errors}
          />
       </div>
    );
@@ -71,6 +81,7 @@ const DobrasCampos = ({
    ocultarCampos,
    getValues,
    watch,
+   errors,
 }) => {
    const dobrasDisponiveis = [
       "subescapular",
@@ -107,23 +118,32 @@ const DobrasCampos = ({
                {filteredDobras.map((campo) => {
                   const hasAsterisk = camposComAsterisco.has(campo); // Verifica se o campo está filtrado
                   return (
-                     <div className="col-md-4" key={campo}>
-                        <label className={`form-label ${hasAsterisk ? "fw-bold" : ""}`}>
+                     <Field className="col-md-4" key={campo}>
+                        <FieldLabel className={`${hasAsterisk ? "fw-bold" : ""}`}>
                            {campo.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())} {hasAsterisk ? " *" : ""}{" "}
                            (mm)
-                        </label>
-                        <MediaInput
-                           id={campo}
-                           required={camposComAsterisco.has(campo)}
-                           campo={campo}
-                           register={register}
-                           setValue={setValue}
-                           startSpeechRecognition={startSpeechRecognition}
-                           metodo={metodoDobras}
-                           defaultValue={getValues(campo)}
-                           watch={watch}
-                        />
-                     </div>
+                        </FieldLabel>
+
+                        <FieldContent>
+                           <MediaInputUI
+                              whatch={watch}
+                              inputId={campo}
+                              register={register}
+                              defaultValue={getValues(campo)}
+                              field={campo}
+                              startSpeechRecognition={startSpeechRecognition}
+                              type={metodoDobras == "normal" ? "default" : "media"}
+                              setValue={setValue}
+                              required={camposComAsterisco.has(campo)}
+                           />
+
+                           {errors && errors?.[campo] && (
+                              <div id="mediahelp" className="form-text text-danger">
+                                 Esse campo é obrigatório
+                              </div>
+                           )}
+                        </FieldContent>
+                     </Field>
                   );
                })}
             </>

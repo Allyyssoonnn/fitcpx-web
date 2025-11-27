@@ -1,5 +1,7 @@
 import { Info } from "lucide-react";
-import MediaInput from "../../../components/mediaInput";
+import { MediaInputUI } from "../../../components/fitUI/numberInput.ui";
+import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
 
 function Perimetros({
@@ -12,11 +14,12 @@ function Perimetros({
    startSpeechRecognition,
    getValues,
    watch,
+   errors,
 }) {
    return (
       <div className="row g-3">
          <div className="col-md-3">
-            <label className="form-label">
+            <label>
                <Tooltip>
                   <TooltipTrigger>
                      <Info size={15} />
@@ -36,14 +39,16 @@ function Perimetros({
                <span className="ms-1">Metódo</span>
             </label>
 
-            <select
-               value={metodoPerimetro}
-               onChange={(e) => setMetodoPerimetro(e.target.value)}
-               className="form-control"
-            >
-               <option value="normal">Normal</option>
-               <option value="media">Média</option>
-            </select>
+            <Select value={metodoPerimetro} onValueChange={(v) => setMetodoPerimetro(v)}>
+               <SelectTrigger>
+                  <SelectValue placeholder="Metódo" />
+               </SelectTrigger>
+
+               <SelectContent>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="media">Média</SelectItem>
+               </SelectContent>
+            </Select>
          </div>
 
          <h5 className="text-muted">Geral</h5>
@@ -54,30 +59,38 @@ function Perimetros({
                if (tipoAvaliacao === "simples") return;
 
                return (
-                  <div key={index} className="col-md-4">
-                     <div className="d-flex align-items-center mb-2">
+                  <Field key={index} className="col-md-4">
+                     <FieldLabel className="d-flex align-items-center">
                         <label
-                           className={`form-label ${
+                           className={`${
                               perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "fw-bold" : ""
                            }`}
                         >
                            {field.label}
                            {perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "*" : ""}
                         </label>
-                     </div>
+                     </FieldLabel>
 
-                     <MediaInput
-                        id={field.name}
-                        campo={field.name}
-                        register={register}
-                        setValue={setValue}
-                        startSpeechRecognition={startSpeechRecognition}
-                        metodo={metodoPerimetro}
-                        required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
-                        defaultValue={getValues(field.name)}
-                        watch={watch}
-                     />
-                  </div>
+                     <FieldContent>
+                        <MediaInputUI
+                           whatch={watch}
+                           inputId={field.name}
+                           register={register}
+                           defaultValue={getValues(field.name)}
+                           field={field.name}
+                           startSpeechRecognition={startSpeechRecognition}
+                           type={metodoPerimetro == "normal" ? "default" : "media"}
+                           setValue={setValue}
+                           required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
+                        />
+
+                        {errors && errors?.[field.name] && (
+                           <div id="mediahelp" className="form-text text-danger">
+                              Esse campo é obrigatório
+                           </div>
+                        )}
+                     </FieldContent>
+                  </Field>
                );
             })}
          </div>
@@ -90,30 +103,38 @@ function Perimetros({
                if (tipoAvaliacao === "simples") return;
 
                return (
-                  <div key={index} className="col-md-4">
-                     <div className="d-flex align-items-center mb-2">
+                  <Field key={index} className="col-md-4">
+                     <FieldLabel className="d-flex align-items-center">
                         <label
-                           className={`form-label ${
+                           className={`${
                               perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "fw-bold" : ""
                            }`}
                         >
                            {field.label}
                            {perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "*" : ""}
                         </label>
-                     </div>
+                     </FieldLabel>
 
-                     <MediaInput
-                        id={field.name}
-                        campo={field.name}
-                        register={register}
-                        setValue={setValue}
-                        startSpeechRecognition={startSpeechRecognition}
-                        metodo={metodoPerimetro}
-                        required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
-                        defaultValue={getValues(field.name)}
-                        watch={watch}
-                     />
-                  </div>
+                     <FieldContent>
+                        <MediaInputUI
+                           whatch={watch}
+                           inputId={field.name}
+                           register={register}
+                           defaultValue={getValues(field.name)}
+                           field={field.name}
+                           startSpeechRecognition={startSpeechRecognition}
+                           type={metodoPerimetro == "normal" ? "default" : "media"}
+                           setValue={setValue}
+                           required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
+                        />
+
+                        {errors && errors?.[field.name] && (
+                           <div id="mediahelp" className="form-text text-danger">
+                              Esse campo é obrigatório
+                           </div>
+                        )}
+                     </FieldContent>
+                  </Field>
                );
             })}
          </div>
@@ -126,30 +147,38 @@ function Perimetros({
                if (tipoAvaliacao === "simples") return;
 
                return (
-                  <div className="col-md-4" key={index}>
-                     <div className="d-flex align-items-center mb-2">
+                  <Field className="col-md-4" key={index}>
+                     <FieldLabel className="d-flex align-items-center">
                         <label
-                           className={`form-label ${
+                           className={`${
                               perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "fw-bold" : ""
                            }`}
                         >
                            {field.label}
                            {perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "*" : ""}
                         </label>
-                     </div>
+                     </FieldLabel>
 
-                     <MediaInput
-                        id={field.name}
-                        campo={field.name}
-                        register={register}
-                        setValue={setValue}
-                        startSpeechRecognition={startSpeechRecognition}
-                        metodo={metodoPerimetro}
-                        required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
-                        defaultValue={getValues(field.name)}
-                        watch={watch}
-                     />
-                  </div>
+                     <FieldContent>
+                        <MediaInputUI
+                           whatch={watch}
+                           inputId={field.name}
+                           register={register}
+                           defaultValue={getValues(field.name)}
+                           field={field.name}
+                           startSpeechRecognition={startSpeechRecognition}
+                           type={metodoPerimetro == "normal" ? "default" : "media"}
+                           setValue={setValue}
+                           required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
+                        />
+
+                        {errors && errors?.[field.name] && (
+                           <div id="mediahelp" className="form-text text-danger">
+                              Esse campo é obrigatório
+                           </div>
+                        )}
+                     </FieldContent>
+                  </Field>
                );
             })}
          </div>
