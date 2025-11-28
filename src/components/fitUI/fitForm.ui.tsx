@@ -360,7 +360,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                        id={field.id}
                                        value={value}
                                        className={cn(
-                                          "h-full w-full text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                          "h-full w-full px-3 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                        )}
                                        onChange={(e) => {
                                           const val = e.target.value;
