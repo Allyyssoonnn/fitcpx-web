@@ -9,6 +9,15 @@ import { buyLicense, getLicensesAvaliable, sendCoupon } from "../../../api/licen
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
+import {
+   Dialog,
+   DialogClose,
+   DialogContent,
+   DialogDescription,
+   DialogFooter,
+   DialogHeader,
+   DialogTitle,
+} from "../../../components/ui/dialog";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../../../components/ui/input-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
 import { useNotificacao } from "../../../states/states";
@@ -18,6 +27,8 @@ function License() {
    const { register, handleSubmit, setValue } = useForm();
    const { nConfirm, nLoading, endLoading } = useNotificacao();
    const [coupon, setCoupon] = useState(null);
+   const [showURL, setShowURL] = useState(false);
+   const [url, setURL] = useState();
 
    const { data: licencas, refetch: refetchLicenses } = useQuery({
       queryKey: ["licencas"],
@@ -68,13 +79,8 @@ function License() {
             });
             refetch();
             if (response?.url) {
-               const a = document.createElement("a");
-               a.href = response.url;
-               a.target = "_blank";
-               a.rel = "noopener noreferrer";
-               document.body.appendChild(a);
-               a.click();
-               a.remove();
+               setURL(response?.url);
+               setShowURL(true);
             }
             if (response?.token) {
                setCookie(null, "token", response.token, { maxAge: 60 * 60 * 7 });
@@ -95,6 +101,25 @@ function License() {
 
    return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+         <Dialog open={showURL} onOpenChange={setShowURL}>
+            <DialogContent onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+               <DialogHeader>
+                  <DialogTitle className="text-black">🎉 Bem-vindo(a) ao FitCpx! 🎉</DialogTitle>
+               </DialogHeader>
+
+               <DialogDescription>
+                  Você acaba de assinar nossa plataforma e sua fatura já está disponível para pagamento. Agora é só
+                  finalizar o processo para liberar todos os recursos e aproveitar tudo o que o FitCpx oferece. 🚀
+               </DialogDescription>
+
+               <DialogFooter>
+                  <DialogClose>
+                     <Button onClick={() => window.open(url, "_blank", "noopener,noreferrer")}>Pagar agora</Button>
+                  </DialogClose>
+               </DialogFooter>
+            </DialogContent>
+         </Dialog>
+
          {/* COLUNA ESQ - Planos disponíveis */}
          <Card>
             <CardHeader>
