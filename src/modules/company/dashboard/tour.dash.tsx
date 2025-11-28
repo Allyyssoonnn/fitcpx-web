@@ -57,7 +57,6 @@ export default function TourDash() {
 
                            <ItemActions>
                               <Button
-                                 disabled={tour.complete}
                                  size="sm"
                                  onClick={() => {
                                     document
@@ -67,7 +66,7 @@ export default function TourDash() {
                                     startTour(tour.tourName);
                                  }}
                               >
-                                 Iniciar tour
+                                 {tour.complete ? "Repetir tour" : "Iniciar tour"}
                               </Button>
                            </ItemActions>
                         </Item>
