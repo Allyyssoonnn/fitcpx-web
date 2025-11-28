@@ -198,7 +198,7 @@ function Account({ usuario, setusuario }) {
                                        label: "CPF",
                                        id: "personalId",
                                        fieldName: "cpf_usuario",
-                                       type: "number",
+                                       inputType: "number",
                                     },
                                     {
                                        label: "Chave PIX",

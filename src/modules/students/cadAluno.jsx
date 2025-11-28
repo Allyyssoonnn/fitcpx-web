@@ -115,14 +115,14 @@ function CadAluno() {
                                     label: "CPF",
                                     fieldName: "cpf_aluno",
                                     description: "Necessário para contratação de plano",
-                                    type: "number",
+                                    inputType: "number",
                                  },
                                  {
                                     id: "rg",
                                     label: "RG",
                                     fieldName: "rg_aluno",
                                     description: "Necessário para contratação de plano",
-                                    type: "number",
+                                    inputType: "number",
                                  },
                                  {
                                     type: "phone",
