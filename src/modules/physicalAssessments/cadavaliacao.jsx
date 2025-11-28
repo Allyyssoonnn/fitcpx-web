@@ -35,9 +35,15 @@ import Imagens from "./cadAvaliacao/imagens";
 import Perimetros from "./cadAvaliacao/perimetros";
 
 function CadAvaliacao() {
+   const location = useLocation();
    const { nLoading, endLoading } = useNotificacao();
    const { formData, setAvaliacaoForm } = useFormStore();
-   const form = useForm();
+   const avaliacaoRecebida = location.state?.avaliacao;
+   const avaliacaoCached = formData.avaliacao;
+
+   const form = useForm({
+      defaultValues: avaliacaoRecebida ?? avaliacaoCached ?? { data_avaliacao: new Date().toISOString().split("T")[0] },
+   });
    const {
       handleSubmit,
       register,
@@ -47,43 +53,13 @@ function CadAvaliacao() {
       reset,
       formState: { errors, isSubmitting },
    } = form;
+   console.log(getValues());
+
    const navigate = useNavigate();
-   const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
    const [lastPhysicalAssessments, setLastPhysicalAssessments] = useState([]);
-   const [protocolos] = useState({
-      Geral: [
-         {
-            cod_protocolo: 1,
-            nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
-            categoria_protocolo: "Geral",
-         },
-      ],
-      Feminino: [
-         {
-            cod_protocolo: 2,
-            nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
-            categoria_protocolo: "Feminino",
-         },
-         {
-            cod_protocolo: 3,
-            nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
-            categoria_protocolo: "Feminino",
-         },
-      ],
-      Masculino: [
-         {
-            cod_protocolo: 4,
-            nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
-            categoria_protocolo: "Masculino",
-         },
-         // {
-         //    cod_protocolo: 5,
-         //    nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
-         //    categoria_protocolo: "Masculino",
-         // },
-      ],
-   });
+   const [protocolos] = useState(protocolosPattern);
+   const [protocolo, setProtocolo] = useState();
 
    const [capturedImages, setCapturedImages] = useState({});
    const [imageDescriptions, setImageDescriptions] = useState({});
@@ -92,8 +68,7 @@ function CadAvaliacao() {
    const [activeTab, setActiveTab] = useState("bioimpedancia");
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
-   const [tipoAvaliacao, setTipoAvaliacao] = useState("");
-   const [protocolo, setProtocolo] = useState();
+   const [tipoAvaliacao, setTipoAvaliacao] = useState(localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
    const [ocultarCampos, setOcultarCampos] = useState(false);
 
    const [cod_protocolo, tipo_avaliacao] = watch(["cod_protocolo", "tipo_avaliacao"]);
@@ -103,8 +78,16 @@ function CadAvaliacao() {
    }, [cod_protocolo]);
 
    useEffect(() => {
-      if (tipo_avaliacao && tipo_avaliacao !== protocolo) setTipoAvaliacao(tipo_avaliacao);
+      if (tipo_avaliacao && tipo_avaliacao !== protocolo) {
+         setTipoAvaliacao(tipo_avaliacao);
+      }
    }, [tipo_avaliacao]);
+
+   useEffect(() => {
+      if (tipoAvaliacao) {
+         localStorage.setItem("memoPhysicalAssessmentType", tipoAvaliacao);
+      }
+   }, [tipoAvaliacao]);
 
    useEffect(() => {
       setLastPhysicalAssessments(location.state?.avaliacoes ?? []);
@@ -114,11 +97,10 @@ function CadAvaliacao() {
       setValue("cod_aluno", alunoRecebido?.cod_aluno);
       if (alunoRecebido) setAluno(alunoRecebido);
       if (avaliacaoRecebida) {
-         Object.keys(avaliacaoRecebida).forEach((key) => {
-            setValue(key, avaliacaoRecebida[key]);
-         });
          setProtocolo(avaliacaoRecebida.cod_protocolo);
          setTipoAvaliacao(avaliacaoRecebida.tipo_avaliacao);
+
+         //Carrega as imagens da avaliação
          avaliacaoRecebida?.imagem?.map((img, index) => {
             setCapturedImages((prevImages) => ({
                ...prevImages,
@@ -130,6 +112,9 @@ function CadAvaliacao() {
             }));
          });
       } else {
+         setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
+         setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
+
          if (formData.avaliacao?.cod_aluno == alunoRecebido?.cod_aluno) {
             Object.keys(formData.avaliacao).forEach((key) => {
                setValue(key, formData.avaliacao[key]);
@@ -231,6 +216,7 @@ function CadAvaliacao() {
       let timeoutId = null;
 
       recognition.onstart = () => {
+         toast.info("Aguardando comando", { duration: 5000 });
          console.log("🎤 Reconhecimento iniciado");
          // Para automaticamente após 5 segundos
          timeoutId = setTimeout(() => {
@@ -243,8 +229,10 @@ function CadAvaliacao() {
       recognition.onresult = (event) => {
          const result = event.results[0];
          if (result.isFinal) {
-            const transcript = result[0].transcript;
+            let transcript = result[0].transcript;
             toast.success(`Reconhecido ${transcript}`);
+
+            if (numberString[transcript]) transcript = String(numberString[transcript]);
 
             console.log("Comando reconhecido:", inputName, transcript);
             setValue(inputName, transcript.replace(",", "."));
@@ -268,6 +256,9 @@ function CadAvaliacao() {
       reset();
       useFormStore.getState().clearForm();
       localStorage.removeItem("avaliacaoCache");
+      setProtocolo();
+      setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
+      setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
    }
 
    function bringLast(e, field) {
@@ -531,5 +522,52 @@ function CadAvaliacao() {
       </div>
    );
 }
+
+const numberString = {
+   Um: 1,
+   Dois: 2,
+   Três: 3,
+   Quatro: 4,
+   Cinco: 5,
+   Seis: 6,
+   Sete: 7,
+   Oito: 8,
+   Nove: 9,
+   Dez: 10,
+};
+
+const protocolosPattern = {
+   Geral: [
+      {
+         cod_protocolo: 1,
+         nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
+         categoria_protocolo: "Geral",
+      },
+   ],
+   Feminino: [
+      {
+         cod_protocolo: 2,
+         nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
+         categoria_protocolo: "Feminino",
+      },
+      {
+         cod_protocolo: 3,
+         nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
+         categoria_protocolo: "Feminino",
+      },
+   ],
+   Masculino: [
+      {
+         cod_protocolo: 4,
+         nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
+         categoria_protocolo: "Masculino",
+      },
+      // {
+      //    cod_protocolo: 5,
+      //    nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+      //    categoria_protocolo: "Masculino",
+      // },
+   ],
+};
 
 export default CadAvaliacao;

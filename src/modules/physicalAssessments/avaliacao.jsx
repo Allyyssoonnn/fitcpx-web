@@ -159,7 +159,7 @@ function Avaliacao() {
                </div>
 
                <Accordion type="single" collapsible className="mx-3 mt-3">
-                  <AreaMagraGorda result={result} />
+                  {avaliacao.tipo_avaliacao === "completo" && <AreaMagraGorda result={result} />}
                   <Perimetro avaliacao={avaliacao} />
                   <Dobras avaliacao={avaliacao} />
                   <Diametro avaliacao={avaliacao} />
