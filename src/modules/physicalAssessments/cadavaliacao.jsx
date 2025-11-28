@@ -68,7 +68,7 @@ function CadAvaliacao() {
    const [activeTab, setActiveTab] = useState("bioimpedancia");
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
-   const [tipoAvaliacao, setTipoAvaliacao] = useState("");
+   const [tipoAvaliacao, setTipoAvaliacao] = useState(localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
    const [ocultarCampos, setOcultarCampos] = useState(false);
 
    const [cod_protocolo, tipo_avaliacao] = watch(["cod_protocolo", "tipo_avaliacao"]);
@@ -78,8 +78,16 @@ function CadAvaliacao() {
    }, [cod_protocolo]);
 
    useEffect(() => {
-      if (tipo_avaliacao && tipo_avaliacao !== protocolo) setTipoAvaliacao(tipo_avaliacao);
+      if (tipo_avaliacao && tipo_avaliacao !== protocolo) {
+         setTipoAvaliacao(tipo_avaliacao);
+      }
    }, [tipo_avaliacao]);
+
+   useEffect(() => {
+      if (tipoAvaliacao) {
+         localStorage.setItem("memoPhysicalAssessmentType", tipoAvaliacao);
+      }
+   }, [tipoAvaliacao]);
 
    useEffect(() => {
       setLastPhysicalAssessments(location.state?.avaliacoes ?? []);
@@ -105,6 +113,8 @@ function CadAvaliacao() {
          });
       } else {
          setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
+         setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
+
          if (formData.avaliacao?.cod_aluno == alunoRecebido?.cod_aluno) {
             Object.keys(formData.avaliacao).forEach((key) => {
                setValue(key, formData.avaliacao[key]);
@@ -246,6 +256,8 @@ function CadAvaliacao() {
       reset();
       useFormStore.getState().clearForm();
       localStorage.removeItem("avaliacaoCache");
+      setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
+      setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
    }
 
    function bringLast(e, field) {
