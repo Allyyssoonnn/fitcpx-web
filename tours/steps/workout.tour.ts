@@ -145,6 +145,6 @@ export const workoutSteps: any[] = [
          title: "Salvar Treino",
          description: "Clique para confirmar e salvar as alterações",
       },
-      isInput: true,
+      isInput: false,
    },
 ];
