@@ -41,7 +41,9 @@ function CadAvaliacao() {
    const avaliacaoRecebida = location.state?.avaliacao;
    const avaliacaoCached = formData.avaliacao;
 
-   const form = useForm({ defaultValues: avaliacaoRecebida ?? avaliacaoCached });
+   const form = useForm({
+      defaultValues: avaliacaoRecebida ?? avaliacaoCached ?? { data_avaliacao: new Date().toISOString().split("T")[0] },
+   });
    const {
       handleSubmit,
       register,
@@ -51,6 +53,8 @@ function CadAvaliacao() {
       reset,
       formState: { errors, isSubmitting },
    } = form;
+   console.log(getValues());
+
    const navigate = useNavigate();
    const [usuario] = useRecoilState(stateUsuario);
    const [lastPhysicalAssessments, setLastPhysicalAssessments] = useState([]);
@@ -100,6 +104,7 @@ function CadAvaliacao() {
             }));
          });
       } else {
+         setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
          if (formData.avaliacao?.cod_aluno == alunoRecebido?.cod_aluno) {
             Object.keys(formData.avaliacao).forEach((key) => {
                setValue(key, formData.avaliacao[key]);
