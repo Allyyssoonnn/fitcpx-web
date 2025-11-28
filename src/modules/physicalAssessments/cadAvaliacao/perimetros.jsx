@@ -56,7 +56,7 @@ function Perimetros({
          <div className="row g-3">
             {perimetros.map((field, index) => {
                if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
-               if (tipoAvaliacao === "simples") return;
+               if (tipoAvaliacao === "simples" && ocultarCampos) return;
 
                return (
                   <Field key={index} className="col-md-4">
@@ -100,7 +100,7 @@ function Perimetros({
          <div className="row g-3">
             {perimetrosDireito.map((field, index) => {
                if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
-               if (tipoAvaliacao === "simples") return;
+               if (tipoAvaliacao === "simples" && ocultarCampos) return;
 
                return (
                   <Field key={index} className="col-md-4">
@@ -144,7 +144,7 @@ function Perimetros({
          <div className="row g-3">
             {perimetrosEsquerdo.map((field, index) => {
                if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
-               if (tipoAvaliacao === "simples") return;
+               if (tipoAvaliacao === "simples" && ocultarCampos) return;
 
                return (
                   <Field className="col-md-4" key={index}>
