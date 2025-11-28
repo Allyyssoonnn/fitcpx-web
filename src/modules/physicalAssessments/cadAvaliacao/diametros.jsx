@@ -1,35 +1,49 @@
-function Diametros({ tipoAvaliacao, ocultarCampos, register, startSpeechRecognition, bringLast, showBringLast }) {
+import { RotateCcw } from "lucide-react";
+import { MediaInputUI } from "../../../components/fitUI/numberInput.ui";
+import { Button } from "../../../components/ui/button";
+import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
+
+function Diametros({
+   tipoAvaliacao,
+   ocultarCampos,
+   register,
+   startSpeechRecognition,
+   bringLast,
+   showBringLast,
+   watch,
+   setValue,
+   getValues,
+}) {
    return (
       <div className="row g-3">
          {["biestiloide_punho", "biepicondilo_umeral", "biepicondilo_femoral"].map((campo, index) => {
             const obrigatorio = (index === 0 || index === 2) && tipoAvaliacao === "completo";
             return (
-               <div key={index} className={`col-md-4 ${!obrigatorio && ocultarCampos ? "d-none" : ""}`}>
-                  <label className={`form-label ${obrigatorio ? "fw-bold" : ""}`}>
+               <Field key={index} className={`col-md-4 ${!obrigatorio && ocultarCampos ? "d-none" : ""}`}>
+                  <FieldLabel className={`${obrigatorio ? "fw-bold" : ""}`}>
                      {campo.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())} {obrigatorio ? "*" : ""} (cm)
-                  </label>
-                  <div className="input-group">
-                     <input
-                        id={campo}
-                        type="number"
-                        step="0.01"
-                        {...register(campo, { required: obrigatorio ? "Diamêtro obrigatório!" : false })}
-                        className="form-control"
+                  </FieldLabel>
+
+                  <FieldContent>
+                     <MediaInputUI
+                        whatch={watch}
+                        inputId={campo}
+                        register={register}
+                        defaultValue={getValues(campo)}
+                        field={campo}
+                        startSpeechRecognition={startSpeechRecognition}
+                        setValue={setValue}
+                        required={obrigatorio}
                      />
+
                      {showBringLast && (
-                        <button className="btn btn-outline-dark" onClick={(e) => bringLast(e, campo)}>
-                           <i className="bi bi-arrow-counterclockwise" />
-                        </button>
+                        <Button className="mt-1" variant="outline" size="sm" onClick={(e) => bringLast(e, campo)}>
+                           <RotateCcw />
+                           Usar da avaliação anterior
+                        </Button>
                      )}
-                     <button
-                        type="button"
-                        className="btn btn-outline-success"
-                        onClick={() => startSpeechRecognition(campo)}
-                     >
-                        <i className="bi bi-mic"></i>
-                     </button>
-                  </div>
-               </div>
+                  </FieldContent>
+               </Field>
             );
          })}
       </div>

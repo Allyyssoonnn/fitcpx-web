@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ImageCropModal from "../../../components/cutImg";
+import { Input } from "../../../components/ui/input";
 
 function Imagens({
    capturedImages,
@@ -202,8 +203,7 @@ function Imagens({
 
             <p></p>
 
-            <input
-               className="form-control"
+            <Input
                placeholder="Descrição imagem"
                type="text"
                value={imageDescriptions[option] || ""}

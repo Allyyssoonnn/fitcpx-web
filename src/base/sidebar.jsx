@@ -231,7 +231,7 @@ function Footer() {
 
    return (
       <div className="d-flex items-center justify-around w-100 border-t-1 pt-2">
-         <Button size="sm" onClick={() => window.open("https://wa.me/55449991654044", "_blank")}>
+         <Button size="sm" onClick={() => window.open("https://wa.me/551152866458", "_blank")}>
             {/* <MessageCircle /> */}
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                <path

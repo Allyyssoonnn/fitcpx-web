@@ -5,7 +5,7 @@ export const configSteps: any[] = [
       element: "#avatar",
       popover: {
          title: "Perfil",
-         description: "Clique na foto para abrir o menu",
+         description: "Clique na sua foto para acessar o menu",
       },
       isInput: false,
    },
@@ -13,23 +13,23 @@ export const configSteps: any[] = [
       element: "#avatar-config",
       popover: {
          title: "Configurações",
-         description: "Clique aqui para editar suas configurações",
+         description: "Gerencie seus dados da conta",
       },
       isInput: false,
    },
    {
       element: "#tab-business",
       popover: {
-         title: "Configurações profissionais",
-         description: "Vamos para aba mais importante para conseguirmos avançar",
+         title: "Dados Profissionais",
+         description: "Preencha para validar sua conta e receber os pagamentos",
       },
       isInput: false,
    },
    {
       element: "#cnpj",
       popover: {
-         title: "CNPJ ou CPF",
-         description: "Informe seu CNPJ ou CPF usaremos para válidar conta e enviar os repasses",
+         title: "CNPJ/CPF",
+         description: "Essencial para validar a conta e processar seus repasses",
       },
       isInput: true,
    },
@@ -37,7 +37,15 @@ export const configSteps: any[] = [
       element: "#pix",
       popover: {
          title: "Chave PIX",
-         description: "Enviaremos os repasses para essa conta",
+         description: "Informe a chave para receber seus pagamentos",
+      },
+      isInput: true,
+   },
+   {
+      element: "#name",
+      popover: {
+         title: "Nome",
+         description: "Nome que será vinculado aos contratos",
       },
       isInput: true,
    },
@@ -45,7 +53,7 @@ export const configSteps: any[] = [
       element: "#phone",
       popover: {
          title: "Telefone",
-         description: "Usado nos contratos com alunos e precisamos do seu telefone para contato em caso de problemas",
+         description: "Necessário para contato e para preencher contratos",
       },
       isInput: true,
    },
@@ -53,7 +61,7 @@ export const configSteps: any[] = [
       element: "#email",
       popover: {
          title: "E-mail",
-         description: "Usado para preenchimento dos contratos e para avisos",
+         description: "Usado para avisos importantes e para preencher contratos",
       },
       isInput: true,
    },
@@ -61,7 +69,7 @@ export const configSteps: any[] = [
       element: "#cep",
       popover: {
          title: "CEP",
-         description: "Usado para preenchimento dos contratos",
+         description: "Usado para o preenchimento automático de endereço",
       },
       isInput: true,
    },
@@ -69,15 +77,15 @@ export const configSteps: any[] = [
       element: "#number",
       popover: {
          title: "Número predial",
-         description: "Usado para preenchimento dos contratos",
+         description: "Complete seu endereço para os contratos",
       },
       isInput: true,
    },
    {
       element: "#submit",
       popover: {
-         title: "Pronto",
-         description: "Vamos confirmar e salvar as alterações",
+         title: "Salvar Alterações",
+         description: "Clique para confirmar e salvar os dados",
       },
       isInput: false,
    },

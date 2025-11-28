@@ -1,16 +1,30 @@
 /* eslint-disable react/prop-types */
-import { Check, Trash } from "lucide-react";
+import { Check, EyeClosed, Info, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
 import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
+import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
-import { Card, CardFooter } from "../../components/ui/card";
+import { Card, CardContent, CardFooter } from "../../components/ui/card";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Field, FieldContent, FieldLabel } from "../../components/ui/field";
+import { Label } from "../../components/ui/label";
+import {
+   Select,
+   SelectContent,
+   SelectGroup,
+   SelectItem,
+   SelectLabel,
+   SelectTrigger,
+   SelectValue,
+} from "../../components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, limpaForm, preventForm } from "../../utils";
@@ -23,6 +37,7 @@ import Perimetros from "./cadAvaliacao/perimetros";
 function CadAvaliacao() {
    const { nLoading, endLoading } = useNotificacao();
    const { formData, setAvaliacaoForm } = useFormStore();
+   const form = useForm();
    const {
       handleSubmit,
       register,
@@ -31,7 +46,7 @@ function CadAvaliacao() {
       watch,
       reset,
       formState: { errors, isSubmitting },
-   } = useForm();
+   } = form;
    const navigate = useNavigate();
    const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
@@ -78,7 +93,7 @@ function CadAvaliacao() {
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
    const [tipoAvaliacao, setTipoAvaliacao] = useState("");
-   const [protocolo, setProtocolo] = useState(0);
+   const [protocolo, setProtocolo] = useState();
    const [ocultarCampos, setOcultarCampos] = useState(false);
 
    const [cod_protocolo, tipo_avaliacao] = watch(["cod_protocolo", "tipo_avaliacao"]);
@@ -202,39 +217,52 @@ function CadAvaliacao() {
 
    const startSpeechRecognition = (inputName) => {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
       if (!SpeechRecognition) {
          alert("Seu navegador não suporta a API de reconhecimento de fala.");
          return;
       }
 
       const recognition = new SpeechRecognition();
-      recognition.lang = "pt-BR"; // Defina o idioma, pode ser 'en-US' para inglês, 'pt-BR' para português
-      recognition.start();
+      recognition.lang = "pt-BR";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      let timeoutId = null;
+
+      recognition.onstart = () => {
+         console.log("🎤 Reconhecimento iniciado");
+         // Para automaticamente após 5 segundos
+         timeoutId = setTimeout(() => {
+            toast.warning("Tempo limite atingido");
+            console.log("⏱️ Tempo limite atingido (5s). Parando...");
+            recognition.stop();
+         }, 5000);
+      };
 
       recognition.onresult = (event) => {
-         const transcript = event.results[0][0].transcript;
-         console.log("Comando reconhecido:", inputName, transcript);
-         setValue(inputName, transcript); // Preenche o campo com o texto reconhecido
-      };
-      recognition.onerror = (event) => console.error("Erro no reconhecimento de voz:", event.error);
-   };
+         const result = event.results[0];
+         if (result.isFinal) {
+            const transcript = result[0].transcript;
+            toast.success(`Reconhecido ${transcript}`);
 
-   const tooltipErros = (
-      <Tooltip id="tooltip">
-         <div>
-            {Object.keys(errors).length > 0 && (
-               <ul style={{ margin: 0, padding: "0 10px", listStyleType: "disc" }}>
-                  {Object.entries(errors).map(([field, error]) => (
-                     <li key={field}>
-                        {/* {error.message || `Erro no campo ${field}`} */}
-                        {field}
-                     </li>
-                  ))}
-               </ul>
-            )}
-         </div>
-      </Tooltip>
-   );
+            console.log("Comando reconhecido:", inputName, transcript);
+            setValue(inputName, transcript.replace(",", "."));
+         }
+      };
+
+      recognition.onerror = (event) => {
+         // toast.error(`Erro - ${event.error}`);
+         console.error("Erro no reconhecimento de voz:", event.error);
+      };
+
+      recognition.onend = () => {
+         console.log("🎤 Reconhecimento finalizado");
+         clearTimeout(timeoutId);
+      };
+
+      recognition.start();
+   };
 
    function clear() {
       reset();
@@ -255,235 +283,253 @@ function CadAvaliacao() {
       <div className="container-fluid">
          <BackBoxUI actions={[{ action: clear, label: "Limpar", Icon: Trash }]} />
 
-         <Card className="mt-3">
-            <CardBody className="p-4">
+         <div className="mt-3">
+            <FormProvider {...form}>
                <form onKeyDown={preventForm} onSubmit={handleSubmit(confirma)}>
-                  <h5 className="card-title fw-semibold mb-4">Informações iniciais</h5>
-
-                  <div className="row g-3">
-                     <div className="col-md-3">
-                        <label className="form-label">Aluno</label>
-                        <input
-                           value={`${calcularIdade(aluno?.data_nascimento_aluno)} - Anos / ${aluno?.nome_aluno}`}
-                           disabled
-                           className="form-control"
-                        />
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Protocolo *</label>
-                        <select
-                           id="select-protocol"
-                           {...register("cod_protocolo", { required: "Protocolo necessário!" })}
-                           className="form-control"
-                        >
-                           <option value="">Selecione um protocolo</option>
-                           {Object.keys(protocolos).map((categoria) => (
-                              <optgroup key={categoria} label={categoria}>
-                                 {Array.isArray(protocolos[categoria]) &&
-                                    protocolos[categoria]?.map((protocolo) => (
-                                       <option key={protocolo.cod_protocolo} value={protocolo.cod_protocolo}>
-                                          {protocolo.nome_protocolo}
-                                       </option>
-                                    ))}
-                              </optgroup>
-                           ))}
-                        </select>
-                     </div>
-
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">
-                           Tipo *
-                           <OverlayTrigger placement="bottom" overlay={tooltip}>
-                              <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
-                           </OverlayTrigger>
+                  <Card>
+                     <CardContent>
+                        <label className="mb-3">
+                           Aluno:{" "}
+                           <strong>{`${aluno?.nome_aluno} | ${calcularIdade(
+                              aluno?.data_nascimento_aluno
+                           )} - Anos`}</strong>
                         </label>
-                        <select
-                           id="select-type"
-                           disabled={!protocolo}
-                           {...register("tipo_avaliacao", { required: "Tipo da avaliação necessário!" })}
-                           className="form-control"
-                        >
-                           <option value="">Selecione um tipo</option>
-                           <option value="simples">Simples</option>
-                           <option value="completo">Completo</option>
-                        </select>
-                     </div>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Data da Avaliação *</label>
-                        <input
-                           id="date"
-                           {...register("data_avaliacao", { required: "A data é obrigatória" })}
-                           type="date"
-                           className="form-control"
-                           defaultValue={new Date().toISOString().split("T")[0]}
+                        <FitFormUI
+                           errors={errors}
+                           fields={[
+                              {
+                                 title: "Informações iniciais",
+                                 cols: 4,
+                                 fields: [
+                                    {
+                                       id: "select-type",
+                                       label: "Tipo de avaliação",
+                                       fieldName: "tipo_avaliacao",
+                                       type: "select",
+                                       selectOptions: [
+                                          { label: "Simples", value: "simples" },
+                                          { label: "Completo", value: "completo" },
+                                       ],
+                                       options: {
+                                          required: true,
+                                       },
+                                       tooltipText: (
+                                          <>
+                                             <div>
+                                                <strong>Simples:</strong> Será apresentado a distribuição corporal em
+                                                gordura e massa magra, utilizando um menor número de medidas.
+                                             </div>
+                                             <p></p>
+                                             <div>
+                                                <strong>Completo:</strong> Será detalhada a composição corporal em
+                                                termos de gordura, músculo, osso e peso residual, utilizando um maior
+                                                número de medidas.
+                                             </div>
+                                          </>
+                                       ),
+                                    },
+                                    {
+                                       id: "date",
+                                       label: "Data da Avaliação",
+                                       fieldName: "data_avaliacao",
+                                       inputType: "date",
+                                       options: {
+                                          required: true,
+                                       },
+                                    },
+                                    {
+                                       id: "weight",
+                                       label: "Peso (kg)",
+                                       fieldName: "peso",
+                                       type: "number",
+                                       options: {
+                                          required: true,
+                                       },
+                                    },
+                                    {
+                                       id: "height",
+                                       label: "Altura (m)",
+                                       fieldName: "altura",
+                                       type: "number",
+                                       options: {
+                                          required: true,
+                                       },
+                                    },
+                                 ],
+                              },
+                           ]}
                         />
-                     </div>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Peso (kg) *</label>
-                        <input
-                           id="weight"
-                           {...register("peso", { required: "O peso é obrigatório" })}
-                           type="number"
-                           step="0.01"
-                           className="form-control"
-                        />
-                     </div>
+                        <div className="row g-3 mt-2">
+                           <Field className="col-md-6">
+                              <FieldLabel>Protocolo *</FieldLabel>
 
-                     <div className="col-md-3">
-                        <label className="form-label fw-bold">Altura (m) *</label>
-                        <div className="input-group">
-                           <input
-                              id="height"
-                              {...register("altura", { required: "A altura é obrigatória" })}
-                              type="number"
-                              step="0.01"
-                              className="form-control"
-                           />
-                           {!!lastPhysicalAssessments.length && (
-                              <button className="btn btn-outline-dark" onClick={(e) => bringLast(e, "altura")}>
-                                 <i className="bi bi-arrow-counterclockwise" />
-                              </button>
-                           )}
+                              <FieldContent className="w-full">
+                                 <Select
+                                    id="select-protocol"
+                                    value={protocolo}
+                                    onValueChange={(v) => setValue("cod_protocolo", v)}
+                                 >
+                                    <SelectTrigger>
+                                       <SelectValue placeholder="Selecione um protocolo" />
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                       {Object.keys(protocolos).map((categoria) => (
+                                          <SelectGroup key={categoria}>
+                                             <SelectLabel>{categoria}</SelectLabel>
+                                             {Array.isArray(protocolos[categoria]) &&
+                                                protocolos[categoria]?.map((protocolo) => (
+                                                   <SelectItem
+                                                      key={protocolo.cod_protocolo}
+                                                      value={protocolo.cod_protocolo}
+                                                   >
+                                                      {protocolo.nome_protocolo}
+                                                   </SelectItem>
+                                                ))}
+                                          </SelectGroup>
+                                       ))}
+                                    </SelectContent>
+                                 </Select>
+                              </FieldContent>
+                           </Field>
                         </div>
-                     </div>
-                  </div>
 
-                  <div className="row g-3 m-1">
-                     <div className="form-check">
-                        <input
-                           value={ocultarCampos}
-                           onChange={(e) => setOcultarCampos(e.target.checked)}
-                           type="checkbox"
-                           className="form-check-input"
-                           id="ocultarCampos"
-                        />
-                        <label className="form-check-label" htmlFor="ocultarCampos">
-                           Ocultar campos não obrigatórios
-                        </label>
-                        <OverlayTrigger placement="bottom" overlay={tooltipCampos}>
-                           <i className="bi bi-info-circle ms-2 text-primary" style={{ cursor: "pointer" }}></i>
-                        </OverlayTrigger>
-                     </div>
-                  </div>
+                        <Badge variant="destructive" className={`${protocolo ? "d-none" : ""} my-3`}>
+                           Selecione um protocolo
+                        </Badge>
+                     </CardContent>
+                  </Card>
 
-                  <h5 className="card-title fw-semibold mb-4 mt-4">Avaliação</h5>
-                  <h6 className={`text-danger ${protocolo ? "d-none" : ""}`}>Selecione um protocolo</h6>
+                  <Card className="mt-3">
+                     <CardContent>
+                        <div className="m-1 flex justify-between">
+                           <h5 className="card-title fw-semibold mb-4 mt-4">Dados da avaliação</h5>
 
-                  <Tabs
-                     value={activeTab}
-                     activeKey={activeTab}
-                     onValueChange={(tab) => setActiveTab(tab)}
-                     className="mb-3"
-                  >
-                     <TabsList>
-                        <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
-                        <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
-                        <TabsTrigger value="dobras">Dobras cutâneas</TabsTrigger>
-                        <TabsTrigger value="perimetros">Perímetros</TabsTrigger>
-                        <TabsTrigger value="imagens">Imagens</TabsTrigger>
-                     </TabsList>
+                           <div className="flex items-center gap-2 border-1 px-2 rounded shadow-sm">
+                              <Checkbox
+                                 id="ocultarCampos"
+                                 checked={ocultarCampos}
+                                 onCheckedChange={(checked) => setOcultarCampos(checked)}
+                              />
 
-                     <TabsContent value="bioimpedancia" className="mt-3">
-                        <Bioimpedancia register={register} startSpeechRecognition={startSpeechRecognition} />
-                     </TabsContent>
+                              <div className="flex flex-row items-center gap-1 cursor-pointer">
+                                 <EyeClosed className="w-4 h-4" />
+                                 <Label htmlFor="ocultarCampos">Ocultar campos não obrigatórios</Label>
+                              </div>
 
-                     <TabsContent value="diametros" className="mt-3">
-                        <Diametros
-                           ocultarCampos={ocultarCampos}
-                           register={register}
-                           startSpeechRecognition={startSpeechRecognition}
-                           tipoAvaliacao={tipoAvaliacao}
-                           bringLast={bringLast}
-                           showBringLast={!!lastPhysicalAssessments.length}
-                        />
-                     </TabsContent>
+                              <TooltipProvider>
+                                 <Tooltip>
+                                    <TooltipTrigger asChild>
+                                       <Info className="w-4 h-4 text-primary cursor-pointer" />
+                                    </TooltipTrigger>
 
-                     <TabsContent value="dobras" className="mt-3">
-                        <Dobras
-                           getValues={getValues}
-                           metodoDobras={metodoDobras}
-                           ocultarCampos={ocultarCampos}
-                           protocolo={protocolo}
-                           register={register}
-                           setMetodoDobras={setMetodoDobras}
-                           setValue={setValue}
-                           startSpeechRecognition={startSpeechRecognition}
-                           tipoAvaliacao={tipoAvaliacao}
-                           watch={watch}
-                        />
-                     </TabsContent>
+                                    <TooltipContent side="bottom">
+                                       Marcar essa opção vai ocultar todos os campos não obrigatórios para o protocolo
+                                       selecionado.
+                                    </TooltipContent>
+                                 </Tooltip>
+                              </TooltipProvider>
+                           </div>
+                        </div>
 
-                     <TabsContent value="perimetros" className="mt-3">
-                        <Perimetros
-                           getValues={getValues}
-                           metodoPerimetro={metodoPerimetro}
-                           ocultarCampos={ocultarCampos}
-                           register={register}
-                           setMetodoPerimetro={setMetodoPerimetro}
-                           setValue={setValue}
-                           startSpeechRecognition={startSpeechRecognition}
-                           tipoAvaliacao={tipoAvaliacao}
-                           watch={watch}
-                        />
-                     </TabsContent>
+                        <Tabs
+                           value={activeTab}
+                           activeKey={activeTab}
+                           onValueChange={(tab) => setActiveTab(tab)}
+                           className="mb-3"
+                        >
+                           <TabsList>
+                              <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
+                              <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
+                              <TabsTrigger value="dobras">Dobras cutâneas</TabsTrigger>
+                              <TabsTrigger value="perimetros">Perímetros</TabsTrigger>
+                              <TabsTrigger value="imagens">Imagens</TabsTrigger>
+                           </TabsList>
 
-                     <TabsContent value="imagens" className="mt-3">
-                        <Imagens
-                           capturedImages={capturedImages}
-                           setCapturedImages={setCapturedImages}
-                           imageDescriptions={imageDescriptions}
-                           setImageDescriptions={setImageDescriptions}
-                           deletedImages={deletedImages}
-                           setDeletedImages={setDeletedImages}
-                        />
-                     </TabsContent>
-                  </Tabs>
+                           <TabsContent value="bioimpedancia" className="mt-3 pt-3 border-t-1">
+                              <Bioimpedancia
+                                 register={register}
+                                 startSpeechRecognition={startSpeechRecognition}
+                                 errors={errors}
+                                 watch={watch}
+                                 setValue={setValue}
+                                 getValues={getValues}
+                              />
+                           </TabsContent>
 
-                  <CardFooter className="d-flex items-end justify-end px-0 mt-4 gap-3">
-                     <OverlayTrigger placement="top" overlay={tooltipErros}>
-                        <i
-                           className={`bi bi-exclamation-octagon ms-2 text-danger ${
-                              Object.keys(errors).length > 0 ? "" : "d-none"
-                           }`}
-                           style={{ cursor: "pointer" }}
-                        ></i>
-                     </OverlayTrigger>
+                           <TabsContent value="diametros" className="mt-3 pt-3 border-t-1">
+                              <Diametros
+                                 ocultarCampos={ocultarCampos}
+                                 register={register}
+                                 startSpeechRecognition={startSpeechRecognition}
+                                 tipoAvaliacao={tipoAvaliacao}
+                                 bringLast={bringLast}
+                                 showBringLast={!!lastPhysicalAssessments.length}
+                                 errors={errors}
+                                 watch={watch}
+                                 setValue={setValue}
+                                 getValues={getValues}
+                              />
+                           </TabsContent>
 
-                     <Button id="submit" disabled={isSubmitting} type="submit">
-                        <Check />
-                        Confirmar
-                     </Button>
-                  </CardFooter>
+                           <TabsContent value="dobras" className="mt-3 pt-3 border-t-1">
+                              <Dobras
+                                 getValues={getValues}
+                                 metodoDobras={metodoDobras}
+                                 ocultarCampos={ocultarCampos}
+                                 protocolo={protocolo}
+                                 register={register}
+                                 setMetodoDobras={setMetodoDobras}
+                                 setValue={setValue}
+                                 startSpeechRecognition={startSpeechRecognition}
+                                 tipoAvaliacao={tipoAvaliacao}
+                                 watch={watch}
+                                 errors={errors}
+                              />
+                           </TabsContent>
+
+                           <TabsContent value="perimetros" className="mt-3 pt-3 border-t-1">
+                              <Perimetros
+                                 getValues={getValues}
+                                 metodoPerimetro={metodoPerimetro}
+                                 ocultarCampos={ocultarCampos}
+                                 register={register}
+                                 setMetodoPerimetro={setMetodoPerimetro}
+                                 setValue={setValue}
+                                 startSpeechRecognition={startSpeechRecognition}
+                                 tipoAvaliacao={tipoAvaliacao}
+                                 watch={watch}
+                                 errors={errors}
+                              />
+                           </TabsContent>
+
+                           <TabsContent value="imagens" className="mt-3 pt-3 border-t-1">
+                              <Imagens
+                                 capturedImages={capturedImages}
+                                 setCapturedImages={setCapturedImages}
+                                 imageDescriptions={imageDescriptions}
+                                 setImageDescriptions={setImageDescriptions}
+                                 deletedImages={deletedImages}
+                                 setDeletedImages={setDeletedImages}
+                              />
+                           </TabsContent>
+                        </Tabs>
+                     </CardContent>
+
+                     <CardFooter className="d-flex items-end justify-end mt-4 gap-3">
+                        <Button id="submit" disabled={isSubmitting} type="submit">
+                           <Check />
+                           Confirmar
+                        </Button>
+                     </CardFooter>
+                  </Card>
                </form>
-            </CardBody>
-         </Card>
+            </FormProvider>
+         </div>
       </div>
    );
 }
-
-const tooltip = (
-   <Tooltip id="tooltip">
-      <div>
-         <strong>Simples:</strong> Será apresentado a distribuição corporal em gordura e massa magra, utilizando um
-         menor número de medidas.
-      </div>
-      <p></p>
-      <div>
-         <strong>Completo:</strong> Será detalhada a composição corporal em termos de gordura, músculo, osso e peso
-         residual, utilizando um maior número de medidas.
-      </div>
-   </Tooltip>
-);
-
-const tooltipCampos = (
-   <Tooltip id="tooltip">
-      <div>
-         <strong></strong> Marcar essa opção vai ocultar todos os campos não obrigatórios para o protocolo selecionado.
-      </div>
-   </Tooltip>
-);
 
 export default CadAvaliacao;

@@ -2,8 +2,8 @@ export const workoutSteps: any[] = [
    {
       element: "#workoutsMenu",
       popover: {
-         title: "Treino",
-         description: "Clique em treino para abrir as opções",
+         title: "Treinos",
+         description: "Gerencie seus planos de treino",
       },
       isInput: false,
    },
@@ -11,39 +11,39 @@ export const workoutSteps: any[] = [
       element: "#workouts",
       popover: {
          title: "Lista de treinos",
-         description: "Abra a lista de treinos",
+         description: "Visualize todos os treinos criados",
       },
       isInput: false,
    },
    {
       element: "#newWorkout",
       popover: {
-         title: "Criar novo treino",
-         description: "Vamos criar um novo treino usando essa opcão",
+         title: "Novo Treino",
+         description: "Clique para criar um novo treino",
       },
       isInput: false,
    },
    {
       element: "#name",
       popover: {
-         title: "Vamos dar um nome ao treino",
-         description: "Preencha o nome do treino Ex. Feminino - Hipertrofia",
+         title: "Nome do Treino",
+         description: "Dê um nome para o treino. Ex: Hipertrofia Fem.",
       },
       isInput: true,
    },
    {
       element: "#periodicity",
       popover: {
-         title: "Agora a frequência",
-         description: `Preencha a frequência do treino Ex. "3"`,
+         title: "Frequência",
+         description: "Informe a frequência semanal. Ex: 3",
       },
       isInput: true,
    },
    {
       element: "#gender",
       popover: {
-         title: "Genêro do treino",
-         description: "Para treinos bases que não estão vinculados ao aluno precisamos informar o sexo",
+         title: "Gênero",
+         description: "Selecione o gênero alvo do treino",
       },
       isInput: true,
       isPortal: true,
@@ -51,8 +51,8 @@ export const workoutSteps: any[] = [
    {
       element: "#difficulty",
       popover: {
-         title: "Dificuldade do treino",
-         description: "Preencha a dificuldade do treino",
+         title: "Nível",
+         description: "Defina o nível no aluno",
       },
       isInput: true,
       isPortal: true,
@@ -60,8 +60,8 @@ export const workoutSteps: any[] = [
    {
       element: "#development",
       popover: {
-         title: "Desenvolvimento do treino",
-         description: "Preencha a desenvolvimento do treino Ex. 'Força'",
+         title: "Objetivo",
+         description: "Qual a valência será o foco do treino? Ex: Força",
       },
       isInput: true,
       isPortal: true,
@@ -69,40 +69,40 @@ export const workoutSteps: any[] = [
    {
       element: "#addSessions",
       popover: {
-         title: "Vamos adicionar um sessão",
-         description: "Sessão de treino agora Ex. 'Segunda-feira', 'Peitoral e Tríceps'",
+         title: "Nova Sessão",
+         description: "Adicione uma sessão de treino",
       },
       isInput: false,
    },
    {
       element: "#btnSessionEdit-0",
       popover: {
-         title: "Vamos editar o nome da sessão",
-         description: "Clique no lápis para editar o nome após preencher clique enter",
+         title: "Editar Nome da Sessão",
+         description: "Clique no lápis para renomear",
       },
       isInput: true,
    },
    {
       element: "#btnSession-0",
       popover: {
-         title: "Vamos ver a sessão",
-         description: "Clique para ver mais desta sessão para adicionarmos exercícios",
+         title: "Ver Sessão",
+         description: "Clique para adicionar/ver exercícios",
       },
       isInput: false,
    },
    {
       element: "#addExercise-0",
       popover: {
-         title: "Agora vamos adicionar um exercício",
-         description: "Clique adicionar um exercício a essa sessão",
+         title: "Adicionar Exercício",
+         description: "Clique para incluir um exercício na sessão",
       },
       isInput: false,
    },
    {
       element: "#exercise-0-session-0-set-null",
       popover: {
-         title: "Agora vamos selecionar o exercício",
-         description: "Clique para abrir a lista de exercícios",
+         title: "Selecionar Exercício",
+         description: "Escolha um exercício da sua lista",
       },
       isInput: true,
       isPortal: true,
@@ -110,40 +110,40 @@ export const workoutSteps: any[] = [
    {
       element: "#serie_sessao_exercicio-0",
       popover: {
-         title: "Quantidade de série",
-         description: "Você pode alterar a quantidade de séries a ser realizada para esse exercício",
+         title: "Séries",
+         description: "Defina o número de séries",
       },
       isInput: true,
    },
    {
       element: "#repeticao_sessao_exercicio-0",
       popover: {
-         title: "Quantidade de repetições",
-         description: "Você pode alterar a quantidade de repetições a ser realizada para esse exercício",
+         title: "Repetições",
+         description: "Defina o número de repetições",
       },
       isInput: true,
    },
    {
       element: "#carga_sessao_exercicio-0",
       popover: {
-         title: "Quantidade de carga",
-         description: "Você pode alterar a quantidade de carga a ser realizada para esse exercício",
+         title: "Carga",
+         description: "Defina a carga (peso) do exercício",
       },
       isInput: true,
    },
    {
       element: "#intervalo_sessao_exercicio-0",
       popover: {
-         title: "Quantidade de intervalo",
-         description: "Você pode alterar a quantidade de intervalo a ser realizada para esse exercício",
+         title: "Intervalo",
+         description: "Defina o descanso entre as séries (em segundos)",
       },
       isInput: true,
    },
    {
       element: "#submit",
       popover: {
-         title: "Agora você pode complementar ou confirmar",
-         description: "Caso queira explorar a tela ou adicionar mais sessões e exercícios ou pode confirmar o cadastro",
+         title: "Salvar Treino",
+         description: "Clique para confirmar e salvar as alterações",
       },
       isInput: true,
    },

@@ -11,8 +11,7 @@ import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import TreinoInteligente from "../../components/prescricao/treinoInteligente";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Separator } from "../../components/ui/separator";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { preventForm } from "../../utils";
@@ -243,7 +242,7 @@ function CadTreino() {
 
             <Card className="mt-3">
                <CardHeader>
-                  <CardTitle>Prescrição</CardTitle>
+                  <h5 className="card-title fw-semibold mb-4 mt-4">Prescrição</h5>
                   <label>{sessoes?.length}/15</label>
                </CardHeader>
 
@@ -260,16 +259,14 @@ function CadTreino() {
                      desenvolvimento_treino={desenvolvimento_treino}
                      exercicios={exerciciosLista}
                   />
-
-                  <Separator className="mt-3" />
-
-                  <div className="d-flex justify-end mt-3 px-3">
-                     <Button id="submit" type="submit" disabled={isSubmitting}>
-                        <Check />
-                        Confirmar
-                     </Button>
-                  </div>
                </CardContent>
+
+               <CardFooter className="d-flex items-end justify-end mt-4 gap-3">
+                  <Button id="submit" disabled={isSubmitting} type="submit">
+                     <Check />
+                     Confirmar
+                  </Button>
+               </CardFooter>
             </Card>
          </form>
       </FormProvider>
