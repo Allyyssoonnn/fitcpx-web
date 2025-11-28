@@ -35,9 +35,12 @@ import Imagens from "./cadAvaliacao/imagens";
 import Perimetros from "./cadAvaliacao/perimetros";
 
 function CadAvaliacao() {
+   const location = useLocation();
    const { nLoading, endLoading } = useNotificacao();
    const { formData, setAvaliacaoForm } = useFormStore();
-   const form = useForm();
+   const avaliacaoRecebida = location.state?.aluno;
+   const avaliacaoCached = formData.avaliacao;
+   const form = useForm({ defaultValues: avaliacaoRecebida ?? avaliacaoCached });
    const {
       handleSubmit,
       register,
@@ -48,7 +51,6 @@ function CadAvaliacao() {
       formState: { errors, isSubmitting },
    } = form;
    const navigate = useNavigate();
-   const location = useLocation();
    const [usuario] = useRecoilState(stateUsuario);
    const [lastPhysicalAssessments, setLastPhysicalAssessments] = useState([]);
    const [protocolos] = useState({
@@ -114,11 +116,10 @@ function CadAvaliacao() {
       setValue("cod_aluno", alunoRecebido?.cod_aluno);
       if (alunoRecebido) setAluno(alunoRecebido);
       if (avaliacaoRecebida) {
-         Object.keys(avaliacaoRecebida).forEach((key) => {
-            setValue(key, avaliacaoRecebida[key]);
-         });
          setProtocolo(avaliacaoRecebida.cod_protocolo);
          setTipoAvaliacao(avaliacaoRecebida.tipo_avaliacao);
+
+         //Carrega as imagens da avaliação
          avaliacaoRecebida?.imagem?.map((img, index) => {
             setCapturedImages((prevImages) => ({
                ...prevImages,
@@ -231,6 +232,7 @@ function CadAvaliacao() {
       let timeoutId = null;
 
       recognition.onstart = () => {
+         toast.info("Aguardando comando", { duration: 5000 });
          console.log("🎤 Reconhecimento iniciado");
          // Para automaticamente após 5 segundos
          timeoutId = setTimeout(() => {
@@ -243,8 +245,10 @@ function CadAvaliacao() {
       recognition.onresult = (event) => {
          const result = event.results[0];
          if (result.isFinal) {
-            const transcript = result[0].transcript;
+            let transcript = result[0].transcript;
             toast.success(`Reconhecido ${transcript}`);
+
+            if (numberString[transcript]) transcript = String(numberString[transcript]);
 
             console.log("Comando reconhecido:", inputName, transcript);
             setValue(inputName, transcript.replace(",", "."));
@@ -531,5 +535,18 @@ function CadAvaliacao() {
       </div>
    );
 }
+
+const numberString = {
+   Um: 1,
+   Dois: 2,
+   Três: 3,
+   Quatro: 4,
+   Cinco: 5,
+   Seis: 6,
+   Sete: 7,
+   Oito: 8,
+   Nove: 9,
+   Dez: 10,
+};
 
 export default CadAvaliacao;
