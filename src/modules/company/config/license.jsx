@@ -67,7 +67,15 @@ function License() {
                endLoading();
             });
             refetch();
-            if (response?.url) window.open(response.url, "_blank", "noopener,noreferrer");
+            if (response?.url) {
+               const a = document.createElement("a");
+               a.href = response.url;
+               a.target = "_blank";
+               a.rel = "noopener noreferrer";
+               document.body.appendChild(a);
+               a.click();
+               a.remove();
+            }
             if (response?.token) {
                setCookie(null, "token", response.token, { maxAge: 60 * 60 * 7 });
                setCookie(null, "refreshToken", response.refreshToken, { maxAge: 60 * 60 * 24 * 7 });
