@@ -63,7 +63,9 @@ function License() {
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
             nLoading();
-            const response = await buyLicense(licenca.cod_licenca);
+            const response = await buyLicense(licenca.cod_licenca).catch(() => {
+               endLoading();
+            });
             refetch();
             if (response?.url) window.open(response.url, "_blank", "noopener,noreferrer");
             if (response?.token) {
