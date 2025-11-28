@@ -198,7 +198,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "CNPJ/CPF",
                                        id: "cnpj",
-                                       type: "number",
+                                       inputType: "number",
                                        fieldName: "doc_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },

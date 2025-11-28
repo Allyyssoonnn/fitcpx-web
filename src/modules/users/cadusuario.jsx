@@ -96,6 +96,7 @@ function CadUsuario() {
                                  {
                                     id: "idnumber",
                                     label: "CPF",
+                                    inputType: "number",
                                     format: "documentId",
                                     fieldName: "cpf_usuario",
                                     options: {

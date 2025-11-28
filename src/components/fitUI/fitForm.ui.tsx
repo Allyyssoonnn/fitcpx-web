@@ -407,6 +407,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     id={field.id}
                                     placeholder={field.label}
                                     type={field.inputType ?? "text"}
+                                    className="appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                  />
 
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
