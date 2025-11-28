@@ -93,7 +93,7 @@ function CadAvaliacao() {
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
    const [tipoAvaliacao, setTipoAvaliacao] = useState("");
-   const [protocolo, setProtocolo] = useState(0);
+   const [protocolo, setProtocolo] = useState();
    const [ocultarCampos, setOcultarCampos] = useState(false);
 
    const [cod_protocolo, tipo_avaliacao] = watch(["cod_protocolo", "tipo_avaliacao"]);
