@@ -257,7 +257,10 @@ function CadAvaliacao() {
       useFormStore.getState().clearForm();
       localStorage.removeItem("avaliacaoCache");
       setProtocolo();
-      setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
+      setValue(
+         "data_avaliacao",
+         new Intl.DateTimeFormat("fr-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())
+      );
       setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
    }
 
