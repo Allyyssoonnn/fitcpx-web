@@ -262,6 +262,12 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
                </Badge>
             )}
 
+            {licenca?.due_licenca && (
+               <Badge className="mt-2 bg-amber-300 text-black">
+                  Válido até {new Date(licenca?.due_licenca).toLocaleString()}
+               </Badge>
+            )}
+
             <CardDescription className="text-sm mt-2">{licenca?.descricao_licenca}</CardDescription>
 
             <div className="mt-2">
