@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
-import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter } from "../../components/ui/card";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -59,7 +58,7 @@ function CadAvaliacao() {
    const [usuario] = useRecoilState(stateUsuario);
    const [lastPhysicalAssessments, setLastPhysicalAssessments] = useState([]);
    const [protocolos] = useState(protocolosPattern);
-   const [protocolo, setProtocolo] = useState();
+   const [protocolo, setProtocolo] = useState(1);
 
    const [capturedImages, setCapturedImages] = useState({});
    const [imageDescriptions, setImageDescriptions] = useState({});
@@ -113,6 +112,7 @@ function CadAvaliacao() {
          });
       } else {
          setValue("data_avaliacao", new Date().toISOString().split("T")[0]);
+         setValue("cod_protocolo", 1);
          setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
 
          if (formData.avaliacao?.cod_aluno == alunoRecebido?.cod_aluno) {
@@ -261,6 +261,7 @@ function CadAvaliacao() {
          "data_avaliacao",
          new Intl.DateTimeFormat("fr-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())
       );
+      setValue("cod_protocolo", 1);
       setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
    }
 
@@ -389,10 +390,6 @@ function CadAvaliacao() {
                               </FieldContent>
                            </Field>
                         </div>
-
-                        <Badge variant="destructive" className={`${protocolo ? "d-none" : ""} my-3`}>
-                           Selecione um protocolo
-                        </Badge>
                      </CardContent>
                   </Card>
 
