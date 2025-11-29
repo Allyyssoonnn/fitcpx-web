@@ -31,7 +31,7 @@ export default function BannerUI({ show, closeControlled }: BannerUIControlled) 
             onInteractOutside={(e) => e.preventDefault()}
             onEscapeKeyDown={(e) => e.preventDefault()}
          >
-            <img className="rounded-md w-full h-auto" src="/public/assets/images/app/banner.png" />
+            <img className="rounded-md w-full h-auto" src="../assets/images/app/banner.png" />
 
             <DialogFooter className="px-3 pb-3 flex items-center justify-between flex-wrap gap-3">
                <div className="flex items-center gap-1">
