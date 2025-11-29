@@ -53,11 +53,7 @@ function Dobras({
             </Select>
          </div>
 
-         {!protocolo ? (
-            <h5 className="text-muted text-center">Você precisa selecionar um protocolo para visualizar as dobras</h5>
-         ) : (
-            <h5 className="text-muted">Dobras</h5>
-         )}
+         <h5 className="text-muted">Dobras</h5>
 
          <DobrasCampos
             getValues={getValues}
