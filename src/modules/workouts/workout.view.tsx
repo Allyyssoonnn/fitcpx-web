@@ -29,19 +29,23 @@ export default function WorkoutView() {
    return (
       <div className="container-fluid">
          <BackBoxUI
-            actions={[
-               {
-                  Icon: Pen,
-                  label: "Editar",
-                  action: () => {
-                     navigate("/cadtreino", {
-                        state: {
-                           treino: workout,
-                        },
-                     });
-                  },
-               },
-            ]}
+            actions={
+               workout?.cod_empresa
+                  ? [
+                       {
+                          Icon: Pen,
+                          label: "Editar",
+                          action: () => {
+                             navigate("/cadtreino", {
+                                state: {
+                                   treino: workout,
+                                },
+                             });
+                          },
+                       },
+                    ]
+                  : []
+            }
          />
 
          <Card className="mt-3">
