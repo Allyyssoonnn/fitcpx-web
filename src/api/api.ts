@@ -10,6 +10,17 @@ const api = axios.create({
    baseURL,
 });
 
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string = null) => {
+   failedQueue.forEach((prom) => {
+      if (error) prom.reject(error);
+      else prom.resolve(token);
+   });
+   failedQueue = [];
+};
+
 // Interceptor para lidar com 401 e 403
 api.interceptors.response.use(
    (response: AxiosResponse) => response,
@@ -27,7 +38,20 @@ api.interceptors.response.use(
       }
 
       if (error.response?.status === 401 && !originalRequest._retry && !(originalRequest?.url == "/users/login")) {
+         if (isRefreshing) {
+            // Queue a requisição
+            return new Promise((resolve, reject) => {
+               failedQueue.push({ resolve, reject });
+            })
+               .then((token) => {
+                  originalRequest.headers.Authorization = token;
+                  return api(originalRequest);
+               })
+               .catch((err) => Promise.reject(err));
+         }
+
          originalRequest._retry = true;
+         isRefreshing = true;
 
          try {
             const refreshResponse = await axios.post(`${baseURL}/users/refreshToken`, {
@@ -46,10 +70,13 @@ api.interceptors.response.use(
                originalRequest.headers["Authorization"] = refreshResponse.data.token;
                return api(originalRequest);
             }
-         } catch (e) {
+         } catch (refreshError) {
+            processQueue(refreshError, null);
             destroyCookie(null, "token");
-            localStorage.removeItem("recoil-persist");
             window.location.replace("/entrar");
+            return Promise.reject(refreshError);
+         } finally {
+            isRefreshing = false;
          }
       }
 
