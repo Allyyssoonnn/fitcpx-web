@@ -152,7 +152,7 @@ function Header() {
                {!!videoHelp && (
                   <Dialog>
                      <DialogTrigger>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm">
                            <HelpCircle />
                            {pageName}
                         </Button>
