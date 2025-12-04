@@ -201,8 +201,8 @@ function AreaMagraGorda({ result }) {
             <Label>Área Magra/Gorda</Label>
          </AccordionTrigger>
 
-         <AccordionContent className="d-flex">
-            <div className="col-md-4 table-responsive">
+         <AccordionContent className="grid grid-cols-1 lg:grid-cols-3">
+            <div className="table-responsive">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <thead>
                      <tr>
@@ -223,7 +223,7 @@ function AreaMagraGorda({ result }) {
                </table>
             </div>
 
-            <div className="col-md-4 table-responsive">
+            <div className="table-responsive">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <thead>
                      <tr>
@@ -244,7 +244,7 @@ function AreaMagraGorda({ result }) {
                </table>
             </div>
 
-            <div className="col-md-4 table-responsive">
+            <div className="table-responsive">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <thead>
                      <tr>
