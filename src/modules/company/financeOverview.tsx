@@ -80,8 +80,8 @@ export default function FinanceOverview() {
             </div>
          )}
 
-         <div className="row">
-            <div className="col-md-3">
+         <div className="grid grid-cols-1 lg:grid-cols-4 sm:grid-cols-3 gap-3">
+            <div>
                <Card className="h-45">
                   <CardHeader>
                      <CardTitle>Resumo financeiro</CardTitle>
@@ -98,7 +98,7 @@ export default function FinanceOverview() {
                </Card>
             </div>
 
-            <div className="col-md-3">
+            <div>
                <Card className="hover:scale-105 transition-all h-45">
                   <CardHeader>
                      <CardTitle>Total</CardTitle>
@@ -117,7 +117,7 @@ export default function FinanceOverview() {
                </Card>
             </div>
 
-            <div className="col-md-3">
+            <div>
                <Card className="hover:scale-105 transition-all h-45">
                   <CardHeader>
                      <CardTitle>A receber</CardTitle>
@@ -137,7 +137,7 @@ export default function FinanceOverview() {
                </Card>
             </div>
 
-            <div className="col-md-3">
+            <div>
                <Card className="hover:scale-105 transition-all h-45">
                   <CardHeader>
                      <CardTitle>Entrar em contato</CardTitle>
