@@ -64,7 +64,7 @@ function AppSidebar() {
                <SidebarMenu className="px-1">
                   {items.map((item, index) => (
                      <SidebarMenuItem key={index}>
-                        <SidebarMenuButton id={item.id} asChild className="p-4">
+                        <SidebarMenuButton id={item.id} asChild className="p-6">
                            <a
                               href="#"
                               onClick={(e) => {
@@ -83,7 +83,7 @@ function AppSidebar() {
                      <Collapsible key={index} className="group/collapsible">
                         <SidebarMenuItem>
                            <CollapsibleTrigger asChild>
-                              <SidebarMenuButton id={menu.id} className="w-full justify-between p-4">
+                              <SidebarMenuButton id={menu.id} className="w-full justify-between p-6">
                                  <span className="fs-4">{menu.label}</span>
                                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                               </SidebarMenuButton>
@@ -93,7 +93,7 @@ function AppSidebar() {
                               <SidebarMenuSub>
                                  {menu.items.map((item, indexItem) => (
                                     <SidebarMenuSubItem key={indexItem}>
-                                       <SidebarMenuSubButton id={item.id} asChild className="p-4">
+                                       <SidebarMenuSubButton id={item.id} asChild className="p-6">
                                           <a
                                              href="#"
                                              onClick={(e) => {
