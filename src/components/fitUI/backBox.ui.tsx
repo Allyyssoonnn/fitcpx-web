@@ -18,7 +18,7 @@ function BackBoxUI({ actions }: BackBoxUIProps) {
 
    return (
       <Card className="mb-3">
-         <CardContent className="flex justify-between">
+         <CardContent className="flex justify-between flex-wrap">
             <Button
                variant="outline"
                onClick={(e) => {
@@ -30,7 +30,7 @@ function BackBoxUI({ actions }: BackBoxUIProps) {
                Voltar
             </Button>
 
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-3 flex-wrap flex-col lg:flex-row">
                {actions?.map((ac) => (
                   <Button variant="outline" onClick={ac.action}>
                      {ac.Icon && <ac.Icon />}
