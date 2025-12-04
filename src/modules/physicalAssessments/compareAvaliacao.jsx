@@ -759,15 +759,10 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
       <div>
          <div className="d-md-flex align-items-center justify-content-between mb-4">
             <h5 className="card-title mb-0">Evolução</h5>
-            {/* <select className="form-select w-auto fw-semibold bg-light border-0 rounded-pill mt-2 mt-md-0">
-                            <option value="1">Last 7 days</option>
-                            <option value="2">Last 3 days</option>
-                            <option value="3">Last 1 day</option>
-                        </select> */}
          </div>
 
          {/* Checkboxes em uma única linha */}
-         <div className="legend mb-3 d-flex flex-wrap gap-3">
+         <div className="legend mb-3 flex flex-wrap flex-col lg:flex-row justify-center gap-3">
             {data.map((serie) => (
                <div key={serie.name} className="form-check form-check-inline">
                   <input
