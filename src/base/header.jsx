@@ -154,7 +154,7 @@ function Header() {
                      <DialogTrigger>
                         <Button size="sm">
                            <HelpCircle />
-                           {pageName}
+                           <span className="hidden lg:flex">{pageName}</span>
                         </Button>
                      </DialogTrigger>
 
