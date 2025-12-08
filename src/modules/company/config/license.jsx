@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
-import { Box, Check, HelpCircle } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
 import { setCookie } from "nookies";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import { cancelCompanyLicense, getCompanyLicense } from "../../../api/companies";
 import { buyLicense, getLicensesAvaliable, sendCoupon } from "../../../api/licenses";
+import { DiscountSticker } from "../../../components/fitUI/DiscountSticker.ui";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
@@ -234,17 +235,23 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
       <Card className={borderClass}>
          {/* HEADER: ícone ao lado do nome (mudança mínima) */}
          <CardHeader className="text-left">
-            <div className="flex items-center gap-3">
-               <div className="bg-muted rounded-full w-10 h-10 flex items-center justify-center">
-                  <Box className="w-5 h-5 text-muted-foreground" />
+            <div className="flex items-center justify-between">
+               <div className="flex items-center gap-3">
+                  {!atual && !!licenca.discount && (
+                     <div className="w-12 h-12 flex items-center justify-center">
+                        <DiscountSticker value={licenca.discount} />
+                     </div>
+                  )}
+
+                  {/* Título + descrição ficam juntos; descrição continua abaixo */}
+                  <div className="flex-1">
+                     <CardTitle className="text-xl font-bold mb-0">
+                        {licenca?.nome_licenca ?? "Período de teste"}
+                     </CardTitle>
+                  </div>
                </div>
 
-               {/* Título + descrição ficam juntos; descrição continua abaixo */}
-               <div className="flex-1">
-                  <CardTitle className="text-xl font-bold mb-0">
-                     {licenca?.nome_licenca ?? "Período de teste"}
-                  </CardTitle>
-               </div>
+               {licenca.cod_licenca == 7 && <Badge className="h-5 text-[10px]">Mais contratado</Badge>}
             </div>
 
             {licenca?.cupom_licenca && (
@@ -286,15 +293,15 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
                {isFree && <Badge variant="outline">Plano Gratuito</Badge>}
                {atual && !isFree && <Badge variant="default">Licença Atual</Badge>}
                {isVIP && <Badge className="bg-purple-600">VIP</Badge>}
-               {licenca?.prefix_licenca && <Badge className="bg-purple-600">{licenca?.prefix_licenca}</Badge>}
+               {licenca?.prefix_licenca && <Badge variant="outline">{licenca?.prefix_licenca}</Badge>}
             </div>
          </CardHeader>
 
-         <CardContent>
-            {isFree && <p className="text-center text-sm opacity-80">Ativado quando não há plano contratado.</p>}
-
-            {atual && !isFree && <p className="text-center text-sm opacity-80">Licença atual.</p>}
-         </CardContent>
+         {atual && !isFree && (
+            <CardContent>
+               <p className="text-center text-sm opacity-80">Licença atual.</p>
+            </CardContent>
+         )}
 
          <CardFooter className="flex justify-center">
             {/* BOTÃO COMPRAR */}
