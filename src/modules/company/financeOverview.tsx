@@ -1,5 +1,5 @@
 import { getContracts } from "@/api/contracts";
-import { markPaymentReceived } from "@/api/payments";
+import { getNextPayout, markPaymentReceived } from "@/api/payments";
 import FitSelectDate from "@/components/baseComponents/FitSelectDate";
 import FitPagination from "@/components/baseComponents/TableComponent/FitPagination";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,9 @@ import {
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { stateEmpresa } from "@/states/states";
 import { formatarMoeda } from "@/utils";
@@ -23,32 +25,43 @@ import {
    getPaginationRowModel,
    useReactTable,
 } from "@tanstack/react-table";
-import { Check, Clipboard, Coins, HandCoins, MessageCircleMore, MoreHorizontal, Paperclip } from "lucide-react";
+import { BanknoteArrowDown, Check, Clipboard, Coins, HandCoins, MoreHorizontal, Paperclip } from "lucide-react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 
+interface CompanyType {
+   pix_empresa: string;
+}
+
 export default function FinanceOverview() {
    const [date, setDate] = useState();
-   const [empresa] = useRecoilState(stateEmpresa);
+   const [empresa] = useRecoilState<CompanyType>(stateEmpresa);
    const [value, setValue] = useState(0);
    const [valueRecieve, setValueRecieve] = useState(0);
 
+   const { data: nextPayout } = useQuery({
+      queryKey: ["nextPayout"],
+      queryFn: () => getNextPayout(),
+      initialData: { value: 0, date: null },
+   });
+
+   console.log(nextPayout);
+
    const { data: contratos, refetch } = useQuery({
-      queryKey: ["contratos", empresa.cod_empresa],
-      queryFn: getContracts,
+      queryKey: ["contratos"],
+      queryFn: () => getContracts(),
       initialData: [],
-      enabled: !!empresa.cod_empresa,
    });
 
    const payments = useMemo(() => {
       return (
          contratos.reduce(
-            (resp, contract) => [
+            (resp: any, contract: any) => [
                ...resp,
-               ...(contract?.pagamentos?.map((payment) => ({
+               ...(contract?.pagamentos?.map((payment: any) => ({
                   ...payment,
                   contract,
                })) ?? []),
@@ -60,8 +73,8 @@ export default function FinanceOverview() {
 
    const maxDate = useMemo(() => {
       const max = payments
-         .map((p) => new Date(p?.expiracao_aluno_contrato_pagamento))
-         .reduce((a, b) => (a > b ? a : b), new Date());
+         .map((p: any) => new Date(p?.expiracao_aluno_contrato_pagamento))
+         .reduce((a: any, b: any) => (a > b ? a : b), new Date());
 
       return max ?? new Date();
    }, [payments]);
@@ -92,7 +105,7 @@ export default function FinanceOverview() {
                         minDate={payments[0]?.data_aluno_contrato_pagamento ?? new Date()}
                         maxDate={maxDate}
                         value={date}
-                        onChange={(value) => setDate(value)}
+                        onChange={(value: any) => setDate(value)}
                      />
                   </CardContent>
                </Card>
@@ -130,7 +143,7 @@ export default function FinanceOverview() {
                      </div>
                   </CardContent>
 
-                  <CardFooter className="d-flex flex-column">
+                  <CardFooter className="d-flex flex-column items-start">
                      <CardDescription>Valor total a ser recebido</CardDescription>
                      <CardDescription className="fs-1 text-muted">* Não inclui recebidos manualmente</CardDescription>
                   </CardFooter>
@@ -140,23 +153,20 @@ export default function FinanceOverview() {
             <div>
                <Card className="hover:scale-105 transition-all h-45">
                   <CardHeader>
-                     <CardTitle>Entrar em contato</CardTitle>
+                     <CardTitle>Próximo repasse</CardTitle>
                   </CardHeader>
 
                   <CardContent>
-                     <div className="d-flex justify-center">
-                        <button
-                           className="btn d-flex btn-outline-success rounded-3 py-1"
-                           onClick={() => window.open("https://wa.me/5544991654044", "_blank")}
-                        >
-                           <MessageCircleMore size={20} className="me-2" />
-                           Suporte
-                        </button>
+                     <div className="card-body p-3 d-flex">
+                        <BanknoteArrowDown />
+                        <h5 className="card-title ms-2">{formatarMoeda(nextPayout.value)}</h5>
                      </div>
                   </CardContent>
 
                   <CardFooter>
-                     <CardDescription>Tirar dúvidas sobre pagamentos</CardDescription>
+                     <CardDescription>
+                        Transação em <strong className="text-primary">{nextPayout.date}</strong>
+                     </CardDescription>
                   </CardFooter>
                </Card>
             </div>
@@ -188,7 +198,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
    const [globalFilter, setGlobalFilter] = useState(null);
    const [columnFilters, setColumnFilters] = useState([]);
 
-   const getColumns = useMemo(() => getPaymentColumns(navigate, onRecieved), [navigate, onRecieved]);
+   const getColumns = useMemo(() => getPaymentColumns(navigate, onRecieved), [navigate, onRecieved]) as any;
 
    const table = useReactTable({
       data: payments,
@@ -200,12 +210,12 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
          columnFilters,
          globalFilter,
       },
-      getRowId: (row) => row.cod_aluno_contrato_pagamento.toString(),
+      getRowId: (row: any) => row.cod_aluno_contrato_pagamento.toString(),
       getCoreRowModel: getCoreRowModel(),
       manualPagination: false, // deixe false se os dados já estão todos carregados
       onPaginationChange: setPagination,
       getPaginationRowModel: getPaginationRowModel(),
-      globalFilterFn: (row, _columnId, filterValue) => {
+      globalFilterFn: (row: any, _columnId, filterValue) => {
          if (!filterValue) return true; // sem filtro
          const raw = row.original.expiracao_aluno_contrato_pagamento;
          if (!raw) return false;
@@ -222,7 +232,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
       let total = 0;
       let toReceive = 0;
 
-      payments.forEach((payment) => {
+      payments.forEach((payment: any) => {
          const raw = payment.expiracao_aluno_contrato_pagamento;
          if (!raw) return;
 
@@ -260,75 +270,92 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
       <Card>
          <CardHeader>
             <CardTitle>
-               Pagamentos de {String(date?.month).padStart(2, "0")}/{String(date?.year).padEnd(2, "0")}
+               Pagamentos criados em{" "}
+               <strong className="text-green-400">
+                  {String(date?.month).padStart(2, "0")}/{String(date?.year).padEnd(2, "0")}
+               </strong>
             </CardTitle>
+
+            <div className="mt-3 flex justify-between gap-2">
+               <Input
+                  placeholder="Pesquisar aluno"
+                  value={table.getColumn("client")?.getFilterValue() ?? ""}
+                  onChange={(e) => table.getColumn("client")?.setFilterValue(e.target.value)}
+                  className="max-w-sm"
+               />
+
+               <Select
+                  value={table.getColumn("status")?.getFilterValue() ?? ""}
+                  onValueChange={(value) =>
+                     table.getColumn("status")?.setFilterValue(value == "all" ? undefined : value)
+                  }
+                  className="max-w-sm"
+               >
+                  <SelectTrigger>
+                     <SelectValue placeholder="Todos os status" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                     <SelectItem value="all">Todos os status</SelectItem>
+                     <SelectItem value="Pending">Pendente</SelectItem>
+                     <SelectItem value="overdue">Vencido</SelectItem>
+                     <SelectItem value="succeeded">Disponível</SelectItem>
+                     <SelectItem value="deleted">Removida</SelectItem>
+                     <SelectItem value="refunded">Reembolsada</SelectItem>
+                     <SelectItem value="paid">Repassado</SelectItem>
+                     <SelectItem value="receivedCash">Recebido Manual</SelectItem>
+                  </SelectContent>
+               </Select>
+            </div>
          </CardHeader>
 
          <CardContent>
-            <div className="mb-3 d-flex gap-2">
-               <input
-                  placeholder="Filtrar aluno"
-                  value={table.getColumn("client")?.getFilterValue() ?? ""}
-                  onChange={(e) => table.getColumn("client")?.setFilterValue(e.target.value)}
-                  className="form-control"
-               />
-
-               <select
-                  value={table.getColumn("status")?.getFilterValue() ?? ""}
-                  onChange={(e) => table.getColumn("status")?.setFilterValue(e.target.value)}
-                  className="form-select"
-               >
-                  <option value="">Todos os status</option>
-                  <option value="Pending">Pendente</option>
-                  <option value="overdue">Vencido</option>
-                  <option value="succeeded">Disponível</option>
-                  <option value="deleted">Removida</option>
-                  <option value="refunded">Reembolsada</option>
-                  <option value="paid">Repassado</option>
-                  <option value="receivedCash">Recebido Manual</option>
-               </select>
-            </div>
-
-            <Table>
-               <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                     <TableRow id={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                           <TableHead key={header.id} colSpan={header.colSpan}>
-                              {header.isPlaceholder
-                                 ? null
-                                 : flexRender(header.column.columnDef.header, header.getContext())}
-                           </TableHead>
-                        ))}
-                     </TableRow>
-                  ))}
-               </TableHeader>
-
-               <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                     table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                           {row.getVisibleCells().map((cell) => (
-                              <TableCell key={cell.id}>
-                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                              </TableCell>
+            <div className="border rounded-md min-h-100">
+               <Table>
+                  <TableHeader>
+                     {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow id={headerGroup.id}>
+                           {headerGroup.headers.map((header) => (
+                              <TableHead key={header.id} colSpan={header.colSpan}>
+                                 {header.isPlaceholder
+                                    ? null
+                                    : flexRender(header.column.columnDef.header, header.getContext())}
+                              </TableHead>
                            ))}
                         </TableRow>
-                     ))
-                  ) : (
+                     ))}
+                  </TableHeader>
+
+                  <TableBody>
+                     {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
+                           <TableRow key={row.id}>
+                              {row.getVisibleCells().map((cell) => (
+                                 <TableCell key={cell.id}>
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                 </TableCell>
+                              ))}
+                           </TableRow>
+                        ))
+                     ) : (
+                        <TableRow>
+                           <TableCell colSpan={getColumns.length} className="h-24 text-center">
+                              Nenhum resultado
+                           </TableCell>
+                        </TableRow>
+                     )}
+                  </TableBody>
+
+                  <TableFooter>
                      <TableRow>
-                        <TableCell colSpan={getColumns.length} className="h-24 text-center">
-                           Nenhum resultado
+                        <TableCell colSpan={getColumns.length}>
+                           <FitPagination table={table} />
                         </TableCell>
                      </TableRow>
-                  )}
-               </TableBody>
-            </Table>
+                  </TableFooter>
+               </Table>
+            </div>
          </CardContent>
-
-         <CardFooter className="d-flex justify-end">
-            <FitPagination table={table} />
-         </CardFooter>
       </Card>
    );
 }
@@ -336,6 +363,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
 const getPaymentColumns = (navigate, onRecieved) => [
    {
       id: "status",
+      header: "Status",
       accessorFn: (row) => row.status_aluno_contrato_pagamento,
       filterFn: "includesString",
       cell: ({ row: { original } }) => {
@@ -423,7 +451,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
                <Tooltip>
                   <TooltipTrigger>
                      <Badge variant="outline">
-                        <i className="bi bi-check-circle-fill text-success" />
+                        <i className="bi bi-x-circle-fill text-danger" />
                         Removida
                      </Badge>
                   </TooltipTrigger>
@@ -460,7 +488,7 @@ const getPaymentColumns = (navigate, onRecieved) => [
    },
    {
       id: "payoutDate",
-      header: "Data pagamento",
+      header: "Pagamento",
       cell: ({ row: { original } }) =>
          original.jsonwebhook_aluno_contrato_pagamento &&
          JSON.parse(original.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
@@ -469,15 +497,16 @@ const getPaymentColumns = (navigate, onRecieved) => [
    },
    {
       id: "payoutDate",
-      header: "Data repasse",
+      header: "Repasse",
       cell: ({ row: { original } }) =>
          original.repasse_aluno_contrato_pagamento
-            ? moment(original.repasse_aluno_contrato_pagamento).format("DD/MM/YYYY")
+            ? // ? moment(original.repasse_aluno_contrato_pagamento).format("DD/MM/YYYY")
+              getNextDate(new Date(original.repasse_aluno_contrato_pagamento))
             : "-",
    },
    {
       id: "type",
-      header: "Forma",
+      header: "Forma de pag.",
       cell: ({ row: { original } }) => {
          const tipo = original?.forma_aluno_contrato_pagamento;
          if (tipo === "CREDIT_CARD") return "Crédito";
@@ -489,14 +518,6 @@ const getPaymentColumns = (navigate, onRecieved) => [
       id: "value",
       header: "Valor",
       cell: ({ row: { original } }) => formatarMoeda(original?.valor_aluno_contrato_pagamento),
-   },
-   {
-      id: "liquid",
-      header: "A receber",
-      cell: ({ row: { original } }) =>
-         original.status_aluno_contrato_pagamento === "recievedCash"
-            ? formatarMoeda(0)
-            : formatarMoeda(original?.liquido_aluno_contrato_pagamento),
    },
    {
       id: "options",
@@ -573,3 +594,17 @@ const getPaymentColumns = (navigate, onRecieved) => [
       ),
    },
 ];
+
+function getNextDate(date: Date) {
+   const DAYS = [10, 20, 30];
+   const now = date ?? new Date();
+   const today = now.getDate();
+
+   for (const day of DAYS) {
+      if (today < day) {
+         return new Date(now.getFullYear(), now.getMonth(), day).toLocaleDateString();
+      }
+   }
+
+   return new Date(now.getFullYear(), now.getMonth() + 1, DAYS[0]).toLocaleDateString();
+}
