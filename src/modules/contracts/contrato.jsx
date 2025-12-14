@@ -160,6 +160,7 @@ function Contrato() {
                            <TableCell>Status</TableCell>
                            <TableCell>Vencimento</TableCell>
                            <TableCell>Valor</TableCell>
+                           <TableCell>A Receber</TableCell>
                            <TableCell>Identificação</TableCell>
                            <TableCell></TableCell>
                         </TableRow>
@@ -207,6 +208,9 @@ function Contrato() {
                               </TableCell>
                               <TableCell className="text-muted">
                                  {formatarMoeda(pagamento?.valor_aluno_contrato_pagamento)}
+                              </TableCell>
+                              <TableCell className="text-muted">
+                                 {formatarMoeda(pagamento?.liquido_aluno_contrato_pagamento)}
                               </TableCell>
                               <TableCell>
                                  <span className="badge bg-warning-subtle text-dark">
