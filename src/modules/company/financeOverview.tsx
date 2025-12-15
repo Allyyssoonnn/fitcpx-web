@@ -1,6 +1,6 @@
 import { getContracts } from "@/api/contracts";
 import { getNextPayout, markPaymentReceived } from "@/api/payments";
-import FitSelectDate from "@/components/baseComponents/FitSelectDate";
+import FitSelectMonthDate, { MONTHS } from "@/components/baseComponents/FitSelectMonthDate";
 import FitPagination from "@/components/baseComponents/TableComponent/FitPagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -37,7 +38,7 @@ interface CompanyType {
 }
 
 export default function FinanceOverview() {
-   const [date, setDate] = useState();
+   const [date, setDate] = useState<Date>(new Date());
    const [empresa] = useRecoilState<CompanyType>(stateEmpresa);
    const [value, setValue] = useState(0);
    const [valueRecieve, setValueRecieve] = useState(0);
@@ -47,8 +48,6 @@ export default function FinanceOverview() {
       queryFn: () => getNextPayout(),
       initialData: { value: 0, date: null },
    });
-
-   console.log(nextPayout);
 
    const { data: contratos, refetch } = useQuery({
       queryKey: ["contratos"],
@@ -70,14 +69,6 @@ export default function FinanceOverview() {
          ) || []
       );
    }, [contratos]);
-
-   const maxDate = useMemo(() => {
-      const max = payments
-         .map((p: any) => new Date(p?.expiracao_aluno_contrato_pagamento))
-         .reduce((a: any, b: any) => (a > b ? a : b), new Date());
-
-      return max ?? new Date();
-   }, [payments]);
 
    return (
       <div className="container-fluid">
@@ -101,12 +92,8 @@ export default function FinanceOverview() {
                   </CardHeader>
 
                   <CardContent>
-                     <FitSelectDate
-                        minDate={payments[0]?.data_aluno_contrato_pagamento ?? new Date()}
-                        maxDate={maxDate}
-                        value={date}
-                        onChange={(value: any) => setDate(value)}
-                     />
+                     <Label>Selecione o mês</Label>
+                     <FitSelectMonthDate date={date} setDate={setDate} />
                   </CardContent>
                </Card>
             </div>
@@ -189,7 +176,7 @@ export default function FinanceOverview() {
    );
 }
 
-function Payments({ payments, date, refetch, onTotalsChange }) {
+function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
    const navigate = useNavigate();
    const [pagination, setPagination] = useState({
       pageIndex: 0,
@@ -252,7 +239,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
 
    useEffect(() => {
       // importante criar um novo objeto para disparar a refiltragem
-      setGlobalFilter(date ? { year: date.year, month: date.month } : null);
+      setGlobalFilter(date ? { year: date.getFullYear(), month: date.getMonth() } : null);
    }, [date]);
 
    useEffect(() => {
@@ -272,7 +259,7 @@ function Payments({ payments, date, refetch, onTotalsChange }) {
             <CardTitle>
                Pagamentos criados em{" "}
                <strong className="text-green-400">
-                  {String(date?.month).padStart(2, "0")}/{String(date?.year).padEnd(2, "0")}
+                  {MONTHS[date.getMonth()]}/{date.getFullYear()}
                </strong>
             </CardTitle>
 
