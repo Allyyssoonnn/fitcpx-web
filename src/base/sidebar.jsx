@@ -145,11 +145,6 @@ const items = [
       Icon: Dumbbell,
       path: "planilha",
    },
-   {
-      label: "Avaliações físicas",
-      Icon: Activity,
-      path: "avaliacoes",
-   },
 ];
 
 const dropdown = [
