@@ -35,7 +35,7 @@ const metrics: {
       description: "Quantidade de avaliações cadastradas",
       key: "physicalAssessments",
       Icon: ClipboardList,
-      route: "/avaliacoes",
+      route: "#",
    },
 ];
 
