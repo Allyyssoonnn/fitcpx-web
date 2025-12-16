@@ -115,31 +115,31 @@ function ShowPayments({ payments }: { payments: any[] }) {
                   <TableBody>
                      {payments.map((payment: any) => (
                         <TableRow>
-                           <TableCell>{payment.payment.cod_aluno_contrato_pagamento}</TableCell>
-                           <TableCell>{payment.payment.contract.nome_aluno_contrato}</TableCell>
-                           <TableCell>{payment.payment.contract.aluno.nome_aluno}</TableCell>
+                           <TableCell>{payment?.payment?.cod_aluno_contrato_pagamento}</TableCell>
+                           <TableCell>{payment?.payment?.contract.nome_aluno_contrato}</TableCell>
+                           <TableCell>{payment?.payment?.contract.aluno.nome_aluno}</TableCell>
                            <TableCell>
-                              {formatarData(new Date(payment.payment.expiracao_aluno_contrato_pagamento))}
+                              {formatarData(new Date(payment?.payment?.expiracao_aluno_contrato_pagamento))}
                            </TableCell>
                            <TableCell>
-                              {JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
+                              {JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
                                  ? formatarData(
-                                      JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento).paymentDate
+                                      JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento).paymentDate
                                    )
                                  : "-"}
                            </TableCell>
                            <TableCell>
-                              {JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
-                                 ? JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento).billingType
+                              {JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
+                                 ? JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento).billingType
                                  : "-"}
                            </TableCell>
-                           <TableCell>{toMoney(payment.payment.liquido_aluno_contrato_pagamento)}</TableCell>
+                           <TableCell>{toMoney(payment?.payment?.liquido_aluno_contrato_pagamento)}</TableCell>
                            <TableCell>
                               <Button
                                  className="h-7"
                                  variant="outline"
                                  size="icon"
-                                 onClick={() => window.open(payment.payment.asaas_url, "_blank")}
+                                 onClick={() => window.open(payment?.payment?.asaas_url, "_blank")}
                               >
                                  <Share />
                               </Button>
