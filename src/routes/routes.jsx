@@ -21,6 +21,7 @@ import CadContrato from "../modules/contracts/cadContrato";
 import ContratacaoPlano from "../modules/contracts/contratacaoPlano";
 import Contrato from "../modules/contracts/contrato";
 import CadExercicio from "../modules/exercises/cadExercicio";
+import Payouts from "../modules/payouts/payouts";
 import Avaliacao from "../modules/physicalAssessments/avaliacao";
 import CadAvaliacao from "../modules/physicalAssessments/cadavaliacao";
 import CompareAvaliacao from "../modules/physicalAssessments/compareAvaliacao";
@@ -46,6 +47,7 @@ const routes = [
    { path: "/modalidades", name: "Licença", element: Modalidades },
    { path: "/modcontratos", name: "Licença", element: ModContratos },
    { path: "/contratos", name: "Licença", element: Contratos },
+   { path: "/payouts", name: "Licença", element: Payouts },
 
    //Cadastros
    { path: "/cadexercicio", name: "Licença", element: CadExercicio },

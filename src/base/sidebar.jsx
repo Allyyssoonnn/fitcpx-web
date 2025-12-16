@@ -1,5 +1,6 @@
 import {
    Activity,
+   BanknoteArrowDown,
    BoxIcon,
    BoxSelect,
    Calendar,
@@ -173,6 +174,11 @@ const dropdown = [
             label: "Resumo",
             Icon: ChartBarIncreasing,
             path: "financeOverview",
+         },
+         {
+            label: "Repasses",
+            Icon: BanknoteArrowDown,
+            path: "payouts",
          },
          {
             label: "Contratos",
