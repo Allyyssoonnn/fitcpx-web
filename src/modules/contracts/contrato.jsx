@@ -7,6 +7,7 @@ import { deleteContract, downloadContract, getContract } from "../../api/contrac
 import { markPaymentReceived } from "../../api/payments";
 import { getStudent } from "../../api/student";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
+import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import {
@@ -109,14 +110,14 @@ function Contrato() {
                      <strong>
                         {(() => {
                            if (new Date(alunoContrato?.expiracao_aluno_contrato) < new Date())
-                              return <div className="badge bg-danger">Expirado</div>;
+                              return <Badge className="bg-yellow-400 text-white">Expirado</Badge>;
                            if (alunoContrato?.status_aluno_contrato == "Ativo")
-                              return <div className="badge bg-success">Ativo</div>;
+                              return <Badge className="text-white">Ativo</Badge>;
                            if (alunoContrato?.status_aluno_contrato == "Inative")
-                              return <div className="badge bg-danger">Inativo</div>;
+                              return <Badge className="bg-red-400 text-white">Inativo</Badge>;
                            if (alunoContrato?.status_aluno_contrato == "Canceled")
-                              return <div className="badge bg-danger">Cancelado</div>;
-                           return <div className="badge bg-warning text-dark">Pendente</div>;
+                              return <Badge className="bg-red-400 text-white">Cancelado</Badge>;
+                           return <Badge className="bg-yellow-400 text-white">Pendente</Badge>;
                         })()}
                      </strong>
                   </Label>
