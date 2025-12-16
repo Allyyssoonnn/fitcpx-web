@@ -2,10 +2,19 @@ import { getPayouts } from "@/api/payments";
 import FitSelectMonthDate from "@/components/baseComponents/FitSelectMonthDate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+   Dialog,
+   DialogClose,
+   DialogContent,
+   DialogFooter,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatarData, toMoney } from "@/utils/utils";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Download } from "lucide-react";
+import { Download, Eye, Share } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 
@@ -73,7 +82,91 @@ export default function Payouts() {
    );
 }
 
+function ShowPayments({ payments }: { payments: any[] }) {
+   return (
+      <Dialog>
+         <DialogTrigger disabled={!payments.length}>
+            <Button disabled={!payments.length} variant="outline" size="sm" className="h-7">
+               {payments.length}
+               <Eye />
+            </Button>
+         </DialogTrigger>
+
+         <DialogContent className="text-black sm:max-w-[70vw]">
+            <DialogHeader>
+               <DialogTitle>Recebimentos</DialogTitle>
+            </DialogHeader>
+
+            <div className="overflow-auto rounded-md border mt-3 h-[70vh] w-full">
+               <Table>
+                  <TableHeader>
+                     <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Contrato</TableHead>
+                        <TableHead>Aluno</TableHead>
+                        <TableHead>Vencimento</TableHead>
+                        <TableHead>Pagamento</TableHead>
+                        <TableHead>Forma pag.</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead>Fatura</TableHead>
+                     </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                     {payments.map((payment: any) => (
+                        <TableRow>
+                           <TableCell>{payment.payment.cod_aluno_contrato_pagamento}</TableCell>
+                           <TableCell>{payment.payment.contract.nome_aluno_contrato}</TableCell>
+                           <TableCell>{payment.payment.contract.aluno.nome_aluno}</TableCell>
+                           <TableCell>
+                              {formatarData(new Date(payment.payment.expiracao_aluno_contrato_pagamento))}
+                           </TableCell>
+                           <TableCell>
+                              {JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
+                                 ? formatarData(
+                                      JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento).paymentDate
+                                   )
+                                 : "-"}
+                           </TableCell>
+                           <TableCell>
+                              {JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
+                                 ? JSON.parse(payment.payment.jsonwebhook_aluno_contrato_pagamento).billingType
+                                 : "-"}
+                           </TableCell>
+                           <TableCell>{toMoney(payment.payment.liquido_aluno_contrato_pagamento)}</TableCell>
+                           <TableCell>
+                              <Button
+                                 className="h-7"
+                                 variant="outline"
+                                 size="icon"
+                                 onClick={() => window.open(payment.payment.asaas_url, "_blank")}
+                              >
+                                 <Share />
+                              </Button>
+                           </TableCell>
+                        </TableRow>
+                     ))}
+                  </TableBody>
+               </Table>
+            </div>
+
+            <DialogClose>
+               <DialogFooter>
+                  <Button variant="outline" size="sm" className="w-full">
+                     Fechar
+                  </Button>
+               </DialogFooter>
+            </DialogClose>
+         </DialogContent>
+      </Dialog>
+   );
+}
+
 const columns: ColumnDef<any>[] = [
+   {
+      header: "ID",
+      accessorKey: "id",
+   },
    {
       header: "Valor",
       accessorKey: "value",
@@ -87,7 +180,8 @@ const columns: ColumnDef<any>[] = [
    {
       header: "Recebimentos",
       accessorKey: "payments",
-      cell: ({ row: { original } }) => original?.payments.length,
+      // cell: ({ row: { original } }) => original?.payments.length,
+      cell: ({ row: { original } }) => <ShowPayments payments={original?.payments} />,
    },
    {
       header: "",
