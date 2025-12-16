@@ -113,39 +113,40 @@ function ShowPayments({ payments }: { payments: any[] }) {
                   </TableHeader>
 
                   <TableBody>
-                     {payments.map((payment: any) => (
-                        <TableRow>
-                           <TableCell>{payment?.payment?.cod_aluno_contrato_pagamento}</TableCell>
-                           <TableCell>{payment?.payment?.contract.nome_aluno_contrato}</TableCell>
-                           <TableCell>{payment?.payment?.contract.aluno.nome_aluno}</TableCell>
-                           <TableCell>
-                              {formatarData(new Date(payment?.payment?.expiracao_aluno_contrato_pagamento))}
-                           </TableCell>
-                           <TableCell>
-                              {JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
-                                 ? formatarData(
-                                      JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento).paymentDate
-                                   )
-                                 : "-"}
-                           </TableCell>
-                           <TableCell>
-                              {JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
-                                 ? JSON.parse(payment?.payment?.jsonwebhook_aluno_contrato_pagamento).billingType
-                                 : "-"}
-                           </TableCell>
-                           <TableCell>{toMoney(payment?.payment?.liquido_aluno_contrato_pagamento)}</TableCell>
-                           <TableCell>
-                              <Button
-                                 className="h-7"
-                                 variant="outline"
-                                 size="icon"
-                                 onClick={() => window.open(payment?.payment?.asaas_url, "_blank")}
-                              >
-                                 <Share />
-                              </Button>
-                           </TableCell>
-                        </TableRow>
-                     ))}
+                     {payments.map((payment: any) => {
+                        const paymentInfo = payment?.payment;
+                        const json = paymentInfo?.jsonwebhook_aluno_contrato_pagamento;
+
+                        return (
+                           <TableRow>
+                              <TableCell>{paymentInfo?.cod_aluno_contrato_pagamento}</TableCell>
+                              <TableCell>{paymentInfo?.contract.nome_aluno_contrato}</TableCell>
+                              <TableCell>{paymentInfo?.contract.aluno.nome_aluno}</TableCell>
+                              <TableCell>
+                                 {formatarData(new Date(paymentInfo?.expiracao_aluno_contrato_pagamento))}
+                              </TableCell>
+                              <TableCell>
+                                 {json && JSON.parse(json)?.paymentDate
+                                    ? formatarData(JSON.parse(json).paymentDate)
+                                    : "-"}
+                              </TableCell>
+                              <TableCell>
+                                 {json && JSON.parse(json)?.paymentDate ? JSON.parse(json).billingType : "-"}
+                              </TableCell>
+                              <TableCell>{toMoney(paymentInfo?.liquido_aluno_contrato_pagamento)}</TableCell>
+                              <TableCell>
+                                 <Button
+                                    className="h-7"
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => window.open(paymentInfo?.asaas_url, "_blank")}
+                                 >
+                                    <Share />
+                                 </Button>
+                              </TableCell>
+                           </TableRow>
+                        );
+                     })}
                   </TableBody>
                </Table>
             </div>
