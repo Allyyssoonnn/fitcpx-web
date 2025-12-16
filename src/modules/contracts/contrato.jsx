@@ -138,7 +138,14 @@ function Contrato() {
                   >
                      Baixar contrato (Assinado)
                   </Button>
-                  <Button onClick={cancelContract} variant="destructive">
+                  <Button
+                     disabled={
+                        alunoContrato?.status_aluno_contrato == "Canceled" ||
+                        new Date(alunoContrato?.expiracao_aluno_contrato) < new Date()
+                     }
+                     onClick={cancelContract}
+                     variant="destructive"
+                  >
                      Solicitar Cancelamento
                   </Button>
                </div>
