@@ -14,7 +14,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatarData, toMoney } from "@/utils/utils";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Download, Eye, Share } from "lucide-react";
+import { Download, Eye, LucideReceiptText, Share } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 
@@ -107,8 +107,8 @@ function ShowPayments({ payments }: { payments: any[] }) {
                         <TableHead>Vencimento</TableHead>
                         <TableHead>Pagamento</TableHead>
                         <TableHead>Forma pag.</TableHead>
-                        <TableHead>Value</TableHead>
-                        <TableHead>Fatura</TableHead>
+                        <TableHead>Valor</TableHead>
+                        <TableHead></TableHead>
                      </TableRow>
                   </TableHeader>
 
@@ -116,6 +116,7 @@ function ShowPayments({ payments }: { payments: any[] }) {
                      {payments.map((payment: any) => {
                         const paymentInfo = payment?.payment;
                         const json = paymentInfo?.jsonwebhook_aluno_contrato_pagamento;
+                        console.log(json);
 
                         return (
                            <TableRow>
@@ -134,7 +135,7 @@ function ShowPayments({ payments }: { payments: any[] }) {
                                  {json && JSON.parse(json)?.paymentDate ? JSON.parse(json).billingType : "-"}
                               </TableCell>
                               <TableCell>{toMoney(paymentInfo?.liquido_aluno_contrato_pagamento)}</TableCell>
-                              <TableCell>
+                              <TableCell className="flex gap-3">
                                  <Button
                                     className="h-7"
                                     variant="outline"
@@ -142,6 +143,15 @@ function ShowPayments({ payments }: { payments: any[] }) {
                                     onClick={() => window.open(paymentInfo?.asaas_url, "_blank")}
                                  >
                                     <Share />
+                                 </Button>
+
+                                 <Button
+                                    className="h-7"
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => window.open(JSON.parse(json)?.transactionReceiptUrl, "_blank")}
+                                 >
+                                    <LucideReceiptText />
                                  </Button>
                               </TableCell>
                            </TableRow>
