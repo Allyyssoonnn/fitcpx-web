@@ -292,8 +292,12 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                                    typeof option === "string" ? option : String(option.value);
                                                 const label = typeof option === "string" ? option : option.label;
                                                 return (
-                                                   <SelectItem id={`${field.id}-${index}`} value={value}>
-                                                      {label}
+                                                   <SelectItem
+                                                      key={`${field.fieldName}-${value}-${index}`}
+                                                      id={`${field.id}-${index}`}
+                                                      value={value}
+                                                   >
+                                                      <span>{label}</span>
                                                    </SelectItem>
                                                 );
                                              })}
