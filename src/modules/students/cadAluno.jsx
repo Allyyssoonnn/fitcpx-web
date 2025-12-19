@@ -15,7 +15,7 @@ import { limpaForm, states } from "../../utils";
 function CadAluno() {
    const location = useLocation();
    const alunoRecebido = location.state?.aluno;
-   const { formData, setAlunoForm, clearForm } = useFormStore();
+   const { formData, clearForm } = useFormStore();
    const { nSuccess } = useNotificacao();
    const form = useForm({ defaultValues: alunoRecebido });
    const {
@@ -71,12 +71,6 @@ function CadAluno() {
          });
       }
    }, [alunoRecebido, setValue]);
-
-   const watched = watch();
-   useEffect(() => {
-      if (watched?.cod_aluno) return;
-      setAlunoForm(watched);
-   }, [JSON.stringify(watched)]);
 
    async function confirma(data) {
       await createOrUpdateStudent(limpaForm(data));
