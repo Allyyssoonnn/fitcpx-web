@@ -46,7 +46,7 @@ function Avaliacao() {
    }
 
    const shareResult = async () => {
-      const resp = await getFitnessAssessmentPDF(result, empresa.imagem_empresa);
+      const resp = await getFitnessAssessmentPDF(result, empresa.imagem_empresa, empresa.nome_empresa);
       if (!resp) return;
 
       printJS({

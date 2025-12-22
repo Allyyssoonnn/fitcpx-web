@@ -86,7 +86,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                         let fieldClassName = "";
                         let fieldVisible = true;
                         if (field?.hideField && field.hideField(getValues())) {
-                           fieldClassName = `${fieldClassName} d-none`;
+                           fieldClassName = `${fieldClassName} hidden`;
                            fieldVisible = false;
                         }
                         let fieldRequerid = (field?.options?.required && fieldVisible) || false;
@@ -140,7 +140,12 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     {field.label} {fieldRequerid && "*"}
                                  </FieldLabel>
 
-                                 <CurrencyInput id={field.id} name={field.fieldName} control={control} />
+                                 <CurrencyInput
+                                    rules={{ required: fieldRequerid }}
+                                    id={field.id}
+                                    name={field.fieldName}
+                                    control={control}
+                                 />
 
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
                                     <FieldError>{field.label} obrigatório</FieldError>

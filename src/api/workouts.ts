@@ -19,3 +19,4 @@ export const getExerciseResistences = async (lang: string = "en") =>
    await get(`/workouts/getExerciseResistences?${lang ? `lang=${lang}` : ""}`);
 export const getMovementPatterns = async (lang: string = "en") =>
    await get(`/workouts/getMovementPatterns?${lang ? `lang=${lang}` : ""}`);
+export const getWorkoutTemplatePDF = async () => await get("/workouts/workoutpdf");
