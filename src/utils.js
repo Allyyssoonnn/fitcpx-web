@@ -1,4 +1,5 @@
 import { getFitnessAssessmentTemplatePDF } from "./api/physicalAssessments";
+import { getWorkoutTemplatePDF } from "./api/workouts";
 
 export const states = [
    "AC",
@@ -30,13 +31,54 @@ export const states = [
    "TO",
 ];
 
-export async function getFitnessAssessmentPDF(assessment, companyImg) {
+export async function getWorkoutPDF(workout, companyImg, companyName) {
+   if (!workout) return null;
+   var htmlTemplate = await getWorkoutTemplatePDF();
+
+   if (!htmlTemplate) return null;
+
+   const body = (workout.sessoes || [])
+      .map(
+         (session) => `
+            <section>
+               <h3>${session.nome_sessao}</h3>
+               <ul>
+               ${(session.exercicios || [])
+                  .map(
+                     (exercise) => `
+                     <li>
+                     <strong>${exercise.nome_exercicio}</strong>
+                     ${exercise.serie_sessao_exercicio} Séries |
+                     ${exercise.repeticao_sessao_exercicio} Reps |
+                     ${exercise.intervalo_sessao_exercicio}s Pausa
+                     </li>
+                  `
+                  )
+                  .join("")}
+               </ul>
+            </section>
+         `
+      )
+      .join("");
+
+   htmlTemplate = htmlTemplate
+      .replaceAll("<!-- {{company}} -->", companyName ?? "")
+      .replaceAll("{{companyImg}}", companyImg ?? "")
+      .replaceAll("<!-- {{trainer}} -->", workout.usuario.nome_usuario ?? "")
+      .replaceAll("<!-- {{client}} -->", workout?.aluno?.nome_aluno ?? "Treino Base - (Sem aluno)")
+      .replaceAll("<!-- {{workoutBody}} -->", body.toString() ?? "");
+
+   return htmlTemplate;
+}
+
+export async function getFitnessAssessmentPDF(assessment, companyImg, companyName) {
    if (!assessment) return null;
    var htmlTemplate = await getFitnessAssessmentTemplatePDF();
 
    if (!htmlTemplate) return null;
 
    htmlTemplate = htmlTemplate
+      .replaceAll("<!-- {{company}} -->", companyName ?? "")
       .replaceAll("{{companyImg}}", companyImg ?? "")
       .replaceAll("<!-- {{trainer}} -->", assessment.usuario.nome_usuario ?? "")
       .replaceAll("<!-- {{client}} -->", assessment.aluno.nome_aluno ?? "")

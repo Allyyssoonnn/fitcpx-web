@@ -8,14 +8,19 @@ import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/componen
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, Pen } from "lucide-react";
+import { Info, Pen, Share } from "lucide-react";
+import printJS from "print-js";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { stateEmpresa } from "../../states/states";
+import { getWorkoutPDF } from "../../utils";
 import { arrayBackgrounds } from "../../utils/utils";
 
 export default function WorkoutView() {
    const navigate = useNavigate();
    const { state } = useLocation();
+   const [empresa] = useRecoilState(stateEmpresa);
 
    if (!state.workoutId) navigate(-1);
 
@@ -25,6 +30,17 @@ export default function WorkoutView() {
       enabled: !!state.workoutId,
       initialData: {},
    });
+
+   async function sharePDF() {
+      const resp = await getWorkoutPDF(workout, empresa.imagem_empresa, empresa.nome_empresa);
+      if (!resp) return;
+
+      printJS({
+         printable: resp,
+         type: "raw-html",
+         documentTitle: "Avaliação Física",
+      });
+   }
 
    return (
       <div className="container-fluid">
@@ -43,8 +59,19 @@ export default function WorkoutView() {
                              });
                           },
                        },
+                       {
+                          Icon: Share,
+                          label: "Exportar",
+                          action: sharePDF,
+                       },
                     ]
-                  : []
+                  : [
+                       {
+                          Icon: Share,
+                          label: "Exportar",
+                          action: sharePDF,
+                       },
+                    ]
             }
          />
 
