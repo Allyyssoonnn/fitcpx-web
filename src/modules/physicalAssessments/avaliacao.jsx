@@ -617,7 +617,7 @@ function Dobras({ avaliacao }) {
    return (
       <AccordionItem value="item-4">
          <AccordionTrigger>
-            <Label>Dobras Cutâneas (cm)</Label>
+            <Label>Dobras Cutâneas (mm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>
