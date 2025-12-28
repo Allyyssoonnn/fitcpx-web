@@ -71,7 +71,7 @@ function License() {
 
    async function onBuy(licenca) {
       nConfirm(
-         `${formatarMoeda(licenca?.valor_licenca)}`,
+         `${formatarMoeda(licenca?.valor_licenca)}${licenca?.prefix_licenca ? `/${licenca?.prefix_licenca}` : ""}`,
          `Confirma contratação do plano ${licenca?.nome_licenca}?`,
          async () => {
             nLoading();

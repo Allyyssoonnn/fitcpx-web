@@ -18,7 +18,7 @@ import { processaPlano } from "../../utils/utilsPlan";
 function CadPlano() {
    const location = useLocation();
    const planoRecebido = location.state?.plano;
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
    const form = useForm({ defaultValues: planoRecebido });
    const {
@@ -86,7 +86,7 @@ function CadPlano() {
          { ...data, valor_plano: valorTotal, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa },
          selectModalidades
       );
-      nSuccess();
+      tSuccess();
       navigate("/planos");
    }
 

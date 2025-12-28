@@ -20,7 +20,7 @@ import { formatarMoeda } from "../../utils";
 function CadModalidade() {
    const location = useLocation();
    const modalidadeRecebido = location.state?.modalidade;
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const [empresa] = useRecoilState(stateEmpresa);
    const [usuario] = useRecoilState(stateUsuario);
    const form = useForm({ defaultValues: modalidadeRecebido });
@@ -56,7 +56,7 @@ function CadModalidade() {
          cod_usuario: usuario.cod_usuario,
          cod_empresa: usuario.cod_empresa,
       });
-      nSuccess();
+      tSuccess();
       navigate("/modalidades");
    }
 

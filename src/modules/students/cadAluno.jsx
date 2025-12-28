@@ -16,7 +16,7 @@ function CadAluno() {
    const location = useLocation();
    const alunoRecebido = location.state?.aluno;
    const { formData, clearForm } = useFormStore();
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const form = useForm({ defaultValues: alunoRecebido });
    const {
       handleSubmit,
@@ -75,7 +75,7 @@ function CadAluno() {
    async function confirma(data) {
       await createOrUpdateStudent(limpaForm(data));
       clearForm();
-      nSuccess();
+      tSuccess();
       navigate("/aluno", { state: { cod_aluno: data.cod_aluno } });
    }
 

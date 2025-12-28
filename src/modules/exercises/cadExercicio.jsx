@@ -23,7 +23,7 @@ import { stateUsuario, useNotificacao } from "../../states/states";
 function CadExercicio() {
    const location = useLocation();
    const exercicioRecebido = location.state?.exercicio;
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const form = useForm({ defaultValues: exercicioRecebido });
    const {
       handleSubmit,
@@ -101,7 +101,7 @@ function CadExercicio() {
             base_exercicio: "N",
          });
       }
-      nSuccess();
+      tSuccess();
       navigate("/exercicios");
    }
 
