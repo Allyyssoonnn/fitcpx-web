@@ -6,6 +6,7 @@ export const workoutSteps: any[] = [
          description: "Gerencie seus planos de treino",
       },
       isInput: false,
+      needOpenSidebar: true,
    },
    {
       element: "#workouts",
@@ -22,6 +23,7 @@ export const workoutSteps: any[] = [
          description: "Clique para criar um novo treino",
       },
       isInput: false,
+      needOpenSidebar: false,
    },
    {
       element: "#name",

@@ -6,6 +6,7 @@ import { stateEmpresa, stateUsuario } from "../../states/states";
 import Account from "./config/account";
 import Business from "./config/business";
 import License from "./config/license";
+import Notifications from "./config/notifications";
 import Payments from "./config/payments";
 
 function Configuracao() {
@@ -23,6 +24,7 @@ function Configuracao() {
          2: "business",
          3: "security",
          4: "bills",
+         5: "notifications",
       };
 
       if (tab && map[tab]) setTabAtiva(map[tab]);
@@ -33,6 +35,7 @@ function Configuracao() {
       { id: "business", label: "Dados profissionais", icon: "bi-building" },
       { id: "security", label: "Licença", icon: "bi-unlock" },
       { id: "bills", label: "Pagamentos", icon: "bi-cash" },
+      { id: "notifications", label: "Notificações", icon: "bi-bell" },
    ];
 
    return (
@@ -77,6 +80,11 @@ function Configuracao() {
                   {tabAtiva === "bills" && (
                      <div className="tab-pane fade show active">
                         <Payments cod_empresa={empresa.cod_empresa} />
+                     </div>
+                  )}
+                  {tabAtiva === "notifications" && (
+                     <div className="tab-pane fade show active">
+                        <Notifications />
                      </div>
                   )}
                </div>

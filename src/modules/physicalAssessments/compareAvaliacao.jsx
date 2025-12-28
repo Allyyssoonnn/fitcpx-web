@@ -316,7 +316,7 @@ function AreaMagraGorda({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <div className="card-body">
+            <div>
                <row className="row g-3 justify-content-around">
                   <table id="basic-datatables" className="table table-sm table-striped table-hover">
                      <tbody>
@@ -459,7 +459,7 @@ function SimetriaMembro({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <div className="card-body">
+            <div className="overflow-auto">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <thead>
                      <tr>
@@ -620,7 +620,7 @@ function Diametro({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <div className="card-body accordion-bogy">
+            <div>
                <div className="row">
                   <div className="table-responsive">
                      <table id="basic-datatables" className="table table-sm table-striped table-hover">
@@ -756,43 +756,34 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
    };
 
    return (
-      <div className="col-lg-12">
-         <div className="card">
-            <div className="card-body">
-               <div className="d-md-flex align-items-center justify-content-between mb-4">
-                  <h5 className="card-title mb-0">Evolução</h5>
-                  {/* <select className="form-select w-auto fw-semibold bg-light border-0 rounded-pill mt-2 mt-md-0">
-                            <option value="1">Last 7 days</option>
-                            <option value="2">Last 3 days</option>
-                            <option value="3">Last 1 day</option>
-                        </select> */}
-               </div>
+      <div>
+         <div className="d-md-flex align-items-center justify-content-between mb-4">
+            <h5 className="card-title mb-0">Evolução</h5>
+         </div>
 
-               {/* Checkboxes em uma única linha */}
-               <div className="legend mb-3 d-flex flex-wrap gap-3">
-                  {data.map((serie) => (
-                     <div key={serie.name} className="form-check form-check-inline">
-                        <input
-                           className="form-check-input"
-                           type="checkbox"
-                           id={serie.name}
-                           value={serie.name}
-                           checked={seriesVisible[serie.name]}
-                           onChange={toggleSeries}
-                           style={{ backgroundColor: serie.color, borderColor: serie.color }} // Cor fixa do checkbox
-                        />
-                        <label className="form-check-label" htmlFor={serie.name}>
-                           {serie.name}
-                        </label>
-                     </div>
-                  ))}
+         {/* Checkboxes em uma única linha */}
+         <div className="legend mb-3 flex flex-wrap flex-col lg:flex-row justify-center gap-3">
+            {data.map((serie) => (
+               <div key={serie.name} className="form-check form-check-inline">
+                  <input
+                     className="form-check-input"
+                     type="checkbox"
+                     id={serie.name}
+                     value={serie.name}
+                     checked={seriesVisible[serie.name]}
+                     onChange={toggleSeries}
+                     style={{ backgroundColor: serie.color, borderColor: serie.color }} // Cor fixa do checkbox
+                  />
+                  <label className="form-check-label" htmlFor={serie.name}>
+                     {serie.name}
+                  </label>
                </div>
+            ))}
+         </div>
 
-               {/* Gráfico */}
-               <div style={{ height: "300px" }}>
-                  <ReactApexChart options={options} series={series} type="line" height={300} />
-               </div>
-            </div>
+         {/* Gráfico */}
+         <div style={{ height: "300px" }}>
+            <ReactApexChart options={options} series={series} type="line" height={300} />
          </div>
       </div>
    );

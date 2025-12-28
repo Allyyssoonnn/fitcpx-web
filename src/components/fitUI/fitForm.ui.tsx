@@ -86,7 +86,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                         let fieldClassName = "";
                         let fieldVisible = true;
                         if (field?.hideField && field.hideField(getValues())) {
-                           fieldClassName = `${fieldClassName} d-none`;
+                           fieldClassName = `${fieldClassName} hidden`;
                            fieldVisible = false;
                         }
                         let fieldRequerid = (field?.options?.required && fieldVisible) || false;
@@ -140,7 +140,12 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     {field.label} {fieldRequerid && "*"}
                                  </FieldLabel>
 
-                                 <CurrencyInput id={field.id} name={field.fieldName} control={control} />
+                                 <CurrencyInput
+                                    rules={{ required: fieldRequerid }}
+                                    id={field.id}
+                                    name={field.fieldName}
+                                    control={control}
+                                 />
 
                                  {getNestedError(errors, field.fieldName)?.type === "required" && (
                                     <FieldError>{field.label} obrigatório</FieldError>
@@ -292,8 +297,12 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                                    typeof option === "string" ? option : String(option.value);
                                                 const label = typeof option === "string" ? option : option.label;
                                                 return (
-                                                   <SelectItem id={`${field.id}-${index}`} value={value}>
-                                                      {label}
+                                                   <SelectItem
+                                                      key={`${field.fieldName}-${value}-${index}`}
+                                                      id={`${field.id}-${index}`}
+                                                      value={value}
+                                                   >
+                                                      <span>{label}</span>
                                                    </SelectItem>
                                                 );
                                              })}

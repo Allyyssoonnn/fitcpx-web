@@ -52,7 +52,6 @@ function CadAvaliacao() {
       reset,
       formState: { errors, isSubmitting },
    } = form;
-   console.log(getValues());
 
    const navigate = useNavigate();
    const [usuario] = useRecoilState(stateUsuario);

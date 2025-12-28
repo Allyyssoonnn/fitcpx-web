@@ -145,7 +145,7 @@ function TreinoInteligente({
             {sessoes.map((sessao, index) => (
                <Accordion key={index} type="multiple">
                   <AccordionItem value={`session-${index}`}>
-                     <AccordionHeader className="border-1 p-3 grid grid-cols-2 rounded-md">
+                     <AccordionHeader className="border-1 p-3 grid grid-cols-1 lg:grid-cols-2 gap-3 rounded-md">
                         <div className="flex gap-3 w-full justify-start">
                            <div className="flex flex-col justify-center items-center">
                               <Button

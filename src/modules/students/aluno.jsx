@@ -265,7 +265,7 @@ function Aluno() {
                {/* Tabs Section */}
                <div className="p-4">
                   <Tabs defaultValue="informacoesPessoais">
-                     <TabsList>
+                     <TabsList className="flex-wrap w-[100%] rounded my-3 h-auto">
                         <TabsTrigger value="informacoesPessoais">Informações Pessoais</TabsTrigger>
                         <TabsTrigger value="avaliacaoFisica">Avaliações Físicas</TabsTrigger>
                         <TabsTrigger value="treino">Treinos</TabsTrigger>

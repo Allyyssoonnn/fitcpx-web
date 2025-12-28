@@ -198,10 +198,16 @@ function Calendario() {
       setShowModal(true);
    };
 
+   const initialView = window.innerWidth < 768 ? "timeGridDay" : "dayGridMonth";
+   const rightHeader =
+      window.innerWidth < 768 ? "addEventButton" : "addEventButton dayGridMonth,timeGridWeek,timeGridDay";
+
    return (
-      <div style={{ height: "900px" }}>
+      <div>
          <FullCalendar
-            height={900}
+            initialView={initialView}
+            height={"auto"}
+            handleWindowResize={true}
             eventContent={(arg) => {
                const tipo = arg.event.extendedProps.tipo_evento;
 
@@ -260,7 +266,22 @@ function Calendario() {
                         {isMonthView && arg.timeText && <strong style={{ marginRight: "4px" }}>{arg.timeText}h</strong>}
 
                         {/* Título */}
-                        <span style={{ marginLeft: "2px" }}>{arg.event.title}</span>
+                        {/* // Título - Adicionar truncamento para celular (Visualização Mensal) */}
+                        <span
+                           style={{
+                              marginLeft: "2px",
+                              flexGrow: 1, // Permite que o span cresça para ocupar o espaço
+                              // >>> Estilos de Truncamento:
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              // Ajustar a largura máxima para dar espaço para a bolinha e a hora
+                              // Exemplo: calc(100% - 30px)
+                              maxWidth: "100%",
+                           }}
+                        >
+                           {arg.event.title}
+                        </span>
                      </div>
                   </div>
                );
@@ -293,7 +314,6 @@ function Calendario() {
             locale={ptBrLocale}
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
             selectable={true}
             events={agenda}
             customButtons={{
@@ -307,9 +327,9 @@ function Calendario() {
             select={handleDateClick}
             eventClick={handleEventClick}
             headerToolbar={{
-               left: "prev,next addEventButton",
+               left: "prev,next",
                center: "title",
-               right: "dayGridMonth,timeGridWeek,timeGridDay",
+               right: rightHeader,
             }}
          />
 

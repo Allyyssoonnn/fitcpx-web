@@ -144,12 +144,32 @@ function CadContrato() {
                      value={contratohtml}
                      onBlur={(newContent) => setContratohtml(newContent)} // Atualiza quando perde o foco
                      config={{
+                        events: {
+                           keydown: (e) => {
+                              if (e.key === "<" || e.key === ">") {
+                                 e.preventDefault();
+                                 return false;
+                              }
+                           },
+
+                           beforeInsertText: (text) => {
+                              if (!text) return text;
+                              return text.replace(/[<>]/g, "");
+                           },
+
+                           beforePaste: (e) => {
+                              e.preventDefault();
+                              const text = e.clipboardData?.getData("text/plain") ?? "";
+                              return text.replace(/[<>]/g, "");
+                           },
+                        },
+
                         readonly: false,
                         // height: 900,
                         // buttons: "bold,italic,underline,|,ul,ol,|,font,fontsize,brush,|,link,align,undo,redo",
                         // buttons: "source,|,bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall,cut,copy,paste,|",
                         buttons:
-                           "source, bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall",
+                           "bold,italic,underline,strikethrough,|,ul,ol,indent,outdent,|,left,center,right,justify,|,font,fontsize,brush,paragraph,|,table,|,hr,undo,redo,selectall",
                         extraButtons: [
                            {
                               name: "Tempo de contrato",

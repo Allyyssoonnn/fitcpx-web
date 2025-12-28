@@ -1,3 +1,4 @@
+import { sleep } from "@/utils/utils";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { configSteps } from "./steps/config.tour";
@@ -140,13 +141,18 @@ function configureDriver() {
    });
 }
 
-export async function startTour(tourName: string) {
+export async function startTour(tourName: string, verifySidebar?: (needOpen: boolean) => void) {
    localStorage.setItem("currentTourNameUpdate", tourName);
 
    if (tourName === "config") currentSteps = configSteps;
    if (tourName === "workout") {
       const mod = await import("./steps/workout.tour");
       currentSteps = mod.workoutSteps;
+   }
+
+   if (currentSteps[0].needOpenSidebar !== undefined && verifySidebar) {
+      verifySidebar(currentSteps[0].needOpenSidebar);
+      await sleep(500);
    }
 
    currentStepIndex = 0;
@@ -157,7 +163,7 @@ export async function startTour(tourName: string) {
 
    tourRunning = true;
    window.addEventListener("scroll", onScrollRefresh, true);
-   attachGlobalListener();
+   attachGlobalListener(verifySidebar);
 
    driverInstance.drive();
 }
@@ -167,7 +173,7 @@ function getCurrentStepElement(): string | HTMLElement | undefined {
 }
 
 // LISTENER GLOBAL DE CLIQUE
-function onGlobalClick(e: MouseEvent) {
+async function onGlobalClick(e: MouseEvent, verifySidebar?: (needOpen: boolean) => void) {
    if (!tourRunning) return;
 
    const step = currentSteps[currentStepIndex];
@@ -287,6 +293,11 @@ function onGlobalClick(e: MouseEvent) {
       const nextStep = currentSteps[currentStepIndex + 1];
       const nextElement = nextStep?.element;
 
+      if (nextStep?.needOpenSidebar !== undefined && verifySidebar) {
+         verifySidebar(nextStep.needOpenSidebar);
+         await sleep(500);
+      }
+
       if (typeof nextElement === "string") {
          waitForElement(nextElement).then(() => {
             driverInstance.moveNext?.();
@@ -299,8 +310,8 @@ function onGlobalClick(e: MouseEvent) {
    }
 }
 
-export function attachGlobalListener() {
-   document.addEventListener("click", onGlobalClick, true);
+export function attachGlobalListener(verifySidebar?: (needOpen: boolean) => void) {
+   document.addEventListener("click", (e) => onGlobalClick(e, verifySidebar), true);
 }
 
 export function detachGlobalListener() {

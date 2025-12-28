@@ -13,3 +13,6 @@ export const getToursInfo = async () => await get("/companies/getToursInfo");
 export const sendFeedback = async (type: string, message: string) =>
    await post("/companies/sendFeedback", { type, message });
 export const getNotifications = async () => await get("/companies/getNotifications");
+export const saveNotificationsConfig = async (notifications: string) =>
+   await post("/companies/saveNotificationsConfig", { notifications });
+export const getNotificationsConfig = async () => await get("/companies/getNotificationsConfig");

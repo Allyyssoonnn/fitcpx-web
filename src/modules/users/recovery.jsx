@@ -17,7 +17,6 @@ function Recovery() {
    const navigate = useNavigate();
 
    async function recoveryPassword(data) {
-      console.log(data);
       const resp = await recoveryAccount(data.email);
 
       if (resp) {

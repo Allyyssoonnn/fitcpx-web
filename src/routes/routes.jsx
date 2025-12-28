@@ -2,7 +2,6 @@
 import Contratos from "../modules/contracts/contratos";
 import ModContratos from "../modules/contracts/modContratos";
 import Exercicios from "../modules/exercises/exercicios";
-import Avaliacoes from "../modules/physicalAssessments/avaliacoes";
 import Planos from "../modules/plans/planos";
 import Modalidades from "../modules/services/modalidades";
 import Alunos from "../modules/students/alunos";
@@ -22,6 +21,7 @@ import CadContrato from "../modules/contracts/cadContrato";
 import ContratacaoPlano from "../modules/contracts/contratacaoPlano";
 import Contrato from "../modules/contracts/contrato";
 import CadExercicio from "../modules/exercises/cadExercicio";
+import Payouts from "../modules/payouts/payouts";
 import Avaliacao from "../modules/physicalAssessments/avaliacao";
 import CadAvaliacao from "../modules/physicalAssessments/cadavaliacao";
 import CompareAvaliacao from "../modules/physicalAssessments/compareAvaliacao";
@@ -43,11 +43,11 @@ const routes = [
    { path: "/alunos", name: "Alunos", element: Alunos },
    { path: "/exercicios", name: "Licença", element: Exercicios },
    { path: "/treinos", name: "Licença", element: Treinos },
-   { path: "/avaliacoes", name: "Licença", element: Avaliacoes },
    { path: "/planos", name: "Licença", element: Planos },
    { path: "/modalidades", name: "Licença", element: Modalidades },
    { path: "/modcontratos", name: "Licença", element: ModContratos },
    { path: "/contratos", name: "Licença", element: Contratos },
+   { path: "/payouts", name: "Licença", element: Payouts },
 
    //Cadastros
    { path: "/cadexercicio", name: "Licença", element: CadExercicio },

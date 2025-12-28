@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
+import { useSidebar } from "@/components/ui/sidebar";
 import { useQuery } from "react-query";
 
 type TourProps = {
@@ -16,11 +17,21 @@ type TourProps = {
 };
 
 export default function TourDash() {
+   const { toggleSidebar, openMobile, setOpen, setOpenMobile, isMobile } = useSidebar();
+
    const { data: tours } = useQuery<TourProps[]>({
       queryKey: ["tours"],
       queryFn: getToursInfo,
       initialData: [],
    });
+
+   function verifySidebar(needOpen: boolean) {
+      if (isMobile) {
+         setOpenMobile(needOpen);
+      } else {
+         // setOpen(needOpen);
+      }
+   }
 
    return (
       <Card className="py-0">
@@ -63,7 +74,7 @@ export default function TourDash() {
                                        .querySelectorAll('[data-state="open"]')
                                        .forEach((el) => el.dispatchEvent(new Event("click", { bubbles: true })));
 
-                                    startTour(tour.tourName);
+                                    startTour(tour.tourName, verifySidebar);
                                  }}
                               >
                                  {tour.complete ? "Repetir tour" : "Iniciar tour"}

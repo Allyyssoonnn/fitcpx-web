@@ -1,19 +1,9 @@
-import {
-   AlarmClockIcon,
-   AlarmClockOff,
-   ArrowRight,
-   BadgeDollarSign,
-   DoorClosed,
-   HelpCircle,
-   Moon,
-   Sun,
-} from "lucide-react";
+import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed, HelpCircle, Moon, Sun } from "lucide-react";
 import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import BannerUI from "../components/fitUI/banner.ui";
 import Notificacoes from "../components/notificacoes";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
@@ -152,9 +142,9 @@ function Header() {
                {!!videoHelp && (
                   <Dialog>
                      <DialogTrigger>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm">
                            <HelpCircle />
-                           {pageName}
+                           <span className="hidden lg:flex">{pageName}</span>
                         </Button>
                      </DialogTrigger>
 
@@ -195,12 +185,12 @@ function Header() {
                      </Button>
                   </li>
 
-                  <Button className="bg-black ms-3" onClick={openSmooth}>
+                  {/* <Button className="bg-black ms-3" onClick={openSmooth}>
                      <BadgeDollarSign />
                      <span className="d-none d-md-flex">Black Friday</span>
                      <span className="d-flex d-md-none">Black</span>
-                  </Button>
-                  <BannerUI show={openBanner} closeControlled={() => setOpenBanner(false)} />
+                  </Button> */}
+                  {/* <BannerUI show={openBanner} closeControlled={() => setOpenBanner(false)} /> */}
 
                   {["Trial Active", "Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
                      <Tooltip>

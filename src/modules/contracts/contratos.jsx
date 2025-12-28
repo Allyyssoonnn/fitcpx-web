@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getContracts } from "../../api/contracts";
 import { FitTable } from "../../components/baseComponents/FitTable";
+import { Badge } from "../../components/ui/badge";
 import { stateEmpresa } from "../../states/states";
 
 function Contratos() {
@@ -40,7 +41,21 @@ function Contratos() {
                      type: "date",
                      className: "fw-bold text-black",
                   },
-                  { name: "status_aluno_contrato", header: "Status", className: "fw-bold text-black" },
+                  {
+                     name: "status_aluno_contrato",
+                     header: "Status",
+                     className: "fw-bold text-black",
+                     getCell: (row) => {
+                        if (new Date(row?.expiracao_aluno_contrato) < new Date())
+                           return <Badge className="bg-yellow-400 text-white">Expirado</Badge>;
+                        if (row?.status_aluno_contrato == "Ativo") return <Badge className="text-white">Ativo</Badge>;
+                        if (row?.status_aluno_contrato == "Inative")
+                           return <Badge className="bg-red-400 text-white">Inativo</Badge>;
+                        if (row?.status_aluno_contrato == "Canceled")
+                           return <Badge className="bg-red-400 text-white">Cancelado</Badge>;
+                        return <Badge className="bg-yellow-400 text-white">Pendente</Badge>;
+                     },
+                  },
                ]}
             />
          </div>

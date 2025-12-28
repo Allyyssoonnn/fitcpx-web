@@ -7,6 +7,7 @@ import { deleteContract, downloadContract, getContract } from "../../api/contrac
 import { markPaymentReceived } from "../../api/payments";
 import { getStudent } from "../../api/student";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
+import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import {
@@ -109,14 +110,14 @@ function Contrato() {
                      <strong>
                         {(() => {
                            if (new Date(alunoContrato?.expiracao_aluno_contrato) < new Date())
-                              return <div className="badge bg-danger">Expirado</div>;
+                              return <Badge className="bg-yellow-400 text-white">Expirado</Badge>;
                            if (alunoContrato?.status_aluno_contrato == "Ativo")
-                              return <div className="badge bg-success">Ativo</div>;
+                              return <Badge className="text-white">Ativo</Badge>;
                            if (alunoContrato?.status_aluno_contrato == "Inative")
-                              return <div className="badge bg-danger">Inativo</div>;
+                              return <Badge className="bg-red-400 text-white">Inativo</Badge>;
                            if (alunoContrato?.status_aluno_contrato == "Canceled")
-                              return <div className="badge bg-danger">Cancelado</div>;
-                           return <div className="badge bg-warning text-dark">Pendente</div>;
+                              return <Badge className="bg-red-400 text-white">Cancelado</Badge>;
+                           return <Badge className="bg-yellow-400 text-white">Pendente</Badge>;
                         })()}
                      </strong>
                   </Label>
@@ -137,7 +138,14 @@ function Contrato() {
                   >
                      Baixar contrato (Assinado)
                   </Button>
-                  <Button onClick={cancelContract} variant="destructive">
+                  <Button
+                     disabled={
+                        alunoContrato?.status_aluno_contrato == "Canceled" ||
+                        new Date(alunoContrato?.expiracao_aluno_contrato) < new Date()
+                     }
+                     onClick={cancelContract}
+                     variant="destructive"
+                  >
                      Solicitar Cancelamento
                   </Button>
                </div>
@@ -160,6 +168,7 @@ function Contrato() {
                            <TableCell>Status</TableCell>
                            <TableCell>Vencimento</TableCell>
                            <TableCell>Valor</TableCell>
+                           <TableCell>A Receber</TableCell>
                            <TableCell>Identificação</TableCell>
                            <TableCell></TableCell>
                         </TableRow>
@@ -207,6 +216,9 @@ function Contrato() {
                               </TableCell>
                               <TableCell className="text-muted">
                                  {formatarMoeda(pagamento?.valor_aluno_contrato_pagamento)}
+                              </TableCell>
+                              <TableCell className="text-muted">
+                                 {formatarMoeda(pagamento?.liquido_aluno_contrato_pagamento)}
                               </TableCell>
                               <TableCell>
                                  <span className="badge bg-warning-subtle text-dark">

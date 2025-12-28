@@ -1,6 +1,7 @@
 import React, { KeyboardEvent, useEffect, useState } from "react";
 import { Control, Controller, FieldValues } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
+import { FieldDescription } from "../ui/field";
 import { Input } from "../ui/input";
 
 type CurrencyInputProps<T extends FieldValues = any> = {
@@ -73,7 +74,7 @@ function CurrencyInput<T extends FieldValues>({
                      onKeyDown={(e) => handleKeyDown(e, field.value)}
                      customInput={Input}
                   />
-                  {fieldState.error && <div className="invalid-feedback">{fieldState.error.message}</div>}
+                  {fieldState.error && <FieldDescription>{fieldState.error.message}</FieldDescription>}
                </>
             )}
          />

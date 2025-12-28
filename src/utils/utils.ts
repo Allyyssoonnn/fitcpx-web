@@ -49,3 +49,13 @@ export const arrayBorders = [
    "border-slate-400",
    "border-emerald-400",
 ];
+
+export function sleep(ms: number) {
+   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export const toMoney = (value: number) => {
+   return typeof value == "number"
+      ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)
+      : "-";
+};

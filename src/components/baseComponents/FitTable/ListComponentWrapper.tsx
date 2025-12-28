@@ -7,7 +7,7 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatarData, formatarMoeda, getNestedError } from "@/utils";
 import {
    ColumnFiltersState,
@@ -211,9 +211,17 @@ export default function ListComponentWrapper({
                      </TableRow>
                   )}
                </TableBody>
-            </Table>
 
-            {!hideFooter && <FitPagination table={table} />}
+               {!hideFooter && (
+                  <TableFooter>
+                     <TableRow>
+                        <TableCell colSpan={columns?.length}>
+                           <FitPagination table={table} />
+                        </TableCell>
+                     </TableRow>
+                  </TableFooter>
+               )}
+            </Table>
          </CardContent>
       </Card>
    );
