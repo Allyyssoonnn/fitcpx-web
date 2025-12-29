@@ -535,7 +535,7 @@ const numberString = {
    Dez: 10,
 };
 
-const protocolosPattern = {
+export const protocolosPattern = {
    Geral: [
       {
          cod_protocolo: 1,
@@ -568,5 +568,33 @@ const protocolosPattern = {
       // },
    ],
 };
+
+export const protocolosPatternRaw = [
+   {
+      cod_protocolo: 1,
+      nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
+      categoria_protocolo: "Geral",
+   },
+   {
+      cod_protocolo: 2,
+      nome_protocolo: "18 a 55 anos - Jackson, Pollock e Ward - (1980)",
+      categoria_protocolo: "Feminino",
+   },
+   {
+      cod_protocolo: 3,
+      nome_protocolo: "50 a 75 anos - Rech, Santos e Silva - (2006)",
+      categoria_protocolo: "Feminino",
+   },
+   {
+      cod_protocolo: 4,
+      nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
+      categoria_protocolo: "Masculino",
+   },
+   // {
+   //    cod_protocolo: 5,
+   //    nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+   //    categoria_protocolo: "Masculino",
+   // },
+];
 
 export default CadAvaliacao;
