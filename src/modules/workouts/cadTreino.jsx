@@ -21,7 +21,7 @@ function CadTreino() {
    const treinoRecebido = location.state?.treino;
    const alunoRecebido = location.state?.aluno;
    const { formData, setTreinoForm, clearForm } = useFormStore();
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const form = useForm({ defaultValues: { ...treinoRecebido, sexo_treino: alunoRecebido?.sexo_aluno || "M" } });
    const {
       handleSubmit,
@@ -155,7 +155,7 @@ function CadTreino() {
 
       reset();
       clearForm();
-      nSuccess();
+      tSuccess();
       navigate(-1);
    }
 

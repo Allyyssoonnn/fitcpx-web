@@ -10,7 +10,7 @@ import { useNotificacao } from "../../../states/states";
 import { dataURLToBlob, states } from "../../../utils";
 
 function Account({ usuario, setusuario }) {
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const form = useForm({ defaultValues: usuario });
    const {
       watch,
@@ -104,7 +104,7 @@ function Account({ usuario, setusuario }) {
    async function HandleConfirm(data) {
       const usuario = await createOrUpdateUser(data);
       setusuario(usuario);
-      nSuccess("Alteração confirmada");
+      tSuccess("Alteração confirmada");
    }
 
    return (

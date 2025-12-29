@@ -1,6 +1,7 @@
 import { atom, useRecoilState } from "recoil";
 import { recoilPersist } from "recoil-persist";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
+import { Alert } from "../lib/alert";
 const { persistAtom } = recoilPersist();
 
 export const stateUsuario = atom({
@@ -27,11 +28,11 @@ export const stateApp = atom({
 });
 
 export const useNotificacao = () => {
-   const nSuccess = (title, message) => Swal.fire(title || "Sucesso!", message || "", "success");
-   const nError = (title, message) => Swal.fire(title || "Erro!", message || "", "error");
+   const nSuccess = (title, message) => Alert.fire(title || "Sucesso!", message || "", "success");
+   const nError = (title, message) => Alert.fire(title || "Erro!", message || "", "error");
 
    const nConfirm = (title, message, func, onError) => {
-      Swal.fire({
+      Alert.fire({
          title: title ?? "Tem certeza?",
          text: message ?? "",
          icon: "warning",
@@ -51,19 +52,21 @@ export const useNotificacao = () => {
    };
 
    const nLoading = (title, message) => {
-      Swal.fire({
+      Alert.fire({
          title: title ?? "Carregando...",
          text: message ?? "Aguarde estamos processando.",
          allowOutsideClick: false,
          didOpen: () => {
-            Swal.showLoading();
+            Alert.showLoading();
          },
       });
    };
 
-   const endLoading = () => Swal.close();
+   const endLoading = () => Alert.close();
 
-   return { nSuccess, nError, nConfirm, nLoading, endLoading };
+   const tSuccess = (title, message) => toast.success(title || "Sucesso!", message || "", "success");
+
+   return { nSuccess, nError, nConfirm, nLoading, endLoading, tSuccess };
 };
 
 export const useStateApp = () => {

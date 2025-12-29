@@ -12,7 +12,7 @@ import { stateUsuario, useNotificacao } from "../../states/states";
 import { states } from "../../utils";
 
 function CadUsuario() {
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
    const navigate = useNavigate();
    const location = useLocation();
@@ -66,7 +66,7 @@ function CadUsuario() {
 
    async function confirma(data) {
       await createOrUpdateUser({ ...data, cod_empresa: usuario.cod_empresa });
-      nSuccess();
+      tSuccess();
       navigate("/users");
    }
 

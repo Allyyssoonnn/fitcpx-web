@@ -526,7 +526,6 @@ function Perimetro({ avaliacao }) {
                         <li>
                            <strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || "-"}
                         </li>
-                        {/* <li><strong>Punho:</strong> {avaliacao.punho || '-'}</li> */}
                         <li>
                            <strong>Cintura:</strong> {avaliacao.cintura || "-"}
                         </li>
@@ -617,7 +616,7 @@ function Dobras({ avaliacao }) {
    return (
       <AccordionItem value="item-4">
          <AccordionTrigger>
-            <Label>Dobras Cutâneas (cm)</Label>
+            <Label>Dobras Cutâneas (mm)</Label>
          </AccordionTrigger>
 
          <AccordionContent>

@@ -25,7 +25,7 @@ function CadContrato() {
    const location = useLocation();
    const contratoRecebido = location.state?.contrato;
    const editor = useRef(null);
-   const { nSuccess, nConfirm } = useNotificacao();
+   const { tSuccess, nConfirm } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
    const form = useForm({ defaultValues: contratoRecebido });
    const {
@@ -47,7 +47,7 @@ function CadContrato() {
 
    async function confirma(data) {
       await createOrUpdateContractTemplate({ ...data, cod_empresa: usuario.cod_empresa, contrato: contratohtml });
-      nSuccess();
+      tSuccess();
       navigate("/modcontratos");
    }
 

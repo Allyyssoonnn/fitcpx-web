@@ -20,7 +20,7 @@ import { formatarMoeda } from "../../utils";
 function CadModalidade() {
    const location = useLocation();
    const modalidadeRecebido = location.state?.modalidade;
-   const { nSuccess } = useNotificacao();
+   const { tSuccess } = useNotificacao();
    const [empresa] = useRecoilState(stateEmpresa);
    const [usuario] = useRecoilState(stateUsuario);
    const form = useForm({ defaultValues: modalidadeRecebido });
@@ -56,7 +56,7 @@ function CadModalidade() {
          cod_usuario: usuario.cod_usuario,
          cod_empresa: usuario.cod_empresa,
       });
-      nSuccess();
+      tSuccess();
       navigate("/modalidades");
    }
 
@@ -379,7 +379,14 @@ function ModalVariacao({ show, setShow, newVariacao }) {
 }
 
 function ModalSubVariacao({ show, setShow, newDescont }) {
-   const { register, handleSubmit, control, reset } = useForm();
+   const form = useForm();
+   const {
+      register,
+      handleSubmit,
+      control,
+      reset,
+      formState: { errors },
+   } = form;
 
    function confirmar(data) {
       newDescont({
@@ -400,26 +407,41 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
             </div>
 
             <div className="card-body">
-               <div>
-                  <label className="form-label">Nome</label>
-                  <input
-                     {...register("nome_modalidade_variacao_valor", { required: "Nome obrigatório!" })}
-                     className="form-control"
+               <FormProvider {...form}>
+                  <FitFormUI
+                     errors={errors}
+                     fields={[
+                        {
+                           cols: 1,
+                           fields: [
+                              {
+                                 label: "Nome",
+                                 fieldName: "nome_modalidade_variacao_valor",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 label: "Duração",
+                                 fieldName: "quantidade_modalidade_variacao_valor",
+                                 type: "number",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                              {
+                                 label: "Valor",
+                                 fieldName: "valor_modalidade_variacao_valor",
+                                 type: "currency",
+                                 options: {
+                                    required: true,
+                                 },
+                              },
+                           ],
+                        },
+                     ]}
                   />
-               </div>
-
-               <div className="mt-3">
-                  <label className="form-label">Duração do plano</label>
-                  <input
-                     {...register("quantidade_modalidade_variacao_valor", { required: "Duração obrigatório!" })}
-                     className="form-control"
-                  />
-               </div>
-
-               <div className="mt-3">
-                  <label className="form-label">Valor</label>
-                  <FitInputCurrency name="valor_modalidade_variacao_valor" control={control} />
-               </div>
+               </FormProvider>
             </div>
 
             <div className="card-footer d-flex justify-content-between">
@@ -441,7 +463,6 @@ function ModalComissao({ show, setShow, newComissao }) {
    const {
       register,
       handleSubmit,
-      control,
       reset,
       formState: { errors },
    } = useForm();
