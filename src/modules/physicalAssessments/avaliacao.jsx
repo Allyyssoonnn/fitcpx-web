@@ -526,7 +526,6 @@ function Perimetro({ avaliacao }) {
                         <li>
                            <strong>Tórax Expirado:</strong> {avaliacao.torax_expirado || "-"}
                         </li>
-                        {/* <li><strong>Punho:</strong> {avaliacao.punho || '-'}</li> */}
                         <li>
                            <strong>Cintura:</strong> {avaliacao.cintura || "-"}
                         </li>

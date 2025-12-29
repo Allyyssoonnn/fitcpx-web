@@ -184,6 +184,7 @@ function CompareAvaliacao() {
 
                <Accordion type="single" collapsible className="mx-3">
                   <AreaMagraGorda avaliacoes={[physical1, physical2, physical3]} />
+                  <Perimetria avaliacoes={[physical1, physical2, physical3]} />
                   <SimetriaMembro avaliacoes={[physical1, physical2, physical3]} />
                   <Dobras avaliacoes={[physical1, physical2, physical3]} />
                   <Diametro avaliacoes={[physical1, physical2, physical3]} />
@@ -260,6 +261,80 @@ function Imagens({ avaliacoes }) {
                   </div>
                ))}
             </div>
+         </AccordionContent>
+      </AccordionItem>
+   );
+}
+
+function Perimetria({ avaliacoes }) {
+   const fields = [
+      { label: "Pescoço", value: "pescoco" },
+      { label: "Ombro", value: "ombro" },
+      { label: "Tórax Inspirado", value: "torax_inspirado" },
+      { label: "Tórax Expirado", value: "torax_expirado" },
+      { label: "Cintura", value: "cintura" },
+      { label: "Abdômen", value: "abdomen" },
+      { label: "Quadril", value: "quadril" },
+      { label: "Quadril", value: "quadril" },
+      { label: "Braço Relaxado Direito:", value: "braco_relaxado_direito" },
+      { label: "Braço Contraído Direito:", value: "braco_contraido_direito" },
+      { label: "Antebraço Direito:", value: "antebraco_direito" },
+      { label: "Coxa Direita", value: "coxa_direita" },
+      { label: "Panturrilha Direita", value: "panturrilha_direita" },
+      { label: "Braço Relaxado Esquerdo:", value: "braco_relaxado_esquerdo" },
+      { label: "Braço Contraído Esquerdo:", value: "braco_contraido_esquerdo" },
+      { label: "Antebraço Esquerdo:", value: "antebraco_esquerdo" },
+      { label: "Coxa Esquerda", value: "coxa_esquerda" },
+      { label: "Panturrilha Esquerda", value: "panturrilha_esquerda" },
+   ];
+
+   return (
+      <AccordionItem value="item-6">
+         <AccordionTrigger>
+            <Label>Perimetria (cm)</Label>
+         </AccordionTrigger>
+
+         <AccordionContent>
+            <row className="row g-3 justify-content-around">
+               <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                  <tbody>
+                     <tr>
+                        <th></th>
+                        <th>
+                           {avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : "Selecione"}
+                        </th>
+                        <th></th>
+                        <th>
+                           {avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : "Selecione"}
+                        </th>
+                        <th></th>
+                        <th>
+                           {avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : "Selecione"}
+                        </th>
+                     </tr>
+                     {fields.map(({ label, value }) => {
+                        const value1 = avaliacoes[0]?.[value] || 0;
+                        const value2 = avaliacoes[1]?.[value] || 0;
+                        const value3 = avaliacoes[2]?.[value] || 0;
+
+                        return (
+                           <tr key={value}>
+                              <th>{label}</th>
+                              <td>{value1 || "-"}</td>
+                              <th className={`${value2 - value1 > 0 ? "text-success" : "text-danger"}`}>
+                                 {(value2 - value1).toFixed(2)}
+                              </th>
+                              <td>{value2 || "-"}</td>
+                              <th className={`${value3 - value2 > 0 ? "text-success" : "text-danger"}`}>
+                                 {(value3 - value2).toFixed(2)}
+                              </th>
+                              <td>{value3 || "-"}</td>
+                           </tr>
+                        );
+                     })}
+                  </tbody>
+               </table>
+            </row>
          </AccordionContent>
       </AccordionItem>
    );
