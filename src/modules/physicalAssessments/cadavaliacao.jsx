@@ -430,7 +430,7 @@ function CadAvaliacao() {
                            onValueChange={(tab) => setActiveTab(tab)}
                            className="mb-3"
                         >
-                           <TabsList>
+                           <TabsList className="flex-wrap w-[100%] rounded my-3 h-auto">
                               <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
                               <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
                               <TabsTrigger value="dobras">Dobras cutâneas</TabsTrigger>
