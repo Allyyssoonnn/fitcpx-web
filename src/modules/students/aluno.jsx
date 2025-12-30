@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
+import { protocolosPatternRaw } from "../physicalAssessments/cadavaliacao";
 import { AddTreino } from "./addWorkout.ui";
 
 function Aluno() {
@@ -387,6 +388,16 @@ function Aluno() {
                                        name: "usuario.nome_usuario",
                                        header: "Reponsável",
                                        className: "fw-bold text-black",
+                                    },
+                                    {
+                                       name: "cod_protocolo",
+                                       header: "Protocolo",
+                                       className: "fw-bold text-black",
+                                       getValue: (row) => {
+                                          const protocolo = protocolosPatternRaw[row?.cod_protocolo - 1];
+                                          if (!protocolo) return "-";
+                                          return <div className="text-muted">{protocolo?.nome_protocolo}</div>;
+                                       },
                                     },
                                     {
                                        name: "altura",
