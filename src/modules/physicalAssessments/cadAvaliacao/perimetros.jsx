@@ -202,6 +202,7 @@ const perimetros = [
    { name: "cintura", label: "Cintura (cm)", icon: "bi bi-body" },
    { name: "abdomen", label: "Abdômen (cm)", icon: "bi bi-body" },
    { name: "quadril", label: "Quadril (cm)", icon: "bi bi-body" },
+   { name: "crista_iliaca", label: "Crista Ilíaca (cm)", icon: "bi bi-body" },
 ];
 
 const perimetrosDireito = [
