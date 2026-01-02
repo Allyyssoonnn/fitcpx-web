@@ -492,6 +492,7 @@ function CadAvaliacao() {
                                  tipoAvaliacao={tipoAvaliacao}
                                  watch={watch}
                                  errors={errors}
+                                 cod_protocolo={protocolo}
                               />
                            </TabsContent>
 
@@ -561,11 +562,11 @@ export const protocolosPattern = {
          nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
          categoria_protocolo: "Masculino",
       },
-      // {
-      //    cod_protocolo: 5,
-      //    nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
-      //    categoria_protocolo: "Masculino",
-      // },
+      {
+         cod_protocolo: 5,
+         nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+         categoria_protocolo: "Masculino",
+      },
    ],
 };
 
@@ -590,11 +591,11 @@ export const protocolosPatternRaw = [
       nome_protocolo: "18 a 61 anos - Jackson e Pollock - (1978)",
       categoria_protocolo: "Masculino",
    },
-   // {
-   //    cod_protocolo: 5,
-   //    nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
-   //    categoria_protocolo: "Masculino",
-   // },
+   {
+      cod_protocolo: 5,
+      nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
+      categoria_protocolo: "Masculino",
+   },
 ];
 
 export default CadAvaliacao;

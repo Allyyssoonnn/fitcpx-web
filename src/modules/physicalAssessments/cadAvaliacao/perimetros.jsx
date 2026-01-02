@@ -15,6 +15,7 @@ function Perimetros({
    getValues,
    watch,
    errors,
+   cod_protocolo,
 }) {
    return (
       <div className="row g-3">
@@ -55,19 +56,24 @@ function Perimetros({
 
          <div className="row g-3">
             {perimetros.map((field, index) => {
-               if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
+               if (
+                  !perimetrosRequired.includes(field.name) &&
+                  ocultarCampos &&
+                  !protocolosCampos[cod_protocolo].includes(field.name)
+               )
+                  return;
                if (tipoAvaliacao === "simples" && ocultarCampos) return;
+
+               const required =
+                  (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
+                  protocolosCampos[cod_protocolo].includes(field.name);
 
                return (
                   <Field key={index} className="col-md-4">
                      <FieldLabel className="d-flex align-items-center">
-                        <label
-                           className={`${
-                              perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "fw-bold" : ""
-                           }`}
-                        >
+                        <label className={`${required ? "fw-bold" : ""}`}>
                            {field.label}
-                           {perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "*" : ""}
+                           {required ? "*" : ""}
                         </label>
                      </FieldLabel>
 
@@ -81,7 +87,7 @@ function Perimetros({
                            startSpeechRecognition={startSpeechRecognition}
                            type={metodoPerimetro == "normal" ? "default" : "media"}
                            setValue={setValue}
-                           required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
+                           required={required}
                         />
 
                         {errors && errors?.[field.name] && (
@@ -99,19 +105,24 @@ function Perimetros({
 
          <div className="row g-3">
             {perimetrosDireito.map((field, index) => {
-               if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
+               if (
+                  !perimetrosRequired.includes(field.name) &&
+                  ocultarCampos &&
+                  !protocolosCampos[cod_protocolo].includes(field.name)
+               )
+                  return;
                if (tipoAvaliacao === "simples" && ocultarCampos) return;
+
+               const required =
+                  (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
+                  protocolosCampos[cod_protocolo].includes(field.name);
 
                return (
                   <Field key={index} className="col-md-4">
                      <FieldLabel className="d-flex align-items-center">
-                        <label
-                           className={`${
-                              perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "fw-bold" : ""
-                           }`}
-                        >
+                        <label className={`${required ? "fw-bold" : ""}`}>
                            {field.label}
-                           {perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "*" : ""}
+                           {required ? "*" : ""}
                         </label>
                      </FieldLabel>
 
@@ -125,7 +136,7 @@ function Perimetros({
                            startSpeechRecognition={startSpeechRecognition}
                            type={metodoPerimetro == "normal" ? "default" : "media"}
                            setValue={setValue}
-                           required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
+                           required={required}
                         />
 
                         {errors && errors?.[field.name] && (
@@ -143,19 +154,24 @@ function Perimetros({
 
          <div className="row g-3">
             {perimetrosEsquerdo.map((field, index) => {
-               if (!perimetrosRequired.includes(field.name) && ocultarCampos) return;
+               if (
+                  !perimetrosRequired.includes(field.name) &&
+                  ocultarCampos &&
+                  !protocolosCampos[cod_protocolo].includes(field.name)
+               )
+                  return;
                if (tipoAvaliacao === "simples" && ocultarCampos) return;
+
+               const required =
+                  (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
+                  protocolosCampos[cod_protocolo].includes(field.name);
 
                return (
                   <Field className="col-md-4" key={index}>
                      <FieldLabel className="d-flex align-items-center">
-                        <label
-                           className={`${
-                              perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "fw-bold" : ""
-                           }`}
-                        >
+                        <label className={`${required ? "fw-bold" : ""}`}>
                            {field.label}
-                           {perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo" ? "*" : ""}
+                           {required ? "*" : ""}
                         </label>
                      </FieldLabel>
 
@@ -169,7 +185,7 @@ function Perimetros({
                            startSpeechRecognition={startSpeechRecognition}
                            type={metodoPerimetro == "normal" ? "default" : "media"}
                            setValue={setValue}
-                           required={perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo"}
+                           required={required}
                         />
 
                         {errors && errors?.[field.name] && (
@@ -186,13 +202,15 @@ function Perimetros({
    );
 }
 
-const perimetrosRequired = [
-   "braco_relaxado_direito",
-   "coxa_direita",
-   "panturrilha_direita",
-   // "antebraco_direito",
-   // "abdomen",
-];
+const perimetrosRequired = ["braco_relaxado_direito", "coxa_direita", "panturrilha_direita"];
+
+export const protocolosCampos = {
+   1: [],
+   2: [],
+   3: [],
+   4: [],
+   5: ["abdomen", "quadril", "crista_iliaca"],
+};
 
 const perimetros = [
    { name: "pescoco", label: "Pescoço (cm)", icon: "bi bi-body" },
