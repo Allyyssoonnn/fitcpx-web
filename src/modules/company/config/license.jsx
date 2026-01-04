@@ -188,19 +188,35 @@ function License() {
             <Card>
                <CardHeader>
                   <CardTitle>
-                     Plano atual:{" "}
-                     <span className="text-primary">{licencaAtual.nome_licenca ?? "Período de teste"}</span>
+                     Plano atual: <span className="text-primary">{licencaAtual.nome_licenca}</span>
+                     {!licencaAtual.nome_licenca && licencaAtual?.status && licencaAtual.status === "Canceled" && (
+                        <Badge variant="destructive">Licença cancelada</Badge>
+                     )}
+                     {!licencaAtual.nome_licenca && licencaAtual?.status && licencaAtual.status === "Expired" && (
+                        <Badge variant="destructive">Licença expirada</Badge>
+                     )}
+                     {!licencaAtual.nome_licenca && licencaAtual?.status && licencaAtual.status === "Trial Expired" && (
+                        <Badge variant="destructive">Período de teste expirado</Badge>
+                     )}
+                     {!licencaAtual.nome_licenca &&
+                        licencaAtual?.status &&
+                        licencaAtual.status === "Trial Active" &&
+                        licencaAtual?.trialDaysLeft >= 0 && (
+                           <Badge>Restam {licencaAtual.trialDaysLeft} dia(s) do Período de teste</Badge>
+                        )}
                   </CardTitle>
                   <CardDescription>Pagamento e verificação de licença.</CardDescription>
                </CardHeader>
 
                <CardContent>
-                  <CardLicenca
-                     licenca={licencaAtual}
-                     onCancel={onCancel}
-                     refetch={refetch}
-                     isVIP={licencaAtual?.cod_licenca == 5}
-                  />
+                  {!licencaAtual?.status && (
+                     <CardLicenca
+                        licenca={licencaAtual}
+                        onCancel={onCancel}
+                        refetch={refetch}
+                        isVIP={licencaAtual?.cod_licenca == 5}
+                     />
+                  )}
                </CardContent>
             </Card>
 

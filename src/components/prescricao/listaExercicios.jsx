@@ -3,6 +3,7 @@ import {
    ArrowUp,
    EllipsisVerticalIcon,
    MessageSquareMore,
+   MessageSquareText,
    PlusCircle,
    RefreshCcw,
    Trash,
@@ -346,7 +347,13 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                        id={`optionsExercise-${index}-session-${indexSessao}`}
                                        variant="outline"
                                        size="icon"
+                                       className="relative inline-flex"
                                     >
+                                       {exercicio.observacao_sessao_exercicio && (
+                                          <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center">
+                                             <MessageSquareText className="!h-3 !w-3" strokeWidth={1.5} />
+                                          </Badge>
+                                       )}
                                        <EllipsisVerticalIcon />
                                     </Button>
                                  </DropdownMenuTrigger>

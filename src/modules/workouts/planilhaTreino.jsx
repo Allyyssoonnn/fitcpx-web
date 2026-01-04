@@ -450,6 +450,7 @@ function PlanilhaTreino() {
                                                          }
                                                       />
                                                       <Edit
+                                                         fallbackResponseNull={true}
                                                          name="Observação"
                                                          className="col-5"
                                                          value={set.observacao_sessao_exercicio}
@@ -610,7 +611,7 @@ function EditExercicio({ value, onUpdate, exercicios }) {
    );
 }
 
-function Edit({ value, onUpdate, className = "", name = "" }) {
+function Edit({ value, onUpdate, className = "", name = "", fallbackResponseNull = false }) {
    const [isEditing, setIsEditing] = useState(false);
    const [inputValue, setInputValue] = useState(value);
 
@@ -620,8 +621,12 @@ function Edit({ value, onUpdate, className = "", name = "" }) {
 
    const handleBlur = () => {
       setIsEditing(false);
-      if (inputValue.trim() && inputValue !== value) {
-         onUpdate(inputValue.trim());
+      if (inputValue !== value) {
+         if (!inputValue.trim()) {
+            onUpdate(fallbackResponseNull ? null : 0);
+         } else {
+            onUpdate(inputValue.trim());
+         }
       }
    };
 

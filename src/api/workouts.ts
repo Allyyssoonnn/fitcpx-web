@@ -1,7 +1,7 @@
 import { deleteAPI, get, post } from "./api";
 
 export const getWorkouts = async (deleted: boolean, studentId?: string) =>
-   await get(`/workouts?deleted=${deleted}${studentId ? `&studentId=${studentId}` : ""}`);
+   await get(`/workouts?onlyActives=false&deleted=${deleted}${studentId ? `&studentId=${studentId}` : ""}`);
 export const getWorkout = async (workoutId: string) => await get(`/workouts/${workoutId}`);
 export const deleteWorkout = async (id: number) => await deleteAPI(`/workouts/${id}`);
 export const createOrUpdateWorkout = async (treino: any, sessoes: any) => await post("/workouts", { treino, sessoes });

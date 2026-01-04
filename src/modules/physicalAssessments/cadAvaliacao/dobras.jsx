@@ -157,7 +157,7 @@ export const protocolosCampos = {
    2: ["subescapular", "triciptal", "supra_iliaca", "coxa", "peitoral", "axilar_media", "abdominal"],
    3: ["supra_iliaca", "peitoral", "coxa"],
    4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
-   5: [], // *** NÃO IMPLEMENTADO ***
+   5: [],
 };
 
 export default Dobras;
