@@ -3,12 +3,15 @@ import FitModalViewVideo from "@/components/baseComponents/FitModalVideoView";
 import BackBoxUI from "@/components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, Pen, Share } from "lucide-react";
+import { Info, MessageSquareMore, Pen, Share } from "lucide-react";
 import printJS from "print-js";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -153,6 +156,7 @@ export default function WorkoutView() {
                                           weight={exercise?.carga_sessao_exercicio}
                                           interval={exercise?.intervalo_sessao_exercicio}
                                           observation={exercise?.observacao_sessao_exercicio ?? "-"}
+                                          studentObservation={exercise?.observacao_sessao_exercicio_aluno}
                                           url={exercise?.exercicio?.url_exercicio}
                                        />
 
@@ -200,6 +204,7 @@ interface CardExerciseType {
    interval: number;
    weight: number;
    observation: string;
+   studentObservation: string;
    classNameBadge?: string;
 }
 
@@ -214,6 +219,7 @@ function CardExercise({
    repetitions,
    interval,
    observation,
+   studentObservation,
    weight,
    classNameBadge,
 }: CardExerciseType) {
@@ -260,12 +266,37 @@ function CardExercise({
                   Intervalo: <strong>{interval}</strong>
                </Label>
             </div>
-            <Label>
+            {/* <Label>
                Observação: <strong>{observation ?? "-"}</strong>
-            </Label>
+            </Label> */}
          </ItemContent>
 
          <ItemActions>
+            {(observation || studentObservation) && (
+               <Dialog>
+                  <DialogTrigger>
+                     <Button size="icon">
+                        <MessageSquareMore />
+                     </Button>
+                  </DialogTrigger>
+
+                  <DialogContent>
+                     <label className="text-sm font-medium">Observação</label>
+                     <Textarea placeholder="Digite uma observação..." value={observation} disabled />
+                     {studentObservation && (
+                        <>
+                           <label className="text-sm font-medium">Observação do aluno</label>
+                           <Textarea value={studentObservation} disabled />
+                        </>
+                     )}
+                     <DialogFooter>
+                        <DialogClose>
+                           <Button type="button">Fechar</Button>
+                        </DialogClose>
+                     </DialogFooter>
+                  </DialogContent>
+               </Dialog>
+            )}
             <FitModalViewVideo url={url} name={name} />
          </ItemActions>
       </Item>

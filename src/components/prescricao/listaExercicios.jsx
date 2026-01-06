@@ -389,6 +389,12 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                     value={exercicio.observacao_sessao_exercicio}
                                     onChange={(e) => updateField(index, "observacao_sessao_exercicio", e.target.value)}
                                  />
+                                 {exercicio.observacao_sessao_exercicio_aluno && (
+                                    <>
+                                       <label className="text-sm font-medium">Observação do aluno</label>
+                                       <Textarea value={exercicio.observacao_sessao_exercicio_aluno} disabled />
+                                    </>
+                                 )}
                                  <DialogFooter>
                                     <DialogClose>
                                        <Button type="button">Fechar</Button>
