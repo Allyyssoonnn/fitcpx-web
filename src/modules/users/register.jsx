@@ -50,7 +50,7 @@ function Register() {
                <a href="#" className="flex items-center gap-2 font-medium">
                   <div className="bg-secondary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                      <GalleryVerticalEnd className="size-4" />
-                     <img src="../assets/images/logos/natal.png" />
+                     <img src="../assets/images/logos/logo.png" />
                   </div>
                   FitCpx
                </a>

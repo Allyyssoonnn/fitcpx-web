@@ -52,7 +52,7 @@ function AppSidebar() {
          <SidebarHeader className="shadow-sm">
             <div className="d-flex align-items-center w-100 justify-content-center py-1">
                <div className="position-relative">
-                  <img src="../assets/images/logos/natal2.png" alt="Logo" width="45" className="rounded-circle" />
+                  <img src="../assets/images/logos/logo.png" alt="Logo" width="45" className="rounded-circle" />
                </div>
                <h3 className="ms-3 mb-0 fs-6">FitCpx</h3>
             </div>
