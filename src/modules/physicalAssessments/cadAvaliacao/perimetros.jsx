@@ -210,6 +210,7 @@ export const protocolosCampos = {
    3: [],
    4: [],
    5: ["abdomen", "quadril", "crista_iliaca"],
+   6: ["abdomen", "braco_relaxado_direito", "panturrilha_direita"],
 };
 
 const perimetros = [

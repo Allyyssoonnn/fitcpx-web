@@ -388,6 +388,7 @@ function Aluno() {
                                        name: "usuario.nome_usuario",
                                        header: "Reponsável",
                                        className: "fw-bold text-black",
+                                       getValue: (row) => <div>{row?.usuario?.nome_usuario ?? "-"}</div>,
                                     },
                                     {
                                        name: "cod_protocolo",

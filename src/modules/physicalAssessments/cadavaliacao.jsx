@@ -543,6 +543,11 @@ export const protocolosPattern = {
          nome_protocolo: "7 a 17 anos - Dezenberg, Weststrate, Seidell - (1991)",
          categoria_protocolo: "Geral",
       },
+      {
+         cod_protocolo: 6,
+         nome_protocolo: "Jovens - Kach e McArdle (1973)",
+         categoria_protocolo: "Geral",
+      },
    ],
    Feminino: [
       {
@@ -595,6 +600,11 @@ export const protocolosPatternRaw = [
       cod_protocolo: 5,
       nome_protocolo: "60 a 81 anos - Tran e Weltman - (1988)",
       categoria_protocolo: "Masculino",
+   },
+   {
+      cod_protocolo: 6,
+      nome_protocolo: "Jovens - Kach e McArdle (1973)",
+      categoria_protocolo: "Geral",
    },
 ];
 
