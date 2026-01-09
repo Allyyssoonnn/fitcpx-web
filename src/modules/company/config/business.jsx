@@ -154,7 +154,7 @@ function Business({ empresa, setempresa, usuario }) {
 
                <CardContent className="flex justify-center">
                   <img
-                     src="/assets/images/logos/natal.png"
+                     src="/assets/images/logos/logo.png"
                      alt="Foto da Empresa"
                      className="img-fluid"
                      loading="lazy"

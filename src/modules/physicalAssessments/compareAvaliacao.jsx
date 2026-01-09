@@ -142,15 +142,24 @@ function CompareAvaliacao() {
                            <tbody>
                               {[
                                  { label: "Peso (kg)", value: "peso" },
-                                 { label: "Músculo (%)", value: "result.compositionPercentage.massa_muscular" },
-                                 { label: "Músculo (kg)", value: "result.compositionWeight.massa_muscular" },
+                                 {
+                                    label: "Músculo (%)",
+                                    value: "result.compositionPercentage.massa_muscular",
+                                    type: "completo",
+                                 },
+                                 {
+                                    label: "Músculo (kg)",
+                                    value: "result.compositionWeight.massa_muscular",
+                                    type: "completo",
+                                 },
                                  { label: "Gordura (%)", value: "result.compositionPercentage.gordura" },
                                  { label: "Gordura (kg)", value: "result.compositionWeight.gordura" },
                                  { label: "Massa Magra (%)", value: "result.compositionPercentage.massa_magra" },
                                  { label: "Massa Magra (kg)", value: "result.compositionWeight.massa_magra" },
-                              ].map(({ label, key, value }) => {
+                              ].map(({ label, key, value, type }) => {
                                  const getValue = (data) => {
                                     if (!value) return "Não informado";
+                                    if (type == "completo" && data.tipo_avaliacao !== "completo") return 0;
                                     const raw = value.split(".").reduce((acc, key) => acc?.[key], data);
                                     return raw;
                                  };
@@ -164,15 +173,15 @@ function CompareAvaliacao() {
                                        <td>
                                           <strong>{label}</strong>
                                        </td>
-                                       <td>{val1 || "Não informado"}</td>
+                                       <td>{val1 || "-"}</td>
                                        <th className={`${val2 - val1 > 0 ? "text-success" : "text-danger"}`}>
                                           {val2 ? (val2 - val1).toFixed(2) : "-"}
                                        </th>
-                                       <td>{val2 || "Não informado"}</td>
+                                       <td>{val2 || "-"}</td>
                                        <th className={`${val3 - val2 > 0 ? "text-success" : "text-danger"}`}>
                                           {val3 ? (val3 - val2).toFixed(2) : "-"}
                                        </th>
-                                       <td>{val3 || "Não informado"}</td>
+                                       <td>{val3 || "-"}</td>
                                     </tr>
                                  );
                               })}
@@ -183,6 +192,7 @@ function CompareAvaliacao() {
                </div>
 
                <Accordion type="single" collapsible className="mx-3">
+                  <Biompedancia avaliacoes={[physical1, physical2, physical3]} />
                   <AreaMagraGorda avaliacoes={[physical1, physical2, physical3]} />
                   <Perimetria avaliacoes={[physical1, physical2, physical3]} />
                   <SimetriaMembro avaliacoes={[physical1, physical2, physical3]} />
@@ -261,6 +271,66 @@ function Imagens({ avaliacoes }) {
                   </div>
                ))}
             </div>
+         </AccordionContent>
+      </AccordionItem>
+   );
+}
+
+function Biompedancia({ avaliacoes }) {
+   const fields = [
+      { label: "% Gordura", value: "bioimpedancia_gordura" },
+      { label: "% Muscular", value: "bioimpedancia_muscular" },
+      { label: "Idade Corporal", value: "bioimpedancia_idade" },
+      { label: "Gordura Visceral", value: "gordura_viceral" },
+   ];
+
+   return (
+      <AccordionItem value="item-8">
+         <AccordionTrigger>
+            <Label>Bioimpedância</Label>
+         </AccordionTrigger>
+
+         <AccordionContent>
+            <row className="row g-3 justify-content-around">
+               <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                  <tbody>
+                     <tr>
+                        <th></th>
+                        <th>
+                           {avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : "Selecione"}
+                        </th>
+                        <th></th>
+                        <th>
+                           {avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : "Selecione"}
+                        </th>
+                        <th></th>
+                        <th>
+                           {avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : "Selecione"}
+                        </th>
+                     </tr>
+                     {fields.map(({ label, value }) => {
+                        const value1 = avaliacoes[0]?.[value] || 0;
+                        const value2 = avaliacoes[1]?.[value] || 0;
+                        const value3 = avaliacoes[2]?.[value] || 0;
+
+                        return (
+                           <tr key={value}>
+                              <th>{label}</th>
+                              <td>{value1 || "-"}</td>
+                              <th className={`${value2 - value1 > 0 ? "text-success" : "text-danger"}`}>
+                                 {(value2 - value1).toFixed(2)}
+                              </th>
+                              <td>{value2 || "-"}</td>
+                              <th className={`${value3 - value2 > 0 ? "text-success" : "text-danger"}`}>
+                                 {(value3 - value2).toFixed(2)}
+                              </th>
+                              <td>{value3 || "-"}</td>
+                           </tr>
+                        );
+                     })}
+                  </tbody>
+               </table>
+            </row>
          </AccordionContent>
       </AccordionItem>
    );
@@ -772,11 +842,11 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
          { name: "Peso", data: [], color: "var(--bs-info)" },
       ];
       for (const av of ordenaAvalicaoData(avaliacoes)) {
-         temp[0].data.push(Number(av.result.compositionWeight.massa_muscular));
+         temp[0].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_muscular : 0));
          temp[1].data.push(Number(av.result.compositionWeight.massa_magra));
          temp[2].data.push(Number(av.result.compositionWeight.gordura));
-         temp[3].data.push(Number(av.result.compositionWeight.massa_ossea));
-         temp[4].data.push(Number(av.result.compositionWeight.massa_residual));
+         temp[3].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_ossea : 0));
+         temp[4].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_residual : 0));
          temp[5].data.push(Number(av.peso));
       }
       setData(temp);
