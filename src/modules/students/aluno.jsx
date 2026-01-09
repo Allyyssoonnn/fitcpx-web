@@ -15,7 +15,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getContracts } from "../../api/contracts";
 import { deletePhysicalAssessment, getPhysicalAssessments } from "../../api/physicalAssessments";
 import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api/student";
-import { createOrUpdateWorkout, deleteWorkout, getWorkouts } from "../../api/workouts";
+import { createOrUpdateWorkout, deleteWorkout, getWorkoutHistory, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import ImageCropModal from "../../components/cutImg";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
@@ -64,6 +64,13 @@ function Aluno() {
    const { data: alunoContratos, refetch: refetchContrato } = useQuery({
       queryKey: ["alunoContratos"],
       queryFn: () => getContracts(cod_aluno),
+      initialData: [],
+      enabled: !!cod_aluno,
+   });
+
+   const { data: workoutHistory, refetch } = useQuery({
+      queryKey: ["workoutHistory"],
+      queryFn: () => getWorkoutHistory(cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
@@ -196,7 +203,7 @@ function Aluno() {
                               }}
                            />
                            <label
-                              className="btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle shadow d-flex align-items-center justify-content-center"
+                              className="btn btn-success btn-sm position-absolute bottom-0 end-0 rounded-circle shadow d-flex align-items-center justify-content-center"
                               htmlFor="img_aluno"
                               style={{
                                  width: "40px",
@@ -271,6 +278,7 @@ function Aluno() {
                         <TabsTrigger value="avaliacaoFisica">Avaliações Físicas</TabsTrigger>
                         <TabsTrigger value="treino">Treinos</TabsTrigger>
                         <TabsTrigger value="contratos">Contratos</TabsTrigger>
+                        <TabsTrigger value="workoutHistory">Treinos realizados</TabsTrigger>
                      </TabsList>
 
                      <TabsContent value="informacoesPessoais" id="aluno-tab-avaliacaoFisica">
@@ -362,7 +370,7 @@ function Aluno() {
                               Adicionar Avaliação
                            </Button>
 
-                           <div className="row g-4">
+                           <div className="g-4">
                               <FitTable.Root
                                  hideHeader
                                  list={avaliacoes.sort(
@@ -389,6 +397,7 @@ function Aluno() {
                                        header: "Reponsável",
                                        className: "fw-bold text-black",
                                        getValue: (row) => <div>{row?.usuario?.nome_usuario ?? "-"}</div>,
+                                       canSort: true,
                                     },
                                     {
                                        name: "cod_protocolo",
@@ -483,9 +492,8 @@ function Aluno() {
                         <div className="mt-4">
                            <AddTreino treinosAluno={treinos} aluno={aluno} />
 
-                           <div className="row g-4">
+                           <div className="g-4">
                               <FitTable.Root
-                                 hideHeader
                                  list={treinos.sort((a, b) => b.cod_treino - a.cod_treino)}
                                  fieldSearch="nome_treino"
                                  onClickItem={(row) => navigate("/treino", { state: { workoutId: row.cod_treino } })}
@@ -494,11 +502,13 @@ function Aluno() {
                                        name: "nome_treino",
                                        header: "Nome",
                                        className: "fw-bold text-black",
+                                       canSort: true,
                                     },
                                     {
                                        name: "usuario.nome_usuario",
                                        header: "Reponsável",
                                        className: "fw-bold text-black",
+                                       canSort: true,
                                     },
                                     {
                                        name: "nivel_treino",
@@ -510,6 +520,7 @@ function Aluno() {
                                        header: "Sessão(s)",
                                        className: "fw-bold text-black",
                                        getValue: (row) => row?.sessoes?.length,
+                                       canSort: true,
                                     },
                                     {
                                        name: "status_treino",
@@ -566,7 +577,7 @@ function Aluno() {
                               Contratar Plano
                            </Button>
 
-                           <div className="row g-4">
+                           <div className="g-4">
                               <FitTable.Root
                                  hideHeader
                                  list={alunoContratos}
@@ -576,11 +587,13 @@ function Aluno() {
                                        name: "cod_aluno_contrato",
                                        header: "ID",
                                        className: "fw-bold text-black",
+                                       canSort: true,
                                     },
                                     {
                                        name: "nome_aluno_contrato",
                                        header: "Nome",
                                        className: "fw-bold text-black",
+                                       canSort: true,
                                     },
                                     {
                                        name: "expiracao_aluno_contrato",
@@ -625,6 +638,104 @@ function Aluno() {
                                  ]}
                               />
                            </div>
+                        </div>
+                     </TabsContent>
+
+                     <TabsContent value="workoutHistory">
+                        {console.log(workoutHistory)}
+                        <div className="g-4">
+                           <FitTable.Root
+                              hideHeader
+                              list={workoutHistory}
+                              fieldSearch="nome_aluno_contrato"
+                              columns={[
+                                 {
+                                    name: "cod_treino_execucao",
+                                    header: "ID",
+                                    className: "fw-bold text-black",
+                                    canSort: true,
+                                 },
+                                 {
+                                    name: "sessao.nome_sessao",
+                                    header: "Sessão",
+                                    className: "fw-bold text-black",
+                                    canSort: true,
+                                 },
+                                 {
+                                    name: "data_treino_execucao",
+                                    header: "Data",
+                                    className: "fw-bold text-black",
+                                    canSort: true,
+                                    type: "date",
+                                 },
+                                 {
+                                    name: "data_treino_execucao",
+                                    header: "Hora",
+                                    className: "fw-bold text-black",
+                                    canSort: true,
+                                    type: "time",
+                                 },
+                                 {
+                                    name: "duracao_treino_execucao",
+                                    header: "Duração",
+                                    className: "fw-bold text-black",
+                                    canSort: true,
+                                    type: "seconds",
+                                 },
+                                 {
+                                    name: "volume",
+                                    header: "Volume",
+                                    className: "fw-bold text-black",
+                                    getValue: (row) => {
+                                       let value = 0;
+
+                                       row.exercicios.map((v) => {
+                                          v.sets?.map(
+                                             (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0)
+                                          );
+
+                                          v.superSets?.map((v2) => {
+                                             v2.sets?.map(
+                                                (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0)
+                                             );
+                                          });
+                                       });
+
+                                       return <div>{value}</div>;
+                                    },
+                                 },
+                                 {
+                                    name: "status",
+                                    header: "Status",
+                                    className: "fw-bold text-black",
+                                    getValue: (row) => {
+                                       if (
+                                          row.exercicios.every(
+                                             (v) =>
+                                                v?.treino_exercicio_executado == "S" &&
+                                                v.superSets?.every((v2) => v2.treino_exercicio_executado == "S")
+                                          )
+                                       ) {
+                                          return <div className="badge bg-success">Completo</div>;
+                                       }
+
+                                       return <div className="badge bg-warning text-dark">Incompleto</div>;
+                                    },
+                                 },
+                                 {
+                                    name: "Ver execução",
+                                    type: "option",
+                                    Icon: Clipboard,
+                                    // onClick: (row) =>
+                                    //    navigate("/contrato", {
+                                    //       state: {
+                                    //          cod_aluno_contrato: row.cod_aluno_contrato,
+                                    //          cod_aluno: aluno.cod_aluno,
+                                    //       },
+                                    //    }),
+                                 },
+                              ]}
+                           />
                         </div>
                      </TabsContent>
                   </Tabs>

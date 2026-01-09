@@ -206,27 +206,65 @@ export function capitalizeFirstLetter(str) {
 export const formatarData = (data) => {
    if (!data) return "";
 
-   let date;
-
    if (typeof data === "string") {
-      // Caso seja uma string no formato YYYY-MM-DD
-      const [year, month, day] = data.split("-");
-      date = new Date(year, month - 1, day);
-   } else if (data instanceof Date) {
-      // Caso já seja um objeto Date
-      date = data;
-   } else if (typeof data === "number") {
-      // Caso seja um timestamp
-      date = new Date(data);
-   } else {
-      return "";
+      data = data.replace(" ", "T");
    }
+
+   const date = new Date(data);
+
+   //Validação de segurança
+   if (isNaN(date.getTime())) return "";
 
    return date.toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
    });
+};
+
+export const formatarHora = (data) => {
+   if (!data) return "";
+
+   // Garante compatibilidade com strings "YYYY-MM-DD HH:mm:ss"
+   if (typeof data === "string") {
+      data = data.replace(" ", "T");
+   }
+
+   const date = new Date(data);
+
+   // Verifica se é uma data/hora válida
+   if (isNaN(date.getTime())) return "";
+
+   // Retorna apenas a hora formatada (ex: 14:30)
+   return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      // second: "2-digit" // Descomente esta linha se precisar dos segundos (14:30:45)
+   });
+};
+
+export const formatarSegundos = (segundos) => {
+   // Tratamento para valores nulos ou inválidos
+   if (!segundos && seconds !== 0) return "00:00";
+
+   // Garante que é número
+   const totalSeconds = Number(segundos);
+
+   // Extrai as partes
+   const hours = Math.floor(totalSeconds / 3600);
+   const minutes = Math.floor((totalSeconds % 3600) / 60);
+   const seconds = Math.floor(totalSeconds % 60);
+
+   // Função auxiliar para colocar o zero à esquerda (ex: 5 vira 05)
+   const pad = (num) => num.toString().padStart(2, "0");
+
+   // Lógica de exibição:
+   // Se tiver hora, retorna HH:mm:ss. Se não, retorna mm:ss
+   if (hours > 0) {
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+   }
+
+   return `${pad(minutes)}:${pad(seconds)}`;
 };
 
 export function formatDateToLocalInput(date) {

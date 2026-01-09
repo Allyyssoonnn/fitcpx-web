@@ -60,6 +60,7 @@ function Treinos() {
                      name: "nome_treino",
                      header: "Nome",
                      className: "fw-bold text-black",
+                     canSort: true,
                      getCell: (row) => {
                         if (row.cod_empresa) {
                            return <tr>{row.nome_treino}</tr>;
