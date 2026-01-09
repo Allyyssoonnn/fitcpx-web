@@ -446,6 +446,7 @@ function CadAvaliacao() {
                                  watch={watch}
                                  setValue={setValue}
                                  getValues={getValues}
+                                 protocolo={protocolo}
                               />
                            </TabsContent>
 
@@ -548,6 +549,11 @@ export const protocolosPattern = {
          nome_protocolo: "Jovens - Kach e McArdle (1973)",
          categoria_protocolo: "Geral",
       },
+      {
+         cod_protocolo: 7,
+         nome_protocolo: "Bioimpedância",
+         categoria_protocolo: "Geral",
+      },
    ],
    Feminino: [
       {
@@ -604,6 +610,11 @@ export const protocolosPatternRaw = [
    {
       cod_protocolo: 6,
       nome_protocolo: "Jovens - Kach e McArdle (1973)",
+      categoria_protocolo: "Geral",
+   },
+   {
+      cod_protocolo: 7,
+      nome_protocolo: "Bioimpedância",
       categoria_protocolo: "Geral",
    },
 ];

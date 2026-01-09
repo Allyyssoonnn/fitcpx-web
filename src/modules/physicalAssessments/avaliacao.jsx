@@ -159,6 +159,7 @@ function Avaliacao() {
                </div>
 
                <Accordion type="single" collapsible className="mx-3 mt-3">
+                  <Biompedancia avaliacao={avaliacao} />
                   {avaliacao.tipo_avaliacao === "completo" && <AreaMagraGorda result={result} />}
                   <Perimetro avaliacao={avaliacao} />
                   <Dobras avaliacao={avaliacao} />
@@ -509,9 +510,9 @@ function Perimetro({ avaliacao }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <div className="card-body">
+            <div>
                <div className="row g-3 mt-3">
-                  <div className="card col-md-4">
+                  <div className="col-md-4">
                      <h6>Geral</h6>
                      <ul>
                         <li>
@@ -538,7 +539,7 @@ function Perimetro({ avaliacao }) {
                      </ul>
                   </div>
 
-                  <div className="card col-md-4">
+                  <div className="col-md-4">
                      <h6>Lado direito</h6>
                      <ul>
                         <li>
@@ -559,7 +560,7 @@ function Perimetro({ avaliacao }) {
                      </ul>
                   </div>
 
-                  <div className="card col-md-4">
+                  <div className="col-md-4">
                      <h6>Lado esquerdo</h6>
                      <ul>
                         <li>
@@ -658,6 +659,37 @@ function Dobras({ avaliacao }) {
                   <div className="mt-3 col-md-3">
                      {/* <img className="img-fluid" src="/assets/images/app/dobras.png" /> */}
                   </div>
+               </row>
+            </div>
+         </AccordionContent>
+      </AccordionItem>
+   );
+}
+
+function Biompedancia({ avaliacao }) {
+   return (
+      <AccordionItem value="item-7">
+         <AccordionTrigger>
+            <Label>Bioimpedância</Label>
+         </AccordionTrigger>
+
+         <AccordionContent>
+            <div className="card-body">
+               <row className="row g-3">
+                  <ul className="mt-3 col-md-3">
+                     <li>
+                        <strong>% Gordura:</strong> {avaliacao.bioimpedancia_gordura || "-"}
+                     </li>
+                     <li>
+                        <strong>% Muscular:</strong> {avaliacao.bioimpedancia_muscular || "-"}
+                     </li>
+                     <li>
+                        <strong>Idade Corporal:</strong> {avaliacao.bioimpedancia_idade || "-"}
+                     </li>
+                     <li>
+                        <strong>Gordura Visceral:</strong> {avaliacao.gordura_viceral || "-"}
+                     </li>
+                  </ul>
                </row>
             </div>
          </AccordionContent>

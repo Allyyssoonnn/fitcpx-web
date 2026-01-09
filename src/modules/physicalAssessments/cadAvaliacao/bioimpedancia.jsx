@@ -1,11 +1,14 @@
 import { MediaInputUI } from "../../../components/fitUI/numberInput.ui";
 import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
 
-function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getValues }) {
+function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getValues, protocolo, errors }) {
    return (
       <div className="row g-3">
          <Field className="col-md-4">
-            <FieldLabel>Gordura Visceral</FieldLabel>
+            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>
+               Gordura Visceral
+               {protocolo == 7 ? " *" : ""}
+            </FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -16,12 +19,22 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
                   field="gordura_viceral"
                   startSpeechRecognition={startSpeechRecognition}
                   setValue={setValue}
+                  required={protocolo == 7}
                />
+
+               {errors && errors?.["gordura_viceral"] && (
+                  <div id="mediahelp" className="form-text text-danger">
+                     Esse campo é obrigatório
+                  </div>
+               )}
             </FieldContent>
          </Field>
 
          <Field className="col-md-4">
-            <FieldLabel>% Gordura</FieldLabel>
+            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>
+               % Gordura
+               {protocolo == 7 ? " *" : ""}
+            </FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -32,12 +45,22 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
                   field="bioimpedancia_gordura"
                   startSpeechRecognition={startSpeechRecognition}
                   setValue={setValue}
+                  required={protocolo == 7}
                />
             </FieldContent>
+
+            {errors && errors?.["bioimpedancia_gordura"] && (
+               <div id="mediahelp" className="form-text text-danger">
+                  Esse campo é obrigatório
+               </div>
+            )}
          </Field>
 
          <Field className="col-md-4">
-            <FieldLabel>% Muscular</FieldLabel>
+            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>
+               % Muscular
+               {protocolo == 7 ? " *" : ""}
+            </FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -48,12 +71,22 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
                   field="bioimpedancia_muscular"
                   startSpeechRecognition={startSpeechRecognition}
                   setValue={setValue}
+                  required={protocolo == 7}
                />
             </FieldContent>
+
+            {errors && errors?.["bioimpedancia_muscular"] && (
+               <div id="mediahelp" className="form-text text-danger">
+                  Esse campo é obrigatório
+               </div>
+            )}
          </Field>
 
          <Field className="col-md-4">
-            <FieldLabel>Idade Corporal</FieldLabel>
+            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>
+               Idade Corporal
+               {protocolo == 7 ? " *" : ""}
+            </FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -64,8 +97,15 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
                   field="bioimpedancia_idade"
                   startSpeechRecognition={startSpeechRecognition}
                   setValue={setValue}
+                  required={protocolo == 7}
                />
             </FieldContent>
+
+            {errors && errors?.["bioimpedancia_idade"] && (
+               <div id="mediahelp" className="form-text text-danger">
+                  Esse campo é obrigatório
+               </div>
+            )}
          </Field>
       </div>
    );

@@ -192,6 +192,7 @@ function CompareAvaliacao() {
                </div>
 
                <Accordion type="single" collapsible className="mx-3">
+                  <Biompedancia avaliacoes={[physical1, physical2, physical3]} />
                   <AreaMagraGorda avaliacoes={[physical1, physical2, physical3]} />
                   <Perimetria avaliacoes={[physical1, physical2, physical3]} />
                   <SimetriaMembro avaliacoes={[physical1, physical2, physical3]} />
@@ -270,6 +271,66 @@ function Imagens({ avaliacoes }) {
                   </div>
                ))}
             </div>
+         </AccordionContent>
+      </AccordionItem>
+   );
+}
+
+function Biompedancia({ avaliacoes }) {
+   const fields = [
+      { label: "% Gordura", value: "bioimpedancia_gordura" },
+      { label: "% Muscular", value: "bioimpedancia_muscular" },
+      { label: "Idade Corporal", value: "bioimpedancia_idade" },
+      { label: "Gordura Visceral", value: "gordura_viceral" },
+   ];
+
+   return (
+      <AccordionItem value="item-8">
+         <AccordionTrigger>
+            <Label>Bioimpedância</Label>
+         </AccordionTrigger>
+
+         <AccordionContent>
+            <row className="row g-3 justify-content-around">
+               <table id="basic-datatables" className="table table-sm table-striped table-hover">
+                  <tbody>
+                     <tr>
+                        <th></th>
+                        <th>
+                           {avaliacoes[0]?.data_avaliacao ? formatarData(avaliacoes[0].data_avaliacao) : "Selecione"}
+                        </th>
+                        <th></th>
+                        <th>
+                           {avaliacoes[1]?.data_avaliacao ? formatarData(avaliacoes[1].data_avaliacao) : "Selecione"}
+                        </th>
+                        <th></th>
+                        <th>
+                           {avaliacoes[2]?.data_avaliacao ? formatarData(avaliacoes[2].data_avaliacao) : "Selecione"}
+                        </th>
+                     </tr>
+                     {fields.map(({ label, value }) => {
+                        const value1 = avaliacoes[0]?.[value] || 0;
+                        const value2 = avaliacoes[1]?.[value] || 0;
+                        const value3 = avaliacoes[2]?.[value] || 0;
+
+                        return (
+                           <tr key={value}>
+                              <th>{label}</th>
+                              <td>{value1 || "-"}</td>
+                              <th className={`${value2 - value1 > 0 ? "text-success" : "text-danger"}`}>
+                                 {(value2 - value1).toFixed(2)}
+                              </th>
+                              <td>{value2 || "-"}</td>
+                              <th className={`${value3 - value2 > 0 ? "text-success" : "text-danger"}`}>
+                                 {(value3 - value2).toFixed(2)}
+                              </th>
+                              <td>{value3 || "-"}</td>
+                           </tr>
+                        );
+                     })}
+                  </tbody>
+               </table>
+            </row>
          </AccordionContent>
       </AccordionItem>
    );
