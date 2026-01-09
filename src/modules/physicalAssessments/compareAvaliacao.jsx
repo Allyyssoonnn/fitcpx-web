@@ -142,15 +142,24 @@ function CompareAvaliacao() {
                            <tbody>
                               {[
                                  { label: "Peso (kg)", value: "peso" },
-                                 { label: "Músculo (%)", value: "result.compositionPercentage.massa_muscular" },
-                                 { label: "Músculo (kg)", value: "result.compositionWeight.massa_muscular" },
+                                 {
+                                    label: "Músculo (%)",
+                                    value: "result.compositionPercentage.massa_muscular",
+                                    type: "completo",
+                                 },
+                                 {
+                                    label: "Músculo (kg)",
+                                    value: "result.compositionWeight.massa_muscular",
+                                    type: "completo",
+                                 },
                                  { label: "Gordura (%)", value: "result.compositionPercentage.gordura" },
                                  { label: "Gordura (kg)", value: "result.compositionWeight.gordura" },
                                  { label: "Massa Magra (%)", value: "result.compositionPercentage.massa_magra" },
                                  { label: "Massa Magra (kg)", value: "result.compositionWeight.massa_magra" },
-                              ].map(({ label, key, value }) => {
+                              ].map(({ label, key, value, type }) => {
                                  const getValue = (data) => {
                                     if (!value) return "Não informado";
+                                    if (type == "completo" && data.tipo_avaliacao !== "completo") return 0;
                                     const raw = value.split(".").reduce((acc, key) => acc?.[key], data);
                                     return raw;
                                  };
@@ -164,15 +173,15 @@ function CompareAvaliacao() {
                                        <td>
                                           <strong>{label}</strong>
                                        </td>
-                                       <td>{val1 || "Não informado"}</td>
+                                       <td>{val1 || "-"}</td>
                                        <th className={`${val2 - val1 > 0 ? "text-success" : "text-danger"}`}>
                                           {val2 ? (val2 - val1).toFixed(2) : "-"}
                                        </th>
-                                       <td>{val2 || "Não informado"}</td>
+                                       <td>{val2 || "-"}</td>
                                        <th className={`${val3 - val2 > 0 ? "text-success" : "text-danger"}`}>
                                           {val3 ? (val3 - val2).toFixed(2) : "-"}
                                        </th>
-                                       <td>{val3 || "Não informado"}</td>
+                                       <td>{val3 || "-"}</td>
                                     </tr>
                                  );
                               })}
@@ -772,11 +781,11 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
          { name: "Peso", data: [], color: "var(--bs-info)" },
       ];
       for (const av of ordenaAvalicaoData(avaliacoes)) {
-         temp[0].data.push(Number(av.result.compositionWeight.massa_muscular));
+         temp[0].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_muscular : 0));
          temp[1].data.push(Number(av.result.compositionWeight.massa_magra));
          temp[2].data.push(Number(av.result.compositionWeight.gordura));
-         temp[3].data.push(Number(av.result.compositionWeight.massa_ossea));
-         temp[4].data.push(Number(av.result.compositionWeight.massa_residual));
+         temp[3].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_ossea : 0));
+         temp[4].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_residual : 0));
          temp[5].data.push(Number(av.peso));
       }
       setData(temp);
