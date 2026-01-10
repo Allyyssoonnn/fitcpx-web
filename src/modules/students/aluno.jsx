@@ -1,6 +1,7 @@
 import {
    ChartBar,
    Clipboard,
+   Eye,
    PauseCircle,
    Pen,
    Pencil,
@@ -647,6 +648,14 @@ function Aluno() {
                            <FitTable.Root
                               hideHeader
                               list={workoutHistory}
+                              onClickItem={(row) =>
+                                 navigate("/sessionWorkoutSession", {
+                                    state: {
+                                       session: row,
+                                       aluno: aluno,
+                                    },
+                                 })
+                              }
                               fieldSearch="nome_aluno_contrato"
                               columns={[
                                  {
@@ -725,14 +734,14 @@ function Aluno() {
                                  {
                                     name: "Ver execução",
                                     type: "option",
-                                    Icon: Clipboard,
-                                    // onClick: (row) =>
-                                    //    navigate("/contrato", {
-                                    //       state: {
-                                    //          cod_aluno_contrato: row.cod_aluno_contrato,
-                                    //          cod_aluno: aluno.cod_aluno,
-                                    //       },
-                                    //    }),
+                                    Icon: Eye,
+                                    onClick: (row) =>
+                                       navigate("/sessionWorkoutSession", {
+                                          state: {
+                                             session: row,
+                                             aluno: aluno,
+                                          },
+                                       }),
                                  },
                               ]}
                            />

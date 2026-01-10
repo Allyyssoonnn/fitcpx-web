@@ -245,7 +245,7 @@ export const formatarHora = (data) => {
 
 export const formatarSegundos = (segundos) => {
    // Tratamento para valores nulos ou inválidos
-   if (!segundos && seconds !== 0) return "00:00";
+   if (!segundos) return "00:00";
 
    // Garante que é número
    const totalSeconds = Number(segundos);

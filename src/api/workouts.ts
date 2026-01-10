@@ -22,3 +22,5 @@ export const getMovementPatterns = async (lang: string = "en") =>
 export const getWorkoutTemplatePDF = async () => await get("/workouts/workoutpdf");
 export const getWorkoutHistory = async (studentId: string) =>
    await get(`/workouts/getWorkoutHistory?studentId=${studentId}`);
+export const getWorkoutHistoryReport = async (workoutId: string) =>
+   await get(`/workouts/getWorkoutHistoryReport?workoutId=${workoutId}`);
