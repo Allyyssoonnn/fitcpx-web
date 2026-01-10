@@ -335,7 +335,7 @@ function CardExercise({
                </strong>
             </Label>
             <Label>
-               Maior de carga: <strong>{getMaxWeight()}kg</strong>
+               Maior carga: <strong>{getMaxWeight()}kg</strong>
             </Label>
             <Label>
                Maior contagem de repetições: <strong>{getMaxRepetition()}</strong>
