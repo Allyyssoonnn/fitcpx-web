@@ -53,6 +53,7 @@ function Exercicios() {
                      name: "nome_exercicio",
                      header: "Nome",
                      className: "fw-bold text-black",
+                     canSort: true,
                      getCell: (row) => {
                         if (row.base_exercicio === "N") {
                            return <tr>{row.nome_exercicio}</tr>;
@@ -80,11 +81,13 @@ function Exercicios() {
                      name: "grupo_exercicio_1.nome_grupo_exercicio",
                      header: "Grupo muscular",
                      className: "fw-bold text-black",
+                     canSort: true,
                   },
                   {
                      name: "grupo_exercicio_2.nome_grupo_exercicio",
                      header: "Grupo muscular",
                      className: "fw-bold text-black",
+                     canSort: true,
                   },
                   {
                      name: "Editar",

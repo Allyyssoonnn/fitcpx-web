@@ -5,10 +5,7 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
    return (
       <div className="row g-3">
          <Field className="col-md-4">
-            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>
-               Gordura Visceral
-               {protocolo == 7 ? " *" : ""}
-            </FieldLabel>
+            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>Gordura Visceral</FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -19,14 +16,7 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
                   field="gordura_viceral"
                   startSpeechRecognition={startSpeechRecognition}
                   setValue={setValue}
-                  required={protocolo == 7}
                />
-
-               {errors && errors?.["gordura_viceral"] && (
-                  <div id="mediahelp" className="form-text text-danger">
-                     Esse campo é obrigatório
-                  </div>
-               )}
             </FieldContent>
          </Field>
 
@@ -83,10 +73,7 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
          </Field>
 
          <Field className="col-md-4">
-            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>
-               Idade Corporal
-               {protocolo == 7 ? " *" : ""}
-            </FieldLabel>
+            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>Idade Corporal</FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -97,15 +84,8 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
                   field="bioimpedancia_idade"
                   startSpeechRecognition={startSpeechRecognition}
                   setValue={setValue}
-                  required={protocolo == 7}
                />
             </FieldContent>
-
-            {errors && errors?.["bioimpedancia_idade"] && (
-               <div id="mediahelp" className="form-text text-danger">
-                  Esse campo é obrigatório
-               </div>
-            )}
          </Field>
       </div>
    );

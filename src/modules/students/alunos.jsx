@@ -79,7 +79,7 @@ function Alunos() {
                            />
                         ),
                      },
-                     { name: "nome_aluno", header: "Nome", className: "fw-bold" },
+                     { name: "nome_aluno", header: "Nome", className: "fw-bold", canSort: true },
                      { name: "Editar", header: "", type: "option", onClick: (row) => editarAluno(row), Icon: Pencil },
                      {
                         name: "Excluir",

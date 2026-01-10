@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatarData, formatarMoeda, getNestedError } from "@/utils";
+import { formatarData, formatarHora, formatarMoeda, formatarSegundos, getNestedError } from "@/utils";
 import {
    ColumnFiltersState,
    FilterFn,
@@ -16,9 +16,11 @@ import {
    getCoreRowModel,
    getFilteredRowModel,
    getPaginationRowModel,
+   getSortedRowModel,
+   SortingState,
    useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal, PlusCircle } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import FitPagination from "../TableComponent/FitPagination";
 import ListComponentFilters from "./ListComponentFilters";
@@ -40,12 +42,14 @@ type ListComponentProps = {
    buttonId?: string;
    children: (filteredList: any[]) => React.ReactNode;
    subHeader?: React.ReactNode;
+   canSort?: boolean;
 };
 
 type DataColumnsProp = {
    rowId?: string;
    fieldId?: string;
    name: string;
+   canSort?: boolean;
    header: string;
    Icon: any;
    className?: string;
@@ -57,7 +61,7 @@ type DataColumnsProp = {
    onChange?: (row: any, value: any) => void;
    inputProps?: any;
    value?: any;
-   type?: "date" | "currency" | "image" | "option";
+   type?: "date" | "time" | "currency" | "image" | "option" | "seconds";
 };
 
 export default function ListComponentWrapper({
@@ -78,10 +82,12 @@ export default function ListComponentWrapper({
    hideSearch = false,
    hideHeader = false,
    hideFooter = false,
+   canSort = false,
    subHeader,
 }: ListComponentProps) {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+   const [sorting, setSorting] = React.useState<SortingState>([]);
 
    const childrenFilters = useMemo(() => {
       if (React.isValidElement(children) && children?.type === ListComponentFilters) {
@@ -121,6 +127,7 @@ export default function ListComponentWrapper({
       state: {
          pagination: pagination,
          columnFilters,
+         sorting,
       },
       filterFns: {
          insensitiveIncludes, // adiciona aqui
@@ -132,6 +139,8 @@ export default function ListComponentWrapper({
       getPaginationRowModel: getPaginationRowModel(),
       onColumnFiltersChange: setColumnFilters,
       getFilteredRowModel: getFilteredRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      onSortingChange: setSorting,
    });
 
    return (
@@ -178,9 +187,26 @@ export default function ListComponentWrapper({
                      <TableRow id={headerGroup.id}>
                         {headerGroup.headers.map((header) => (
                            <TableHead key={header.id} colSpan={header.colSpan}>
-                              {header.isPlaceholder
-                                 ? null
-                                 : flexRender(header.column.columnDef.header, header.getContext())}
+                              {header.isPlaceholder ? null : (
+                                 <div
+                                    className={
+                                       header.column.getCanSort()
+                                          ? "cursor-pointer select-none d-flex align-items-center gap-1"
+                                          : ""
+                                    }
+                                    onClick={header.column.getToggleSortingHandler()}
+                                 >
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                    {{
+                                       asc: <ArrowUp className="h-4 w-4" />,
+                                       desc: <ArrowDown className="h-4 w-4" />,
+                                    }[header.column.getIsSorted() as string] ??
+                                       // Mostra ícone neutro se a coluna for ordenável mas não estiver ativa
+                                       (header.column.getCanSort() ? (
+                                          <ArrowUpDown className="h-4 w-4 opacity-50" />
+                                       ) : null)}
+                                 </div>
+                              )}
                            </TableHead>
                         ))}
                      </TableRow>
@@ -250,6 +276,10 @@ const getColumns = (columns: DataColumnsProp[]) => {
 
       if (type === "date") return formatarData(obj[name]);
 
+      if (type === "seconds") return formatarSegundos(obj[name]);
+
+      if (type === "time") return formatarHora(obj[name]);
+
       if (type === "currency") return formatarMoeda(obj[name]);
 
       if (type === "option") return ""; // já tratado externamente
@@ -270,6 +300,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
             className: col.className,
             accessorKey: col.name,
             filterFn: "insensitiveIncludes",
+            enableSorting: col.canSort ?? false,
             cell: ({ row: { original } }) => getCell(original, col.name, col.type, col.getValue, col.getCell),
          });
       }
@@ -280,6 +311,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
       cols.push({
          id: "option",
          header: "",
+         enableSorting: false,
          cell: ({ row: { original } }) => {
             if (option.visible && !option.visible(original)) return null;
             return (
@@ -300,6 +332,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
       cols.push({
          id: "options",
          header: "",
+         enableSorting: false,
          cell: ({ row: { original } }) => {
             const rowOptions = options.filter((opt) => !opt.visible || opt.visible(original));
 

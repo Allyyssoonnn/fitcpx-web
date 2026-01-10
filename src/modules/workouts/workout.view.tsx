@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, MessageSquareMore, Pen, Share } from "lucide-react";
+import { Activity, Info, MessageSquareMore, Pen, Share } from "lucide-react";
 import printJS from "print-js";
 import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -45,38 +45,33 @@ export default function WorkoutView() {
       });
    }
 
+   const actionsList = [
+      // 1. Relatório: Só se tiver empresa E aluno
+      workout?.cod_empresa &&
+         workout?.cod_aluno && {
+            Icon: Activity,
+            label: "Relatório do aluno",
+            action: () => navigate("/workoutHistoryView", { state: { workoutId: workout.cod_treino } }),
+         },
+
+      // 2. Editar: Só se tiver empresa
+      workout?.cod_empresa && {
+         Icon: Pen,
+         label: "Editar",
+         action: () => navigate("/cadtreino", { state: { treino: workout } }),
+      },
+
+      // 3. Exportar: Sempre aparece (estava duplicado no seu if/else)
+      {
+         Icon: Share,
+         label: "Exportar",
+         action: sharePDF,
+      },
+   ].filter(Boolean);
+
    return (
       <div className="container-fluid">
-         <BackBoxUI
-            actions={
-               workout?.cod_empresa
-                  ? [
-                       {
-                          Icon: Pen,
-                          label: "Editar",
-                          action: () => {
-                             navigate("/cadtreino", {
-                                state: {
-                                   treino: workout,
-                                },
-                             });
-                          },
-                       },
-                       {
-                          Icon: Share,
-                          label: "Exportar",
-                          action: sharePDF,
-                       },
-                    ]
-                  : [
-                       {
-                          Icon: Share,
-                          label: "Exportar",
-                          action: sharePDF,
-                       },
-                    ]
-            }
-         />
+         <BackBoxUI actions={actionsList} />
 
          <Card className="mt-3">
             <CardContent>
@@ -155,7 +150,7 @@ export default function WorkoutView() {
                                           repetitions={exercise?.repeticao_sessao_exercicio}
                                           weight={exercise?.carga_sessao_exercicio}
                                           interval={exercise?.intervalo_sessao_exercicio}
-                                          observation={exercise?.observacao_sessao_exercicio ?? "-"}
+                                          observation={exercise?.observacao_sessao_exercicio}
                                           studentObservation={exercise?.observacao_sessao_exercicio_aluno}
                                           url={exercise?.exercicio?.url_exercicio}
                                        />
@@ -173,7 +168,8 @@ export default function WorkoutView() {
                                                 repetitions={set?.repeticao_sessao_exercicio}
                                                 weight={set?.carga_sessao_exercicio}
                                                 interval={set?.intervalo_sessao_exercicio}
-                                                observation={set?.observacao_sessao_exercicio ?? "-"}
+                                                observation={set?.observacao_sessao_exercicio}
+                                                studentObservation={exercise?.observacao_sessao_exercicio_aluno}
                                                 url={set?.exercicio?.url_exercicio}
                                              />
                                           ))}
