@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { get } from "../api/api";
+import ChangelogUI from "../components/fitUI/changelog.ui";
 import Notificacoes from "../components/notificacoes";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
@@ -33,7 +35,9 @@ import { getYouTubeEmbedUrl } from "../utils";
 
 function Header() {
    const { pathname } = useLocation();
-   const [openBanner, setOpenBanner] = useState(false);
+   // const [openBanner, setOpenBanner] = useState(false);
+   const [openChangelog, setOpenChangelog] = useState(false);
+   const [changelog, setChangelog] = useState(null);
 
    // busca a primeira rota cujo padrão case com a URL atual
    const matched = routes.find((r) => {
@@ -53,15 +57,38 @@ function Header() {
    const [isInstalled, setIsInstalled] = useState(false);
    const [isIos, setIsIos] = useState(false);
 
+   // useEffect(() => {
+   //    if (localStorage.getItem("Banner-BlackFriday") === "hidden") return;
+   //    setOpenBanner(true);
+   // }, []);
+
    useEffect(() => {
-      if (localStorage.getItem("Banner-BlackFriday") === "hidden") return;
-      setOpenBanner(true);
+      (async () => {
+         const version = __APP_VERSION__.substring(0, __APP_VERSION__.lastIndexOf(".")) + ".x";
+         const response = await get(`changelog?v=${version}`);
+
+         const lastSeenVersion = localStorage.getItem("lastSeenChangelogVersion");
+         if (lastSeenVersion === version) return;
+
+         if (response && Object.keys(response).length > 0) {
+            localStorage.setItem("lastSeenChangelogVersion", version);
+            setChangelog(response);
+            setOpenChangelog(true);
+         }
+      })();
    }, []);
 
-   const openSmooth = () => {
-      setOpenBanner(false); // garante mount limpo do Portal
+   // const openSmooth = () => {
+   //    setOpenBanner(false); // garante mount limpo do Portal
+   //    requestAnimationFrame(() => {
+   //       setOpenBanner(true);
+   //    });
+   // };
+
+   const openChangeloSmooth = () => {
+      setOpenChangelog(false); // garante mount limpo do Portal
       requestAnimationFrame(() => {
-         setOpenBanner(true);
+         setOpenChangelog(true);
       });
    };
 
@@ -192,6 +219,12 @@ function Header() {
                   </Button> */}
                   {/* <BannerUI show={openBanner} closeControlled={() => setOpenBanner(false)} /> */}
 
+                  <ChangelogUI
+                     changelog={changelog}
+                     show={openChangelog}
+                     closeControlled={() => setOpenChangelog(false)}
+                  />
+
                   {["Trial Active", "Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
                      <Tooltip>
                         <TooltipTrigger>
@@ -303,6 +336,12 @@ function Header() {
 
                         <DropdownMenuItem id="avatar-config" onClick={() => navigate("/configuracao")}>
                            Configuração
+                           <DropdownMenuShortcut>
+                              <ArrowRight />
+                           </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={openChangeloSmooth}>
+                           Notas de atualização
                            <DropdownMenuShortcut>
                               <ArrowRight />
                            </DropdownMenuShortcut>

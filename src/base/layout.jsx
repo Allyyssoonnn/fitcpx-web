@@ -39,7 +39,7 @@ function Layout() {
                {import.meta.env.MODE == "production" ? (
                   <p className="mb-0 fs-4">Version: {__APP_VERSION__}</p>
                ) : (
-                  <p className="mb-0 fs-4">Version: DEV MODE</p>
+                  <p className="mb-0 fs-4">Version: {__APP_VERSION__} - DEV MODE</p>
                )}
             </div>
          </main>
