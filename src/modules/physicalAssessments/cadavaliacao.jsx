@@ -546,7 +546,7 @@ export const protocolosPattern = {
       },
       {
          cod_protocolo: 6,
-         nome_protocolo: "Jovens - Kach e McArdle (1973)",
+         nome_protocolo: "Marinha Americana (U.S. Navy)",
          categoria_protocolo: "Geral",
       },
       {
@@ -609,7 +609,7 @@ export const protocolosPatternRaw = [
    },
    {
       cod_protocolo: 6,
-      nome_protocolo: "Jovens - Kach e McArdle (1973)",
+      nome_protocolo: "Marinha Americana (U.S. Navy)",
       categoria_protocolo: "Geral",
    },
    {
