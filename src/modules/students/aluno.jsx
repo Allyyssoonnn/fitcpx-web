@@ -1,4 +1,5 @@
 import {
+   ArrowRight,
    ChartBar,
    Clipboard,
    Eye,
@@ -24,6 +25,7 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { modalAssignWorkout } from "../../modals/assignWorkout";
 import { useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
 import { protocolosPatternRaw } from "../physicalAssessments/cadavaliacao";
@@ -535,6 +537,13 @@ function Aluno() {
                                           ),
                                     },
                                     {
+                                       name: "Atribuir treino",
+                                       header: "",
+                                       type: "option",
+                                       onClick: (row) => modalAssignWorkout.show({ workout: row }),
+                                       Icon: ArrowRight,
+                                    },
+                                    {
                                        name: "Editar",
                                        type: "option",
                                        Icon: Pencil,
@@ -643,7 +652,6 @@ function Aluno() {
                      </TabsContent>
 
                      <TabsContent value="workoutHistory">
-                        {console.log(workoutHistory)}
                         <div className="g-4">
                            <FitTable.Root
                               hideHeader

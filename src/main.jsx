@@ -10,6 +10,7 @@ import { ExcelExportModule } from "ag-grid-enterprise";
 ModuleRegistry.registerModules([AllCommunityModule]);
 ModuleRegistry.registerModules([ExcelExportModule]);
 
+import NiceModal from "@ebay/nice-modal-react";
 import "./i18n";
 import "./scss/CardInput.scss";
 
@@ -18,7 +19,9 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
    <RecoilRoot>
       <QueryClientProvider client={queryClient}>
-         <App />
+         <NiceModal.Provider>
+            <App />
+         </NiceModal.Provider>
       </QueryClientProvider>
    </RecoilRoot>
 );

@@ -1,4 +1,4 @@
-import { ArrowLeftCircle, Info, Pencil, Trash } from "lucide-react";
+import { ArrowLeftCircle, ArrowRight, Info, Pencil, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil";
 import { createOrUpdateWorkout, deleteWorkout, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
+import { modalAssignWorkout } from "../../modals/assignWorkout";
 import { stateUsuario } from "../../states/states";
 
 function Treinos() {
@@ -85,6 +86,13 @@ function Treinos() {
                   },
                   { name: "nivel_treino", header: "Nível", className: "fw-bold text-black" },
                   // { name: "observacao_treino", header: "Observação", className: "fw-bold text-black" },
+                  {
+                     name: "Atribuir treino",
+                     header: "",
+                     type: "option",
+                     onClick: (row) => modalAssignWorkout.show({ workout: row }),
+                     Icon: ArrowRight,
+                  },
                   {
                      name: "Editar",
                      header: "",
