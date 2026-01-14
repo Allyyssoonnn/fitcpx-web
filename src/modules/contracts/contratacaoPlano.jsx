@@ -134,7 +134,7 @@ function ContratacaoPlano() {
             return {
                ...m,
                valor_modalidade: m.valor_modalidade_original ?? (m.valor_modalidade || 0),
-               nome_modalidade: m.nome_modalidade_original ?? m.nome_modalidade,
+               nome_modalidade: m.nome_modalidade ?? m.nome_modalidade_original,
             };
          }
 

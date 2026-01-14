@@ -156,7 +156,7 @@ function NewPayment({ close, onPay, callback, atSigth }) {
             )}
          </CardContent>
 
-         <div className="card-footer d-flex p-3 align-items-center justify-content-between">
+         <div className="flex px-3 align-items-center justify-content-between">
             <Button type="button" variant="destructive" onClick={onClose}>
                Fechar
             </Button>
