@@ -219,6 +219,7 @@ export const formatarData = (data) => {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
+      timeZone: "UTC",
    });
 };
 
@@ -239,6 +240,7 @@ export const formatarHora = (data) => {
    return date.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "UTC",
       // second: "2-digit" // Descomente esta linha se precisar dos segundos (14:30:45)
    });
 };
