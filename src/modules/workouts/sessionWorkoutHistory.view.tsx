@@ -118,7 +118,7 @@ export default function SessionWorkoutHistoryView() {
                                  <CardExercise
                                     sets={set.sets}
                                     key={`exercise-${indexExercise}`}
-                                    sequence={`${indexSet + 2}/${exercise?.sets?.length + 1}`}
+                                    sequence={`${indexSet + 2}/${exercise?.superSets?.length + 1}`}
                                     classNameBadge={arrayBackgrounds[indexExercise]}
                                     name={set?.exercicio?.nome_exercicio}
                                     observation={set?.observacao_sessao_exercicio}
