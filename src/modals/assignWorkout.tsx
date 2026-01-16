@@ -31,7 +31,10 @@ const AssignWorkout = NiceModal.create(({ workout, navigate }: { workout: any; n
       const { cod_treino, ...treinoLimpo } = workout;
       treinoLimpo.sessoes = treinoLimpo.sessoes.map(({ cod_sessao, cod_treino, exercicios = [], ...sessao }: any) => ({
          ...sessao,
-         exercicios: exercicios.map(({ cod_sessao_exercicio, ...exercicio }: any) => exercicio),
+         exercicios: exercicios.map(({ cod_sessao_exercicio, ...exercicio }: any) => ({
+            ...exercicio,
+            sets: exercicio?.sets?.map(({ cod_sessao_exercicio, ...set }: any) => set) ?? [],
+         })),
       }));
       treinoLimpo.status_treino = "A";
 
@@ -43,7 +46,7 @@ const AssignWorkout = NiceModal.create(({ workout, navigate }: { workout: any; n
             sexo_treino: studentRaw?.sexo_aluno ?? treinoLimpo?.sexo_treino,
             cod_aluno: student,
          },
-         treinoLimpo.sessoes
+         treinoLimpo.sessoes,
       );
       // navigate("/cadtreino", { state: { aluno: studentRaw, treino: treinoLimpo } });
 
