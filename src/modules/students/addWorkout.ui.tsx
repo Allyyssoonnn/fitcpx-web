@@ -51,8 +51,12 @@ export function AddTreino({ aluno, treinosAluno }: AddTreinoProps) {
       const { cod_treino, ...treinoLimpo } = treinoSelecionado;
       treinoLimpo.sessoes = treinoLimpo.sessoes.map(({ cod_sessao, cod_treino, exercicios = [], ...sessao }) => ({
          ...sessao,
-         exercicios: exercicios.map(({ cod_sessao_exercicio, ...exercicio }) => exercicio),
+         exercicios: exercicios.map(({ cod_sessao_exercicio, ...exercicio }) => ({
+            ...exercicio,
+            sets: exercicio?.sets?.map(({ cod_sessao_exercicio, ...set }) => set) ?? [],
+         })),
       }));
+
       treinoLimpo.status_treino = "A";
 
       navigate("/cadtreino", { state: { aluno, treino: treinoLimpo } });
