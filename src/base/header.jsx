@@ -1,4 +1,14 @@
-import { AlarmClockIcon, AlarmClockOff, ArrowRight, DoorClosed, HelpCircle, Moon, Sun } from "lucide-react";
+import {
+   AlarmClockIcon,
+   AlarmClockOff,
+   ClipboardList,
+   DoorClosed,
+   Earth,
+   HelpCircle,
+   Moon,
+   Settings,
+   Sun,
+} from "lucide-react";
 import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -68,13 +78,13 @@ function Header() {
          const response = await get(`changelog?v=${version}`);
 
          const lastSeenVersion = localStorage.getItem("lastSeenChangelogVersion");
-         if (lastSeenVersion === version) return;
-
          if (response && Object.keys(response).length > 0) {
             localStorage.setItem("lastSeenChangelogVersion", version);
             setChangelog(response);
-            setOpenChangelog(true);
          }
+         if (lastSeenVersion === version) return;
+
+         setOpenChangelog(true);
       })();
    }, []);
 
@@ -337,19 +347,25 @@ function Header() {
                         <DropdownMenuItem id="avatar-config" onClick={() => navigate("/configuracao")}>
                            Configuração
                            <DropdownMenuShortcut>
-                              <ArrowRight />
+                              <Settings />
                            </DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={openChangeloSmooth}>
                            Notas de atualização
                            <DropdownMenuShortcut>
-                              <ArrowRight />
+                              <ClipboardList />
                            </DropdownMenuShortcut>
                         </DropdownMenuItem>
+                        {/* <DropdownMenuItem onClick={() => navigate("/help")}>
+                           Ajuda
+                           <DropdownMenuShortcut>
+                              <HelpCircle />
+                           </DropdownMenuShortcut>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem>
                            <a href="https://fitcpx.com">Acessar site</a>
                            <DropdownMenuShortcut>
-                              <ArrowRight />
+                              <Earth />
                            </DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem variant="destructive" onClick={sair}>
