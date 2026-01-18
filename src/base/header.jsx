@@ -68,13 +68,13 @@ function Header() {
          const response = await get(`changelog?v=${version}`);
 
          const lastSeenVersion = localStorage.getItem("lastSeenChangelogVersion");
-         if (lastSeenVersion === version) return;
-
          if (response && Object.keys(response).length > 0) {
             localStorage.setItem("lastSeenChangelogVersion", version);
             setChangelog(response);
-            setOpenChangelog(true);
          }
+         if (lastSeenVersion === version) return;
+
+         setOpenChangelog(true);
       })();
    }, []);
 
