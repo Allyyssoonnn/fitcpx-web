@@ -32,7 +32,7 @@ function Layout() {
          <main className="w-[100%] bg-secondary">
             <Header />
 
-            {!(!usuario?.cod_usuario && !empresa?.cod_empresa) ? <Outlet /> : <a>Carregando...</a>}
+            <Outlet />
 
             <div className="py-6 px-6 text-center">
                <p className="mb-0 fs-4">{t("footerText")}</p>
