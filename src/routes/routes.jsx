@@ -21,6 +21,7 @@ import CadContrato from "../modules/contracts/cadContrato";
 import ContratacaoPlano from "../modules/contracts/contratacaoPlano";
 import Contrato from "../modules/contracts/contrato";
 import CadExercicio from "../modules/exercises/cadExercicio";
+import Help from "../modules/help/help";
 import Payouts from "../modules/payouts/payouts";
 import Avaliacao from "../modules/physicalAssessments/avaliacao";
 import CadAvaliacao from "../modules/physicalAssessments/cadavaliacao";
@@ -78,6 +79,7 @@ const routes = [
    { path: "/contratacaoplano", name: "Alunos", element: ContratacaoPlano },
 
    //Informações
+   { path: "/help", name: "Aluno", element: Help },
    { path: "/aluno", name: "Aluno", element: Aluno },
    { path: "/avaliacao", name: "Avaliação", element: Avaliacao },
    { path: "/treino", name: "Avaliação", element: WorkoutView },
