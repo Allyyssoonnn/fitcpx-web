@@ -445,6 +445,7 @@ function CadAvaliacao() {
 
                            <TabsContent value="bioimpedancia" className="mt-3 pt-3 border-t-1">
                               <Bioimpedancia
+                                 ocultarCampos={ocultarCampos}
                                  register={register}
                                  startSpeechRecognition={startSpeechRecognition}
                                  errors={errors}

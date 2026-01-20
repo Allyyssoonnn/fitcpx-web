@@ -358,6 +358,8 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
 
                                  <InputGroup>
                                     <NumericFormat
+                                       decimalSeparator=","
+                                       allowedDecimalSeparators={[",", "."]}
                                        {...(register
                                           ? register(field.fieldName as string, {
                                                required: fieldRequerid,
@@ -369,12 +371,16 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                        id={field.id}
                                        value={value}
                                        className={cn(
-                                          "h-full w-full px-3 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                          "h-full w-full px-3 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                                        )}
-                                       onChange={(e) => {
-                                          const val = e.target.value;
-                                          setValue(field.fieldName, val === "" ? "" : Number(val));
+                                       onValueChange={(values) => {
+                                          const val = values.floatValue ?? "";
+                                          setValue(field.fieldName, val);
                                        }}
+                                       // onChange={(e) => {
+                                       //    const val = e.target.value;
+                                       //    setValue(field.fieldName, val === "" ? "" : Number(val));
+                                       // }}
                                     />
                                  </InputGroup>
 

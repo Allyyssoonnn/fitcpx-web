@@ -16,7 +16,7 @@ function Perimetros({
    watch,
    errors,
    cod_protocolo,
-}) {
+}: any) {
    return (
       <div className="row g-3">
          <div className="col-md-3">
@@ -210,7 +210,7 @@ export const protocolosCampos = {
    3: [],
    4: [],
    5: ["abdomen", "quadril", "crista_iliaca"],
-   6: ["abdomen", "braco_relaxado_direito", "panturrilha_direita"],
+   6: ["pescoco", "cintura", "quadril"],
    7: [],
 };
 
