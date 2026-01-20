@@ -160,7 +160,7 @@ function Avaliacao() {
 
                <Accordion type="single" collapsible className="mx-3 mt-3">
                   <Biompedancia avaliacao={avaliacao} />
-                  {avaliacao.tipo_avaliacao === "completo" && <AreaMagraGorda result={result} />}
+                  <AreaMagraGorda result={result} />
                   <Perimetro avaliacao={avaliacao} />
                   <Dobras avaliacao={avaliacao} />
                   <Diametro avaliacao={avaliacao} />
@@ -289,7 +289,11 @@ function ComposicaoCorporal({ avaliacao, result }) {
          ];
       }
 
-      if (avaliacao.tipo_avaliacao === "completo") {
+      if (
+         result?.compositionPercentage?.massa_muscular > 0 &&
+         result?.compositionPercentage?.massa_ossea > 0 &&
+         result?.compositionPercentage?.massa_residual > 0
+      ) {
          return [
             {
                id: "gordura",
@@ -368,37 +372,43 @@ function ComposicaoCorporal({ avaliacao, result }) {
                         <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
                      </TableRow>
                   )}
-                  {avaliacao.tipo_avaliacao === "completo" && avaliacao.cod_protocolo != 7 && (
-                     <>
+                  {result?.compositionPercentage?.massa_muscular > 0 &&
+                     result?.compositionPercentage?.massa_ossea > 0 &&
+                     result?.compositionPercentage?.massa_residual > 0 &&
+                     avaliacao.cod_protocolo != 7 && (
+                        <>
+                           <TableRow>
+                              <TableCell>Muscular</TableCell>
+                              <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
+                              <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
+                           </TableRow>
+                           <TableRow>
+                              <TableCell>Óssea</TableCell>
+                              <TableCell>{result?.compositionPercentage?.massa_ossea} %</TableCell>
+                              <TableCell>{result?.compositionWeight?.massa_ossea} KG</TableCell>
+                           </TableRow>
+                           <TableRow>
+                              <TableCell>Residual</TableCell>
+                              <TableCell>{result?.compositionPercentage?.massa_residual} %</TableCell>
+                              <TableCell>{result?.compositionWeight?.massa_residual} KG</TableCell>
+                           </TableRow>
+                           <TableRow>
+                              <TableCell>MCM</TableCell>
+                              <TableCell>{result?.compositionPercentage?.mcm} %</TableCell>
+                              <TableCell>{result?.compositionWeight?.mcm} KG</TableCell>
+                           </TableRow>
+                        </>
+                     )}
+                  {result?.compositionPercentage?.massa_muscular <= 0 &&
+                     result?.compositionPercentage?.massa_ossea <= 0 &&
+                     result?.compositionPercentage?.massa_residual <= 0 &&
+                     avaliacao.cod_protocolo != 7 && (
                         <TableRow>
-                           <TableCell>Muscular</TableCell>
-                           <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
-                           <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
+                           <TableCell>Massa magra</TableCell>
+                           <TableCell>{result?.compositionPercentage?.massa_magra} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.massa_magra} KG</TableCell>
                         </TableRow>
-                        <TableRow>
-                           <TableCell>Óssea</TableCell>
-                           <TableCell>{result?.compositionPercentage?.massa_ossea} %</TableCell>
-                           <TableCell>{result?.compositionWeight?.massa_ossea} KG</TableCell>
-                        </TableRow>
-                        <TableRow>
-                           <TableCell>Residual</TableCell>
-                           <TableCell>{result?.compositionPercentage?.massa_residual} %</TableCell>
-                           <TableCell>{result?.compositionWeight?.massa_residual} KG</TableCell>
-                        </TableRow>
-                        <TableRow>
-                           <TableCell>MCM</TableCell>
-                           <TableCell>{result?.compositionPercentage?.mcm} %</TableCell>
-                           <TableCell>{result?.compositionWeight?.mcm} KG</TableCell>
-                        </TableRow>
-                     </>
-                  )}
-                  {avaliacao.tipo_avaliacao !== "completo" && avaliacao.cod_protocolo != 7 && (
-                     <TableRow>
-                        <TableCell>Massa magra</TableCell>
-                        <TableCell>{result?.compositionPercentage?.massa_magra} %</TableCell>
-                        <TableCell>{result?.compositionWeight?.massa_magra} KG</TableCell>
-                     </TableRow>
-                  )}
+                     )}
                </TableBody>
             </Table>
          </CardContent>
