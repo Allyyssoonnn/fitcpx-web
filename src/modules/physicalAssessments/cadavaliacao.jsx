@@ -64,6 +64,7 @@ function CadAvaliacao() {
    const [imageDescriptions, setImageDescriptions] = useState({});
    const [deletedImages, setDeletedImages] = useState([]);
    const [aluno, setAluno] = useState();
+   const [resetKey, setResetKey] = useState(0);
    const [activeTab, setActiveTab] = useState("bioimpedancia");
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
@@ -254,16 +255,37 @@ function CadAvaliacao() {
    };
 
    function clear() {
-      reset();
+      // 1. Define o estado "limpo" desejado
+      const cleanValues = {
+         data_avaliacao: new Date().toISOString().split("T")[0],
+         cod_protocolo: 1,
+         tipo_avaliacao: localStorage.getItem("memoPhysicalAssessmentType") ?? "completo",
+         cod_usuario: usuario?.cod_usuario, // Mantém o vínculo com o avaliador
+         cod_aluno: aluno?.cod_aluno, // Mantém o vínculo com o aluno atual
+         peso: "",
+         altura: "",
+         // O reset vai limpar todos os outros campos não especificados aqui como undefined
+      };
+
+      // 2. Reseta o React Hook Form passando os novos valores limpos
+      reset(cleanValues);
+
+      // 3. Limpa o Store Global e Cache
       useFormStore.getState().clearForm();
       localStorage.removeItem("avaliacaoCache");
-      setProtocolo();
-      setValue(
-         "data_avaliacao",
-         new Intl.DateTimeFormat("fr-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()),
-      );
-      setValue("cod_protocolo", 1);
-      setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
+
+      // 4. Reseta os Estados Locais (React useState)
+      setProtocolo(1);
+      setCapturedImages({}); // Limpa as imagens visuais
+      setImageDescriptions({}); // Limpa as descrições
+      setDeletedImages([]); // Limpa lista de exclusão
+
+      setActiveTab("bioimpedancia");
+
+      setResetKey((prev) => prev + 1);
+
+      // Opcional: Feedback visual
+      toast.success("Formulário limpo com sucesso!");
    }
 
    function bringLast(e, field) {
@@ -428,6 +450,7 @@ function CadAvaliacao() {
                         </div>
 
                         <Tabs
+                           key={resetKey}
                            value={activeTab}
                            activeKey={activeTab}
                            onValueChange={(tab) => setActiveTab(tab)}

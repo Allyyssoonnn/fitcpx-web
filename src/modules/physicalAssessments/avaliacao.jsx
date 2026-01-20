@@ -271,6 +271,69 @@ function AreaMagraGorda({ result }) {
 }
 
 function ComposicaoCorporal({ avaliacao, result }) {
+   const getData = () => {
+      if (avaliacao.cod_protocolo === 7) {
+         return [
+            {
+               id: "Gordura",
+               label: "Gordura",
+               value: result?.compositionPercentage?.gordura,
+               fill: "var(--color-chrome)",
+            },
+            {
+               id: "Músculo",
+               label: "Músculo",
+               value: result?.compositionPercentage?.massa_muscular,
+               fill: "var(--color-safari)",
+            },
+         ];
+      }
+
+      if (avaliacao.tipo_avaliacao === "completo") {
+         return [
+            {
+               id: "gordura",
+               label: "Gordura",
+               value: result?.compositionPercentage?.gordura,
+               fill: "var(--color-chrome)",
+            },
+            {
+               id: "Músculo",
+               label: "Músculo",
+               value: result?.compositionPercentage?.massa_muscular,
+               fill: "var(--color-safari)",
+            },
+            {
+               id: "Osso",
+               label: "Osso",
+               value: result?.compositionPercentage?.massa_ossea,
+               fill: "var(--color-firefox)",
+            },
+            {
+               id: "Residual",
+               label: "Residual",
+               value: result?.compositionPercentage?.massa_residual,
+               fill: "var(--color-edge)",
+            },
+         ];
+      } else {
+         return [
+            {
+               id: "Gordura",
+               label: "Gordura",
+               value: result?.compositionPercentage?.gordura,
+               fill: "var(--color-chrome)",
+            },
+            {
+               id: "Massa magra",
+               label: "Massa magra",
+               value: result?.compositionPercentage?.massa_magra,
+               fill: "var(--color-safari)",
+            },
+         ];
+      }
+   };
+
    return (
       <Card className="bg-accent">
          <CardHeader>
@@ -278,51 +341,7 @@ function ComposicaoCorporal({ avaliacao, result }) {
          </CardHeader>
 
          <CardContent className="px-3">
-            <ChartPieLabel
-               data={
-                  avaliacao.tipo_avaliacao === "completo"
-                     ? [
-                          {
-                             id: "gordura",
-                             label: "Gordura",
-                             value: result?.compositionPercentage?.gordura,
-                             fill: "var(--color-chrome)",
-                          },
-                          {
-                             id: "Músculo",
-                             label: "Músculo",
-                             value: result?.compositionPercentage?.massa_muscular,
-                             fill: "var(--color-safari)",
-                          },
-                          {
-                             id: "Osso",
-                             label: "Osso",
-                             value: result?.compositionPercentage?.massa_ossea,
-                             fill: "var(--color-firefox)",
-                          },
-                          {
-                             id: "Residual",
-                             label: "Residual",
-                             value: result?.compositionPercentage?.massa_residual,
-                             fill: "var(--color-edge)",
-                          },
-                       ]
-                     : [
-                          {
-                             id: "Gordura",
-                             label: "Gordura",
-                             value: result?.compositionPercentage?.gordura,
-                             fill: "var(--color-chrome)",
-                          },
-                          {
-                             id: "Massa magra",
-                             label: "Massa magra",
-                             value: result?.compositionPercentage?.massa_magra,
-                             fill: "var(--color-safari)",
-                          },
-                       ]
-               }
-            />
+            <ChartPieLabel data={getData()} />
 
             <Table className="mt-3">
                <TableHeader>
@@ -342,20 +361,27 @@ function ComposicaoCorporal({ avaliacao, result }) {
                      <TableCell>{result?.compositionPercentage?.gordura} %</TableCell>
                      <TableCell>{result?.compositionWeight?.gordura} KG</TableCell>
                   </TableRow>
-                  {avaliacao.tipo_avaliacao === "completo" ? (
+                  {avaliacao.cod_protocolo == 7 && (
+                     <TableRow>
+                        <TableCell>Muscular</TableCell>
+                        <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
+                        <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
+                     </TableRow>
+                  )}
+                  {avaliacao.tipo_avaliacao === "completo" && avaliacao.cod_protocolo != 7 && (
                      <>
                         <TableRow>
-                           <TableCell>Musc.</TableCell>
+                           <TableCell>Muscular</TableCell>
                            <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
                            <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
                         </TableRow>
                         <TableRow>
-                           <TableCell>Óssea.</TableCell>
+                           <TableCell>Óssea</TableCell>
                            <TableCell>{result?.compositionPercentage?.massa_ossea} %</TableCell>
                            <TableCell>{result?.compositionWeight?.massa_ossea} KG</TableCell>
                         </TableRow>
                         <TableRow>
-                           <TableCell>Resi.</TableCell>
+                           <TableCell>Residual</TableCell>
                            <TableCell>{result?.compositionPercentage?.massa_residual} %</TableCell>
                            <TableCell>{result?.compositionWeight?.massa_residual} KG</TableCell>
                         </TableRow>
@@ -365,9 +391,10 @@ function ComposicaoCorporal({ avaliacao, result }) {
                            <TableCell>{result?.compositionWeight?.mcm} KG</TableCell>
                         </TableRow>
                      </>
-                  ) : (
+                  )}
+                  {avaliacao.tipo_avaliacao !== "completo" && avaliacao.cod_protocolo != 7 && (
                      <TableRow>
-                        <TableCell>Massa Magra</TableCell>
+                        <TableCell>Massa magra</TableCell>
                         <TableCell>{result?.compositionPercentage?.massa_magra} %</TableCell>
                         <TableCell>{result?.compositionWeight?.massa_magra} KG</TableCell>
                      </TableRow>
@@ -446,7 +473,7 @@ function SimetriaMembro({ avaliacao }) {
                      <TableCell>{avaliacao.braco_relaxado_direito || "-"}</TableCell>
                      <TableCell
                         className={getDifferenceClass(
-                           avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito
+                           avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito,
                         )}
                      >
                         {Math.abs(avaliacao.braco_relaxado_esquerdo - avaliacao.braco_relaxado_direito).toFixed(2) ||
@@ -459,7 +486,7 @@ function SimetriaMembro({ avaliacao }) {
                      <TableCell>{avaliacao.braco_contraido_direito || "-"}</TableCell>
                      <TableCell
                         className={getDifferenceClass(
-                           avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo
+                           avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo,
                         )}
                      >
                         {Math.abs(avaliacao.braco_contraido_direito - avaliacao.braco_contraido_esquerdo).toFixed(2) ||
