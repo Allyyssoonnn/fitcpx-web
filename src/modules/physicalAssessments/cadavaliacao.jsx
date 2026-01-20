@@ -191,7 +191,7 @@ function CadAvaliacao() {
                cod_avaliacao: String(cod_avaliacao),
                deletedImages: JSON.stringify(deletedImages),
             },
-            cod_avaliacao
+            cod_avaliacao,
          );
          resp ? console.log("Imagens enviadas com sucesso!") : console.error("Erro ao enviar as imagens:", resp.msg);
       } catch (error) {
@@ -231,7 +231,8 @@ function CadAvaliacao() {
             let transcript = result[0].transcript;
             toast.success(`Reconhecido ${transcript}`);
 
-            if (numberString[transcript]) transcript = String(numberString[transcript]);
+            if (numberString[String(transcript).toLocaleLowerCase()])
+               transcript = String(numberString[String(transcript).toLocaleLowerCase()]);
 
             console.log("Comando reconhecido:", inputName, transcript);
             setValue(inputName, transcript.replace(",", "."));
@@ -258,7 +259,7 @@ function CadAvaliacao() {
       setProtocolo();
       setValue(
          "data_avaliacao",
-         new Intl.DateTimeFormat("fr-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())
+         new Intl.DateTimeFormat("fr-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()),
       );
       setValue("cod_protocolo", 1);
       setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
@@ -285,7 +286,7 @@ function CadAvaliacao() {
                         <label className="mb-3">
                            Aluno:{" "}
                            <strong>{`${aluno?.nome_aluno} | ${calcularIdade(
-                              aluno?.data_nascimento_aluno
+                              aluno?.data_nascimento_aluno,
                            )} - Anos`}</strong>
                         </label>
 
@@ -525,16 +526,34 @@ function CadAvaliacao() {
 }
 
 const numberString = {
-   Um: 1,
-   Dois: 2,
-   Três: 3,
-   Quatro: 4,
-   Cinco: 5,
-   Seis: 6,
-   Sete: 7,
-   Oito: 8,
-   Nove: 9,
-   Dez: 10,
+   um: 1,
+   dois: 2,
+   três: 3,
+   quatro: 4,
+   cinco: 5,
+   seis: 6,
+   sete: 7,
+   oito: 8,
+   nove: 9,
+   dez: 10,
+   onze: 11,
+   doze: 12,
+   treze: 13,
+   quatorze: 14,
+   quinze: 15,
+   dezesseis: 16,
+   dezessete: 17,
+   dezoito: 18,
+   dezenove: 19,
+   vinte: 20,
+   trinta: 30,
+   quarenta: 40,
+   cinquenta: 50,
+   sessenta: 60,
+   setenta: 70,
+   oitenta: 80,
+   noventa: 90,
+   cem: 100,
 };
 
 export const protocolosPattern = {
