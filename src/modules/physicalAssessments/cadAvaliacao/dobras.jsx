@@ -5,6 +5,30 @@ import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/ui/tooltip";
 
+// Definição dos protocolos fora do componente para evitar recriação
+export const protocolosCampos = {
+   1: [],
+   2: ["subescapular", "triciptal", "supra_iliaca", "coxa", "peitoral", "axilar_media", "abdominal"],
+   3: ["supra_iliaca", "peitoral", "coxa"],
+   4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
+   5: [],
+   6: [],
+   7: [],
+};
+
+const dobrasDisponiveis = [
+   "subescapular",
+   "triciptal",
+   "biciptal",
+   "peitoral",
+   "axilar_media",
+   "supra_iliaca",
+   "supra_espinhal",
+   "abdominal",
+   "coxa",
+   "panturrilha",
+];
+
 function Dobras({
    metodoDobras,
    setMetodoDobras,
@@ -26,7 +50,6 @@ function Dobras({
                   <TooltipTrigger>
                      <Info size={15} />
                   </TooltipTrigger>
-
                   <TooltipContent>
                      <div>
                         <strong>Normal:</strong> Apenas um campo para preencher medidas é liberado.
@@ -38,14 +61,13 @@ function Dobras({
                      </div>
                   </TooltipContent>
                </Tooltip>
-               <span className="ms-1">Metódo</span>
+               <span className="ms-1">Método</span>
             </label>
 
             <Select value={metodoDobras} onValueChange={(v) => setMetodoDobras(v)}>
-               <SelectTrigger>
-                  <SelectValue placeholder="Metódo" />
+               <SelectTrigger className="min-w-sm">
+                  <SelectValue placeholder="Método" />
                </SelectTrigger>
-
                <SelectContent>
                   <SelectItem value="normal">Normal</SelectItem>
                   <SelectItem value="media">Média</SelectItem>
@@ -83,81 +105,61 @@ const DobrasCampos = ({
    watch,
    errors,
 }) => {
-   const dobrasDisponiveis = [
-      "subescapular",
-      "triciptal",
-      "biciptal",
-      "peitoral",
-      "axilar_media",
-      "supra_iliaca",
-      "supra_espinhal",
-      "abdominal",
-      "coxa",
-      "panturrilha",
-   ];
+   // Garante que seja um array mesmo se protocolo for null/undefined
+   const camposDoProtocolo = protocolosCampos[protocolo] || [];
 
-   //Evita uma renderização caso protocolo não esteja definido
-   if (!protocolosCampos[protocolo]) return <></>;
-
-   const camposParaExibir =
+   // Define quais campos fazem parte do protocolo (para colocar o asterisco e controlar o filtro)
+   const camposNecessarios =
       tipoAvaliacao === "completo"
-         ? [...new Set([...protocolosCampos[protocolo], "triciptal", "coxa", "panturrilha"])]
-         : protocolosCampos[protocolo] || [];
+         ? [...new Set([...camposDoProtocolo, "triciptal", "coxa", "panturrilha"])]
+         : camposDoProtocolo;
 
-   const camposComAsterisco = new Set(camposParaExibir);
+   const setCamposNecessarios = new Set(camposNecessarios);
 
-   // Utilizando useMemo para memorizar o resultado da filtragem
+   // Lógica principal de exibição:
    const filteredDobras = useMemo(() => {
-      return dobrasDisponiveis.filter((campo) => !ocultarCampos || camposComAsterisco.has(campo));
-   }, [dobrasDisponiveis, ocultarCampos, camposComAsterisco]);
+      return dobrasDisponiveis.filter((campo) => {
+         // Se ocultarCampos for FALSE: !ocultarCampos é TRUE -> Retorna tudo (curto-circuito no OR)
+         // Se ocultarCampos for TRUE: verifica se o campo está no setCamposNecessarios
+         return !ocultarCampos || setCamposNecessarios.has(campo);
+      });
+   }, [dobrasDisponiveis, ocultarCampos, setCamposNecessarios]);
 
    return (
       <>
-         {[1, 2, 3, 4, 5].includes(protocolo) && (
-            <>
-               {filteredDobras.map((campo) => {
-                  const hasAsterisk = camposComAsterisco.has(campo); // Verifica se o campo está filtrado
-                  return (
-                     <Field className="col-md-4" key={campo}>
-                        <FieldLabel className={`${hasAsterisk ? "fw-bold" : ""}`}>
-                           {campo.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())} {hasAsterisk ? " *" : ""}{" "}
-                           (mm)
-                        </FieldLabel>
+         {filteredDobras.map((campo) => {
+            const isRequired = setCamposNecessarios.has(campo);
 
-                        <FieldContent>
-                           <MediaInputUI
-                              whatch={watch}
-                              inputId={campo}
-                              register={register}
-                              defaultValue={getValues(campo)}
-                              field={campo}
-                              startSpeechRecognition={startSpeechRecognition}
-                              type={metodoDobras == "normal" ? "default" : "media"}
-                              setValue={setValue}
-                              required={camposComAsterisco.has(campo)}
-                           />
+            return (
+               <Field className="col-md-4" key={campo}>
+                  <FieldLabel className={`${isRequired ? "fw-bold" : ""}`}>
+                     {campo.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())} {isRequired ? " *" : ""} (mm)
+                  </FieldLabel>
 
-                           {errors && errors?.[campo] && (
-                              <div id="mediahelp" className="form-text text-danger">
-                                 Esse campo é obrigatório
-                              </div>
-                           )}
-                        </FieldContent>
-                     </Field>
-                  );
-               })}
-            </>
-         )}
+                  <FieldContent>
+                     <MediaInputUI
+                        whatch={watch}
+                        inputId={campo}
+                        register={register}
+                        defaultValue={getValues(campo)}
+                        field={campo}
+                        startSpeechRecognition={startSpeechRecognition}
+                        type={metodoDobras == "normal" ? "default" : "media"}
+                        setValue={setValue}
+                        required={isRequired}
+                     />
+
+                     {errors && errors?.[campo] && (
+                        <div id="mediahelp" className="form-text text-danger">
+                           Esse campo é obrigatório
+                        </div>
+                     )}
+                  </FieldContent>
+               </Field>
+            );
+         })}
       </>
    );
-};
-
-export const protocolosCampos = {
-   1: [],
-   2: ["subescapular", "triciptal", "supra_iliaca", "coxa", "peitoral", "axilar_media", "abdominal"],
-   3: ["supra_iliaca", "peitoral", "coxa"],
-   4: ["peitoral", "axilar_media", "triciptal", "subescapular", "abdominal", "supra_iliaca", "coxa"],
-   5: [],
 };
 
 export default Dobras;

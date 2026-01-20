@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter } from "../../components/ui/card";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -273,6 +274,7 @@ function CadAvaliacao() {
       }
       setValue(field, lastField);
    }
+   console.log(errors);
 
    return (
       <div className="container-fluid">
@@ -366,7 +368,7 @@ function CadAvaliacao() {
                                     value={protocolo}
                                     onValueChange={(v) => setValue("cod_protocolo", v)}
                                  >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="min-w-sm">
                                        <SelectValue placeholder="Selecione um protocolo" />
                                     </SelectTrigger>
 
@@ -434,7 +436,9 @@ function CadAvaliacao() {
                            <TabsList className="flex-wrap w-[100%] rounded my-3 h-auto">
                               <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
                               <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
-                              <TabsTrigger value="dobras">Dobras cutâneas</TabsTrigger>
+                              <TabsTrigger value="dobras">
+                                 Dobras cutâneas <Badge className="bg-red-500">!</Badge>
+                              </TabsTrigger>
                               <TabsTrigger value="perimetros">Perímetros</TabsTrigger>
                               <TabsTrigger value="imagens">Imagens</TabsTrigger>
                            </TabsList>

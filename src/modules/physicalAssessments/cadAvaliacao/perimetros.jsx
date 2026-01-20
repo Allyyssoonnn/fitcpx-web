@@ -41,7 +41,7 @@ function Perimetros({
             </label>
 
             <Select value={metodoPerimetro} onValueChange={(v) => setMetodoPerimetro(v)}>
-               <SelectTrigger>
+               <SelectTrigger className="min-w-sm">
                   <SelectValue placeholder="Metódo" />
                </SelectTrigger>
 
