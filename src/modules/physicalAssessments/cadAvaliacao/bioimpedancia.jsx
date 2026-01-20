@@ -5,7 +5,7 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
    return (
       <div className="row g-3">
          <Field className="col-md-4">
-            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>Gordura Visceral</FieldLabel>
+            <FieldLabel>Gordura Visceral</FieldLabel>
 
             <FieldContent>
                <MediaInputUI
@@ -73,7 +73,7 @@ function Bioimpedancia({ register, startSpeechRecognition, setValue, watch, getV
          </Field>
 
          <Field className="col-md-4">
-            <FieldLabel className={`${protocolo == 7 ? "fw-bold" : ""}`}>Idade Corporal</FieldLabel>
+            <FieldLabel>Idade Corporal</FieldLabel>
 
             <FieldContent>
                <MediaInputUI
