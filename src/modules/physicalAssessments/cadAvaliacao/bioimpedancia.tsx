@@ -74,4 +74,13 @@ function Bioimpedancia({
    );
 }
 
+export function verifyBioimpedanceErrors(errors: any, protocolo: number) {
+   for (let field of fields) {
+      if (errors?.[field.field] && protocolo == field.requiredProtocolo) {
+         return true;
+      }
+   }
+   return false;
+}
+
 export default Bioimpedancia;

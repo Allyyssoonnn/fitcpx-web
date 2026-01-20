@@ -202,6 +202,20 @@ function Perimetros({
    );
 }
 
+export function verifyPerimeterErrors(errors: any, protocolo: number, tipoAvaliacao: string) {
+   for (let field of [...perimetros, ...perimetrosDireito, ...perimetrosEsquerdo]) {
+      const isRequired =
+         (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
+         protocolosCampos[protocolo].includes(field.name);
+
+      if (isRequired && errors?.[field.name]) {
+         return true;
+      }
+   }
+
+   return false;
+}
+
 const perimetrosRequired = ["braco_relaxado_direito", "coxa_direita", "panturrilha_direita"];
 
 export const protocolosCampos = {

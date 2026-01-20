@@ -28,11 +28,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, limpaForm, preventForm } from "../../utils";
-import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
-import Diametros from "./cadAvaliacao/diametros";
-import Dobras from "./cadAvaliacao/dobras";
+import Bioimpedancia, { verifyBioimpedanceErrors } from "./cadAvaliacao/bioimpedancia";
+import Diametros, { verifyDiameterErrors } from "./cadAvaliacao/diametros";
+import Dobras, { verifyFoldErrors } from "./cadAvaliacao/dobras";
 import Imagens from "./cadAvaliacao/imagens";
-import Perimetros from "./cadAvaliacao/perimetros";
+import Perimetros, { verifyPerimeterErrors } from "./cadAvaliacao/perimetros";
 
 function CadAvaliacao() {
    const location = useLocation();
@@ -434,12 +434,30 @@ function CadAvaliacao() {
                            className="mb-3"
                         >
                            <TabsList className="flex-wrap w-[100%] rounded my-3 h-auto">
-                              <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
-                              <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
-                              <TabsTrigger value="dobras">
-                                 Dobras cutâneas <Badge className="bg-red-500">!</Badge>
+                              <TabsTrigger value="bioimpedancia">
+                                 Bioimpedância
+                                 {verifyBioimpedanceErrors(errors, protocolo) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
                               </TabsTrigger>
-                              <TabsTrigger value="perimetros">Perímetros</TabsTrigger>
+                              <TabsTrigger value="diametros">
+                                 Diâmetros
+                                 {verifyDiameterErrors(errors, tipoAvaliacao) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
+                              <TabsTrigger value="dobras">
+                                 Dobras cutâneas
+                                 {verifyFoldErrors(errors, protocolo, tipoAvaliacao) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
+                              <TabsTrigger value="perimetros">
+                                 Perímetros
+                                 {verifyPerimeterErrors(errors, protocolo, tipoAvaliacao) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
                               <TabsTrigger value="imagens">Imagens</TabsTrigger>
                            </TabsList>
 

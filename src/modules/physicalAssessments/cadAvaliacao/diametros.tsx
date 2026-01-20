@@ -78,4 +78,13 @@ function Diametros({
    );
 }
 
+export function verifyDiameterErrors(errors: any, tipoAvaliacao: string) {
+   for (let field of fields) {
+      if (errors?.[field.field] && tipoAvaliacao == field.requiredType) {
+         return true;
+      }
+   }
+   return false;
+}
+
 export default Diametros;

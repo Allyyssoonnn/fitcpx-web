@@ -52,7 +52,7 @@ function Dobras({
 
          <h5 className="text-muted">Dobras</h5>
 
-         {fields.map((field) => (
+         {foldFields.map((field) => (
             <Field
                key={field.field}
                className={`col-md-4 ${
@@ -104,7 +104,20 @@ function Dobras({
    );
 }
 
-const fields = [
+export function verifyFoldErrors(errors: any, protocolo: number, tipoAvaliacao: string) {
+   for (let field of foldFields) {
+      if (
+         errors?.[field.field] &&
+         (field.requiredProtocolos.includes(protocolo) ||
+            (field.requiredType === "completo" && tipoAvaliacao === "completo"))
+      ) {
+         return true;
+      }
+   }
+   return false;
+}
+
+const foldFields = [
    {
       label: "Subescapular",
       field: "subescapular",
