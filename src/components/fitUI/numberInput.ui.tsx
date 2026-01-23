@@ -103,7 +103,7 @@ interface MediaInputUIProps {
    field: string;
    register?: any;
    whatch?: any;
-   setValue: (field: string, value: any) => void;
+   setValue: (field: string, value: any, option?: any) => void;
    startSpeechRecognition?: any;
    type?: "default" | "media";
    defaultValue?: any;
@@ -159,7 +159,8 @@ export const MediaInputUI = ({
 
    function changeValue(v: any) {
       setMedia(v);
-      setValue(field, v);
+      // setValue(field, v);
+      setValue(field, v, { shouldValidate: true });
    }
 
    return (

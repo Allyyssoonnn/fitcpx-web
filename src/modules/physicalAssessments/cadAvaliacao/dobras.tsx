@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { useEffect } from "react";
 import { MediaInputUI } from "../../../components/fitUI/numberInput.ui";
 import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
@@ -16,7 +17,25 @@ function Dobras({
    startSpeechRecognition,
    watch,
    errors,
+   clearErrors,
 }: any) {
+   useEffect(() => {
+      foldFields.forEach((field) => {
+         // Verifica a lógica de obrigatoriedade
+         const isRequired =
+            field.requiredProtocolos.includes(protocolo as number) ||
+            (field.requiredType === "completo" && tipoAvaliacao === "completo");
+
+         // Sobrescreve o registro do campo com a nova regra de required
+         register(field.field, { required: isRequired });
+
+         // Se o campo não for mais obrigatório e tiver um erro do tipo "required", limpa o erro
+         if (!isRequired && errors?.[field.field]?.type === "required") {
+            clearErrors(field.field);
+         }
+      });
+   }, [protocolo, tipoAvaliacao, register, clearErrors, errors]);
+
    return (
       <div className="row g-3">
          <div className="col-md-3">
@@ -117,7 +136,7 @@ export function verifyFoldErrors(errors: any, protocolo: number, tipoAvaliacao: 
    return false;
 }
 
-const foldFields = [
+export const foldFields = [
    {
       label: "Subescapular",
       field: "subescapular",

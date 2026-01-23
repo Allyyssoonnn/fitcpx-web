@@ -15,8 +15,60 @@ function Perimetros({
    getValues,
    watch,
    errors,
-   cod_protocolo,
+   cod_protocolo, // Certifique-se que o Pai está passando esta prop (pode ser 'protocolo' ou 'cod_protocolo')
 }: any) {
+   // Função auxiliar para renderizar os grupos de campos
+   const renderFieldGroup = (fields: typeof perimeterFields) => {
+      return fields.map((field) => {
+         const isRequired =
+            field.requiredProtocolos?.includes(cod_protocolo) ||
+            (field.requiredType === "completo" && tipoAvaliacao === "completo");
+
+         // Lógica de Ocultar: Se ocultar estiver ativado E o campo não for obrigatório -> esconde
+         if (ocultarCampos && !isRequired) return null;
+
+         // No tipo 'Simples', se estiver ocultando campos, esconde os que não são 'Simples' (se houver essa lógica específica)
+         // Mas seguindo a lógica do pai, 'tipoAvaliacao' já controla o requiredType.
+
+         return (
+            <Field key={field.field} className="col-md-4">
+               <FieldLabel className="d-flex align-items-center">
+                  <label className={`${isRequired ? "fw-bold" : ""}`}>
+                     {field.label}
+                     {isRequired ? " *" : ""}
+                  </label>
+               </FieldLabel>
+
+               <FieldContent>
+                  <MediaInputUI
+                     whatch={watch}
+                     inputId={field.field}
+                     register={register}
+                     defaultValue={getValues(field.field)}
+                     field={field.field}
+                     startSpeechRecognition={startSpeechRecognition}
+                     type={metodoPerimetro == "normal" ? "default" : "media"}
+                     setValue={setValue}
+                     // A validação real required vem do register no Pai, aqui é só visual/html
+                     required={isRequired}
+                  />
+
+                  {errors && errors?.[field.field] && (
+                     <div id="mediahelp" className="form-text text-danger">
+                        Esse campo é obrigatório
+                     </div>
+                  )}
+               </FieldContent>
+            </Field>
+         );
+      });
+   };
+
+   // Filtramos a lista mestra para manter a separação visual
+   const geralFields = perimeterFields.filter((f) => f.category === "Geral");
+   const direitoFields = perimeterFields.filter((f) => f.category === "Direito");
+   const esquerdoFields = perimeterFields.filter((f) => f.category === "Esquerdo");
+
    return (
       <div className="row g-3">
          <div className="col-md-3">
@@ -37,12 +89,12 @@ function Perimetros({
                      </div>
                   </TooltipContent>
                </Tooltip>
-               <span className="ms-1">Metódo</span>
+               <span className="ms-1">Método</span>
             </label>
 
             <Select value={metodoPerimetro} onValueChange={(v) => setMetodoPerimetro(v)}>
                <SelectTrigger className="min-w-sm">
-                  <SelectValue placeholder="Metódo" />
+                  <SelectValue placeholder="Método" />
                </SelectTrigger>
 
                <SelectContent>
@@ -52,207 +104,167 @@ function Perimetros({
             </Select>
          </div>
 
-         <h5 className="text-muted">Geral</h5>
+         {/* Renderização visual mantendo os grupos */}
+         {geralFields.length > 0 && (
+            <>
+               <h5 className="text-muted mt-3">Geral</h5>
+               <div className="row g-3">{renderFieldGroup(geralFields)}</div>
+            </>
+         )}
 
-         <div className="row g-3">
-            {perimetros.map((field, index) => {
-               if (
-                  !perimetrosRequired.includes(field.name) &&
-                  ocultarCampos &&
-                  !protocolosCampos[cod_protocolo].includes(field.name)
-               )
-                  return;
-               if (tipoAvaliacao === "simples" && ocultarCampos) return;
+         {direitoFields.length > 0 && (
+            <>
+               <h5 className="text-muted mt-3">Lado Direito</h5>
+               <div className="row g-3">{renderFieldGroup(direitoFields)}</div>
+            </>
+         )}
 
-               const required =
-                  (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
-                  protocolosCampos[cod_protocolo].includes(field.name);
-
-               return (
-                  <Field key={index} className="col-md-4">
-                     <FieldLabel className="d-flex align-items-center">
-                        <label className={`${required ? "fw-bold" : ""}`}>
-                           {field.label}
-                           {required ? "*" : ""}
-                        </label>
-                     </FieldLabel>
-
-                     <FieldContent>
-                        <MediaInputUI
-                           whatch={watch}
-                           inputId={field.name}
-                           register={register}
-                           defaultValue={getValues(field.name)}
-                           field={field.name}
-                           startSpeechRecognition={startSpeechRecognition}
-                           type={metodoPerimetro == "normal" ? "default" : "media"}
-                           setValue={setValue}
-                           required={required}
-                        />
-
-                        {errors && errors?.[field.name] && (
-                           <div id="mediahelp" className="form-text text-danger">
-                              Esse campo é obrigatório
-                           </div>
-                        )}
-                     </FieldContent>
-                  </Field>
-               );
-            })}
-         </div>
-
-         <h5 className="text-muted">Lado Direito</h5>
-
-         <div className="row g-3">
-            {perimetrosDireito.map((field, index) => {
-               if (
-                  !perimetrosRequired.includes(field.name) &&
-                  ocultarCampos &&
-                  !protocolosCampos[cod_protocolo].includes(field.name)
-               )
-                  return;
-               if (tipoAvaliacao === "simples" && ocultarCampos) return;
-
-               const required =
-                  (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
-                  protocolosCampos[cod_protocolo].includes(field.name);
-
-               return (
-                  <Field key={index} className="col-md-4">
-                     <FieldLabel className="d-flex align-items-center">
-                        <label className={`${required ? "fw-bold" : ""}`}>
-                           {field.label}
-                           {required ? "*" : ""}
-                        </label>
-                     </FieldLabel>
-
-                     <FieldContent>
-                        <MediaInputUI
-                           whatch={watch}
-                           inputId={field.name}
-                           register={register}
-                           defaultValue={getValues(field.name)}
-                           field={field.name}
-                           startSpeechRecognition={startSpeechRecognition}
-                           type={metodoPerimetro == "normal" ? "default" : "media"}
-                           setValue={setValue}
-                           required={required}
-                        />
-
-                        {errors && errors?.[field.name] && (
-                           <div id="mediahelp" className="form-text text-danger">
-                              Esse campo é obrigatório
-                           </div>
-                        )}
-                     </FieldContent>
-                  </Field>
-               );
-            })}
-         </div>
-
-         <h5 className="text-muted">Lado Esquerdo</h5>
-
-         <div className="row g-3">
-            {perimetrosEsquerdo.map((field, index) => {
-               if (
-                  !perimetrosRequired.includes(field.name) &&
-                  ocultarCampos &&
-                  !protocolosCampos[cod_protocolo].includes(field.name)
-               )
-                  return;
-               if (tipoAvaliacao === "simples" && ocultarCampos) return;
-
-               const required =
-                  (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
-                  protocolosCampos[cod_protocolo].includes(field.name);
-
-               return (
-                  <Field className="col-md-4" key={index}>
-                     <FieldLabel className="d-flex align-items-center">
-                        <label className={`${required ? "fw-bold" : ""}`}>
-                           {field.label}
-                           {required ? "*" : ""}
-                        </label>
-                     </FieldLabel>
-
-                     <FieldContent>
-                        <MediaInputUI
-                           whatch={watch}
-                           inputId={field.name}
-                           register={register}
-                           defaultValue={getValues(field.name)}
-                           field={field.name}
-                           startSpeechRecognition={startSpeechRecognition}
-                           type={metodoPerimetro == "normal" ? "default" : "media"}
-                           setValue={setValue}
-                           required={required}
-                        />
-
-                        {errors && errors?.[field.name] && (
-                           <div id="mediahelp" className="form-text text-danger">
-                              Esse campo é obrigatório
-                           </div>
-                        )}
-                     </FieldContent>
-                  </Field>
-               );
-            })}
-         </div>
+         {esquerdoFields.length > 0 && (
+            <>
+               <h5 className="text-muted mt-3">Lado Esquerdo</h5>
+               <div className="row g-3">{renderFieldGroup(esquerdoFields)}</div>
+            </>
+         )}
       </div>
    );
 }
 
+// Função para auxiliar badges (mantida compatibilidade com o pai se necessário)
 export function verifyPerimeterErrors(errors: any, protocolo: number, tipoAvaliacao: string) {
-   for (let field of [...perimetros, ...perimetrosDireito, ...perimetrosEsquerdo]) {
+   for (let field of perimeterFields) {
       const isRequired =
-         (perimetrosRequired.includes(field.name) && tipoAvaliacao === "completo") ||
-         protocolosCampos[protocolo].includes(field.name);
+         field.requiredProtocolos?.includes(protocolo) ||
+         (field.requiredType === "completo" && tipoAvaliacao === "completo");
 
-      if (isRequired && errors?.[field.name]) {
+      if (isRequired && errors?.[field.field]) {
          return true;
       }
    }
-
    return false;
 }
 
-const perimetrosRequired = ["braco_relaxado_direito", "coxa_direita", "panturrilha_direita"];
+// --- CONSTANTES E CONFIGURAÇÃO ---
 
-export const protocolosCampos = {
-   1: [],
-   2: [],
-   3: [],
-   4: [],
-   5: ["abdomen", "quadril", "crista_iliaca"],
-   6: ["pescoco", "cintura", "quadril"],
-   7: [],
-};
+/* Mapeamento consolidado das regras baseadas no seu código original:
+  Protocolo 5: abdomen, quadril, crista_iliaca
+  Protocolo 6: pescoco, cintura, quadril
+  Required Default (Completo): braco_relaxado_direito, coxa_direita, panturrilha_direita
+*/
 
-const perimetros = [
-   { name: "pescoco", label: "Pescoço (cm)", icon: "bi bi-body" },
-   { name: "ombro", label: "Ombro (cm)", icon: "bi bi-rulers" },
-   { name: "torax_expirado", label: "Tórax expirado (cm)", icon: "bi bi-body" },
-   { name: "torax_inspirado", label: "Tórax inspirado (cm)", icon: "bi bi-body" },
-   { name: "cintura", label: "Cintura (cm)", icon: "bi bi-body" },
-   { name: "abdomen", label: "Abdômen (cm)", icon: "bi bi-body" },
-   { name: "quadril", label: "Quadril (cm)", icon: "bi bi-body" },
-   { name: "crista_iliaca", label: "Crista Ilíaca (cm)", icon: "bi bi-body" },
-];
+export const perimeterFields = [
+   // --- GERAL ---
+   {
+      field: "pescoco",
+      label: "Pescoço (cm)",
+      category: "Geral",
+      requiredProtocolos: [6],
+   },
+   {
+      field: "ombro",
+      label: "Ombro (cm)",
+      category: "Geral",
+      requiredProtocolos: [],
+   },
+   {
+      field: "torax_expirado",
+      label: "Tórax expirado (cm)",
+      category: "Geral",
+      requiredProtocolos: [],
+   },
+   {
+      field: "torax_inspirado",
+      label: "Tórax inspirado (cm)",
+      category: "Geral",
+      requiredProtocolos: [],
+   },
+   {
+      field: "cintura",
+      label: "Cintura (cm)",
+      category: "Geral",
+      requiredProtocolos: [6],
+   },
+   {
+      field: "abdomen",
+      label: "Abdômen (cm)",
+      category: "Geral",
+      requiredProtocolos: [5],
+   },
+   {
+      field: "quadril",
+      label: "Quadril (cm)",
+      category: "Geral",
+      requiredProtocolos: [5, 6],
+   },
+   {
+      field: "crista_iliaca",
+      label: "Crista Ilíaca (cm)",
+      category: "Geral",
+      requiredProtocolos: [5],
+   },
 
-const perimetrosDireito = [
-   { name: "braco_relaxado_direito", label: "Braço Relaxado Direito (cm)", icon: "bi bi-body" },
-   { name: "braco_contraido_direito", label: "Braço Contraído Direito (cm)", icon: "bi bi-body" },
-   { name: "antebraco_direito", label: "Antebraço Direito (cm)", icon: "bi bi-rulers" },
-   { name: "coxa_direita", label: "Coxa Direita (cm)", icon: "bi bi-shoe-prints" },
-   { name: "panturrilha_direita", label: "Panturrilha Direita (cm)", icon: "bi bi-shoe-prints" },
-];
+   // --- DIREITO ---
+   {
+      field: "braco_relaxado_direito",
+      label: "Braço Relaxado Direito (cm)",
+      category: "Direito",
+      requiredType: "completo",
+   },
+   {
+      field: "braco_contraido_direito",
+      label: "Braço Contraído Direito (cm)",
+      category: "Direito",
+      requiredProtocolos: [],
+   },
+   {
+      field: "antebraco_direito",
+      label: "Antebraço Direito (cm)",
+      category: "Direito",
+      requiredProtocolos: [],
+   },
+   {
+      field: "coxa_direita",
+      label: "Coxa Direita (cm)",
+      category: "Direito",
+      requiredType: "completo",
+   },
+   {
+      field: "panturrilha_direita",
+      label: "Panturrilha Direita (cm)",
+      category: "Direito",
+      requiredType: "completo",
+   },
 
-const perimetrosEsquerdo = [
-   { name: "braco_relaxado_esquerdo", label: "Braço Relaxado Esquerdo (cm)", icon: "bi bi-body" },
-   { name: "braco_contraido_esquerdo", label: "Braço Contraído Esquerdo (cm)", icon: "bi bi-body" },
-   { name: "antebraco_esquerdo", label: "Antebraço Esquerdo (cm)", icon: "bi bi-rulers" },
-   { name: "coxa_esquerda", label: "Coxa Esquerda (cm)", icon: "bi bi-shoe-prints" },
-   { name: "panturrilha_esquerda", label: "Panturrilha Esquerda (cm)", icon: "bi bi-shoe-prints" },
+   // --- ESQUERDO ---
+   {
+      field: "braco_relaxado_esquerdo",
+      label: "Braço Relaxado Esquerdo (cm)",
+      category: "Esquerdo",
+      requiredProtocolos: [],
+   },
+   {
+      field: "braco_contraido_esquerdo",
+      label: "Braço Contraído Esquerdo (cm)",
+      category: "Esquerdo",
+      requiredProtocolos: [],
+   },
+   {
+      field: "antebraco_esquerdo",
+      label: "Antebraço Esquerdo (cm)",
+      category: "Esquerdo",
+      requiredProtocolos: [],
+   },
+   {
+      field: "coxa_esquerda",
+      label: "Coxa Esquerda (cm)",
+      category: "Esquerdo",
+      requiredProtocolos: [],
+   },
+   {
+      field: "panturrilha_esquerda",
+      label: "Panturrilha Esquerda (cm)",
+      category: "Esquerdo",
+      requiredProtocolos: [],
+   },
 ];
 
 export default Perimetros;

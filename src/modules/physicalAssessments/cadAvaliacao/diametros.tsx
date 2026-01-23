@@ -3,7 +3,7 @@ import { MediaInputUI } from "../../../components/fitUI/numberInput.ui";
 import { Button } from "../../../components/ui/button";
 import { Field, FieldContent, FieldLabel } from "../../../components/ui/field";
 
-const fields = [
+export const fieldsDiameters = [
    {
       label: "Biestiloide do Punho",
       field: "biestiloide_punho",
@@ -37,7 +37,7 @@ function Diametros({
 }: any) {
    return (
       <div className="row g-3">
-         {fields.map((field) => (
+         {fieldsDiameters.map((field) => (
             <Field
                key={field.field}
                className={`col-md-4 ${ocultarCampos && field.requiredType !== tipoAvaliacao ? "d-none" : ""}`}
@@ -79,7 +79,7 @@ function Diametros({
 }
 
 export function verifyDiameterErrors(errors: any, tipoAvaliacao: string) {
-   for (let field of fields) {
+   for (let field of fieldsDiameters) {
       if (errors?.[field.field] && tipoAvaliacao == field.requiredType) {
          return true;
       }

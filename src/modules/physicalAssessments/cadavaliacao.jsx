@@ -28,11 +28,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, limpaForm, preventForm } from "../../utils";
-import Bioimpedancia, { verifyBioimpedanceErrors } from "./cadAvaliacao/bioimpedancia";
-import Diametros, { verifyDiameterErrors } from "./cadAvaliacao/diametros";
-import Dobras, { verifyFoldErrors } from "./cadAvaliacao/dobras";
+import Bioimpedancia, { fieldsBio, verifyBioimpedanceErrors } from "./cadAvaliacao/bioimpedancia";
+import Diametros, { fieldsDiameters, verifyDiameterErrors } from "./cadAvaliacao/diametros";
+import Dobras, { foldFields, verifyFoldErrors } from "./cadAvaliacao/dobras";
 import Imagens from "./cadAvaliacao/imagens";
-import Perimetros, { verifyPerimeterErrors } from "./cadAvaliacao/perimetros";
+import Perimetros, { perimeterFields, verifyPerimeterErrors } from "./cadAvaliacao/perimetros";
 
 function CadAvaliacao() {
    const location = useLocation();
@@ -51,6 +51,7 @@ function CadAvaliacao() {
       getValues,
       watch,
       reset,
+      clearErrors,
       formState: { errors, isSubmitting },
    } = form;
 
@@ -146,6 +147,32 @@ function CadAvaliacao() {
       if (watched?.cod_avaliacao) return;
       setAvaliacaoForm(watched);
    }, [JSON.stringify(watched)]);
+
+   useEffect(() => {
+      // Função auxiliar para registrar regras
+      const updateRules = (fieldsList) => {
+         fieldsList.forEach((field) => {
+            // Verifica se é obrigatório com base no protocolo e tipo atuais
+            const isRequired =
+               field.requiredProtocolos?.includes(protocolo) ||
+               (field.requiredType === "completo" && tipoAvaliacao === "completo");
+
+            // Atualiza a regra no RHF mesmo que o input não esteja na tela
+            register(field.field, { required: isRequired });
+
+            // Se deixou de ser obrigatório, removemos o erro visual (se houver)
+            if (!isRequired && errors?.[field.field]?.type === "required") {
+               clearErrors(field.field);
+            }
+         });
+      };
+
+      // Chama a atualização para todas as listas de campos
+      if (foldFields) updateRules(foldFields);
+      if (fieldsDiameters) updateRules(fieldsDiameters);
+      if (perimeterFields) updateRules(perimeterFields);
+      if (fieldsBio) updateRules(fieldsBio);
+   }, [protocolo, tipoAvaliacao, register, clearErrors, errors]);
 
    async function confirma(data) {
       try {
@@ -388,7 +415,10 @@ function CadAvaliacao() {
                                  <Select
                                     id="select-protocol"
                                     value={protocolo}
-                                    onValueChange={(v) => setValue("cod_protocolo", v)}
+                                    onValueChange={(v) => {
+                                       setValue("cod_protocolo", v);
+                                       setProtocolo(Number(v));
+                                    }}
                                  >
                                     <SelectTrigger className="min-w-sm">
                                        <SelectValue placeholder="Selecione um protocolo" />
@@ -525,6 +555,7 @@ function CadAvaliacao() {
                                  tipoAvaliacao={tipoAvaliacao}
                                  watch={watch}
                                  errors={errors}
+                                 clearErrors={clearErrors}
                               />
                            </TabsContent>
 
