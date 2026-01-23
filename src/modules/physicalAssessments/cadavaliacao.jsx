@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { createOrUpdatePhysicalAssessment, updateImagePhysicalAssessment } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter } from "../../components/ui/card";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -27,11 +28,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, limpaForm, preventForm } from "../../utils";
-import Bioimpedancia from "./cadAvaliacao/bioimpedancia";
-import Diametros from "./cadAvaliacao/diametros";
-import Dobras from "./cadAvaliacao/dobras";
+import Bioimpedancia, { fieldsBio, verifyBioimpedanceErrors } from "./cadAvaliacao/bioimpedancia";
+import Diametros, { fieldsDiameters, verifyDiameterErrors } from "./cadAvaliacao/diametros";
+import Dobras, { foldFields, verifyFoldErrors } from "./cadAvaliacao/dobras";
 import Imagens from "./cadAvaliacao/imagens";
-import Perimetros from "./cadAvaliacao/perimetros";
+import Perimetros, { perimeterFields, verifyPerimeterErrors } from "./cadAvaliacao/perimetros";
 
 function CadAvaliacao() {
    const location = useLocation();
@@ -50,6 +51,7 @@ function CadAvaliacao() {
       getValues,
       watch,
       reset,
+      clearErrors,
       formState: { errors, isSubmitting },
    } = form;
 
@@ -63,6 +65,7 @@ function CadAvaliacao() {
    const [imageDescriptions, setImageDescriptions] = useState({});
    const [deletedImages, setDeletedImages] = useState([]);
    const [aluno, setAluno] = useState();
+   const [resetKey, setResetKey] = useState(0);
    const [activeTab, setActiveTab] = useState("bioimpedancia");
    const [metodoDobras, setMetodoDobras] = useState("normal");
    const [metodoPerimetro, setMetodoPerimetro] = useState("normal");
@@ -145,6 +148,32 @@ function CadAvaliacao() {
       setAvaliacaoForm(watched);
    }, [JSON.stringify(watched)]);
 
+   useEffect(() => {
+      // Função auxiliar para registrar regras
+      const updateRules = (fieldsList) => {
+         fieldsList.forEach((field) => {
+            // Verifica se é obrigatório com base no protocolo e tipo atuais
+            const isRequired =
+               field.requiredProtocolos?.includes(protocolo) ||
+               (field.requiredType === "completo" && tipoAvaliacao === "completo");
+
+            // Atualiza a regra no RHF mesmo que o input não esteja na tela
+            register(field.field, { required: isRequired });
+
+            // Se deixou de ser obrigatório, removemos o erro visual (se houver)
+            if (!isRequired && errors?.[field.field]?.type === "required") {
+               clearErrors(field.field);
+            }
+         });
+      };
+
+      // Chama a atualização para todas as listas de campos
+      if (foldFields) updateRules(foldFields);
+      if (fieldsDiameters) updateRules(fieldsDiameters);
+      if (perimeterFields) updateRules(perimeterFields);
+      if (fieldsBio) updateRules(fieldsBio);
+   }, [protocolo, tipoAvaliacao, register, clearErrors, errors]);
+
    async function confirma(data) {
       try {
          var cancel = false;
@@ -191,7 +220,7 @@ function CadAvaliacao() {
                cod_avaliacao: String(cod_avaliacao),
                deletedImages: JSON.stringify(deletedImages),
             },
-            cod_avaliacao
+            cod_avaliacao,
          );
          resp ? console.log("Imagens enviadas com sucesso!") : console.error("Erro ao enviar as imagens:", resp.msg);
       } catch (error) {
@@ -231,7 +260,8 @@ function CadAvaliacao() {
             let transcript = result[0].transcript;
             toast.success(`Reconhecido ${transcript}`);
 
-            if (numberString[transcript]) transcript = String(numberString[transcript]);
+            if (numberString[String(transcript).toLocaleLowerCase()])
+               transcript = String(numberString[String(transcript).toLocaleLowerCase()]);
 
             console.log("Comando reconhecido:", inputName, transcript);
             setValue(inputName, transcript.replace(",", "."));
@@ -252,16 +282,37 @@ function CadAvaliacao() {
    };
 
    function clear() {
-      reset();
+      // 1. Define o estado "limpo" desejado
+      const cleanValues = {
+         data_avaliacao: new Date().toISOString().split("T")[0],
+         cod_protocolo: 1,
+         tipo_avaliacao: localStorage.getItem("memoPhysicalAssessmentType") ?? "completo",
+         cod_usuario: usuario?.cod_usuario, // Mantém o vínculo com o avaliador
+         cod_aluno: aluno?.cod_aluno, // Mantém o vínculo com o aluno atual
+         peso: "",
+         altura: "",
+         // O reset vai limpar todos os outros campos não especificados aqui como undefined
+      };
+
+      // 2. Reseta o React Hook Form passando os novos valores limpos
+      reset(cleanValues);
+
+      // 3. Limpa o Store Global e Cache
       useFormStore.getState().clearForm();
       localStorage.removeItem("avaliacaoCache");
-      setProtocolo();
-      setValue(
-         "data_avaliacao",
-         new Intl.DateTimeFormat("fr-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())
-      );
-      setValue("cod_protocolo", 1);
-      setValue("tipo_avaliacao", localStorage.getItem("memoPhysicalAssessmentType") ?? "completo");
+
+      // 4. Reseta os Estados Locais (React useState)
+      setProtocolo(1);
+      setCapturedImages({}); // Limpa as imagens visuais
+      setImageDescriptions({}); // Limpa as descrições
+      setDeletedImages([]); // Limpa lista de exclusão
+
+      setActiveTab("bioimpedancia");
+
+      setResetKey((prev) => prev + 1);
+
+      // Opcional: Feedback visual
+      toast.success("Formulário limpo com sucesso!");
    }
 
    function bringLast(e, field) {
@@ -272,6 +323,7 @@ function CadAvaliacao() {
       }
       setValue(field, lastField);
    }
+   console.log(errors);
 
    return (
       <div className="container-fluid">
@@ -285,7 +337,7 @@ function CadAvaliacao() {
                         <label className="mb-3">
                            Aluno:{" "}
                            <strong>{`${aluno?.nome_aluno} | ${calcularIdade(
-                              aluno?.data_nascimento_aluno
+                              aluno?.data_nascimento_aluno,
                            )} - Anos`}</strong>
                         </label>
 
@@ -363,9 +415,12 @@ function CadAvaliacao() {
                                  <Select
                                     id="select-protocol"
                                     value={protocolo}
-                                    onValueChange={(v) => setValue("cod_protocolo", v)}
+                                    onValueChange={(v) => {
+                                       setValue("cod_protocolo", v);
+                                       setProtocolo(Number(v));
+                                    }}
                                  >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="min-w-sm">
                                        <SelectValue placeholder="Selecione um protocolo" />
                                     </SelectTrigger>
 
@@ -425,21 +480,43 @@ function CadAvaliacao() {
                         </div>
 
                         <Tabs
+                           key={resetKey}
                            value={activeTab}
                            activeKey={activeTab}
                            onValueChange={(tab) => setActiveTab(tab)}
                            className="mb-3"
                         >
                            <TabsList className="flex-wrap w-[100%] rounded my-3 h-auto">
-                              <TabsTrigger value="bioimpedancia">Bioimpedância</TabsTrigger>
-                              <TabsTrigger value="diametros">Diâmetros</TabsTrigger>
-                              <TabsTrigger value="dobras">Dobras cutâneas</TabsTrigger>
-                              <TabsTrigger value="perimetros">Perímetros</TabsTrigger>
+                              <TabsTrigger value="bioimpedancia">
+                                 Bioimpedância
+                                 {verifyBioimpedanceErrors(errors, protocolo) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
+                              <TabsTrigger value="diametros">
+                                 Diâmetros
+                                 {verifyDiameterErrors(errors, tipoAvaliacao) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
+                              <TabsTrigger value="dobras">
+                                 Dobras cutâneas
+                                 {verifyFoldErrors(errors, protocolo, tipoAvaliacao) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
+                              <TabsTrigger value="perimetros">
+                                 Perímetros
+                                 {verifyPerimeterErrors(errors, protocolo, tipoAvaliacao) && (
+                                    <Badge className="bg-red-500 ml-1">!</Badge>
+                                 )}
+                              </TabsTrigger>
                               <TabsTrigger value="imagens">Imagens</TabsTrigger>
                            </TabsList>
 
                            <TabsContent value="bioimpedancia" className="mt-3 pt-3 border-t-1">
                               <Bioimpedancia
+                                 ocultarCampos={ocultarCampos}
                                  register={register}
                                  startSpeechRecognition={startSpeechRecognition}
                                  errors={errors}
@@ -478,6 +555,7 @@ function CadAvaliacao() {
                                  tipoAvaliacao={tipoAvaliacao}
                                  watch={watch}
                                  errors={errors}
+                                 clearErrors={clearErrors}
                               />
                            </TabsContent>
 
@@ -525,16 +603,34 @@ function CadAvaliacao() {
 }
 
 const numberString = {
-   Um: 1,
-   Dois: 2,
-   Três: 3,
-   Quatro: 4,
-   Cinco: 5,
-   Seis: 6,
-   Sete: 7,
-   Oito: 8,
-   Nove: 9,
-   Dez: 10,
+   um: 1,
+   dois: 2,
+   três: 3,
+   quatro: 4,
+   cinco: 5,
+   seis: 6,
+   sete: 7,
+   oito: 8,
+   nove: 9,
+   dez: 10,
+   onze: 11,
+   doze: 12,
+   treze: 13,
+   quatorze: 14,
+   quinze: 15,
+   dezesseis: 16,
+   dezessete: 17,
+   dezoito: 18,
+   dezenove: 19,
+   vinte: 20,
+   trinta: 30,
+   quarenta: 40,
+   cinquenta: 50,
+   sessenta: 60,
+   setenta: 70,
+   oitenta: 80,
+   noventa: 90,
+   cem: 100,
 };
 
 export const protocolosPattern = {

@@ -57,21 +57,21 @@ function Aluno() {
       enabled: !!cod_aluno,
    });
 
-   const { data: avaliacoes, refetchAvaliacao } = useQuery({
+   const { data: avaliacoes, refetch: refetchAvaliacao } = useQuery({
       queryKey: ["avaliacoes"],
       queryFn: () => getPhysicalAssessments("false", cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
 
-   const { data: alunoContratos, refetch: refetchContrato } = useQuery({
+   const { data: alunoContratos } = useQuery({
       queryKey: ["alunoContratos"],
       queryFn: () => getContracts(cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
 
-   const { data: workoutHistory, refetch } = useQuery({
+   const { data: workoutHistory } = useQuery({
       queryKey: ["workoutHistory"],
       queryFn: () => getWorkoutHistory(cod_aluno),
       initialData: [],
@@ -377,7 +377,7 @@ function Aluno() {
                               <FitTable.Root
                                  hideHeader
                                  list={avaliacoes.sort(
-                                    (a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao)
+                                    (a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao),
                                  )}
                                  fieldSearch="data_avaliacao"
                                  onClickItem={(row) =>
@@ -708,12 +708,12 @@ function Aluno() {
 
                                        row.exercicios.map((v) => {
                                           v.sets?.map(
-                                             (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0)
+                                             (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0),
                                           );
 
                                           v.superSets?.map((v2) => {
                                              v2.sets?.map(
-                                                (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0)
+                                                (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0),
                                              );
                                           });
                                        });
@@ -730,7 +730,7 @@ function Aluno() {
                                           row.exercicios.every(
                                              (v) =>
                                                 v?.treino_exercicio_executado == "S" &&
-                                                v.superSets?.every((v2) => v2.treino_exercicio_executado == "S")
+                                                v.superSets?.every((v2) => v2.treino_exercicio_executado == "S"),
                                           )
                                        ) {
                                           return <div className="badge bg-success">Completo</div>;

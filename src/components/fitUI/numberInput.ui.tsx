@@ -64,7 +64,7 @@ export function NumberInputUI({
                step={step}
                disabled={disabled}
                className={cn(
-                  "text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  "text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                )}
                value={currentValue === undefined ? "" : currentValue}
                onChange={(e) => {
@@ -103,7 +103,7 @@ interface MediaInputUIProps {
    field: string;
    register?: any;
    whatch?: any;
-   setValue: (field: string, value: any) => void;
+   setValue: (field: string, value: any, option?: any) => void;
    startSpeechRecognition?: any;
    type?: "default" | "media";
    defaultValue?: any;
@@ -159,7 +159,8 @@ export const MediaInputUI = ({
 
    function changeValue(v: any) {
       setMedia(v);
-      setValue(field, v);
+      // setValue(field, v);
+      setValue(field, v, { shouldValidate: true });
    }
 
    return (
@@ -169,44 +170,67 @@ export const MediaInputUI = ({
                {type === "media" && (
                   <>
                      <NumericFormat
+                        decimalSeparator=","
+                        allowedDecimalSeparators={[",", "."]}
                         className={cn(
-                           "h-full w-full border-e-2 text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                           "h-full w-full border-e-2 text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                         )}
                         value={value1}
-                        onChange={(e) => setValue1(e.target.value)}
+                        // onChange={(e) => setValue1(e.target.value)}
+                        onValueChange={(values) => {
+                           setValue1(values.value);
+                        }}
                      />
                      <NumericFormat
+                        decimalSeparator=","
+                        allowedDecimalSeparators={[",", "."]}
                         className={cn(
-                           "h-full w-full border-e-2 text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                           "h-full w-full border-e-2 text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                         )}
                         value={value2}
-                        onChange={(e) => setValue2(e.target.value)}
+                        // onChange={(e) => setValue2(e.target.value)}
+                        onValueChange={(values) => {
+                           setValue2(values.value);
+                        }}
                      />
                      {again && (
                         <NumericFormat
+                           decimalSeparator=","
+                           allowedDecimalSeparators={[",", "."]}
                            className={cn(
-                              "h-full w-full border-e-2 text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                              "h-full w-full border-e-2 text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
                            )}
                            value={value3}
-                           onChange={(e) => setValue3(e.target.value)}
+                           // onChange={(e) => setValue3(e.target.value)}
+                           onValueChange={(values) => {
+                              setValue3(values.value);
+                           }}
                         />
                      )}
                   </>
                )}
 
                <NumericFormat
+                  decimalSeparator=","
+                  allowedDecimalSeparators={[",", "."]}
                   {...register(field, { required: required })}
                   disabled={type === "media"}
                   id={inputId}
                   value={media}
                   className={cn(
                      "h-full w-full text-center appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-                     type === "media" ? "bg-accent" : ""
+                     type === "media" ? "bg-accent" : "",
                   )}
-                  onChange={(e) => {
-                     const val = e.target.value;
-                     changeValue(val === "" ? "" : Number(val));
+                  // onChange={(e) => {
+                  //    const val = e.target.value;
+                  //    changeValue(val === "" ? "" : Number(val));
+                  // }}
+                  onValueChange={(values) => {
+                     const val = values.floatValue ?? "";
+                     changeValue(val);
                   }}
+                  // decimalScale={2}
+                  // fixedDecimalScale
                />
             </InputGroup>
 
