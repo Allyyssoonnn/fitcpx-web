@@ -135,7 +135,7 @@ export default function WorkoutHistoryView() {
                                           <strong>
                                              {session.execucoes?.reduce(
                                                 (value: number, exec: any) => (value += getVolume(exec)),
-                                                0
+                                                0,
                                              )}
                                           </strong>
                                        </Label>
@@ -240,14 +240,16 @@ function CardExercise({
       executions?.map((v: any) =>
          v?.exercicios.map((exec: any) => {
             if (exec.cod_exercicio == exerciseId && exec.treino_exercicio_executado == "S") count += 1;
-         })
+         }),
       );
 
       return count;
    }
 
-   function getBestSet() {
-      let set = {};
+   function getBestSetByMetric(metric: "weight" | "repetition") {
+      let globalBestSet: any = null;
+      let globalMaxValue = 0;
+
       executions?.forEach((v: any) => {
          v?.exercicios?.forEach((exec: any) => {
             if (exec.cod_exercicio != exerciseId) return;
@@ -261,27 +263,35 @@ function CardExercise({
                sets = [];
             }
 
-            const bestSet = sets.reduce((prev, current) => {
-               if (current.checked) {
-                  return Number(current.weight) > Number(prev.weight) ? current : prev;
-               } else return prev;
-            }, sets[0]);
-            console.log(bestSet);
+            // Filtramos apenas sets marcados como concluídos (checked)
+            const validSets = sets.filter((s: any) => s.checked);
 
-            set = bestSet;
+            validSets.forEach((currentSet: any) => {
+               // Converte para número para garantir a comparação correta
+               const currentValue = Number(currentSet[metric]) || 0;
+
+               // Compara com o maior valor GLOBAL encontrado até agora em todos os treinos
+               if (currentValue > globalMaxValue) {
+                  globalMaxValue = currentValue;
+                  globalBestSet = currentSet;
+               }
+            });
          });
       });
-      return set;
+
+      return globalBestSet || {};
    }
 
+   // Retorna o peso do set com a MAIOR CARGA histórica
    function getMaxWeight() {
-      const response = getBestSet() as any;
-      return response?.weight ?? 0;
+      const response = getBestSetByMetric("weight");
+      return response?.weight ? Number(response.weight) : 0;
    }
 
+   // Retorna as repetições do set com o MAIOR NÚMERO DE REPETIÇÕES histórico
    function getMaxRepetition() {
-      const response = getBestSet() as any;
-      return response?.repetition ?? 0;
+      const response = getBestSetByMetric("repetition");
+      return response?.repetition ? Number(response.repetition) : 0;
    }
 
    return (
