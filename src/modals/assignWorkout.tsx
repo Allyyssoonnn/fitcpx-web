@@ -69,7 +69,7 @@ const AssignWorkout = NiceModal.create(({ workout, navigate }: { workout: any; n
                   value: String(student.cod_aluno),
                }))}
                onChange={(v) => setStudent(v)}
-               value={student}
+               value={student || ""}
             />
 
             <DialogFooter>
