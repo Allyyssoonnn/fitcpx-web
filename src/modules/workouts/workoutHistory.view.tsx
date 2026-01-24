@@ -117,7 +117,7 @@ export default function WorkoutHistoryView() {
                         <Accordion type="multiple">
                            <AccordionItem value={`item-${index}`}>
                               <AccordionTrigger className="border-1 p-3 flex items-center">
-                                 <Item className="w-50">
+                                 <Item className="w-full lg:w-80">
                                     <ItemContent>
                                        <ItemTitle>
                                           {session?.sequencia_sessao}
@@ -125,7 +125,7 @@ export default function WorkoutHistoryView() {
                                           {session?.nome_sessao}
                                        </ItemTitle>
 
-                                       <Separator className="w-50" />
+                                       <Separator className="w-full" />
 
                                        <Label>
                                           Execuções: <strong>{session.execucoes?.length}</strong>
@@ -164,7 +164,7 @@ export default function WorkoutHistoryView() {
                                           exerciseId={exercise.cod_exercicio}
                                        />
 
-                                       <div className="flex flex-col gap-3 ps-3">
+                                       <div className="flex flex-col gap-3">
                                           {exercise?.sets?.map((set: any, indexSet: number) => (
                                              <CardExercise
                                                 key={`exercise-${indexExercise}`}
@@ -296,7 +296,7 @@ function CardExercise({
 
    return (
       <Item key={key}>
-         <ItemMedia variant="icon">
+         <ItemMedia variant="icon" className="hidden lg:flex">
             <Tooltip>
                <TooltipTrigger>
                   <Info />
@@ -352,7 +352,7 @@ function CardExercise({
             </Label>
          </ItemContent>
 
-         <ItemActions className="flex flex-col">
+         <ItemActions className="flex w-full lg:w-auto lg:flex-col gap-3 justify-between lg:justify-start">
             <div className="flex gap-3">
                {(observation || studentObservation) && (
                   <Dialog>

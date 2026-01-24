@@ -449,10 +449,10 @@ function CadAvaliacao() {
 
                   <Card className="mt-3">
                      <CardContent>
-                        <div className="m-1 flex justify-between">
+                        <div className="m-1 flex flex-col lg:flex-row justify-between">
                            <h5 className="card-title fw-semibold mb-4 mt-4">Dados da avaliação</h5>
 
-                           <div className="flex items-center gap-2 border-1 px-2 rounded shadow-sm">
+                           <div className="flex items-center gap-2 border-1 p-3 rounded shadow-sm">
                               <Checkbox
                                  id="ocultarCampos"
                                  checked={ocultarCampos}
