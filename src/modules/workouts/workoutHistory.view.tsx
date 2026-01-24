@@ -321,7 +321,7 @@ function CardExercise({
                {name}
             </ItemTitle>
 
-            <Separator className="w-50" />
+            <Separator className="w-full" />
 
             <div className="flex gap-3 flex-wrap">
                <Label>
@@ -490,16 +490,26 @@ function EvolutionChart({ executions, exerciseId }: { executions: any[]; exercis
                   Nenhum dado de execução encontrado para este exercício.
                </div>
             ) : (
-               <div className="w-full h-[350px] mt-4">
+               <div className="w-full h-[300px] mt-4 min-w-0 overflow-hidden">
                   <ChartContainer config={chartConfig} className="h-full w-full">
-                     <LineChart
-                        accessibilityLayer
-                        data={chartData}
-                        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
-                     >
+                     <LineChart accessibilityLayer data={chartData} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                         <CartesianGrid vertical={false} />
-                        <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
-                        <YAxis yAxisId="left" tickLine={false} axisLine={false} tickMargin={8} width={30} />
+                        <XAxis
+                           interval={"preserveStartEnd"}
+                           dataKey="date"
+                           tickLine={false}
+                           axisLine={false}
+                           tickMargin={8}
+                        />
+                        <YAxis
+                           interval={"preserveStartEnd"}
+                           yAxisId="left"
+                           tickLine={false}
+                           axisLine={false}
+                           tickMargin={8}
+                           width={30}
+                           minTickGap={20}
+                        />
                         <YAxis
                            yAxisId="right"
                            orientation="right"
@@ -508,6 +518,7 @@ function EvolutionChart({ executions, exerciseId }: { executions: any[]; exercis
                            tickMargin={8}
                            width={30}
                            domain={["auto", "auto"]}
+                           minTickGap={20}
                         />
                         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                         <Line
