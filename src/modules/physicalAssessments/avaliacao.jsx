@@ -160,7 +160,7 @@ function Avaliacao() {
 
                <Accordion type="single" collapsible className="mx-3 mt-3">
                   <Biompedancia avaliacao={avaliacao} />
-                  <AreaMagraGorda result={result} />
+                  {avaliacao.cod_protocolo !== 7 && <AreaMagraGorda result={result} />}
                   <Perimetro avaliacao={avaliacao} />
                   <Dobras avaliacao={avaliacao} />
                   <Diametro avaliacao={avaliacao} />
@@ -366,11 +366,18 @@ function ComposicaoCorporal({ avaliacao, result }) {
                      <TableCell>{result?.compositionWeight?.gordura} KG</TableCell>
                   </TableRow>
                   {avaliacao.cod_protocolo == 7 && (
-                     <TableRow>
-                        <TableCell>Muscular</TableCell>
-                        <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
-                        <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
-                     </TableRow>
+                     <>
+                        <TableRow>
+                           <TableCell>Muscular</TableCell>
+                           <TableCell>{result?.compositionPercentage?.massa_muscular} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.massa_muscular} KG</TableCell>
+                        </TableRow>
+                        <TableRow>
+                           <TableCell>MCM</TableCell>
+                           <TableCell>{result?.compositionPercentage?.mcm} %</TableCell>
+                           <TableCell>{result?.compositionWeight?.mcm} KG</TableCell>
+                        </TableRow>
+                     </>
                   )}
                   {result?.compositionPercentage?.massa_muscular > 0 &&
                      result?.compositionPercentage?.massa_ossea > 0 &&
