@@ -68,12 +68,12 @@ function CadPlano() {
                  String(valor)
                     .replace(/\./g, "")
                     .replace(",", ".")
-                    .replace(/[^\d.-]/g, "")
+                    .replace(/[^\d.-]/g, ""),
               );
       if (isNaN(parsed)) return;
 
       const novoPlano = selectModalidades.map((m, i) =>
-         i === index ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m
+         i === index ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m,
       );
       const { planoAtualizado, valorTotal } = processaPlano({ modalidades: novoPlano }, duracaoPlano, valorAdesao);
       setSelectModalidades(planoAtualizado.modalidades);
@@ -84,7 +84,7 @@ function CadPlano() {
    async function confirma(data) {
       await createOrUpdatePlan(
          { ...data, valor_plano: valorTotal, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa },
-         selectModalidades
+         selectModalidades,
       );
       tSuccess();
       navigate("/planos");
@@ -144,16 +144,18 @@ function CadPlano() {
                   />
                </CardContent>
 
-               <div className="d-flex justify-end items-end gap-3 px-3">
-                  <Field className="col-2">
-                     <FieldLabel>Valor mensal</FieldLabel>
-                     <Input disabled value={formatarMoeda(valorTotal / duracaoPlano || 0)} />
-                  </Field>
+               <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-3 px-3">
+                  <div className="flex gap-3">
+                     <Field className="max-w-sm">
+                        <FieldLabel>Valor mensal</FieldLabel>
+                        <Input disabled value={formatarMoeda(valorTotal / duracaoPlano || 0)} />
+                     </Field>
 
-                  <Field className="col-2">
-                     <FieldLabel>Valor total</FieldLabel>
-                     <Input disabled value={formatarMoeda(valorTotal + valorAdesao)} />
-                  </Field>
+                     <Field className="max-w-sm">
+                        <FieldLabel>Valor total</FieldLabel>
+                        <Input disabled value={formatarMoeda(valorTotal + valorAdesao)} />
+                     </Field>
+                  </div>
 
                   <Button id="submit" type="submit">
                      <Check />

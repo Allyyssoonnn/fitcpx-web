@@ -12,6 +12,7 @@ import { stateEmpresa } from "../../states/states";
 
 import { ChartArea, Info, Pen, Share } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Separator } from "../../components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { calcularIdade, formatarData, getFitnessAssessmentPDF, getIMC, getReferenciaIMC } from "../../utils";
 import { ChartBarLabelCustom } from "./chart";
@@ -109,45 +110,47 @@ function Avaliacao() {
                      <h5>Resultado da Avaliação</h5>
                   </CardHeader>
 
-                  <CardContent className="row px-3">
+                  <CardContent className="grid grid-cols-1 lg:grid-cols-2">
                      {/* <p><strong>Protocolo:</strong> {avaliacao.cod_protocolo}</p> */}
-                     <div className="col-6">
-                        <p>
+                     <div className="flex flex-col gap-2">
+                        <Label>
                            <strong>Aluno:</strong> {aluno?.nome_aluno}
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Idade:</strong> {calcularIdade(aluno?.data_nascimento_aluno)} Anos
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Sexo:</strong> {aluno.sexo_aluno === "M" ? "Masculino" : "Feminino"}
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Peso:</strong> {avaliacao.peso} kg
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Total dobras:</strong> {getTotalDobras()} cm
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>IMC:</strong> {getIMC(avaliacao)}
-                        </p>
+                        </Label>
                      </div>
 
-                     <div className="col-6">
-                        <p>
+                     <Separator className="my-4 lg:hidden" />
+
+                     <div className="flex flex-col gap-2">
+                        <Label>
                            <strong>Data da Avaliação:</strong> {formatarData(avaliacao.data_avaliacao)}
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Tipo da Avaliação:</strong> {avaliacao.tipo_avaliacao?.toUpperCase()}
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Altura:</strong> {avaliacao.altura} cm
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Metabolismo basal:</strong> {result?.basal}
-                        </p>
-                        <p>
+                        </Label>
+                        <Label>
                            <strong>Indíce de IMC: </strong> {getReferenciaIMC(aluno, avaliacao)}
-                        </p>
+                        </Label>
                      </div>
                   </CardContent>
                </Card>

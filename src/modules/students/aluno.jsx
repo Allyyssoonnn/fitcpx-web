@@ -589,6 +589,14 @@ function Aluno() {
 
                            <div className="g-4">
                               <FitTable.Root
+                                 onClickItem={(row) =>
+                                    navigate("/contrato", {
+                                       state: {
+                                          cod_aluno_contrato: row.cod_aluno_contrato,
+                                          cod_aluno: aluno.cod_aluno,
+                                       },
+                                    })
+                                 }
                                  hideHeader
                                  list={alunoContratos}
                                  fieldSearch="nome_aluno_contrato"

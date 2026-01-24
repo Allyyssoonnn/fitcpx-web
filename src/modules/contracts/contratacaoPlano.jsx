@@ -18,6 +18,7 @@ import { Field, FieldLabel } from "../../components/ui/field";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Separator } from "../../components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { adicionarMesData, dividirParcelas, formatarCEP, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
@@ -322,6 +323,8 @@ function ContratacaoPlano() {
                         RG: <strong>{aluno?.rg_aluno ?? "-"}</strong>
                      </Label>
                   </div>
+
+                  <Separator className="my-4 lg:hidden" />
 
                   <div className="grid grid-cols-1 gap-2">
                      <CardTitle>Profissonal</CardTitle>
