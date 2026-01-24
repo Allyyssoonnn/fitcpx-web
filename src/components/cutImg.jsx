@@ -21,6 +21,7 @@ function ImageCropModal({ show, image, onConfirm, onCancel, height, width }) {
          zoomable: true,
          minCropBoxWidth: width || 150,
          minCropBoxHeight: height || 150,
+         background: false,
          ready() {
             // Inicializar a área de corte maximizada
             const containerData = cropperInstance.getContainerData();
@@ -60,12 +61,12 @@ function ImageCropModal({ show, image, onConfirm, onCancel, height, width }) {
 
    return (
       <Dialog open={show} onOpenChange={onCancel}>
-         <DialogContent>
+         <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
                <h5 className="text-black">Recortar Imagem</h5>
             </DialogHeader>
 
-            <div className="cropper-container">
+            <div className="relative w-full h-[70vh] bg-slate-100 overflow-hidden rounded-md">
                {image && (
                   <img
                      src={image}
