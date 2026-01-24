@@ -75,7 +75,7 @@ function ContratacaoPlano() {
          tempErrors.push("[Cadastro dos dados profissionais incompleto] - Endereço do profissional não informado");
       if (!empresa?.numero_empresa)
          tempErrors.push(
-            "[Cadastro dos dados profissionais incompleto] - Endereço (Número) do profissional não informado"
+            "[Cadastro dos dados profissionais incompleto] - Endereço (Número) do profissional não informado",
          );
       if (!empresa?.cidade_empresa)
          tempErrors.push("[Cadastro dos dados profissionais incompleto] - Cidade do profissional não informado");
@@ -165,13 +165,13 @@ function ContratacaoPlano() {
                     String(valor)
                        .replace(/\./g, "")
                        .replace(",", ".")
-                       .replace(/[^\d.-]/g, "")
+                       .replace(/[^\d.-]/g, ""),
                  );
 
          if (isNaN(parsed)) return prev;
 
          const modalidades = (prev.modalidades || []).map((m, i) =>
-            i === idx ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m
+            i === idx ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m,
          );
 
          // usar atualizarPlano (aplicarSubvariacoes agora respeita overrides manuais)
@@ -192,14 +192,14 @@ function ContratacaoPlano() {
          atualizarPlano({
             ...prev,
             modalidades: prev.modalidades?.filter((_, i) => i !== index),
-         })
+         }),
       );
    }
 
    useMemo(() => {
       if (selectContrato?.contrato) {
          setContratoPreenchido(
-            preencherContrato(selectContrato.contrato, aluno, empresa, plano?.modalidades, plano, pagamentoInicial)
+            preencherContrato(selectContrato.contrato, aluno, empresa, plano?.modalidades, plano, pagamentoInicial),
          );
       }
    }, [
@@ -259,7 +259,7 @@ function ContratacaoPlano() {
       const { planoAtualizado, valorTotal } = processaPlano(
          planoSelecionado,
          planoSelecionado?.duracao_plano,
-         planoSelecionado?.valor_adesao
+         planoSelecionado?.valor_adesao,
       );
 
       setPlano((prev) => ({
@@ -394,7 +394,7 @@ function ContratacaoPlano() {
             </Card>
          )}
          {!(errors.length > 0) && (
-            <div className="grid grid-cols-2 gap-3 mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
                <Card>
                   <CardContent className="grid grid-cols-1">
                      <TooltipProvider delayDuration={100}>
@@ -610,8 +610,8 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
       .map(
          (parcela, i) =>
             `<p style="margin-left: 20px;">${i + 1}. ${convertNumberToTextWithDecimals(
-               parcela
-            )} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`
+               parcela,
+            )} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`,
       )
       .join("")}`;
 
@@ -625,27 +625,27 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
       /<data_de_termino>/g,
       moment(dataInicio)
          .add(plano?.duracao_plano || 1, "M")
-         .format("DD/MM/YYYY") || "Não definido"
+         .format("DD/MM/YYYY") || "Não definido",
    );
    preenchido = preenchido.replaceAll(/<data_vencimento>/g, moment(dataInicio).format("DD") || "Não definido");
    preenchido = preenchido.replaceAll(/<tempo_contrato>/g, plano?.duracao_plano || "Não definido");
    preenchido = preenchido.replaceAll(
       /<valor_total_plano>/g,
-      plano?.valor_plano ? convertNumberToTextWithDecimals(plano.valor_plano, "pt") : "Não definido"
+      plano?.valor_plano ? convertNumberToTextWithDecimals(plano.valor_plano, "pt") : "Não definido",
    );
    preenchido = preenchido.replaceAll(
       /<valor_mensal_unitario>/g,
-      parcelas[0] ? convertNumberToTextWithDecimals(parcelas[0], "pt") : "Não definido"
+      parcelas[0] ? convertNumberToTextWithDecimals(parcelas[0], "pt") : "Não definido",
    );
 
    preenchido = preenchido.replaceAll(
       /<multa_percentagem>/g,
-      plano?.multa_moratoria ? `${plano.multa_moratoria}%` : "0%"
+      plano?.multa_moratoria ? `${plano.multa_moratoria}%` : "0%",
    );
    preenchido = preenchido.replaceAll(/<juros_percentagem>/g, plano?.juros_atraso ? `${plano.juros_atraso}%` : "0%");
    preenchido = preenchido.replaceAll(
       /<percentagem_multa>/g,
-      plano?.multa_compensatoria ? `${plano.multa_compensatoria}%` : "0%"
+      plano?.multa_compensatoria ? `${plano.multa_compensatoria}%` : "0%",
    );
    //multa_percentagem
    //juros_percentagem
