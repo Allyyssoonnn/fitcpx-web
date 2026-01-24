@@ -60,8 +60,8 @@ function ImageCropModal({ show, image, onConfirm, onCancel, height, width }) {
    }, [cropper]);
 
    return (
-      <Dialog open={show} onOpenChange={onCancel}>
-         <DialogContent className="sm:max-w-[600px]">
+      <Dialog open={show} className="">
+         <DialogContent className="sm:max-w-[600px] [&>button]:hidden">
             <DialogHeader>
                <h5 className="text-black">Recortar Imagem</h5>
             </DialogHeader>
@@ -78,7 +78,11 @@ function ImageCropModal({ show, image, onConfirm, onCancel, height, width }) {
                )}
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex flex-row sm:flex-row gap-2 justify-between">
+               <Button variant="destructive" disabled={isProcessing} onClick={onCancel}>
+                  Cancelar
+               </Button>
+
                <Button disabled={isProcessing} onClick={handleConfirm}>
                   Confirmar
                </Button>
