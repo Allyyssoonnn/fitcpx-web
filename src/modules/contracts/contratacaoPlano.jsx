@@ -18,7 +18,6 @@ import { Field, FieldLabel } from "../../components/ui/field";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-import { Separator } from "../../components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { adicionarMesData, dividirParcelas, formatarCEP, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
@@ -426,11 +425,13 @@ function ContratacaoPlano() {
                      </TooltipProvider>
 
                      {!montandoPlano && (
-                        <Field className="w-[50%]">
+                        <Field className="">
                            <FieldLabel>Selecione o plano</FieldLabel>
                            <Select onValueChange={(v) => selectPlan(v)}>
-                              <SelectTrigger>
-                                 <SelectValue placeholder="Selecione o plano" />
+                              <SelectTrigger disabled={!planos?.length}>
+                                 <SelectValue
+                                    placeholder={!planos?.length ? "Nenhum plano cadastrado" : "Selecione o plano"}
+                                 />
                               </SelectTrigger>
 
                               <SelectContent>
@@ -444,7 +445,7 @@ function ContratacaoPlano() {
                         </Field>
                      )}
 
-                     <Field className="w-[50%]">
+                     <Field className="mt-3">
                         <FieldLabel>Duração plano</FieldLabel>
                         <Select
                            disabled={!montandoPlano}
@@ -452,7 +453,9 @@ function ContratacaoPlano() {
                            onValueChange={(v) => updatePlano("duracao_plano", v)}
                         >
                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione a duração" />
+                              <SelectValue
+                                 placeholder={!montandoPlano ? "Selecione o plano primeiro" : "Selecione a duração"}
+                              />
                            </SelectTrigger>
 
                            <SelectContent>
@@ -465,7 +468,7 @@ function ContratacaoPlano() {
                         </Select>
                      </Field>
 
-                     <Field className="w-[50%] mt-3">
+                     <Field className="mt-3">
                         <FieldLabel>Primeira cobrança</FieldLabel>
                         <Input
                            type="date"
@@ -473,8 +476,6 @@ function ContratacaoPlano() {
                            onChange={(e) => setPagamentoInicial(e.target.value)}
                         />
                      </Field>
-
-                     <Separator className="my-3" />
                   </CardContent>
                </Card>
 

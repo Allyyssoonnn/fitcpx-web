@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
 
 function SelectModalidades({
-   modalidadesPlano,
+   modalidadesPlano = [],
    attValue,
    addModalidade,
    removeModalidade,
@@ -88,6 +88,13 @@ function SelectModalidades({
                      )}
                   </TableRow>
                ))}
+               {modalidadesPlano?.length == 0 && (
+                  <TableRow>
+                     <TableCell colSpan={3} className="text-center h-40">
+                        Nenhuma modalidade selecionada
+                     </TableCell>
+                  </TableRow>
+               )}
             </TableBody>
          </Table>
       </div>
