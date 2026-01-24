@@ -63,7 +63,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
                }}
             >
                <CommandInput placeholder="Pesquisa..." />
-               <CommandList>
+               <CommandList className="max-h-[300px] overflow-y-auto overflow-x-hidden">
                   <CommandEmpty>Nenhum item encontrado.</CommandEmpty>
                   <CommandGroup>
                      {optionsMemo.map((framework) => (
