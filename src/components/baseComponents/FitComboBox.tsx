@@ -49,7 +49,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
             >
                {valueComp != "null"
                   ? optionsMemo.find((framework) => framework.value === valueComp)?.label
-                  : placeHolder ?? "Selecione um item"}
+                  : (placeHolder ?? "Selecione um item")}
                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
          </PopoverTrigger>
@@ -86,7 +86,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
                            <CheckIcon
                               className={cn(
                                  "mr-2 h-4 w-4",
-                                 valueComp === framework.value ? "opacity-100" : "opacity-0"
+                                 valueComp === framework.value ? "opacity-100" : "opacity-0",
                               )}
                            />
                            {framework.label}
