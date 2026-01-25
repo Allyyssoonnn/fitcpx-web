@@ -195,6 +195,7 @@ function CadModalidade() {
                                     label: "Valor Base (R$)",
                                     fieldName: "valor_modalidade",
                                     type: "currency",
+                                    hideField: () => true,
                                  },
                               ],
                            },
@@ -304,8 +305,8 @@ function CadModalidade() {
                      <Card className="h-full">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                            <div className="space-y-1">
-                              <CardTitle>Variações de Plano</CardTitle>
-                              <CardDescription>Mensal, Semestral, etc.</CardDescription>
+                              <CardTitle>Variação da Modalidade</CardTitle>
+                              <CardDescription>Frequência Semanal ou Formato</CardDescription>
                            </div>
                            <Button variant="outline" size="sm" onClick={addPreco} id="newVarService">
                               <PlusCircle className="w-4 h-4 mr-2" />
@@ -466,12 +467,13 @@ function ModalVariacao({ show, setShow, newVariacao }) {
    const { register, handleSubmit, control, reset } = useForm();
 
    useEffect(() => {
-      if (show) reset(); // Reseta o form quando o modal abre
+      if (show) reset();
    }, [show, reset]);
 
    function confirmar(data) {
       newVariacao(data);
       setShow(false);
+      reset();
    }
 
    return (
