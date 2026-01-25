@@ -514,14 +514,12 @@ function ModalVariacao({ show, setShow, newVariacao }) {
 function ModalSubVariacao({ show, setShow, newDescont }) {
    const form = useForm();
    const {
+      register,
       handleSubmit,
+      control,
       reset,
       formState: { errors },
    } = form;
-
-   useEffect(() => {
-      if (show) reset();
-   }, [show, reset]);
 
    function confirmar(data) {
       newDescont({
@@ -531,6 +529,7 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
          valor_modalidade_variacao_valor: data.valor_modalidade_variacao_valor,
       });
       setShow(false);
+      reset();
    }
 
    return (
