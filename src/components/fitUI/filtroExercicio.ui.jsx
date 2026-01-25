@@ -194,7 +194,7 @@ function FiltroExercicio({ exercicios, setExerciciosFiltrados, exercicio = null 
 
          <Separator className="my-3" />
 
-         <div className="grid grid-cols-3 gap-3">
+         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
                <label className="form-label fw-bold">Grupo principal</label>
                <select

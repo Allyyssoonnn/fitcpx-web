@@ -1,4 +1,4 @@
-import { Check, PlusCircle } from "lucide-react";
+import { AlertCircle, Check, PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
@@ -12,8 +12,10 @@ import FitInputForm from "../../components/baseComponents/FitInputForm";
 import FitSelectForm from "../../components/baseComponents/FitSelectForm";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
+import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { stateEmpresa, stateUsuario, useNotificacao } from "../../states/states";
 import { formatarMoeda } from "../../utils";
 
@@ -81,8 +83,8 @@ function CadModalidade() {
    const newDescont = (data) => {
       setVariacoes((prevState) =>
          prevState.map((v, i) =>
-            indexVariacao == i ? { ...v, valores: Array.isArray(v.valores) ? [...v.valores, data] : [data] } : v
-         )
+            indexVariacao == i ? { ...v, valores: Array.isArray(v.valores) ? [...v.valores, data] : [data] } : v,
+         ),
       );
    };
 
@@ -102,8 +104,8 @@ function CadModalidade() {
          prevState.map((v, i) =>
             indexVariacao == i
                ? { ...v, valores: Array.isArray(v.valores) ? v.valores.filter((s, iSub) => iSub !== index) : [] }
-               : v
-         )
+               : v,
+         ),
       );
    }
 
@@ -147,7 +149,6 @@ function CadModalidade() {
                               ],
                            },
                            {
-                              separator: true,
                               cols: 5,
                               fields: [
                                  {
@@ -169,163 +170,229 @@ function CadModalidade() {
                </Card>
 
                <Card className="mt-3">
-                  <CardHeader>
-                     <CardTitle>Comissão</CardTitle>
-                     <CardDescription>Selecione quem recebe por essa modalidade</CardDescription>
-                     <CardDescription>
-                        (Na confirmação do pagamento referente a modalidade é feito o repasse automaticamente)
-                     </CardDescription>
-                  </CardHeader>
-
-                  <CardContent>
-                     <Button className="mb-3" variant="outline" onClick={addComissao}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                     <div className="space-y-1">
+                        <CardTitle>Configuração de Repasse</CardTitle>
+                        <CardDescription>Defina a divisão de valores entre empresa e profissional</CardDescription>
+                     </div>
+                     <Button variant="outline" size="sm" onClick={addComissao}>
                         <PlusCircle />
                         Adicionar
                      </Button>
+                  </CardHeader>
 
-                     <div className="table-responsive">
-                        <table className="table table-striped">
-                           <thead>
-                              <tr>
-                                 <th>Nome</th>
-                                 <th>Porcentagem</th>
-                              </tr>
-                           </thead>
-
-                           <tbody>
-                              <tr>
-                                 <td>{empresa?.nome_empresa}</td>
-                                 <td>{100 - (comissao?.porcentagem_usuario || 0)}%</td>
-                              </tr>
+                  <CardContent>
+                     <div className="rounded-md border mt-4">
+                        <Table>
+                           <TableHeader>
+                              <TableRow>
+                                 <TableHead>Beneficiário</TableHead>
+                                 <TableHead className="text-right">Participação (%)</TableHead>
+                                 <TableHead className="w-[100px]"></TableHead>
+                              </TableRow>
+                           </TableHeader>
+                           <TableBody>
+                              <TableRow>
+                                 <TableCell className="font-medium">
+                                    {empresa?.nome_empresa}{" "}
+                                    <Badge variant="secondary" className="ml-2">
+                                       Empresa
+                                    </Badge>
+                                 </TableCell>
+                                 <TableCell className="text-right font-bold text-green-600">
+                                    {100 - (comissao?.porcentagem_usuario || 0)}%
+                                 </TableCell>
+                                 <TableCell></TableCell>
+                              </TableRow>
                               {comissao?.cod_usuario && (
-                                 <tr>
-                                    <td>{comissao.nome_usuario}</td>
-                                    <td>{comissao.porcentagem_usuario}%</td>
-                                    <td>
-                                       <button
-                                          className="btn btn-sm btn-outline-danger ms-2"
-                                          onClick={(e) => removeComissao(e)}
+                                 <TableRow>
+                                    <TableCell className="font-medium">
+                                       {comissao.nome_usuario}{" "}
+                                       <Badge variant="default" className="ml-2">
+                                          Profissional
+                                       </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right font-bold text-blue-600">
+                                       {comissao.porcentagem_usuario}%
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                       <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className="text-destructive hover:bg-destructive/10"
+                                          onClick={(e) => {
+                                             e.preventDefault();
+                                             removeComissao(e);
+                                          }}
                                        >
-                                          <i className="bi bi-trash" />
-                                       </button>
-                                    </td>
-                                 </tr>
+                                          <Trash2 className="w-4 h-4" />
+                                       </Button>
+                                    </TableCell>
+                                 </TableRow>
                               )}
-                           </tbody>
-                        </table>
+                           </TableBody>
+                        </Table>
                      </div>
-
-                     <p className="text-danger fs-2">[Atenção] - Mudanças em quem recebe afetarão contratos vigentes</p>
+                     <p className="text-muted-foreground mt-2 text-xs italic flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> Alterações afetam contratos em andamento automaticamente.
+                     </p>
                   </CardContent>
                </Card>
 
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                   <div>
                      <Card className="mt-3">
-                        <CardHeader>
-                           <CardTitle>Variações da modalidade (Valor mensal)</CardTitle>
-                        </CardHeader>
-
-                        <CardContent>
-                           <Button className="mb-3" id="newVarService" variant="outline" onClick={addPreco}>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                           <div className="space-y-1">
+                              <CardTitle>Variações de Plano</CardTitle>
+                              <CardDescription>Mensal, Semestral, etc.</CardDescription>
+                           </div>
+                           <Button variant="outline" size="sm" onClick={addPreco} id="newVarService">
                               <PlusCircle />
                               Adicionar
                            </Button>
+                        </CardHeader>
 
-                           <div className="table-responsive">
-                              <table className="table table-striped">
-                                 <thead>
-                                    <tr>
-                                       <th>Nome</th>
-                                       <th>Valor</th>
-                                    </tr>
-                                 </thead>
+                        <CardContent className="flex-1">
+                           {variacoes.length === 0 ? (
+                              <div className="flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-md text-muted-foreground text-sm">
+                                 Nenhuma variação cadastrada.
+                              </div>
+                           ) : (
+                              <div className="rounded-md border">
+                                 <Table>
+                                    <TableHeader>
+                                       <TableRow>
+                                          <TableHead>Nome</TableHead>
+                                          <TableHead>Valor</TableHead>
+                                          <TableHead className="text-right">Ações</TableHead>
+                                       </TableRow>
+                                    </TableHeader>
 
-                                 <tbody>
-                                    {variacoes.map((variacao, index) => (
-                                       <tr key={index}>
-                                          <td>{variacao.nome_modalidade_variacao}</td>
-                                          <td>{formatarMoeda(variacao?.valor_modalidade_variacao || 0)}</td>
-                                          <td>
-                                             <button
-                                                className="btn btn-sm btn-outline-success"
-                                                onClick={(e) => applyDescont(e, index)}
-                                             >
-                                                <span className="me-2">Valores</span>
-                                                <i className="bi bi-cash" />
-                                             </button>
-                                             <button
-                                                className="btn btn-sm btn-outline-danger ms-2"
-                                                onClick={(e) => removeVariacao(e, index)}
-                                             >
-                                                <i className="bi bi-trash" />
-                                             </button>
-                                          </td>
-                                       </tr>
-                                    ))}
-                                 </tbody>
-                              </table>
-                           </div>
+                                    <TableBody>
+                                       {variacoes.map((variacao, index) => (
+                                          <TableRow
+                                             key={index}
+                                             className={indexVariacao === index ? "bg-muted/50" : ""}
+                                          >
+                                             <TableCell className="font-medium">
+                                                {variacao.nome_modalidade_variacao}
+                                             </TableCell>
+                                             <TableCell>
+                                                {formatarMoeda(variacao?.valor_modalidade_variacao || 0)}
+                                             </TableCell>
+                                             <TableCell className="text-right flex justify-end gap-2">
+                                                <Button
+                                                   size="sm"
+                                                   variant={indexVariacao === index ? "default" : "secondary"}
+                                                   onClick={(e) => applyDescont(e, index)}
+                                                >
+                                                   Configurar
+                                                </Button>
+                                                <Button
+                                                   size="icon"
+                                                   variant="ghost"
+                                                   className="text-destructive hover:bg-destructive/10"
+                                                   onClick={(e) => removeVariacao(e, index)}
+                                                >
+                                                   <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                             </TableCell>
+                                          </TableRow>
+                                       ))}
+                                    </TableBody>
+                                 </Table>
+                              </div>
+                           )}
                         </CardContent>
-
-                        <CardFooter>
-                           <Button id="submit" type="submit">
-                              <Check />
-                              Confirmar
-                           </Button>
-                        </CardFooter>
                      </Card>
                   </div>
 
-                  <div>
-                     {indexVariacao >= 0 && (
-                        <Card className="mt-3">
-                           <CardHeader>
-                              <CardTitle>Valores escalonados</CardTitle>
-                              <h5 className="card-subtitle">Valores a partir da duração de plano</h5>
-                              <h6>Variação: {variacoes[indexVariacao]?.nome_variacao}</h6>
-                           </CardHeader>
-
-                           <CardContent>
-                              <Button className="mb-3" variant="outline" onClick={addSubVariacao}>
-                                 <PlusCircle />
+                  <div className={indexVariacao >= 0 ? "block" : "hidden lg:block lg:opacity-50 pointer-events-none"}>
+                     <Card className="flex flex-col border-l-4 border-l-primary mt-3">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                           <div className="space-y-1">
+                              <CardTitle>Escalonamento</CardTitle>
+                              {indexVariacao >= 0 ? (
+                                 <p className="text-sm font-medium text-primary">
+                                    Editando: {variacoes[indexVariacao]?.nome_modalidade_variacao}
+                                 </p>
+                              ) : (
+                                 <CardDescription>Selecione uma variação</CardDescription>
+                              )}
+                           </div>
+                           {indexVariacao >= 0 && (
+                              <Button variant="outline" size="sm" onClick={addSubVariacao}>
+                                 <PlusCircle className="w-4 h-4 mr-2" />
                                  Adicionar
                               </Button>
+                           )}
+                        </CardHeader>
 
-                              <div className="table-responsive">
-                                 <table className="table table-striped">
-                                    <thead>
-                                       <tr>
-                                          <th>Nome</th>
-                                          <th>Duração</th>
-                                          <th>Valor</th>
-                                       </tr>
-                                    </thead>
-
-                                    <tbody>
+                        {indexVariacao >= 0 && (
+                           <CardContent>
+                              <div className="rounded-md border">
+                                 <Table>
+                                    <TableHeader>
+                                       <TableRow>
+                                          <TableHead>Descrição</TableHead>
+                                          <TableHead className="text-center">Meses</TableHead>
+                                          <TableHead>Valor</TableHead>
+                                          <TableHead className="w-[50px]"></TableHead>
+                                       </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                       {(!variacoes[indexVariacao]?.valores ||
+                                          variacoes[indexVariacao]?.valores.length === 0) && (
+                                          <TableRow>
+                                             <TableCell
+                                                colSpan={4}
+                                                className="h-24 text-center text-muted-foreground text-sm"
+                                             >
+                                                Sem valores escalonados definidos.
+                                             </TableCell>
+                                          </TableRow>
+                                       )}
                                        {variacoes[indexVariacao]?.valores?.map((valor, index) => (
-                                          <tr key={index}>
-                                             <td>{valor.nome_modalidade_variacao_valor}</td>
-                                             <td>{valor.quantidade_modalidade_variacao_valor}</td>
-                                             <td>{formatarMoeda(valor?.valor_modalidade_variacao_valor || 0)}</td>
-                                             <td>
-                                                <button
-                                                   className="btn btn-sm btn-outline-danger"
+                                          <TableRow key={index}>
+                                             <TableCell>{valor.nome_modalidade_variacao_valor}</TableCell>
+                                             <TableCell className="text-center">
+                                                <Badge variant="outline">
+                                                   {valor.quantidade_modalidade_variacao_valor}x
+                                                </Badge>
+                                             </TableCell>
+                                             <TableCell className="font-bold">
+                                                {formatarMoeda(valor?.valor_modalidade_variacao_valor || 0)}
+                                             </TableCell>
+                                             <TableCell>
+                                                <Button
+                                                   size="icon"
+                                                   variant="ghost"
+                                                   className="h-8 w-8 text-destructive hover:bg-destructive/10"
                                                    onClick={(e) => removeSubVariacao(e, index)}
                                                 >
-                                                   <i className="bi bi-trash" />
-                                                </button>
-                                             </td>
-                                          </tr>
+                                                   <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                             </TableCell>
+                                          </TableRow>
                                        ))}
-                                    </tbody>
-                                 </table>
+                                    </TableBody>
+                                 </Table>
                               </div>
                            </CardContent>
-                        </Card>
-                     )}
+                        )}
+                     </Card>
                   </div>
                </div>
+
+               <Card className="mt-3">
+                  <CardFooter className="flex justify-end">
+                     <Button type="submit">
+                        <Check />
+                        Confirmar
+                     </Button>
+                  </CardFooter>
+               </Card>
             </form>
          </FormProvider>
       </div>
@@ -381,9 +448,7 @@ function ModalVariacao({ show, setShow, newVariacao }) {
 function ModalSubVariacao({ show, setShow, newDescont }) {
    const form = useForm();
    const {
-      register,
       handleSubmit,
-      control,
       reset,
       formState: { errors },
    } = form;
