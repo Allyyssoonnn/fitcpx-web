@@ -22,46 +22,82 @@ import { formatarMoeda } from "../../utils";
 function CadModalidade() {
    const location = useLocation();
    const modalidadeRecebido = location.state?.modalidade;
-   const { tSuccess } = useNotificacao();
+   const { tSuccess, tError } = useNotificacao(); // Adicionado tError para validações
    const [empresa] = useRecoilState(stateEmpresa);
    const [usuario] = useRecoilState(stateUsuario);
-   const form = useForm({ defaultValues: modalidadeRecebido });
+
+   const form = useForm({
+      defaultValues: modalidadeRecebido || { nome_modalidade: "", valor_modalidade: 0 },
+   });
+
    const {
       handleSubmit,
-      setValue,
+      reset,
       formState: { errors },
    } = form;
+
    const navigate = useNavigate();
+
+   // Estados dos Modais
    const [modalVariacao, setModalVariacao] = useState(false);
    const [modalSubVariacao, setModalSubVariacao] = useState(false);
    const [modalComissao, setModalComissao] = useState(false);
+
+   // Estados de Dados
    const [variacoes, setVariacoes] = useState([]);
    const [indexVariacao, setIndexVariacao] = useState(-1);
-   const [comissao, setComissao] = useState({});
+   const [comissao, setComissao] = useState(null); // Inicializado como null para facilitar checagem
 
+   // Effect para carregar dados na edição
    useEffect(() => {
-      if (modalidadeRecebido?.variacoes) setVariacoes(modalidadeRecebido?.variacoes);
-      if (modalidadeRecebido?.comissao_modalidade) setComissao(JSON.parse(modalidadeRecebido.comissao_modalidade));
       if (modalidadeRecebido) {
-         Object.keys(modalidadeRecebido).forEach((key) => {
-            setValue(key, modalidadeRecebido[key]);
-         });
+         // Carrega variações
+         if (modalidadeRecebido.variacoes && Array.isArray(modalidadeRecebido.variacoes)) {
+            setVariacoes(modalidadeRecebido.variacoes);
+         }
+
+         // Carrega comissão
+         if (modalidadeRecebido.comissao_modalidade) {
+            try {
+               const parsedComissao = JSON.parse(modalidadeRecebido.comissao_modalidade);
+               setComissao(parsedComissao);
+            } catch (e) {
+               console.error("Erro ao ler comissão", e);
+            }
+         }
+
+         // Reseta o formulário principal com os dados
+         reset(modalidadeRecebido);
       }
-   }, [location, setValue, usuario]);
+   }, [modalidadeRecebido, reset]);
 
    async function confirma(data) {
+      // Validação básica
+      if (variacoes.length === 0 && !data.valor_modalidade) {
+         tError("Defina um valor base ou adicione variações de preço.");
+         return;
+      }
+
       const jsonComisao = comissao?.cod_usuario ? JSON.stringify(comissao) : null;
-      await createOrUpdateService({
-         ...data,
-         comissao_modalidade: jsonComisao,
-         variacoes,
-         cod_usuario: usuario.cod_usuario,
-         cod_empresa: usuario.cod_empresa,
-      });
-      tSuccess();
-      navigate("/modalidades");
+
+      try {
+         await createOrUpdateService({
+            ...data,
+            comissao_modalidade: jsonComisao,
+            variacoes,
+            cod_usuario: usuario.cod_usuario,
+            cod_empresa: usuario.cod_empresa,
+         });
+         tSuccess();
+         navigate("/modalidades");
+      } catch (error) {
+         console.error(error);
+         // O hook de notificação global geralmente lida com erros de API,
+         // mas é bom ter o try/catch se precisar de algo específico.
+      }
    }
 
+   // --- Handlers de Abertura de Modal ---
    function addPreco(e) {
       e.preventDefault();
       setModalVariacao(true);
@@ -77,20 +113,31 @@ function CadModalidade() {
       setModalSubVariacao(true);
    }
 
+   // --- Handlers de Manipulação de Estado ---
+
    const newComissao = (data) => setComissao(data);
+
    const newVariacao = (data) => setVariacoes((prev) => [...prev, { ...data, valores: [] }]);
 
    const newDescont = (data) => {
       setVariacoes((prevState) =>
          prevState.map((v, i) =>
-            indexVariacao == i ? { ...v, valores: Array.isArray(v.valores) ? [...v.valores, data] : [data] } : v,
+            indexVariacao === i ? { ...v, valores: Array.isArray(v.valores) ? [...v.valores, data] : [data] } : v,
          ),
       );
    };
 
-   function removeVariacao(e, index) {
+   function removeVariacao(e, indexToRemove) {
       e.preventDefault();
-      setVariacoes((prev) => prev.filter((v, i) => index !== i));
+
+      // Lógica para corrigir o indexVariacao se removermos um item
+      if (indexVariacao === indexToRemove) {
+         setIndexVariacao(-1); // Fechou o que estava editando
+      } else if (indexVariacao > indexToRemove) {
+         setIndexVariacao((prev) => prev - 1); // Ajusta o índice para manter o correto selecionado
+      }
+
+      setVariacoes((prev) => prev.filter((_, i) => indexToRemove !== i));
    }
 
    function removeComissao(e) {
@@ -98,12 +145,15 @@ function CadModalidade() {
       setComissao(null);
    }
 
-   function removeSubVariacao(e, index) {
+   function removeSubVariacao(e, indexSubToRemove) {
       e.preventDefault();
       setVariacoes((prevState) =>
          prevState.map((v, i) =>
-            indexVariacao == i
-               ? { ...v, valores: Array.isArray(v.valores) ? v.valores.filter((s, iSub) => iSub !== index) : [] }
+            indexVariacao === i
+               ? {
+                    ...v,
+                    valores: Array.isArray(v.valores) ? v.valores.filter((_, iSub) => iSub !== indexSubToRemove) : [],
+                 }
                : v,
          ),
       );
@@ -115,15 +165,17 @@ function CadModalidade() {
    }
 
    return (
-      <div className="container-fluid">
+      <div className="container-fluid mb-5">
          <BackBoxUI />
 
+         {/* Modais */}
          <ModalVariacao show={modalVariacao} setShow={setModalVariacao} newVariacao={newVariacao} />
          <ModalSubVariacao show={modalSubVariacao} setShow={setModalSubVariacao} newDescont={newDescont} />
          <ModalComissao show={modalComissao} setShow={setModalComissao} newComissao={newComissao} />
 
          <FormProvider {...form}>
             <form onSubmit={handleSubmit(confirma)}>
+               {/* Informações Básicas */}
                <Card>
                   <CardContent>
                      <FitFormUI
@@ -136,13 +188,11 @@ function CadModalidade() {
                                     id: "name",
                                     label: "Nome",
                                     fieldName: "nome_modalidade",
-                                    options: {
-                                       required: true,
-                                    },
+                                    options: { required: true },
                                  },
                                  {
                                     id: "value",
-                                    label: "Valor",
+                                    label: "Valor Base (R$)",
                                     fieldName: "valor_modalidade",
                                     type: "currency",
                                  },
@@ -169,14 +219,25 @@ function CadModalidade() {
                   </CardContent>
                </Card>
 
+               {/* Comissão */}
                <Card className="mt-3">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                      <div className="space-y-1">
                         <CardTitle>Configuração de Repasse</CardTitle>
                         <CardDescription>Defina a divisão de valores entre empresa e profissional</CardDescription>
                      </div>
-                     <Button variant="outline" size="sm" onClick={addComissao}>
-                        <PlusCircle />
+                     <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={addComissao}
+                        disabled={!!comissao?.cod_usuario} // Desabilita se já tem comissão
+                        title={
+                           !!comissao?.cod_usuario
+                              ? "Remova a comissão atual para adicionar outra"
+                              : "Adicionar comissão"
+                        }
+                     >
+                        <PlusCircle className="w-4 h-4 mr-2" />
                         Adicionar
                      </Button>
                   </CardHeader>
@@ -220,10 +281,7 @@ function CadModalidade() {
                                           size="icon"
                                           variant="ghost"
                                           className="text-destructive hover:bg-destructive/10"
-                                          onClick={(e) => {
-                                             e.preventDefault();
-                                             removeComissao(e);
-                                          }}
+                                          onClick={removeComissao}
                                        >
                                           <Trash2 className="w-4 h-4" />
                                        </Button>
@@ -239,16 +297,18 @@ function CadModalidade() {
                   </CardContent>
                </Card>
 
-               <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+               {/* Variações */}
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-3">
+                  {/* Lista Esquerda */}
                   <div>
-                     <Card className="mt-3">
+                     <Card className="h-full">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                            <div className="space-y-1">
                               <CardTitle>Variações de Plano</CardTitle>
                               <CardDescription>Mensal, Semestral, etc.</CardDescription>
                            </div>
                            <Button variant="outline" size="sm" onClick={addPreco} id="newVarService">
-                              <PlusCircle />
+                              <PlusCircle className="w-4 h-4 mr-2" />
                               Adicionar
                            </Button>
                         </CardHeader>
@@ -308,8 +368,9 @@ function CadModalidade() {
                      </Card>
                   </div>
 
+                  {/* Painel Direito (Escalonamento) */}
                   <div className={indexVariacao >= 0 ? "block" : "hidden lg:block lg:opacity-50 pointer-events-none"}>
-                     <Card className="flex flex-col border-l-4 border-l-primary mt-3">
+                     <Card className="flex flex-col h-full border-l-4 border-l-primary">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                            <div className="space-y-1">
                               <CardTitle>Escalonamento</CardTitle>
@@ -318,7 +379,7 @@ function CadModalidade() {
                                     Editando: {variacoes[indexVariacao]?.nome_modalidade_variacao}
                                  </p>
                               ) : (
-                                 <CardDescription>Selecione uma variação</CardDescription>
+                                 <CardDescription>Selecione uma variação ao lado</CardDescription>
                               )}
                            </div>
                            {indexVariacao >= 0 && (
@@ -386,9 +447,9 @@ function CadModalidade() {
                </div>
 
                <Card className="mt-3">
-                  <CardFooter className="flex justify-end">
-                     <Button type="submit">
-                        <Check />
+                  <CardFooter className="flex justify-end pt-6">
+                     <Button type="submit" size="lg">
+                        <Check className="w-4 h-4 mr-2" />
                         Confirmar
                      </Button>
                   </CardFooter>
@@ -399,20 +460,25 @@ function CadModalidade() {
    );
 }
 
+// --- Modais Refatorados (Reset de formulário no useEffect) ---
+
 function ModalVariacao({ show, setShow, newVariacao }) {
    const { register, handleSubmit, control, reset } = useForm();
+
+   useEffect(() => {
+      if (show) reset(); // Reseta o form quando o modal abre
+   }, [show, reset]);
 
    function confirmar(data) {
       newVariacao(data);
       setShow(false);
-      reset();
    }
 
    return (
-      <Modal show={show}>
+      <Modal show={show} onHide={() => setShow(false)} centered>
          <form className="card" onSubmit={handleSubmit(confirmar)}>
             <div className="card-header">
-               <h5 className="card-title">Adicionar variação</h5>
+               <h5 className="card-title">Adicionar Variação</h5>
             </div>
 
             <div className="card-body">
@@ -420,25 +486,23 @@ function ModalVariacao({ show, setShow, newVariacao }) {
                   <label className="form-label">Nome</label>
                   <input
                      id="nameVarService"
+                     placeholder="Ex: Mensal, Anual"
                      {...register("nome_modalidade_variacao", { required: "Nome obrigatório!" })}
                      className="form-control"
                   />
                </div>
 
                <div className="mt-3">
-                  <label className="form-label">Valor</label>
+                  <label className="form-label">Valor Padrão</label>
                   <FitInputCurrency id="valueVarService" name="valor_modalidade_variacao" control={control} />
                </div>
             </div>
 
             <div className="card-footer d-flex justify-content-between">
-               <button className="btn btn-danger rounded" onClick={() => setShow(false)}>
-                  Fechar
-               </button>
-
-               <button id="submitVarService" type="submit" className="btn btn-success rounded">
-                  Confirmar
-               </button>
+               <Button type="button" variant="ghost" onClick={() => setShow(false)}>
+                  Cancelar
+               </Button>
+               <Button type="submit">Confirmar</Button>
             </div>
          </form>
       </Modal>
@@ -453,22 +517,25 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
       formState: { errors },
    } = form;
 
+   useEffect(() => {
+      if (show) reset();
+   }, [show, reset]);
+
    function confirmar(data) {
       newDescont({
          nome_modalidade_variacao_valor:
-            data.nome_modalidade_variacao_valor ?? `SubVariação ${String(data.quantidade_modalidade_variacao_valor)}`,
+            data.nome_modalidade_variacao_valor ?? `Pacote ${String(data.quantidade_modalidade_variacao_valor)} meses`,
          quantidade_modalidade_variacao_valor: Number(data.quantidade_modalidade_variacao_valor ?? 1),
          valor_modalidade_variacao_valor: data.valor_modalidade_variacao_valor,
       });
       setShow(false);
-      reset();
    }
 
    return (
-      <Modal show={show}>
+      <Modal show={show} onHide={() => setShow(false)} centered>
          <form className="card" onSubmit={handleSubmit(confirmar)}>
             <div className="card-header">
-               <h5 className="card-title">Adicionar variação</h5>
+               <h5 className="card-title">Adicionar Escalonamento</h5>
             </div>
 
             <div className="card-body">
@@ -480,27 +547,22 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
                            cols: 1,
                            fields: [
                               {
-                                 label: "Nome",
+                                 label: "Nome Identificador",
                                  fieldName: "nome_modalidade_variacao_valor",
-                                 options: {
-                                    required: true,
-                                 },
+                                 placeholder: "Ex: Trimestral Promocional",
+                                 options: { required: true },
                               },
                               {
-                                 label: "Duração",
+                                 label: "Duração (Meses)",
                                  fieldName: "quantidade_modalidade_variacao_valor",
                                  type: "number",
-                                 options: {
-                                    required: true,
-                                 },
+                                 options: { required: true, min: 1 },
                               },
                               {
-                                 label: "Valor",
+                                 label: "Valor Total",
                                  fieldName: "valor_modalidade_variacao_valor",
                                  type: "currency",
-                                 options: {
-                                    required: true,
-                                 },
+                                 options: { required: true },
                               },
                            ],
                         },
@@ -510,13 +572,10 @@ function ModalSubVariacao({ show, setShow, newDescont }) {
             </div>
 
             <div className="card-footer d-flex justify-content-between">
-               <button className="btn btn-danger rounded" onClick={() => setShow(false)}>
-                  Fechar
-               </button>
-
-               <button type="submit" className="btn btn-success rounded">
-                  Confirmar
-               </button>
+               <Button type="button" variant="ghost" onClick={() => setShow(false)}>
+                  Cancelar
+               </Button>
+               <Button type="submit">Confirmar</Button>
             </div>
          </form>
       </Modal>
@@ -532,34 +591,39 @@ function ModalComissao({ show, setShow, newComissao }) {
       formState: { errors },
    } = useForm();
 
-   const { data: usuarios, refetch } = useQuery({
+   const { data: usuarios } = useQuery({
       queryKey: ["usuarios", usuario.cod_usuario],
       queryFn: () => getUsers(usuario.cod_empresa),
       initialData: [],
       enabled: !!usuario.cod_empresa,
    });
 
+   useEffect(() => {
+      if (show) reset();
+   }, [show, reset]);
+
    async function confirmar(data) {
-      reset();
-      const usuario = usuarios.find((user) => user.cod_usuario == data.cod_usuario);
-      newComissao({ ...data, nome_usuario: usuario.nome_usuario });
-      setShow(false);
+      const usuarioSelecionado = usuarios.find((user) => user.cod_usuario == data.cod_usuario);
+      if (usuarioSelecionado) {
+         newComissao({ ...data, nome_usuario: usuarioSelecionado.nome_usuario });
+         setShow(false);
+      }
    }
 
    return (
-      <Modal show={show}>
+      <Modal show={show} onHide={() => setShow(false)} centered>
          <form className="card" onSubmit={handleSubmit(confirmar)}>
             <div className="card-header">
-               <h5 className="card-title">Adicionar conta de comissão</h5>
+               <h5 className="card-title">Vincular Profissional</h5>
             </div>
 
             <div className="card-body">
-               <FitSelectForm
-                  nameField="Usuário"
-                  textHelp="Apenas usuário com conta no FitCpx Pay está disponível"
-                  errors={errors}
-                  {...register("cod_usuario", { required: true })}
-               >
+               <div className="alert alert-info py-2 small mb-3">
+                  Apenas usuários com conta ativa no FitCpx Pay aparecem aqui.
+               </div>
+
+               <FitSelectForm nameField="Profissional" errors={errors} {...register("cod_usuario", { required: true })}>
+                  <option value="">Selecione...</option>
                   {usuarios.map((user, index) => (
                      <option key={index} value={user.cod_usuario}>
                         {user.nome_usuario}
@@ -570,19 +634,17 @@ function ModalComissao({ show, setShow, newComissao }) {
                <FitInputForm
                   classNameContainer="mt-3"
                   type="number"
-                  nameField="Porcentagem"
+                  nameField="Porcentagem do Profissional (%)"
                   errors={errors}
                   {...register("porcentagem_usuario", { required: true, min: 1, max: 100 })}
                />
             </div>
 
             <div className="card-footer d-flex justify-content-between">
-               <button className="btn btn-danger rounded" onClick={() => setShow(false)}>
+               <Button type="button" variant="ghost" onClick={() => setShow(false)}>
                   Cancelar
-               </button>
-               <button className="btn btn-success rounded" type="submit">
-                  Confirmar
-               </button>
+               </Button>
+               <Button type="submit">Confirmar</Button>
             </div>
          </form>
       </Modal>
