@@ -30,7 +30,7 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
    const optionsMemo = useMemo(() => options, [options]);
 
    return (
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} modal={true}>
          <PopoverTrigger asChild id={name}>
             <Button
                variant="outline"
