@@ -70,19 +70,27 @@ export default function FitComboBox({ name, options = [], placeHolder, value, on
                         <CommandItem
                            key={framework.value}
                            // Importante: Passamos o label aqui para a busca funcionar visualmente
-                           value={framework.label}
-                           onSelect={(currentValue) => {
-                              // CORREÇÃO CRÍTICA:
-                              // Comparamos normalizando para minúsculo, pois o currentValue vem minúsculo
-                              const item = optionsMemo.find(
-                                 (v) => v.label.toLowerCase() === currentValue.toLowerCase(),
-                              );
+                           // value={framework.label}
+                           // MUDANÇA 1: O value deve ser único para o cmdk não bugar a navegação.
+                           // Concatenamos o ID. Isso ajuda no filtro também (pode buscar por ID).
+                           value={`${framework.label} ${framework.value}`}
+                           // onSelect={(currentValue) => {
+                           //    // CORREÇÃO CRÍTICA:
+                           //    // Comparamos normalizando para minúsculo, pois o currentValue vem minúsculo
+                           //    const item = optionsMemo.find(
+                           //       (v) => v.label.toLowerCase() === currentValue.toLowerCase(),
+                           //    );
 
-                              if (item) {
-                                 const newValue = item.value === valueComp ? "" : item.value;
-                                 onChange?.(newValue);
-                                 setOpen(false);
-                              }
+                           //    if (item) {
+                           //       const newValue = item.value === valueComp ? "" : item.value;
+                           //       onChange?.(newValue);
+                           //       setOpen(false);
+                           //    }
+                           // }}
+                           onSelect={() => {
+                              const newValue = framework.value === valueComp ? "" : framework.value;
+                              onChange?.(newValue);
+                              setOpen(false);
                            }}
                         >
                            <CheckIcon
