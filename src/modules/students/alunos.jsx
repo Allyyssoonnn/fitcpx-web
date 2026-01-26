@@ -58,6 +58,7 @@ function Alunos() {
                   buttonOnClick={() => navigate("/cadaluno")}
                   onClickItem={(row) => navigate("/aluno", { state: { cod_aluno: row.cod_aluno } })}
                   buttonId="newClient"
+                  fieldId="cod_aluno"
                   columns={[
                      {
                         name: "imagem_aluno",
