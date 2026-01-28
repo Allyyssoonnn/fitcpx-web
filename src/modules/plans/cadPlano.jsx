@@ -8,9 +8,10 @@ import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import SelectModalidades from "../../components/selectModalidades";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card, CardContent, CardFooter } from "../../components/ui/card";
 import { Field, FieldLabel } from "../../components/ui/field";
 import { Input } from "../../components/ui/input";
+import { Separator } from "../../components/ui/separator";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { formatarMoeda } from "../../utils";
 import { processaPlano } from "../../utils/utilsPlan";
@@ -20,7 +21,9 @@ function CadPlano() {
    const planoRecebido = location.state?.plano;
    const { tSuccess } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
-   const form = useForm({ defaultValues: planoRecebido });
+   const form = useForm({
+      defaultValues: planoRecebido ?? { vende_online: "S", vende_recorrencia: "S", max_installments: 1 },
+   });
    const {
       handleSubmit,
       watch,
@@ -101,7 +104,6 @@ function CadPlano() {
                      errors={errors}
                      fields={[
                         {
-                           separator: true,
                            cols: 4,
                            title: "Informações",
                            fields: [
@@ -136,6 +138,46 @@ function CadPlano() {
 
             <Card className="mt-3">
                <CardContent>
+                  <FitFormUI
+                     errors={errors}
+                     fields={[
+                        {
+                           cols: 4,
+                           title: "Configurações de Venda",
+                           fields: [
+                              {
+                                 label: "Permite venda online?",
+                                 fieldName: "vende_online",
+                                 type: "toggle",
+                                 selectOptions: [
+                                    { label: "Sim", value: "S" },
+                                    { label: "Não", value: "N" },
+                                 ],
+                              },
+                              {
+                                 label: "Pagamento recorrência?",
+                                 fieldName: "vende_recorrencia",
+                                 type: "toggle",
+                                 selectOptions: [
+                                    { label: "Sim", value: "S" },
+                                    { label: "Não", value: "N" },
+                                 ],
+                              },
+                              {
+                                 label: "Número máximo de parcelas",
+                                 fieldName: "maximo_parcelas",
+                                 type: "select",
+                                 selectOptions: Array.from({ length: 12 }, (_, i) => ({ label: i + 1, value: i + 1 })),
+                              },
+                           ],
+                        },
+                     ]}
+                  />
+               </CardContent>
+            </Card>
+
+            <Card className="mt-3">
+               <CardContent>
                   <SelectModalidades
                      addModalidade={addModalidade}
                      removeModalidade={removeModalidade}
@@ -144,7 +186,9 @@ function CadPlano() {
                   />
                </CardContent>
 
-               <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-3 px-3">
+               <Separator className="my-3" />
+
+               <CardFooter className="flex flex-col lg:flex-row justify-between lg:items-end gap-3">
                   <div className="flex gap-3">
                      <Field className="max-w-sm">
                         <FieldLabel>Valor mensal</FieldLabel>
@@ -161,7 +205,7 @@ function CadPlano() {
                      <Check />
                      Confirmar
                   </Button>
-               </div>
+               </CardFooter>
             </Card>
          </form>
       </FormProvider>

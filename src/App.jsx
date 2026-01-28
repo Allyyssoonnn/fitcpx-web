@@ -6,6 +6,7 @@ import Recovery from "./modules/users/recovery";
 import RecuperacaoSenha from "./modules/users/recuperacaoSenha";
 import Register from "./modules/users/register";
 import PlanilhaTreino from "./modules/workouts/planilhaTreino";
+import Checkout from "./modules/checkout/checkout";
 
 import { parseCookies } from "nookies";
 import { Toaster } from "sonner";
@@ -56,6 +57,7 @@ function App() {
                   <Route path="/recuperar" element={<Recovery />} />
                   <Route path="/recoveryPassword" element={<RecuperacaoSenha />} />
                   <Route path="/planilhatreino" element={<PlanilhaTreino />} />
+                  <Route path="/checkout" element={<Checkout />} />
                </Routes>
             </ErrorBoundaryWrapper>
          </Suspense>
