@@ -9,6 +9,7 @@ import {
    DialogTitle,
 } from "@/components/ui/dialog";
 import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { Trash } from "lucide-react";
@@ -120,11 +121,16 @@ const ShareOnlineSell = NiceModal.create(
                   </FieldDescription>
                </Field>
 
-               <DialogFooter>
-                  <Button variant="outline" onClick={handleOpenLink}>
+               <DialogFooter className="flex items-center">
+                  {!planos?.length && <Label className="text-[12px] text-destructive">Nenhum plano cadastrado</Label>}
+
+                  <Button variant="outline" onClick={handleOpenLink} disabled={!planos?.length}>
                      Abrir Link
                   </Button>
-                  <Button onClick={handleCopyLink}>Copiar Link</Button>
+
+                  <Button onClick={handleCopyLink} disabled={!planos?.length}>
+                     Copiar Link
+                  </Button>
                </DialogFooter>
             </DialogContent>
          </Dialog>
