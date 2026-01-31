@@ -11,7 +11,7 @@ export const checkoutSchema = z
          message: "CPF inválido",
       }),
       data_nascimento_aluno: z.string().refine((val) => val !== "", "Data de nascimento obrigatória"),
-      genero_aluno: z.string().min(1, "Selecione um gênero"), // Select precisa de validação
+      sexo_aluno: z.string().min(1, "Selecione um gênero"), // Select precisa de validação
 
       // Endereço
       cep_aluno: z.string().min(9, "CEP inválido"),

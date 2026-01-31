@@ -609,7 +609,7 @@ function Aluno() {
                                           telefone_aluno: aluno.telefone_aluno.replace("+55", "") ?? "",
                                           cpf_aluno: aluno.cpf_aluno ?? "",
                                           data_nascimento_aluno: aluno.data_nascimento_aluno ?? "",
-                                          genero_aluno: aluno.genero_aluno ?? "",
+                                          sexo_aluno: aluno.sexo_aluno ?? "",
                                        }),
                                     })
                                  }

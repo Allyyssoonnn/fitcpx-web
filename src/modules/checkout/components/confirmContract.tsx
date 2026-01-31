@@ -46,7 +46,7 @@ export const ConfirmContract = NiceModal.create(({ student, plan, onConfirm }: C
 
    return (
       <Dialog open={modal.visible} onOpenChange={modal.remove}>
-         <DialogContent className="sm:max-w-md">
+         <DialogContent className="sm:max-w-md [&>button]:hidden">
             <DialogHeader>
                <DialogTitle>Confirmar Contratação</DialogTitle>
                <DialogDescription>

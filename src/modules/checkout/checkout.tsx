@@ -60,7 +60,7 @@ export default function Checkout() {
               telefone_aluno: "",
               cpf_aluno: "",
               data_nascimento_aluno: "",
-              genero_aluno: "",
+              sexo_aluno: "",
               cep_aluno: "",
               cidade_aluno: "",
               endereco_aluno: "",
@@ -169,7 +169,8 @@ export default function Checkout() {
       }
 
       // O objeto final do aluno será o existente OU o payload do formulário
-      const finalStudentData = existingStudent?.cod_aluno ? { ...existingStudent, ...rawPayload } : rawPayload;
+      var finalStudentData = existingStudent?.cod_aluno ? { ...existingStudent, ...rawPayload } : rawPayload;
+      if (studentId && !finalStudentData.cod_aluno) finalStudentData.cod_aluno = studentId;
 
       // 4. ABRE O MODAL
       // Passamos a lógica da API dentro da prop 'onConfirm'

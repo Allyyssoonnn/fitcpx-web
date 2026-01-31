@@ -105,9 +105,9 @@ export function CheckoutForm({
                      {/* Select precisa de Controller */}
                      <Controller
                         control={control}
-                        name="genero_aluno"
+                        name="sexo_aluno"
                         render={({ field }) => (
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                               <SelectTrigger className="w-full">
                                  <SelectValue placeholder="Selecione" />
                               </SelectTrigger>
@@ -118,9 +118,7 @@ export function CheckoutForm({
                            </Select>
                         )}
                      />
-                     {errors.genero_aluno && (
-                        <span className="text-xs text-red-500">{errors.genero_aluno.message}</span>
-                     )}
+                     {errors.sexo_aluno && <span className="text-xs text-red-500">{errors.sexo_aluno.message}</span>}
                   </div>
                </div>
             </AccordionContent>
