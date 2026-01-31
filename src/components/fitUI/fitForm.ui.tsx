@@ -90,7 +90,7 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                            fieldVisible = false;
                         }
                         let fieldRequerid = (field?.options?.required && fieldVisible) || false;
-                        if (field.colSpan) `${fieldClassName} col-span-${String(field.colSpan)}`;
+                        if (field.colSpan) fieldClassName = `${fieldClassName} col-span-${String(field.colSpan)}`;
 
                         if (field.type === "color") {
                            const value = watch(field.fieldName as string);
@@ -209,8 +209,9 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                     defaultValue=""
                                     render={({ field: controllerField }) => (
                                        <ToggleGroup
-                                          className="bg-accent p-1 rounded-md"
+                                          className="border-1 p-1 rounded-md"
                                           type="single"
+                                          size="sm"
                                           disabled={field.options?.disabled}
                                           value={controllerField.value}
                                           onValueChange={controllerField.onChange}
@@ -311,12 +312,11 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
 
                                        {field.clearSelectButton && value && (
                                           <Button
-                                             className="w-1"
-                                             variant="destructive"
-                                             size="sm"
-                                             onClick={() => setValue(field.fieldName, undefined)}
+                                             variant="outline"
+                                             size="icon"
+                                             onClick={() => setValue(field.fieldName, null)}
                                           >
-                                             <Trash />
+                                             <Trash color="red" />
                                           </Button>
                                        )}
                                     </div>

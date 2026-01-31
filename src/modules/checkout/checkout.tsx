@@ -1,76 +1,230 @@
 import { get } from "@/api/api";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { onlineContract } from "@/api/contracts";
+import { verifyExists } from "@/api/student";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Building2, Coins, CreditCard, MapPin, Phone, RotateCcw, ShoppingBag, User } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { normalizeCep, normalizeCpf, normalizePhone } from "@/utils/utils";
+import { zodResolver } from "@hookform/resolvers/zod"; // Importante
+import { ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form"; // Importante: Controller
 import { useQuery } from "react-query";
-
-interface Plan {
-   value: string;
-   label: string;
-   price: number;
-   joiningFee: number;
-   duration: number;
-   max_installments: number;
-   allowMonthly: boolean;
-}
-
-interface Company {
-   name: string;
-   address: string;
-   phone: string;
-   img: string;
-}
+import { CheckoutForm } from "./components/CheckoutForm";
+import { modalConfirmContract } from "./components/confirmContract";
+import { Resume } from "./components/resume";
+import { CheckoutFormValues, checkoutSchema } from "./schema";
+import { Company, Plan } from "./types";
 
 export default function Checkout() {
-   const { handleSubmit, register } = useForm();
-
    const params = new URLSearchParams(window.location.search);
    const token = params.get("token");
    const companyId = token?.split("-")[1].substring(2);
+   const allowSelectPlan = token?.split("-")[1].substring(0, 1) == "0";
+   const planId = params.get("planId");
+   const studentId = params.get("studentId");
+   const studentName = params.get("studentName");
+   const addressJSON = params.get("addressJSON");
+   const personalJSON = params.get("personalJSON");
+
+   const studentRecieved = {
+      ...(personalJSON ? JSON.parse(personalJSON) : {}),
+      ...(addressJSON ? JSON.parse(addressJSON) : {}),
+   };
 
    const [company, setCompany] = useState<Company | null>(null);
    const [plans, setPlans] = useState<Plan[]>([]);
    const [selectedPlan, setSelectedPlan] = useState<Plan | undefined>();
+   const [companyNotFound, setCompanyNotFound] = useState(false);
+
+   // --- 2. Configuração do Hook Form com Zod ---
+   const {
+      handleSubmit,
+      control,
+      setValue,
+      formState: { errors },
+      watch,
+      setFocus,
+   } = useForm<CheckoutFormValues>({
+      resolver: zodResolver(checkoutSchema),
+      defaultValues: studentRecieved
+         ? {
+              ...studentRecieved,
+              telefone_aluno: normalizePhone(studentRecieved.telefone_aluno),
+              cpf_aluno: normalizeCpf(studentRecieved.cpf_aluno),
+              cep_aluno: normalizeCep(studentRecieved.cep_aluno),
+           }
+         : {
+              // É CRUCIAL inicializar tudo com string vazia para evitar erro de "undefined"
+              nome_aluno: "",
+              email_aluno: "",
+              telefone_aluno: "",
+              cpf_aluno: "",
+              data_nascimento_aluno: "",
+              genero_aluno: "",
+              cep_aluno: "",
+              cidade_aluno: "",
+              endereco_aluno: "",
+              bairro_aluno: "",
+              numero_aluno: "",
+              estado_aluno: "",
+              metodo_pagamento: "monthly", // Este já tem um valor válido por padrão
+           },
+   });
 
    const { isLoading } = useQuery({
       queryKey: ["company-details", companyId],
       queryFn: async () => {
          const response = await get(`/companies/getCompanyAndPlans?companyId=${companyId}`);
-         setCompany(
-            response?.company ?? {
-               name: "-",
-               address: "-",
-               phone: "-",
-               img: "-",
-            },
-         );
+         if (!response?.company?.companyId) setCompanyNotFound(true);
+         setCompany(response?.company ?? { name: "-", address: "-", phone: "-", img: "-" });
          setPlans(response?.plans ?? []);
+         if (planId) {
+            const planPreSelected = (response?.plans ?? []).find((plan: any) => plan.value == planId);
+            if (planPreSelected) setSelectedPlan(planPreSelected);
+            if (planPreSelected.allowMonthly) setValue("metodo_pagamento", "monthly");
+            else setValue("metodo_pagamento", "cash");
+         }
       },
       enabled: !!companyId,
    });
 
+   const cepValue = watch("cep_aluno");
+
+   useEffect(() => {
+      // 2. Remova tudo que não é número para validar o tamanho
+      const cepLimpo = cepValue?.replace(/\D/g, "") ?? "";
+
+      // 3. Verifique se tem 8 NÚMEROS (ignorando o traço da máscara)
+      if (cepLimpo.length === 8) {
+         fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+            .then((resp) => {
+               if (!resp.ok) throw new Error("Erro CEP");
+               return resp.json();
+            })
+            .then((data) => {
+               if (!data.erro) {
+                  // O setValue atualiza os campos automaticamente
+                  setValue("endereco_aluno", data.logradouro);
+                  setValue("bairro_aluno", data.bairro);
+                  setValue("cidade_aluno", data.localidade);
+                  setValue("estado_aluno", String(data.uf).toUpperCase());
+
+                  // Dica de UX: Se quiser focar no número após preencher:
+                  setTimeout(() => setFocus("numero_aluno"), 100);
+               }
+            })
+            .catch((error) => console.error("Erro busca CEP:", error));
+      }
+   }, [cepValue, setValue]);
+
    function handlePlanChange(value: string) {
       const plan = plans.find((p) => p.value === value);
       setSelectedPlan(plan);
+
+      // Resetar metodo de pagamento se o plano mudar para evitar opções inválidas
+      if (plan) {
+         if (plan.allowMonthly) setValue("metodo_pagamento", "monthly");
+         else setValue("metodo_pagamento", "cash");
+      }
    }
 
-   function onSubmit() {
-      // Lógica para processar o pagamento
+   // ... imports e setup do hook form
+
+   // --- 3. Função de Submit ---
+   async function onSubmit(data: CheckoutFormValues) {
+      if (!selectedPlan) return;
+
+      // 1. Prepara os dados brutos (Payload para criar aluno se necessário)
+      const rawPayload = {
+         ...data,
+         cpf_aluno: data.cpf_aluno.replace(/\D/g, ""),
+         telefone_aluno: data.telefone_aluno.replace(/\D/g, ""),
+         cep_aluno: data.cep_aluno.replace(/\D/g, ""),
+         cod_contrato: selectedPlan.contractId, // Supondo que venha daqui
+         cod_empresa: companyId,
+      };
+
+      // 2. Prepara os dados do plano para exibição e envio
+      const planData = {
+         cod_plano: selectedPlan.value,
+         nome_plano: selectedPlan.label,
+         valor_total: selectedPlan.price,
+         cod_contrato: selectedPlan.contractId,
+         cod_empresa: companyId,
+         metodo_pagamento: data.metodo_pagamento,
+         parcelas: data.metodo_pagamento === "installments" ? data.parcelas : undefined,
+      };
+
+      // 3. Verifica se o aluno já existe (Verificação assíncrona)
+      let existingStudent = null;
+      try {
+         // Adicionei um loading visual aqui se precisar, ou deixe transparente
+         existingStudent = await verifyExists({
+            email: data.email_aluno,
+            cpf: rawPayload.cpf_aluno,
+         });
+      } catch (error) {
+         console.error("Erro ao verificar aluno", error);
+         // Decida se para o fluxo ou continua como novo aluno
+      }
+
+      // O objeto final do aluno será o existente OU o payload do formulário
+      const finalStudentData = existingStudent?.cod_aluno ? { ...existingStudent, ...rawPayload } : rawPayload;
+
+      // 4. ABRE O MODAL
+      // Passamos a lógica da API dentro da prop 'onConfirm'
+      modalConfirmContract.show({
+         student: finalStudentData,
+         plan: planData,
+         onConfirm: async () => {
+            // Esta função só roda quando o usuário clica em "Confirmar" dentro do modal
+            if (!companyId) return;
+
+            // Chama sua API final
+            const response = await onlineContract(companyId, finalStudentData, planData);
+
+            // Debug para garantir que está vindo
+            console.log("Resposta da API:", response);
+
+            // 2. Monta os parâmetros
+            const paramsObj: any = {
+               nome: finalStudentData.nome_aluno,
+               email: finalStudentData.email_aluno,
+            };
+
+            // Se a API retornou o link da fatura (Boleto/Pix), adiciona aos params
+            // Ajuste 'response.invoiceUrl' para o campo correto que sua API retorna
+            if (response?.url) {
+               paramsObj.faturaUrl = response.url;
+            }
+
+            if (response?.contractURL) {
+               paramsObj.contractURL = response.contractURL;
+            }
+
+            // 3. Serializa e redireciona
+            const searchParams = new URLSearchParams(paramsObj).toString();
+            // http://localhost:5173/successPage?nome=Fit+Student&email=fitcomplex%40fitcpx.com&faturaUrl=https%3A%2F%2Fsandbox.asaas.com%2Fi%2Fz10x3ez4jsu21r4m&faturaAdicionalUrl=undefined
+            window.location.href = `/successPage?${searchParams}`;
+         },
+      });
    }
 
    if (isLoading) {
       return (
          <div className="min-h-svh flex items-center justify-center">
-            <span className="text-muted-foreground">Carregando detalhes da empresa e planos...</span>
+            <span className="text-muted-foreground">Carregando...</span>
+         </div>
+      );
+   }
+   // localhost:5173/checkout?token=1109-001-2001
+   if (companyNotFound) {
+      return (
+         <div className="min-h-svh bg-accent p-4 md:p-8 flex items-center justify-center">
+            <div className="bg-yellow-100 text-yellow-800 border border-yellow-200 p-4 rounded-lg shadow-lg text-center min-w-xs">
+               <p className="font-semibold mb-1">Empresa não encontrada</p>
+               <p className="text-sm">solicite um link correto para contratar um plano.</p>
+            </div>
          </div>
       );
    }
@@ -78,303 +232,57 @@ export default function Checkout() {
    return (
       <div className="min-h-svh bg-accent p-4 md:p-8 flex items-start justify-center">
          <div className="grid w-full max-w-6xl items-start gap-6 lg:grid-cols-2">
-            {/* Lado Esquerdo: Resumo do Pedido */}
-            <Resume plans={plans} selectedPlan={selectedPlan} handlePlanChange={handlePlanChange} company={company} />
+            <Resume
+               plans={plans}
+               selectedPlan={selectedPlan}
+               handlePlanChange={handlePlanChange}
+               company={company}
+               allowSelectPlan={allowSelectPlan}
+            />
 
-            {/* Lado Direito: Formulário */}
             <Card className="shadow-sm border-muted-foreground/10 relative overflow-hidden">
+               {/* Overlays de bloqueio (mantidos do original) */}
                {!selectedPlan && (
                   <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm p-6 transition-all">
                      <div className="bg-yellow-100 text-yellow-800 border border-yellow-200 p-4 rounded-lg shadow-lg text-center max-w-xs">
                         <p className="font-semibold mb-1">Aguardando Seleção</p>
-                        <p className="text-sm">
-                           Por favor, selecione um plano no resumo do pedido para desbloquear o pagamento.
-                        </p>
-                     </div>
-                  </div>
-               )}
-
-               {!!selectedPlan && selectedPlan?.price <= 0 && (
-                  <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm p-6 transition-all">
-                     <div className="bg-yellow-100 text-yellow-800 border border-yellow-200 p-4 rounded-lg shadow-lg text-center max-w-xs">
-                        <p className="font-semibold mb-1">Plano sem valor</p>
-                        <p className="text-sm">
-                           Por favor, selecione um plano que tenha um valor maior que R$ 0,00 para prosseguir com o
-                           pagamento.
-                        </p>
+                        <p className="text-sm">Selecione um plano no resumo para desbloquear.</p>
                      </div>
                   </div>
                )}
 
                <CardHeader>
                   <CardTitle className="text-xl">Finalizar Pagamento</CardTitle>
-                  <CardDescription>Preencha seus dados com segurança para concluir.</CardDescription>
+                  <CardDescription>Preencha seus dados com segurança.</CardDescription>
                </CardHeader>
 
                <CardContent>
-                  <CheckoutForm selectedPlan={selectedPlan} register={register} />
+                  {/* Envolvemos o formulário aqui */}
+                  <form id="checkout-form" onSubmit={handleSubmit(onSubmit)}>
+                     <CheckoutForm selectedPlan={selectedPlan} control={control} errors={errors} />
+                  </form>
                </CardContent>
 
                <CardFooter>
-                  <Button size="lg" className="w-full text-md font-semibold gap-2" disabled={!selectedPlan}>
+                  {/* O botão deve ter type="submit" e estar ligado ao form */}
+                  <Button
+                     type="submit"
+                     form="checkout-form"
+                     size="lg"
+                     className="w-full text-md font-semibold gap-2"
+                     disabled={!selectedPlan}
+                  >
                      <ShoppingBag className="h-5 w-5" />
-                     Pagar R${" "}
-                     {selectedPlan?.price.toFixed(2)
-                        ? new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(selectedPlan.price)
-                        : ""}
+                     Pagar{" "}
+                     {selectedPlan?.price
+                        ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+                             selectedPlan.price,
+                          )
+                        : "R$ 0,00"}
                   </Button>
                </CardFooter>
             </Card>
          </div>
       </div>
-   );
-}
-
-function Resume({
-   plans,
-   selectedPlan,
-   handlePlanChange,
-   company,
-}: {
-   plans: Plan[];
-   company: Company | null;
-   selectedPlan: Plan | undefined;
-   handlePlanChange: (value: string) => void;
-}) {
-   return (
-      <Card className="h-fit shadow-sm border-muted-foreground/10 pb-0">
-         <CardHeader>
-            <CardTitle className="text-xl">Resumo do Pedido</CardTitle>
-            <CardDescription>Confira os detalhes da sua assinatura</CardDescription>
-         </CardHeader>
-
-         <CardContent className="space-y-6">
-            {/* Informações da Empresa */}
-            <div className="flex flex-col sm:flex-row gap-5 items-start">
-               <img
-                  src={company?.img}
-                  alt="Logo da Empresa"
-                  className="rounded-lg object-cover border w-24 h-24 shadow-sm"
-                  loading="lazy"
-               />
-
-               <div className="space-y-1.5 text-sm">
-                  <h3 className="font-semibold text-lg text-foreground">{company?.name}</h3>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                     <MapPin className="h-4 w-4" />
-                     <span>{company?.address}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                     <Phone className="h-4 w-4" />
-                     <span>{company?.phone}</span>
-                  </div>
-               </div>
-            </div>
-
-            <Separator />
-
-            {/* Seleção do Plano */}
-            <div className="space-y-2">
-               <Label>Plano Selecionado</Label>
-               <Select onValueChange={handlePlanChange}>
-                  <SelectTrigger className="w-full bg-background">
-                     <SelectValue placeholder="Selecione o plano" />
-                  </SelectTrigger>
-                  <SelectContent>
-                     {plans.map((plan) => (
-                        <SelectItem key={plan.value} value={plan.value}>
-                           {plan.label} - R${" "}
-                           {new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(plan.price)}
-                        </SelectItem>
-                     ))}
-                  </SelectContent>
-               </Select>
-            </div>
-         </CardContent>
-
-         <CardFooter className="bg-muted/30 p-6 flex sm:flex-row justify-between items-start gap-4 rounded-b-xl border-t">
-            <div className="text-sm text-muted-foreground">
-               Duração: <br />
-               <span className="font-medium text-foreground">
-                  {selectedPlan?.duration ?? "-"}{" "}
-                  {!!selectedPlan?.duration && selectedPlan?.duration > 1 ? "meses" : "mês"}
-               </span>
-            </div>
-
-            <div className="text-right">
-               <span className="text-xs text-muted-foreground block">Valor Total</span>
-               <span className="text-3xl font-bold text-primary">
-                  {selectedPlan?.price.toFixed(2)
-                     ? `R$ ${new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2 }).format(selectedPlan.price)}`
-                     : "-"}
-               </span>
-            </div>
-         </CardFooter>
-      </Card>
-   );
-}
-
-function CheckoutForm({ selectedPlan, register }: { selectedPlan?: Plan; register: any }) {
-   return (
-      <Accordion type="single" collapsible defaultValue="dados-pessoais" className="w-full space-y-2">
-         {/* Item 1: Dados Pessoais */}
-         <AccordionItem value="dados-pessoais" className="border rounded-lg px-4 bg-background">
-            <AccordionTrigger className="hover:no-underline py-4">
-               <div className="flex items-center gap-2 text-left">
-                  <User className="h-4 w-4 text-primary" />
-                  <Label className="font-medium">Dados Pessoais</Label>
-               </div>
-            </AccordionTrigger>
-
-            <AccordionContent className="pt-2 px-2 pb-6 space-y-4">
-               <div className="grid gap-2">
-                  <Label htmlFor="nome">Nome Completo</Label>
-                  <Input id="nome" placeholder="Ex: João da Silva" {...register("nome_aluno")} />
-               </div>
-
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                     <Label htmlFor="email">E-mail</Label>
-                     <Input id="email" type="email" placeholder="seu@email.com" {...register("email_aluno")} />
-                  </div>
-                  <div className="grid gap-2">
-                     <Label htmlFor="telefone">Telefone</Label>
-                     <Input id="telefone" placeholder="(00) 00000-0000" {...register("telefone_aluno")} />
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                     <Label htmlFor="cpf">CPF</Label>
-                     <Input id="cpf" placeholder="000.000.000-00" {...register("cpf_aluno")} />
-                  </div>
-                  <div className="grid gap-2">
-                     <Label htmlFor="rg">RG</Label>
-                     <Input id="rg" {...register("rg_aluno")} />
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                     <Label>Nascimento</Label>
-                     <Input type="date" {...register("data_nascimento_aluno")} />
-                  </div>
-                  <div className="grid gap-2">
-                     <Label>Gênero</Label>
-                     <Select>
-                        <SelectTrigger>
-                           <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
-                        <SelectContent>
-                           <SelectItem value="masculino">Masculino</SelectItem>
-                           <SelectItem value="feminino">Feminino</SelectItem>
-                           <SelectItem value="outro">Outro</SelectItem>
-                        </SelectContent>
-                     </Select>
-                  </div>
-               </div>
-            </AccordionContent>
-         </AccordionItem>
-
-         {/* Item 2: Endereço */}
-         <AccordionItem value="endereco" className="border rounded-lg px-4 bg-background">
-            <AccordionTrigger className="hover:no-underline py-4">
-               <div className="flex items-center gap-2 text-left">
-                  <Building2 className="h-4 w-4 text-primary" />
-                  <Label className="font-medium">Endereço de Cobrança</Label>
-               </div>
-            </AccordionTrigger>
-
-            <AccordionContent className="pt-2 px-2 pb-6 space-y-4">
-               <div className="grid grid-cols-[120px_1fr] gap-4">
-                  <div className="grid gap-2">
-                     <Label htmlFor="cep">CEP</Label>
-                     <Input id="cep" placeholder="00000-000" {...register("cep_aluno")} />
-                  </div>
-                  <div className="grid gap-2">
-                     <Label htmlFor="cidade">Cidade</Label>
-                     <Input id="cidade" {...register("cidade_aluno")} />
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-[1fr_100px] gap-4">
-                  <div className="grid gap-2">
-                     <Label htmlFor="rua">Logradouro</Label>
-                     <Input id="rua" placeholder="Rua, Avenida..." {...register("rua_aluno")} />
-                  </div>
-                  <div className="grid gap-2">
-                     <Label htmlFor="num">Número</Label>
-                     <Input id="num" {...register("numero_aluno")} />
-                  </div>
-               </div>
-
-               <div className="grid gap-2">
-                  <Label htmlFor="estado">Estado</Label>
-                  <Input id="estado" placeholder="Estado" {...register("estado_aluno")} />
-               </div>
-            </AccordionContent>
-         </AccordionItem>
-
-         {/* Item 3: Pagamento (Exemplo Adicional) */}
-         <AccordionItem value="pagamento" className="border rounded-lg px-4 bg-background">
-            <AccordionTrigger className="hover:no-underline py-4">
-               <div className="flex items-center gap-2 text-left">
-                  <CreditCard className="h-4 w-4 text-primary" />
-                  <Label className="font-medium">Pagamento</Label>
-               </div>
-            </AccordionTrigger>
-
-            <AccordionContent className="pt-2 px-2 pb-6 text-sm text-muted-foreground">
-               <RadioGroup className="mt-4 space-y-2" defaultValue="monthly">
-                  {!!selectedPlan?.duration && selectedPlan?.duration > 1 && selectedPlan?.allowMonthly && (
-                     <FieldLabel htmlFor="plan-0">
-                        <Field orientation="horizontal">
-                           <FieldContent>
-                              <FieldTitle>
-                                 <RotateCcw size={15} color="green" />
-                                 Recorrência
-                              </FieldTitle>
-                              <FieldDescription>
-                                 Pagamento da fatura mensal
-                                 <p className="m-0 text-[10px]">(Automático para cartão)</p>
-                              </FieldDescription>
-                           </FieldContent>
-                           <RadioGroupItem value="monthly" id="plan-0" />
-                        </Field>
-                     </FieldLabel>
-                  )}
-
-                  <FieldLabel htmlFor="plan-1">
-                     <Field orientation="horizontal">
-                        <FieldContent>
-                           <FieldTitle>
-                              <Coins size={15} color="green" />Á vista
-                           </FieldTitle>
-                           <FieldDescription>Pagamento do valor total á vista</FieldDescription>
-                        </FieldContent>
-                        <RadioGroupItem value="cash" id="plan-1" />
-                     </Field>
-                  </FieldLabel>
-
-                  {selectedPlan?.max_installments && selectedPlan?.max_installments > 1 && (
-                     <FieldLabel htmlFor="plan-2">
-                        <Field orientation="horizontal">
-                           <FieldContent>
-                              <FieldTitle>
-                                 <CreditCard size={15} color="green" />
-                                 Parcelado
-                              </FieldTitle>
-                              <FieldDescription>
-                                 Parcelamento em até {selectedPlan?.max_installments}x sem juros
-                              </FieldDescription>
-                           </FieldContent>
-                           <RadioGroupItem value="installments" id="plan-2" />
-                        </Field>
-                     </FieldLabel>
-                  )}
-               </RadioGroup>
-            </AccordionContent>
-         </AccordionItem>
-      </Accordion>
    );
 }

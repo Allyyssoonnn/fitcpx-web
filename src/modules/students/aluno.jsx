@@ -2,6 +2,7 @@ import {
    ArrowRight,
    ChartBar,
    Clipboard,
+   Earth,
    Eye,
    PauseCircle,
    Pen,
@@ -26,6 +27,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { modalAssignWorkout } from "../../modals/assignWorkout";
+import { modalShareOnlineSell } from "../../modals/shareOnlineSell";
 import { useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
 import { protocolosPatternRaw } from "../physicalAssessments/cadavaliacao";
@@ -575,17 +577,47 @@ function Aluno() {
 
                      <TabsContent value="contratos">
                         <div className="mt-4">
-                           <Button
-                              className="mb-4"
-                              onClick={() =>
-                                 navigate("/contratacaoplano", {
-                                    state: { aluno },
-                                 })
-                              }
-                           >
-                              <PlusCircleIcon />
-                              Contratar Plano
-                           </Button>
+                           <div className="mb-4 flex gap-2">
+                              <Button
+                                 onClick={() =>
+                                    navigate("/contratacaoplano", {
+                                       state: { aluno },
+                                    })
+                                 }
+                              >
+                                 <PlusCircleIcon />
+                                 Contratar Plano
+                              </Button>
+
+                              <Button
+                                 variant="outline"
+                                 onClick={() =>
+                                    modalShareOnlineSell.show({
+                                       studentId: aluno.cod_aluno,
+                                       studentName: aluno.nome_aluno,
+                                       addressJSON: JSON.stringify({
+                                          cep_aluno: aluno.cep_aluno ?? "",
+                                          endereco_aluno: aluno.endereco_aluno ?? "",
+                                          numero_aluno: aluno.numero_aluno ?? "",
+                                          cidade_aluno: aluno.cidade_aluno ?? "",
+                                          bairro_aluno: aluno.bairro_aluno ?? "",
+                                          estado_aluno: aluno.estado_aluno ?? "",
+                                       }),
+                                       personalJSON: JSON.stringify({
+                                          email_aluno: aluno.email_aluno ?? "",
+                                          nome_aluno: aluno.nome_aluno ?? "",
+                                          telefone_aluno: aluno.telefone_aluno.replace("+55", "") ?? "",
+                                          cpf_aluno: aluno.cpf_aluno ?? "",
+                                          data_nascimento_aluno: aluno.data_nascimento_aluno ?? "",
+                                          genero_aluno: aluno.genero_aluno ?? "",
+                                       }),
+                                    })
+                                 }
+                              >
+                                 <Earth className="text-primary" />
+                                 Venda Online
+                              </Button>
+                           </div>
 
                            <div className="g-4">
                               <FitTable.Root

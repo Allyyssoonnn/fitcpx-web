@@ -95,7 +95,7 @@ export default function ListComponentWrapper({
       }
       if (Array.isArray(children)) {
          const childFilters = children.find(
-            (child) => React.isValidElement(child) && child?.type === ListComponentFilters
+            (child) => React.isValidElement(child) && child?.type === ListComponentFilters,
          );
          if (childFilters) return childFilters;
       }
@@ -106,7 +106,7 @@ export default function ListComponentWrapper({
       return getColumns(columns);
    }, [columns]);
 
-   const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: v[fieldId] || i })), [list]);
+   const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: v[fieldId] || i })), [list, fieldId]);
 
    function normalizeText(text: string) {
       return text

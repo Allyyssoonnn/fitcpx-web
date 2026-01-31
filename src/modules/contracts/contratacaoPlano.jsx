@@ -610,7 +610,6 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    }
 
    const parcelas = plano?.parcela_plano ? JSON.parse(plano?.parcela_plano) : [];
-   // const descMensalidades = parcelas.map((parcela, i) => `<p>${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`);
    const descMensalidades = `${parcelas
       .map(
          (parcela, i) =>

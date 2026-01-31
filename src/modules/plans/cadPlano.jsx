@@ -1,8 +1,10 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { getContractsTemplates } from "../../api/contractsTemplates";
 import { createOrUpdatePlan } from "../../api/plans";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
@@ -27,12 +29,17 @@ function CadPlano() {
    const {
       handleSubmit,
       watch,
-      getValues,
       formState: { errors },
    } = form;
    const navigate = useNavigate();
    const [selectModalidades, setSelectModalidades] = useState([]);
    const [valorTotal, setValorTotal] = useState(0);
+
+   const { data: contratos, refetch } = useQuery({
+      queryKey: ["modContratos"],
+      queryFn: () => getContractsTemplates(false),
+      initialData: [],
+   });
 
    const duracaoPlano = Number(watch("duracao_plano")) || 0;
    const valorAdesao = Number(watch("valor_adesao") || 0);
@@ -163,11 +170,28 @@ function CadPlano() {
                                     { label: "Não", value: "N" },
                                  ],
                               },
+                           ],
+                        },
+                        {
+                           cols: 5,
+                           fields: [
                               {
                                  label: "Número máximo de parcelas",
                                  fieldName: "maximo_parcelas",
                                  type: "select",
                                  selectOptions: Array.from({ length: 12 }, (_, i) => ({ label: i + 1, value: i + 1 })),
+                              },
+                              {
+                                 colSpan: 2,
+                                 label: "Contrato (opcional)",
+                                 description: "Aluno precisará assinar o contrato gerado e enviado pelo E-mail",
+                                 fieldName: "cod_contrato",
+                                 type: "select",
+                                 selectOptions: contratos.map((contract) => ({
+                                    value: contract.cod_contrato,
+                                    label: contract.nome_contrato,
+                                 })),
+                                 clearSelectButton: true,
                               },
                            ],
                         },

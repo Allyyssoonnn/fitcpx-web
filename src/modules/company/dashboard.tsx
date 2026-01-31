@@ -12,15 +12,16 @@ import { useEffect, useState } from "react";
 import AppMarketingDash from "./dashboard/AppMarketing.dash";
 import DuePaymentsDash from "./dashboard/duePayments.dash";
 import OlderPhysicalDash from "./dashboard/olderPhysical.dash";
+import { OnlineSellDash } from "./dashboard/OnlineSell.dash";
 import OverviewDash from "./dashboard/overview.dash";
-import TourDash from "./dashboard/tour.dash";
 
 const fields = [
    { key: "overview", label: "Totais" },
-   { key: "tours", label: "Tutoriais" },
+   // { key: "tours", label: "Tutoriais" },
    { key: "duepayments", label: "Pagamentos" },
    { key: "physical", label: "Avaliações" },
    { key: "apps", label: "Aplicativos" },
+   { key: "online", label: "Venda online" },
 ];
 
 function Dashboard() {
@@ -79,7 +80,8 @@ function Dashboard() {
 
          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <div className="flex flex-col lg:col-span-2 gap-4">
-               {visibleFields.tours && <TourDash />}
+               {visibleFields.online && <OnlineSellDash />}
+               {/* {visibleFields.tours && <TourDash />} */}
                {visibleFields.apps && <AppMarketingDash />}
             </div>
 

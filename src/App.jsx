@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./base/layout";
+import Checkout from "./modules/checkout/checkout";
+import SuccessPage from "./modules/checkout/success";
 import Login from "./modules/users/login";
 import Recovery from "./modules/users/recovery";
 import RecuperacaoSenha from "./modules/users/recuperacaoSenha";
 import Register from "./modules/users/register";
 import PlanilhaTreino from "./modules/workouts/planilhaTreino";
-import Checkout from "./modules/checkout/checkout";
 
 import { parseCookies } from "nookies";
 import { Toaster } from "sonner";
@@ -58,6 +59,7 @@ function App() {
                   <Route path="/recoveryPassword" element={<RecuperacaoSenha />} />
                   <Route path="/planilhatreino" element={<PlanilhaTreino />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/successPage" element={<SuccessPage />} />
                </Routes>
             </ErrorBoundaryWrapper>
          </Suspense>
