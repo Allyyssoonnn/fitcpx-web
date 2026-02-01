@@ -39,7 +39,7 @@ const ShareOnlineSell = NiceModal.create(
          queryKey: ["onlinePlans"],
          queryFn: async () => {
             const resp = await getPlans(false);
-            return (resp ?? []).filter((plan: any) => plan.venda_online === "S");
+            return (resp ?? []).filter((plan: any) => plan.vende_online === "S");
          },
          initialData: [],
       });
