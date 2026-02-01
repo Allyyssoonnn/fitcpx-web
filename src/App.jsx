@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./base/layout";
+import Checkout from "./modules/checkout/checkout";
+import SuccessPage from "./modules/checkout/success";
 import Login from "./modules/users/login";
 import Recovery from "./modules/users/recovery";
 import RecuperacaoSenha from "./modules/users/recuperacaoSenha";
@@ -56,6 +58,8 @@ function App() {
                   <Route path="/recuperar" element={<Recovery />} />
                   <Route path="/recoveryPassword" element={<RecuperacaoSenha />} />
                   <Route path="/planilhatreino" element={<PlanilhaTreino />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/successPage" element={<SuccessPage />} />
                </Routes>
             </ErrorBoundaryWrapper>
          </Suspense>

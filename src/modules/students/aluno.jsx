@@ -2,6 +2,7 @@ import {
    ArrowRight,
    ChartBar,
    Clipboard,
+   Earth,
    Eye,
    PauseCircle,
    Pen,
@@ -26,6 +27,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { modalAssignWorkout } from "../../modals/assignWorkout";
+import { modalShareOnlineSell } from "../../modals/shareOnlineSell";
 import { useNotificacao } from "../../states/states";
 import { calcularIdade, dataURLToBlob, formatarData } from "../../utils";
 import { protocolosPatternRaw } from "../physicalAssessments/cadavaliacao";
@@ -57,21 +59,21 @@ function Aluno() {
       enabled: !!cod_aluno,
    });
 
-   const { data: avaliacoes, refetchAvaliacao } = useQuery({
+   const { data: avaliacoes, refetch: refetchAvaliacao } = useQuery({
       queryKey: ["avaliacoes"],
       queryFn: () => getPhysicalAssessments("false", cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
 
-   const { data: alunoContratos, refetch: refetchContrato } = useQuery({
+   const { data: alunoContratos } = useQuery({
       queryKey: ["alunoContratos"],
       queryFn: () => getContracts(cod_aluno),
       initialData: [],
       enabled: !!cod_aluno,
    });
 
-   const { data: workoutHistory, refetch } = useQuery({
+   const { data: workoutHistory } = useQuery({
       queryKey: ["workoutHistory"],
       queryFn: () => getWorkoutHistory(cod_aluno),
       initialData: [],
@@ -377,7 +379,7 @@ function Aluno() {
                               <FitTable.Root
                                  hideHeader
                                  list={avaliacoes.sort(
-                                    (a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao)
+                                    (a, b) => new Date(b.data_avaliacao) - new Date(a.data_avaliacao),
                                  )}
                                  fieldSearch="data_avaliacao"
                                  onClickItem={(row) =>
@@ -575,20 +577,58 @@ function Aluno() {
 
                      <TabsContent value="contratos">
                         <div className="mt-4">
-                           <Button
-                              className="mb-4"
-                              onClick={() =>
-                                 navigate("/contratacaoplano", {
-                                    state: { aluno },
-                                 })
-                              }
-                           >
-                              <PlusCircleIcon />
-                              Contratar Plano
-                           </Button>
+                           <div className="mb-4 flex gap-2">
+                              <Button
+                                 onClick={() =>
+                                    navigate("/contratacaoplano", {
+                                       state: { aluno },
+                                    })
+                                 }
+                              >
+                                 <PlusCircleIcon />
+                                 Contratar Plano
+                              </Button>
+
+                              <Button
+                                 variant="outline"
+                                 onClick={() =>
+                                    modalShareOnlineSell.show({
+                                       studentId: aluno.cod_aluno,
+                                       studentName: aluno.nome_aluno,
+                                       addressJSON: JSON.stringify({
+                                          cep_aluno: aluno.cep_aluno ?? "",
+                                          endereco_aluno: aluno.endereco_aluno ?? "",
+                                          numero_aluno: aluno.numero_aluno ?? "",
+                                          cidade_aluno: aluno.cidade_aluno ?? "",
+                                          bairro_aluno: aluno.bairro_aluno ?? "",
+                                          estado_aluno: aluno.estado_aluno ?? "",
+                                       }),
+                                       personalJSON: JSON.stringify({
+                                          email_aluno: aluno.email_aluno ?? "",
+                                          nome_aluno: aluno.nome_aluno ?? "",
+                                          telefone_aluno: aluno.telefone_aluno.replace("+55", "") ?? "",
+                                          cpf_aluno: aluno.cpf_aluno ?? "",
+                                          data_nascimento_aluno: aluno.data_nascimento_aluno ?? "",
+                                          sexo_aluno: aluno.sexo_aluno ?? "",
+                                       }),
+                                    })
+                                 }
+                              >
+                                 <Earth className="text-primary" />
+                                 Venda Online
+                              </Button>
+                           </div>
 
                            <div className="g-4">
                               <FitTable.Root
+                                 onClickItem={(row) =>
+                                    navigate("/contrato", {
+                                       state: {
+                                          cod_aluno_contrato: row.cod_aluno_contrato,
+                                          cod_aluno: aluno.cod_aluno,
+                                       },
+                                    })
+                                 }
                                  hideHeader
                                  list={alunoContratos}
                                  fieldSearch="nome_aluno_contrato"
@@ -708,12 +748,12 @@ function Aluno() {
 
                                        row.exercicios.map((v) => {
                                           v.sets?.map(
-                                             (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0)
+                                             (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0),
                                           );
 
                                           v.superSets?.map((v2) => {
                                              v2.sets?.map(
-                                                (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0)
+                                                (s) => (value += s.checked ? (s.repetition ?? 0) * (s.weight ?? 0) : 0),
                                              );
                                           });
                                        });
@@ -730,7 +770,7 @@ function Aluno() {
                                           row.exercicios.every(
                                              (v) =>
                                                 v?.treino_exercicio_executado == "S" &&
-                                                v.superSets?.every((v2) => v2.treino_exercicio_executado == "S")
+                                                v.superSets?.every((v2) => v2.treino_exercicio_executado == "S"),
                                           )
                                        ) {
                                           return <div className="badge bg-success">Completo</div>;

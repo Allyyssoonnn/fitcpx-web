@@ -8,7 +8,11 @@ export const getContracts = async (studentId?: string) =>
    await get(
       `/contracts${
          studentId && (typeof studentId === "string" || typeof studentId === "number") ? `?studentId=${studentId}` : ""
-      }`
+      }`,
    );
 export const getContract = async (id: number) => await get(`/contracts/${id}`);
 export const getDuePayments = async () => await get("/contracts/getDuePayments");
+
+// Checkout
+export const onlineContract = async (companyId: string, student: any, plan: any) =>
+   await post(`/contracts/onlineContract?companyId=${companyId}`, { student, plan });

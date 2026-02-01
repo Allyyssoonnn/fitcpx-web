@@ -49,7 +49,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
       }));
 
       setSessoes((prevArray) =>
-         prevArray.map((grupo, i) => (i === indexSessao ? { ...grupo, exercicios: updatedExercicios } : grupo))
+         prevArray.map((grupo, i) => (i === indexSessao ? { ...grupo, exercicios: updatedExercicios } : grupo)),
       );
    };
 
@@ -65,7 +65,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                     ...item,
                     sets: item.sets.map((set, id) => (indexSet == id ? { ...set, [campo]: valor } : { ...set })),
                  }
-               : { ...item }
+               : { ...item },
          );
       } else {
          //Atualiza exercicio
@@ -73,7 +73,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
       }
 
       setSessoes((prevArray) =>
-         prevArray.map((grupo, i) => (i == indexSessao ? { ...grupo, exercicios: updatedExercicios } : grupo))
+         prevArray.map((grupo, i) => (i == indexSessao ? { ...grupo, exercicios: updatedExercicios } : grupo)),
       );
    };
 
@@ -89,7 +89,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
       }));
 
       setSessoes((prevArray) =>
-         prevArray.map((grupo, i) => (i == indexSessao ? { ...grupo, exercicios: updatedExercicios } : grupo))
+         prevArray.map((grupo, i) => (i == indexSessao ? { ...grupo, exercicios: updatedExercicios } : grupo)),
       );
    };
 
@@ -107,7 +107,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
       reorderedExercicios[indexExercicio].sets = updatedSets;
 
       setSessoes((prevArray) =>
-         prevArray.map((grupo, i) => (i == indexSessao ? { ...grupo, exercicios: reorderedExercicios } : grupo))
+         prevArray.map((grupo, i) => (i == indexSessao ? { ...grupo, exercicios: reorderedExercicios } : grupo)),
       );
    };
 
@@ -126,11 +126,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                        exercicios: sessao.exercicios.map((exercicio, idExercicio) =>
                           idExercicio == index
                              ? { ...exercicio, ...exercicioAleatorio, exerciciosFiltros: exerciciosFiltrados }
-                             : exercicio
+                             : exercicio,
                        ),
                     }
-                  : sessao
-            )
+                  : sessao,
+            ),
          );
       } else {
          setSessoes((prevSessoes) =>
@@ -145,14 +145,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                   sets: exercicio?.sets?.map((set, idx) =>
                                      indexSet == idx
                                         ? { ...set, ...exercicioAleatorio, exerciciosFiltros: exerciciosFiltrados }
-                                        : set
+                                        : set,
                                   ),
                                }
-                             : exercicio
+                             : exercicio,
                        ),
                     }
-                  : sessao
-            )
+                  : sessao,
+            ),
          );
       }
    };
@@ -173,11 +173,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                   ...exercicio,
                                   ...exercicioAtt,
                                }
-                             : exercicio
+                             : exercicio,
                        ),
                     }
-                  : sessao
-            )
+                  : sessao,
+            ),
          );
       } else {
          // Atualizando set dentro do exercício base
@@ -198,14 +198,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                              // Sequencia exercicio precisa ser a mesma do exercicio pai para agrupar
                                              sequencia_sessao_exercicio: exercicio.sequencia_sessao_exercicio,
                                           }
-                                        : set
+                                        : set,
                                   ),
                                }
-                             : exercicio
+                             : exercicio,
                        ),
                     }
-                  : sessao
-            )
+                  : sessao,
+            ),
          );
       }
    };
@@ -223,11 +223,11 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                   ? {
                        ...sessao,
                        exercicios: sessao.exercicios.map((exercicio, idExercicio) =>
-                          idExercicio == indexExercicio ? { ...exercicio, ...exercicioAleatorio } : exercicio
+                          idExercicio == indexExercicio ? { ...exercicio, ...exercicioAleatorio } : exercicio,
                        ),
                     }
-                  : sessao
-            )
+                  : sessao,
+            ),
          );
       } else {
          setSessoes((prevSessoes) =>
@@ -240,14 +240,14 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                              ? {
                                   ...exercicio,
                                   sets: exercicio?.sets.map((set, idx) =>
-                                     idx == indexSet ? { ...set, ...exercicioAleatorio } : set
+                                     idx == indexSet ? { ...set, ...exercicioAleatorio } : set,
                                   ),
                                }
-                             : exercicio
+                             : exercicio,
                        ),
                     }
-                  : sessao
-            )
+                  : sessao,
+            ),
          );
       }
    };
@@ -261,7 +261,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
          {exercicios.map((exercicio, index) => (
             <div
                key={`exercise-${index}`}
-               className={`d-flex flex-row shadow-sm align-items-center border-s-2 rounded bg-accent p-2 gap-2 ${
+               className={`d-flex flex-row shadow-sm align-items-center lg:border-s-2 rounded lg:bg-accent p-0 lg:p-2 gap-2 ${
                   exercicio.sets?.length > 0 ? arrayBorders[index] : ""
                }`}
             >
@@ -289,10 +289,8 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                   <div>
                      <CardHeader>
                         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-                           {/* Botão filtro */}
                            <FiltroTreino confirma={confirmaTreinoInteligente} exercicio={exercicio} index={index} />
 
-                           {/* Botão atualizar */}
                            {!!exercicio?.exerciciosFiltros?.length && (
                               <Tooltip>
                                  <TooltipTrigger>
@@ -302,7 +300,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                              e,
                                              indexSessao,
                                              index,
-                                             exercicio?.exerciciosFiltros ?? []
+                                             exercicio?.exerciciosFiltros ?? [],
                                           )
                                        }
                                        size="icon"
@@ -318,15 +316,13 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                               </Tooltip>
                            )}
 
-                           {/* Badge */}
                            {exercicio?.sets.length > 0 && (
                               <Badge className={cn("hidden md:flex", arrayBackgrounds[index])}>
                                  1/{exercicio?.sets.length + 1}
                               </Badge>
                            )}
-
-                           {/* Combo responsivo */}
-                           <div className="form-floating flex-grow-1 min-w-200px">
+                           {/* Adicionei 'order-md-0' para resetar o Bootstrap e mantive os resets do Tailwind */}
+                           <div className="form-floating flex-grow-1 min-w-200px order-last w-full md:order-none order-md-0 md:w-auto">
                               <FitComboBox
                                  key={`exercise-combobox-${indexSessao}-${index}-set-null`}
                                  name={`exercise-${index}-session-${indexSessao}-set-null`}
@@ -403,7 +399,6 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                               </DialogContent>
                            </Dialog>
 
-                           {/* Vídeo */}
                            <FitModalViewVideo url={exercicio.url_exercicio} name={exercicio.nome_exercicio} />
                         </div>
                      </CardHeader>
@@ -460,7 +455,7 @@ function ListaExercicios({ exercicios, indexSessao, setSessoes, adicionarSet, ex
                                                       indexSessao,
                                                       index,
                                                       set?.exerciciosFiltros ?? [],
-                                                      idx
+                                                      idx,
                                                    )
                                                 }
                                                 size="icon"

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
 
 function SelectModalidades({
-   modalidadesPlano,
+   modalidadesPlano = [],
    attValue,
    addModalidade,
    removeModalidade,
@@ -43,53 +43,62 @@ function SelectModalidades({
             allowSubVariacao={allowSubVariacao}
          />
          {!disableControls && (
-            <Button variant="outline" onClick={openModalidade}>
+            <Button variant="outline" onClick={openModalidade} className="mb-3">
                <PlusCircle />
                Adicionar modalidade
             </Button>
          )}
 
-         <h5 className="card-title fs-3 mt-3">Modalidades</h5>
+         <h5 className="card-title fs-3">Modalidades</h5>
 
-         <Table>
-            <TableHeader>
-               <TableRow>
-                  <TableCell>Nome</TableCell>
-                  <TableCell>Valor</TableCell>
-               </TableRow>
-            </TableHeader>
-
-            <TableBody>
-               {modalidadesPlano?.map((modalidade, index) => (
-                  <TableRow key={index}>
-                     <TableCell>{modalidade.nome_modalidade}</TableCell>
-                     {attValue && !disableControls ? (
-                        <TableCell>
-                           <EditableCurrency
-                              value={modalidade?.valor_modalidade || 0}
-                              onUpdate={(v) => attValue(v, index)}
-                           />
-                        </TableCell>
-                     ) : (
-                        <TableCell>{formatarMoeda(modalidade?.valor_modalidade || 0)}</TableCell>
-                     )}
-                     {!disableControls && (
-                        <TableCell>
-                           <button
-                              className="btn btn-sm btn-outline-danger"
-                              onClick={(e) => {
-                                 e.preventDefault();
-                                 removeModalidade(index);
-                              }}
-                           >
-                              <i className="bi bi-trash" />
-                           </button>
-                        </TableCell>
-                     )}
+         <div className="rounded-md border mt-4">
+            <Table>
+               <TableHeader>
+                  <TableRow>
+                     <TableCell>Nome</TableCell>
+                     <TableCell>Valor</TableCell>
                   </TableRow>
-               ))}
-            </TableBody>
-         </Table>
+               </TableHeader>
+
+               <TableBody>
+                  {modalidadesPlano?.map((modalidade, index) => (
+                     <TableRow key={index}>
+                        <TableCell>{modalidade.nome_modalidade}</TableCell>
+                        {attValue && !disableControls ? (
+                           <TableCell>
+                              <EditableCurrency
+                                 value={modalidade?.valor_modalidade || 0}
+                                 onUpdate={(v) => attValue(v, index)}
+                              />
+                           </TableCell>
+                        ) : (
+                           <TableCell>{formatarMoeda(modalidade?.valor_modalidade || 0)}</TableCell>
+                        )}
+                        {!disableControls && (
+                           <TableCell>
+                              <button
+                                 className="btn btn-sm btn-outline-danger"
+                                 onClick={(e) => {
+                                    e.preventDefault();
+                                    removeModalidade(index);
+                                 }}
+                              >
+                                 <i className="bi bi-trash" />
+                              </button>
+                           </TableCell>
+                        )}
+                     </TableRow>
+                  ))}
+                  {modalidadesPlano?.length == 0 && (
+                     <TableRow>
+                        <TableCell colSpan={3} className="text-center h-40">
+                           Nenhuma modalidade selecionada
+                        </TableCell>
+                     </TableRow>
+                  )}
+               </TableBody>
+            </Table>
+         </div>
       </div>
    );
 }

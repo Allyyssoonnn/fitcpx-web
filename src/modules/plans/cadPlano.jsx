@@ -1,16 +1,19 @@
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { getContractsTemplates } from "../../api/contractsTemplates";
 import { createOrUpdatePlan } from "../../api/plans";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import FitFormUI from "../../components/fitUI/fitForm.ui";
 import SelectModalidades from "../../components/selectModalidades";
 import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card, CardContent, CardFooter } from "../../components/ui/card";
 import { Field, FieldLabel } from "../../components/ui/field";
 import { Input } from "../../components/ui/input";
+import { Separator } from "../../components/ui/separator";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { formatarMoeda } from "../../utils";
 import { processaPlano } from "../../utils/utilsPlan";
@@ -20,16 +23,23 @@ function CadPlano() {
    const planoRecebido = location.state?.plano;
    const { tSuccess } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
-   const form = useForm({ defaultValues: planoRecebido });
+   const form = useForm({
+      defaultValues: planoRecebido ?? { vende_online: "S", vende_recorrencia: "S", max_installments: 1 },
+   });
    const {
       handleSubmit,
       watch,
-      getValues,
       formState: { errors },
    } = form;
    const navigate = useNavigate();
    const [selectModalidades, setSelectModalidades] = useState([]);
    const [valorTotal, setValorTotal] = useState(0);
+
+   const { data: contratos, refetch } = useQuery({
+      queryKey: ["modContratos"],
+      queryFn: () => getContractsTemplates(false),
+      initialData: [],
+   });
 
    const duracaoPlano = Number(watch("duracao_plano")) || 0;
    const valorAdesao = Number(watch("valor_adesao") || 0);
@@ -68,12 +78,12 @@ function CadPlano() {
                  String(valor)
                     .replace(/\./g, "")
                     .replace(",", ".")
-                    .replace(/[^\d.-]/g, "")
+                    .replace(/[^\d.-]/g, ""),
               );
       if (isNaN(parsed)) return;
 
       const novoPlano = selectModalidades.map((m, i) =>
-         i === index ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m
+         i === index ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m,
       );
       const { planoAtualizado, valorTotal } = processaPlano({ modalidades: novoPlano }, duracaoPlano, valorAdesao);
       setSelectModalidades(planoAtualizado.modalidades);
@@ -84,7 +94,7 @@ function CadPlano() {
    async function confirma(data) {
       await createOrUpdatePlan(
          { ...data, valor_plano: valorTotal, cod_usuario: usuario.cod_usuario, cod_empresa: usuario.cod_empresa },
-         selectModalidades
+         selectModalidades,
       );
       tSuccess();
       navigate("/planos");
@@ -101,7 +111,6 @@ function CadPlano() {
                      errors={errors}
                      fields={[
                         {
-                           separator: true,
                            cols: 4,
                            title: "Informações",
                            fields: [
@@ -136,6 +145,63 @@ function CadPlano() {
 
             <Card className="mt-3">
                <CardContent>
+                  <FitFormUI
+                     errors={errors}
+                     fields={[
+                        {
+                           cols: 4,
+                           title: "Configurações de Venda",
+                           fields: [
+                              {
+                                 label: "Permite venda online?",
+                                 fieldName: "vende_online",
+                                 type: "toggle",
+                                 selectOptions: [
+                                    { label: "Sim", value: "S" },
+                                    { label: "Não", value: "N" },
+                                 ],
+                              },
+                              {
+                                 label: "Pagamento recorrência?",
+                                 fieldName: "vende_recorrencia",
+                                 type: "toggle",
+                                 selectOptions: [
+                                    { label: "Sim", value: "S" },
+                                    { label: "Não", value: "N" },
+                                 ],
+                              },
+                           ],
+                        },
+                        {
+                           cols: 5,
+                           fields: [
+                              {
+                                 label: "Número máximo de parcelas",
+                                 fieldName: "maximo_parcelas",
+                                 type: "select",
+                                 selectOptions: Array.from({ length: 12 }, (_, i) => ({ label: i + 1, value: i + 1 })),
+                              },
+                              {
+                                 colSpan: 2,
+                                 label: "Contrato (opcional)",
+                                 description: "Aluno precisará assinar o contrato gerado e enviado pelo E-mail",
+                                 fieldName: "cod_contrato",
+                                 type: "select",
+                                 selectOptions: contratos.map((contract) => ({
+                                    value: contract.cod_contrato,
+                                    label: contract.nome_contrato,
+                                 })),
+                                 clearSelectButton: true,
+                              },
+                           ],
+                        },
+                     ]}
+                  />
+               </CardContent>
+            </Card>
+
+            <Card className="mt-3">
+               <CardContent>
                   <SelectModalidades
                      addModalidade={addModalidade}
                      removeModalidade={removeModalidade}
@@ -144,22 +210,26 @@ function CadPlano() {
                   />
                </CardContent>
 
-               <div className="d-flex justify-end items-end gap-3 px-3">
-                  <Field className="col-2">
-                     <FieldLabel>Valor mensal</FieldLabel>
-                     <Input disabled value={formatarMoeda(valorTotal / duracaoPlano || 0)} />
-                  </Field>
+               <Separator className="my-3" />
 
-                  <Field className="col-2">
-                     <FieldLabel>Valor total</FieldLabel>
-                     <Input disabled value={formatarMoeda(valorTotal + valorAdesao)} />
-                  </Field>
+               <CardFooter className="flex flex-col lg:flex-row justify-between lg:items-end gap-3">
+                  <div className="flex gap-3">
+                     <Field className="max-w-sm">
+                        <FieldLabel>Valor mensal</FieldLabel>
+                        <Input disabled value={formatarMoeda(valorTotal / duracaoPlano || 0)} />
+                     </Field>
+
+                     <Field className="max-w-sm">
+                        <FieldLabel>Valor total</FieldLabel>
+                        <Input disabled value={formatarMoeda(valorTotal + valorAdesao)} />
+                     </Field>
+                  </div>
 
                   <Button id="submit" type="submit">
                      <Check />
                      Confirmar
                   </Button>
-               </div>
+               </CardFooter>
             </Card>
          </form>
       </FormProvider>

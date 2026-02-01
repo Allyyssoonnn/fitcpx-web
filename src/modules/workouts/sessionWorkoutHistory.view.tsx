@@ -113,7 +113,7 @@ export default function SessionWorkoutHistoryView() {
                               interval={exercise?.intervalo_treino_execucao_exercicio}
                            />
 
-                           <div className="flex flex-col gap-3 ps-3">
+                           <div className="flex flex-col gap-3">
                               {exercise?.superSets?.map((set: any, indexSet: number) => (
                                  <CardExercise
                                     sets={set.sets}
@@ -166,7 +166,7 @@ function CardExercise({
 }: CardExerciseType) {
    return (
       <Item key={key}>
-         <ItemMedia variant="icon">
+         <ItemMedia variant="icon" className="hidden lg:flex">
             <Tooltip>
                <TooltipTrigger>
                   <Info />
@@ -194,7 +194,7 @@ function CardExercise({
                {name}
             </ItemTitle>
 
-            <Separator className="w-50" />
+            <Separator className="w-full" />
 
             {sets.map((set: any, index: number) => (
                <div className="flex gap-3 flex-wrap">

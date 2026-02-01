@@ -45,7 +45,8 @@ export default defineConfig({
             ],
          },
          workbox: {
-            maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // Ajusta o limite para 5MB
+            // maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // Ajusta o limite para 5MB
+            maximumFileSizeToCacheInBytes: 7 * 1024 * 1024,
             skipWaiting: true, // ⬅️ força o SW a ativar sem esperar o usuário fechar
             clientsClaim: true, // ⬅️ força a controlar todas as abas imediatamente
          },

@@ -75,7 +75,7 @@ function ContratacaoPlano() {
          tempErrors.push("[Cadastro dos dados profissionais incompleto] - Endereço do profissional não informado");
       if (!empresa?.numero_empresa)
          tempErrors.push(
-            "[Cadastro dos dados profissionais incompleto] - Endereço (Número) do profissional não informado"
+            "[Cadastro dos dados profissionais incompleto] - Endereço (Número) do profissional não informado",
          );
       if (!empresa?.cidade_empresa)
          tempErrors.push("[Cadastro dos dados profissionais incompleto] - Cidade do profissional não informado");
@@ -165,13 +165,13 @@ function ContratacaoPlano() {
                     String(valor)
                        .replace(/\./g, "")
                        .replace(",", ".")
-                       .replace(/[^\d.-]/g, "")
+                       .replace(/[^\d.-]/g, ""),
                  );
 
          if (isNaN(parsed)) return prev;
 
          const modalidades = (prev.modalidades || []).map((m, i) =>
-            i === idx ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m
+            i === idx ? { ...m, valor_modalidade: parsed, valor_modalidade_alterado: parsed } : m,
          );
 
          // usar atualizarPlano (aplicarSubvariacoes agora respeita overrides manuais)
@@ -192,14 +192,14 @@ function ContratacaoPlano() {
          atualizarPlano({
             ...prev,
             modalidades: prev.modalidades?.filter((_, i) => i !== index),
-         })
+         }),
       );
    }
 
    useMemo(() => {
       if (selectContrato?.contrato) {
          setContratoPreenchido(
-            preencherContrato(selectContrato.contrato, aluno, empresa, plano?.modalidades, plano, pagamentoInicial)
+            preencherContrato(selectContrato.contrato, aluno, empresa, plano?.modalidades, plano, pagamentoInicial),
          );
       }
    }, [
@@ -259,7 +259,7 @@ function ContratacaoPlano() {
       const { planoAtualizado, valorTotal } = processaPlano(
          planoSelecionado,
          planoSelecionado?.duracao_plano,
-         planoSelecionado?.valor_adesao
+         planoSelecionado?.valor_adesao,
       );
 
       setPlano((prev) => ({
@@ -323,6 +323,8 @@ function ContratacaoPlano() {
                         RG: <strong>{aluno?.rg_aluno ?? "-"}</strong>
                      </Label>
                   </div>
+
+                  <Separator className="my-4 lg:hidden" />
 
                   <div className="grid grid-cols-1 gap-2">
                      <CardTitle>Profissonal</CardTitle>
@@ -394,7 +396,7 @@ function ContratacaoPlano() {
             </Card>
          )}
          {!(errors.length > 0) && (
-            <div className="grid grid-cols-2 gap-3 mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
                <Card>
                   <CardContent className="grid grid-cols-1">
                      <TooltipProvider delayDuration={100}>
@@ -426,11 +428,13 @@ function ContratacaoPlano() {
                      </TooltipProvider>
 
                      {!montandoPlano && (
-                        <Field className="w-[50%]">
+                        <Field className="">
                            <FieldLabel>Selecione o plano</FieldLabel>
                            <Select onValueChange={(v) => selectPlan(v)}>
-                              <SelectTrigger>
-                                 <SelectValue placeholder="Selecione o plano" />
+                              <SelectTrigger disabled={!planos?.length}>
+                                 <SelectValue
+                                    placeholder={!planos?.length ? "Nenhum plano cadastrado" : "Selecione o plano"}
+                                 />
                               </SelectTrigger>
 
                               <SelectContent>
@@ -444,7 +448,7 @@ function ContratacaoPlano() {
                         </Field>
                      )}
 
-                     <Field className="w-[50%]">
+                     <Field className="mt-3">
                         <FieldLabel>Duração plano</FieldLabel>
                         <Select
                            disabled={!montandoPlano}
@@ -452,7 +456,9 @@ function ContratacaoPlano() {
                            onValueChange={(v) => updatePlano("duracao_plano", v)}
                         >
                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione a duração" />
+                              <SelectValue
+                                 placeholder={!montandoPlano ? "Selecione o plano primeiro" : "Selecione a duração"}
+                              />
                            </SelectTrigger>
 
                            <SelectContent>
@@ -465,7 +471,7 @@ function ContratacaoPlano() {
                         </Select>
                      </Field>
 
-                     <Field className="w-[50%] mt-3">
+                     <Field className="mt-3">
                         <FieldLabel>Primeira cobrança</FieldLabel>
                         <Input
                            type="date"
@@ -473,13 +479,11 @@ function ContratacaoPlano() {
                            onChange={(e) => setPagamentoInicial(e.target.value)}
                         />
                      </Field>
-
-                     <Separator className="my-3" />
                   </CardContent>
                </Card>
 
                <Card>
-                  <CardContent>
+                  <CardContent className="h-full">
                      <SelectModalidades
                         disableControls={!montandoPlano}
                         addModalidade={addModalidade}
@@ -487,22 +491,23 @@ function ContratacaoPlano() {
                         attValue={attValue}
                         modalidadesPlano={plano?.modalidades}
                      />
-                     <div className="d-flex justify-between mt-3 mb-0">
-                        <p className={`${montandoPlano && "d-none"}`}>
-                           Adesão - <strong>{formatarMoeda(plano?.valor_adesao || 0)}</strong>
-                        </p>
-
-                        <div>
-                           <p className={`${montandoPlano && "d-none"} m-0 text-end`}>
-                              Mensal - <strong>{formatarMoeda(plano?.valor_plano / plano?.duracao_plano || 0)}</strong>
-                           </p>
-                           <p className="m-0 text-end">
-                              Total -{" "}
-                              <strong>{formatarMoeda(plano?.valor_plano + (plano?.valor_adesao || 0) || 0)}</strong>
-                           </p>
-                        </div>
-                     </div>
                   </CardContent>
+
+                  <CardFooter className="d-flex justify-between mt-3 mb-0">
+                     <p className={`${montandoPlano && "d-none"}`}>
+                        Adesão - <strong>{formatarMoeda(plano?.valor_adesao || 0)}</strong>
+                     </p>
+
+                     <div>
+                        <p className={`${montandoPlano && "d-none"} m-0 text-end`}>
+                           Mensal - <strong>{formatarMoeda(plano?.valor_plano / plano?.duracao_plano || 0)}</strong>
+                        </p>
+                        <p className="m-0 text-end">
+                           Total -{" "}
+                           <strong>{formatarMoeda(plano?.valor_plano + (plano?.valor_adesao || 0) || 0)}</strong>
+                        </p>
+                     </div>
+                  </CardFooter>
                </Card>
             </div>
          )}
@@ -605,13 +610,12 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
    }
 
    const parcelas = plano?.parcela_plano ? JSON.parse(plano?.parcela_plano) : [];
-   // const descMensalidades = parcelas.map((parcela, i) => `<p>${i + 1}. ${formatarMoeda(parcela)} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`);
    const descMensalidades = `${parcelas
       .map(
          (parcela, i) =>
             `<p style="margin-left: 20px;">${i + 1}. ${convertNumberToTextWithDecimals(
-               parcela
-            )} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`
+               parcela,
+            )} pagável até o dia ${adicionarMesData(dataInicio, i)}</p>`,
       )
       .join("")}`;
 
@@ -625,27 +629,27 @@ function preencherContrato(contrato, aluno, empresa, modalidades, plano, dataIni
       /<data_de_termino>/g,
       moment(dataInicio)
          .add(plano?.duracao_plano || 1, "M")
-         .format("DD/MM/YYYY") || "Não definido"
+         .format("DD/MM/YYYY") || "Não definido",
    );
    preenchido = preenchido.replaceAll(/<data_vencimento>/g, moment(dataInicio).format("DD") || "Não definido");
    preenchido = preenchido.replaceAll(/<tempo_contrato>/g, plano?.duracao_plano || "Não definido");
    preenchido = preenchido.replaceAll(
       /<valor_total_plano>/g,
-      plano?.valor_plano ? convertNumberToTextWithDecimals(plano.valor_plano, "pt") : "Não definido"
+      plano?.valor_plano ? convertNumberToTextWithDecimals(plano.valor_plano, "pt") : "Não definido",
    );
    preenchido = preenchido.replaceAll(
       /<valor_mensal_unitario>/g,
-      parcelas[0] ? convertNumberToTextWithDecimals(parcelas[0], "pt") : "Não definido"
+      parcelas[0] ? convertNumberToTextWithDecimals(parcelas[0], "pt") : "Não definido",
    );
 
    preenchido = preenchido.replaceAll(
       /<multa_percentagem>/g,
-      plano?.multa_moratoria ? `${plano.multa_moratoria}%` : "0%"
+      plano?.multa_moratoria ? `${plano.multa_moratoria}%` : "0%",
    );
    preenchido = preenchido.replaceAll(/<juros_percentagem>/g, plano?.juros_atraso ? `${plano.juros_atraso}%` : "0%");
    preenchido = preenchido.replaceAll(
       /<percentagem_multa>/g,
-      plano?.multa_compensatoria ? `${plano.multa_compensatoria}%` : "0%"
+      plano?.multa_compensatoria ? `${plano.multa_compensatoria}%` : "0%",
    );
    //multa_percentagem
    //juros_percentagem

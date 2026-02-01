@@ -65,7 +65,7 @@ export default function FinanceOverview() {
                   contract,
                })) ?? []),
             ],
-            []
+            [],
          ) || []
       );
    }, [contratos]);
@@ -298,7 +298,7 @@ function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
 
          <CardContent>
             <div className="border rounded-md min-h-100">
-               <Table>
+               <Table className="min-h-100">
                   <TableHeader>
                      {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow id={headerGroup.id}>

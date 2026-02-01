@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ImageCropModal from "../../../components/cutImg";
+import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 
 function Imagens({
@@ -107,6 +108,8 @@ function Imagens({
       } else {
          console.error("O arquivo selecionado não é uma imagem válida.");
       }
+
+      event.target.value = "";
    };
 
    const handleModalConfirm = (croppedImage) => {
@@ -284,10 +287,10 @@ function Imagens({
 
             <div className={`${options.length >= 20 ? "d-none" : ""} col-md-3 text-center`}>
                <div className="upload-option border border-dark rounded p-3">
-                  <button onClick={addOption} className="btn btn-outline-success">
+                  <Button onClick={addOption}>
                      <i className="bi bi-plus-circle me-2"></i>
                      Adicionar opção
-                  </button>
+                  </Button>
                </div>
             </div>
          </div>

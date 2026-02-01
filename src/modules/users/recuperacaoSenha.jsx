@@ -31,7 +31,7 @@ function RecuperacaoSenha() {
 
    async function submit(data) {
       if (data.nova_senha !== data.repete_nova_senha) {
-         toast.error("A senhas não são iguais!");
+         toast.error("As senhas não são iguais.");
          return;
       }
 

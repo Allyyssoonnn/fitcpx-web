@@ -25,6 +25,7 @@ import {
    DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import { Label } from "../../components/ui/label";
+import { Separator } from "../../components/ui/separator";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import { useNotificacao } from "../../states/states";
 import { formatarData, formatarMoeda } from "../../utils";
@@ -82,7 +83,7 @@ function Contrato() {
                </CardTitle>
             </CardHeader>
 
-            <CardContent className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                <div className="grid grid-cols-1 lg:col-span-2 gap-3">
                   <Label>
                      ID do contrato:{" "}
@@ -122,6 +123,8 @@ function Contrato() {
                      </strong>
                   </Label>
                </div>
+
+               <Separator className="my-4 lg:hidden" />
 
                <div className="grid grid-cols-1 gap-3">
                   <CardTitle>Ações</CardTitle>

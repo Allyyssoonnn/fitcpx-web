@@ -117,7 +117,7 @@ export default function WorkoutHistoryView() {
                         <Accordion type="multiple">
                            <AccordionItem value={`item-${index}`}>
                               <AccordionTrigger className="border-1 p-3 flex items-center">
-                                 <Item className="w-50">
+                                 <Item className="w-full lg:w-80">
                                     <ItemContent>
                                        <ItemTitle>
                                           {session?.sequencia_sessao}
@@ -125,7 +125,7 @@ export default function WorkoutHistoryView() {
                                           {session?.nome_sessao}
                                        </ItemTitle>
 
-                                       <Separator className="w-50" />
+                                       <Separator className="w-full" />
 
                                        <Label>
                                           Execuções: <strong>{session.execucoes?.length}</strong>
@@ -135,7 +135,7 @@ export default function WorkoutHistoryView() {
                                           <strong>
                                              {session.execucoes?.reduce(
                                                 (value: number, exec: any) => (value += getVolume(exec)),
-                                                0
+                                                0,
                                              )}
                                           </strong>
                                        </Label>
@@ -164,7 +164,7 @@ export default function WorkoutHistoryView() {
                                           exerciseId={exercise.cod_exercicio}
                                        />
 
-                                       <div className="flex flex-col gap-3 ps-3">
+                                       <div className="flex flex-col gap-3">
                                           {exercise?.sets?.map((set: any, indexSet: number) => (
                                              <CardExercise
                                                 key={`exercise-${indexExercise}`}
@@ -240,14 +240,16 @@ function CardExercise({
       executions?.map((v: any) =>
          v?.exercicios.map((exec: any) => {
             if (exec.cod_exercicio == exerciseId && exec.treino_exercicio_executado == "S") count += 1;
-         })
+         }),
       );
 
       return count;
    }
 
-   function getBestSet() {
-      let set = {};
+   function getBestSetByMetric(metric: "weight" | "repetition") {
+      let globalBestSet: any = null;
+      let globalMaxValue = 0;
+
       executions?.forEach((v: any) => {
          v?.exercicios?.forEach((exec: any) => {
             if (exec.cod_exercicio != exerciseId) return;
@@ -261,32 +263,40 @@ function CardExercise({
                sets = [];
             }
 
-            const bestSet = sets.reduce((prev, current) => {
-               if (current.checked) {
-                  return Number(current.weight) > Number(prev.weight) ? current : prev;
-               } else return prev;
-            }, sets[0]);
-            console.log(bestSet);
+            // Filtramos apenas sets marcados como concluídos (checked)
+            const validSets = sets.filter((s: any) => s.checked);
 
-            set = bestSet;
+            validSets.forEach((currentSet: any) => {
+               // Converte para número para garantir a comparação correta
+               const currentValue = Number(currentSet[metric]) || 0;
+
+               // Compara com o maior valor GLOBAL encontrado até agora em todos os treinos
+               if (currentValue > globalMaxValue) {
+                  globalMaxValue = currentValue;
+                  globalBestSet = currentSet;
+               }
+            });
          });
       });
-      return set;
+
+      return globalBestSet || {};
    }
 
+   // Retorna o peso do set com a MAIOR CARGA histórica
    function getMaxWeight() {
-      const response = getBestSet() as any;
-      return response?.weight ?? 0;
+      const response = getBestSetByMetric("weight");
+      return response?.weight ? Number(response.weight) : 0;
    }
 
+   // Retorna as repetições do set com o MAIOR NÚMERO DE REPETIÇÕES histórico
    function getMaxRepetition() {
-      const response = getBestSet() as any;
-      return response?.repetition ?? 0;
+      const response = getBestSetByMetric("repetition");
+      return response?.repetition ? Number(response.repetition) : 0;
    }
 
    return (
       <Item key={key}>
-         <ItemMedia variant="icon">
+         <ItemMedia variant="icon" className="hidden lg:flex">
             <Tooltip>
                <TooltipTrigger>
                   <Info />
@@ -311,7 +321,7 @@ function CardExercise({
                {name}
             </ItemTitle>
 
-            <Separator className="w-50" />
+            <Separator className="w-full" />
 
             <div className="flex gap-3 flex-wrap">
                <Label>
@@ -342,7 +352,7 @@ function CardExercise({
             </Label>
          </ItemContent>
 
-         <ItemActions className="flex flex-col">
+         <ItemActions className="flex w-full lg:w-auto lg:flex-col gap-3 justify-between lg:justify-start">
             <div className="flex gap-3">
                {(observation || studentObservation) && (
                   <Dialog>
@@ -480,16 +490,26 @@ function EvolutionChart({ executions, exerciseId }: { executions: any[]; exercis
                   Nenhum dado de execução encontrado para este exercício.
                </div>
             ) : (
-               <div className="w-full h-[350px] mt-4">
+               <div className="w-full h-[300px] mt-4 min-w-0 overflow-hidden">
                   <ChartContainer config={chartConfig} className="h-full w-full">
-                     <LineChart
-                        accessibilityLayer
-                        data={chartData}
-                        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
-                     >
+                     <LineChart accessibilityLayer data={chartData} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                         <CartesianGrid vertical={false} />
-                        <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
-                        <YAxis yAxisId="left" tickLine={false} axisLine={false} tickMargin={8} width={30} />
+                        <XAxis
+                           interval={"preserveStartEnd"}
+                           dataKey="date"
+                           tickLine={false}
+                           axisLine={false}
+                           tickMargin={8}
+                        />
+                        <YAxis
+                           interval={"preserveStartEnd"}
+                           yAxisId="left"
+                           tickLine={false}
+                           axisLine={false}
+                           tickMargin={8}
+                           width={30}
+                           minTickGap={20}
+                        />
                         <YAxis
                            yAxisId="right"
                            orientation="right"
@@ -498,6 +518,7 @@ function EvolutionChart({ executions, exerciseId }: { executions: any[]; exercis
                            tickMargin={8}
                            width={30}
                            domain={["auto", "auto"]}
+                           minTickGap={20}
                         />
                         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                         <Line

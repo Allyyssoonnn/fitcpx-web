@@ -16,3 +16,6 @@ export const getNotifications = async () => await get("/companies/getNotificatio
 export const saveNotificationsConfig = async (notifications: string) =>
    await post("/companies/saveNotificationsConfig", { notifications });
 export const getNotificationsConfig = async () => await get("/companies/getNotificationsConfig");
+
+// Checkout
+export const getCompanyAndPlans = async (companyId: string) => await get(`/companies/getCompanyAndPlans/${companyId}`);
