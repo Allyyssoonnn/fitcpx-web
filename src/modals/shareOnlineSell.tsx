@@ -36,8 +36,11 @@ const ShareOnlineSell = NiceModal.create(
       const [planId, setPlanId] = useState<any>();
 
       const { data: planos } = useQuery({
-         queryKey: ["planos"],
-         queryFn: () => getPlans(false),
+         queryKey: ["onlinePlans"],
+         queryFn: async () => {
+            const resp = await getPlans(false);
+            return (resp ?? []).filter((plan: any) => plan.venda_online === "S");
+         },
          initialData: [],
       });
 
@@ -93,7 +96,12 @@ const ShareOnlineSell = NiceModal.create(
                <Field>
                   <FieldLabel>Selecione um plano (Opcional)</FieldLabel>
                   <FieldContent className="flex flex-row">
-                     <Select key={planId ?? "empty"} value={planId ?? ""} onValueChange={setPlanId}>
+                     <Select
+                        key={planId ?? "empty"}
+                        value={planId ?? ""}
+                        onValueChange={setPlanId}
+                        disabled={!planos?.length}
+                     >
                         <SelectTrigger className="w-full">
                            <SelectValue placeholder="Selecione um plano" />
                         </SelectTrigger>
