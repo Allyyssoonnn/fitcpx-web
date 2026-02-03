@@ -329,12 +329,13 @@ function Header() {
                            <div className="ms-3">
                               <h4 className="mb-0 fs-5">{usuario?.nome_usuario}</h4>
                               {usuario.admin_usuario == "S" && <Badge>Admin</Badge>}
-                              <p className="mb-0 mt-1 d-flex align-items-center gap-1">
-                                 <i className="bi bi-envelope" />
-                                 {usuario?.email_usuario}
-                              </p>
                            </div>
                         </div>
+
+                        <p className="mb-0 mt-3 text-center">
+                           <i className="bi bi-envelope me-2" />
+                           {usuario?.email_usuario}
+                        </p>
 
                         <Separator className="my-2" />
 
@@ -362,12 +363,14 @@ function Header() {
                               <HelpCircle />
                            </DropdownMenuShortcut>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                           <a href="https://fitcpx.com">Acessar site</a>
-                           <DropdownMenuShortcut>
-                              <Earth />
-                           </DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                        <a href="https://fitcpx.com">
+                           <DropdownMenuItem>
+                              Acessar site
+                              <DropdownMenuShortcut>
+                                 <Earth />
+                              </DropdownMenuShortcut>
+                           </DropdownMenuItem>
+                        </a>
                         <DropdownMenuItem variant="destructive" onClick={sair}>
                            Sair da conta
                            <DropdownMenuShortcut>
