@@ -299,7 +299,7 @@ function Header() {
                               src={
                                  usuario.imagem_usuario
                                     ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
-                                    : "https://placehold.co/150x150?text=img"
+                                    : "assets/images/placeholder/person.png"
                               }
                            />
                            <AvatarFallback>
@@ -318,7 +318,7 @@ function Header() {
                                  src={
                                     usuario.imagem_usuario
                                        ? `${usuario.imagem_usuario}?&t=${new Date().getTime()}`
-                                       : "https://placehold.co/150x150?text=img"
+                                       : "assets/images/placeholder/person.png"
                                  }
                               />
                               <AvatarFallback>

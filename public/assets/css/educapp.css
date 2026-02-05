@@ -22,7 +22,9 @@
 }
 
 .hover-effect:hover {
-   box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+   box-shadow:
+      0 19px 38px rgba(0, 0, 0, 0.3),
+      0 15px 12px rgba(0, 0, 0, 0.22);
 }
 
 .hover-effect-success:hover {
@@ -82,4 +84,9 @@
 
 button {
    cursor: pointer;
+}
+
+.swal2-container {
+   pointer-events: auto !important;
+   z-index: 100000 !important; /* Mantenha por segurança */
 }

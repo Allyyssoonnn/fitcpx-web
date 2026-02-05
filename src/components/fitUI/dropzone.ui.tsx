@@ -105,14 +105,12 @@ export interface DropzoneContentProps {
    className?: string;
 }
 
-const maxLabelItems = 3;
+const maxLabelItems = 1;
 
 export const DropzoneContent = ({ children, className }: DropzoneContentProps) => {
-   const { src } = useDropzoneContext();
+   const { src, maxFiles } = useDropzoneContext();
 
-   if (!src) {
-      return null;
-   }
+   if (!src || src.length === 0) return null;
 
    if (children) {
       return children;
@@ -130,7 +128,9 @@ export const DropzoneContent = ({ children, className }: DropzoneContentProps) =
                  )} and ${src.length - maxLabelItems} more`
                : new Intl.ListFormat("en").format(src.map((file) => file.name))}
          </p>
-         <p className="w-full text-wrap text-muted-foreground text-xs">Drag and drop or click to replace</p>
+         <p className="w-full text-wrap text-muted-foreground text-xs">
+            Drag and drop or click to {maxFiles === 1 ? "replace" : "upload"}
+         </p>
       </div>
    );
 };
@@ -143,9 +143,7 @@ export interface DropzoneEmptyStateProps {
 export const DropzoneEmptyState = ({ children, className }: DropzoneEmptyStateProps) => {
    const { src, accept, maxSize, minSize, maxFiles } = useDropzoneContext();
 
-   if (src) {
-      return null;
-   }
+   if (src && src.length > 0) return null;
 
    if (children) {
       return children;
