@@ -144,7 +144,7 @@ export default function ListComponentWrapper({
    });
 
    return (
-      <Card className={`rounded-4 ${className ?? ""}`}>
+      <Card className={`rounded-4 ${className ?? ""} pb-0`}>
          {!hideHeader && (
             <CardHeader>
                <div className="row d-flex justify-content-between">
@@ -180,7 +180,7 @@ export default function ListComponentWrapper({
 
          {subHeader}
 
-         <CardContent className="p-0 pb-5">
+         <CardContent className="p-0">
             <Table>
                <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -265,7 +265,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
       if (type === "image")
          return (
             <img
-               src={obj[name] ? obj[name] : "https://placehold.co/150x150?text=img"}
+               src={obj[name] ? obj[name] : "assets/images/placeholder/person.png"}
                alt="Imagem"
                className="img-fluid rounded-circle shadow-md border-3 border-success"
                width={50}
