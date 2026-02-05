@@ -162,6 +162,7 @@ export default function Checkout() {
          existingStudent = await verifyExists({
             email: data.email_aluno,
             cpf: rawPayload.cpf_aluno,
+            companyId,
          });
       } catch (error) {
          console.error("Erro ao verificar aluno", error);
