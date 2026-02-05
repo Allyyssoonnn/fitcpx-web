@@ -19,24 +19,40 @@ function CompareAvaliacao() {
    const [physical2, setPhysical2] = useState({});
    const [physical3, setPhysical3] = useState({});
    const [aluno, setAluno] = useState({});
+   const [dadosIniciados, setDadosIniciados] = useState(false);
 
    const { data: avaliacoes, refetch } = useQuery({
       queryKey: ["avaliacoes", aluno.cod_aluno],
       queryFn: () => getPhysicalAssessments("false", aluno.cod_aluno),
       initialData: [],
       enabled: !!aluno.cod_aluno,
+      // DICA: Evita que refetchs em background resetem sua UI enquanto o usuário mexe
+      refetchOnWindowFocus: false,
    });
 
+   // Separe a lógica de inicialização do aluno
    useEffect(() => {
-      if (!avaliacoes) return;
-
-      if (avaliacoes[0]) setPhysical1(avaliacoes[0]);
-      if (avaliacoes[avaliacoes.length - 2]) setPhysical2(avaliacoes[avaliacoes.length - 2]);
-      if (avaliacoes[avaliacoes.length - 1]) setPhysical3(avaliacoes[avaliacoes.length - 1]);
-
       const alunoRecebido = location.state?.aluno;
-      alunoRecebido ? setAluno(alunoRecebido) : navigate("/alunos");
-   }, [avaliacoes]);
+      if (alunoRecebido) {
+         setAluno(alunoRecebido);
+      } else {
+         navigate("/alunos");
+      }
+   }, []); // Roda apenas ao montar o componente
+
+   useEffect(() => {
+      // Só entra aqui se tiver dados E se ainda NÃO tiver iniciado
+      if (avaliacoes && avaliacoes.length > 0 && !dadosIniciados) {
+         // Define os valores iniciais
+         setPhysical1(avaliacoes[0]);
+         setPhysical2(avaliacoes[avaliacoes.length - 2] || avaliacoes[0]);
+         setPhysical3(avaliacoes[avaliacoes.length - 1] || avaliacoes[0]);
+
+         // ATENÇÃO: Trava para que este efeito nunca mais rode,
+         // mesmo que 'avaliacoes' mude no futuro.
+         setDadosIniciados(true);
+      }
+   }, [avaliacoes, dadosIniciados]);
 
    if (!aluno) return <div>Carregando...</div>;
 
@@ -210,8 +226,13 @@ function Imagens({ avaliacoes }) {
    const [tipoColagem, setTipoColagem] = useState(2);
    const [indexImg, setIndexImg] = useState([0, 0, 0]);
 
+   // Resetar indices apenas quando as avaliações mudarem drasticamente
+   useEffect(() => {
+      setIndexImg([0, 0, 0]);
+   }, [avaliacoes]);
+
    function changeIndex(value, index) {
-      setIndexImg((prev) => prev.map((v, i) => (index == i ? Number(value) : v)));
+      setIndexImg((prev) => prev.map((v, i) => (index === i ? Number(value) : v)));
    }
 
    return (
@@ -221,14 +242,15 @@ function Imagens({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
+            {/* Botões de Seleção de Layout */}
+            <div className="btn-group mb-3" role="group" aria-label="Basic radio toggle button group">
                <input
                   type="radio"
                   className="btn-check"
                   name="btnradio"
                   id="btnradio-2"
-                  checked={tipoColagem == 2}
-                  onClick={() => setTipoColagem(2)}
+                  checked={tipoColagem === 2}
+                  onChange={() => setTipoColagem(2)}
                />
                <label className="btn btn-outline-primary" htmlFor="btnradio-2">
                   2 Fotos
@@ -239,37 +261,75 @@ function Imagens({ avaliacoes }) {
                   className="btn-check"
                   name="btnradio"
                   id="btnradio-3"
-                  checked={tipoColagem == 3}
-                  onClick={() => setTipoColagem(3)}
+                  checked={tipoColagem === 3}
+                  onChange={() => setTipoColagem(3)}
                />
                <label className="btn btn-outline-primary" htmlFor="btnradio-3">
                   3 Fotos
                </label>
             </div>
+
+            {/* Grid de Imagens */}
             <div className={`row g-3 ${tipoColagem === 3 ? "row-cols-3" : "row-cols-2"}`}>
-               {avaliacoes?.slice(0, tipoColagem).map((av, index) => (
-                  <div key={index} className="col-md-3">
-                     <div className="text-center">
-                        <div>
-                           <label className="form-label fw-bold">Imagem</label>
-                           <select className="form-control" onChange={(e) => changeIndex(e.target.value, index)}>
-                              {av?.imagem?.map((img, i) => (
-                                 <option key={i} value={i}>
-                                    {img.descricao_imagem}
-                                 </option>
-                              ))}
-                           </select>
+               {avaliacoes?.slice(0, tipoColagem).map((av, index) => {
+                  // Variáveis auxiliares para facilitar leitura e evitar erros
+                  const imagensDisponiveis = av?.imagem || [];
+                  const indiceSelecionado = indexImg[index] || 0;
+                  const imagemAtual = imagensDisponiveis[indiceSelecionado];
+
+                  return (
+                     <div key={index} className="col">
+                        <div className="text-center p-2 border rounded">
+                           <div className="mb-2">
+                              <label className="form-label fw-bold">
+                                 {av?.data_avaliacao ? formatarData(av.data_avaliacao) : "Sem Data"}
+                              </label>
+
+                              {/* CORREÇÃO 1: O Select agora tem o atributo VALUE controlado */}
+                              <select
+                                 className="form-control form-select"
+                                 value={indiceSelecionado}
+                                 onChange={(e) => changeIndex(e.target.value, index)}
+                                 disabled={imagensDisponiveis.length === 0}
+                              >
+                                 {imagensDisponiveis.length > 0 ? (
+                                    imagensDisponiveis.map((img, i) => (
+                                       <option key={i} value={i}>
+                                          {img.descricao_imagem || `Imagem ${i + 1}`}
+                                       </option>
+                                    ))
+                                 ) : (
+                                    <option>Sem imagens</option>
+                                 )}
+                              </select>
+                           </div>
+
+                           <div
+                              style={{
+                                 minHeight: "200px",
+                                 display: "flex",
+                                 alignItems: "center",
+                                 justifyContent: "center",
+                                 background: "#f8f9fa",
+                              }}
+                           >
+                              {imagemAtual ? (
+                                 <img
+                                    src={imagemAtual.url_imagem}
+                                    alt={imagemAtual.descricao_imagem}
+                                    style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
+                                 />
+                              ) : (
+                                 <span className="text-muted">Imagem indisponível</span>
+                              )}
+                           </div>
+
+                           {/* CORREÇÃO 3: Exibir a descrição da FOTO, não da avaliação inteira */}
+                           <h6 className="mt-2 text-muted">{imagemAtual?.descricao_imagem || "-"}</h6>
                         </div>
-                        {av?.imagem && (
-                           <img
-                              src={av?.imagem[indexImg[index]]?.url_imagem || ""}
-                              style={{ width: "100%", border: "1px solid black" }}
-                           />
-                        )}
-                        <h4 className="mt-2">{av?.descricao_imagem}</h4>
                      </div>
-                  </div>
-               ))}
+                  );
+               })}
             </div>
          </AccordionContent>
       </AccordionItem>
@@ -874,10 +934,10 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
                ...arr,
                // new Date(av.data_avaliacao).toLocaleDateString()
                new Date(...av.data_avaliacao.split("-").map((v, i) => (i === 1 ? +v - 1 : +v))).toLocaleDateString(
-                  "pt-BR"
+                  "pt-BR",
                ),
             ],
-            []
+            [],
          ),
          labels: { style: { fontSize: "12px", colors: "#a1aab2" } },
       },
