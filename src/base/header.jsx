@@ -356,12 +356,12 @@ function Header() {
                               <ClipboardList />
                            </DropdownMenuShortcut>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate("/help")}>
+                        {/* <DropdownMenuItem onClick={() => navigate("/help")}>
                            Ajuda
                            <DropdownMenuShortcut>
                               <HelpCircle />
                            </DropdownMenuShortcut>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem>
                            <a href="https://fitcpx.com">Acessar site</a>
                            <DropdownMenuShortcut>
