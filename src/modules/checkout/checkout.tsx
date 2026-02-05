@@ -3,7 +3,7 @@ import { onlineContract } from "@/api/contracts";
 import { verifyExists } from "@/api/student";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { normalizeCep, normalizeCpf, normalizePhone } from "@/utils/utils";
+import { normalizeCep, normalizeCpf, normalizePhone, searchCEP } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod"; // Importante
 import { ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -91,31 +91,26 @@ export default function Checkout() {
    const cepValue = watch("cep_aluno");
 
    useEffect(() => {
-      // 2. Remova tudo que não é número para validar o tamanho
-      const cepLimpo = cepValue?.replace(/\D/g, "") ?? "";
+      const handleSearch = async () => {
+         const cepLimpo = cepValue?.replace(/\D/g, "") ?? "";
 
-      // 3. Verifique se tem 8 NÚMEROS (ignorando o traço da máscara)
-      if (cepLimpo.length === 8) {
-         fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
-            .then((resp) => {
-               if (!resp.ok) throw new Error("Erro CEP");
-               return resp.json();
-            })
-            .then((data) => {
-               if (!data.erro) {
-                  // O setValue atualiza os campos automaticamente
-                  setValue("endereco_aluno", data.logradouro);
-                  setValue("bairro_aluno", data.bairro);
-                  setValue("cidade_aluno", data.localidade);
-                  setValue("estado_aluno", String(data.uf).toUpperCase());
+         if (cepLimpo.length === 8) {
+            try {
+               const data = (await searchCEP(cepLimpo)) as any;
+               if (data.city) setValue("cidade_aluno", data.city);
+               if (data.neighbord) setValue("bairro_aluno", data.neighbord);
+               if (data.state) setValue("estado_aluno", data.state);
+               if (data.address) setValue("endereco_aluno", data.address);
 
-                  // Dica de UX: Se quiser focar no número após preencher:
-                  setTimeout(() => setFocus("numero_aluno"), 100);
-               }
-            })
-            .catch((error) => console.error("Erro busca CEP:", error));
-      }
-   }, [cepValue, setValue]);
+               setTimeout(() => setFocus("numero_aluno"), 100);
+            } catch (error) {
+               console.error("Failed to fetch CEP:", error);
+            }
+         }
+      };
+
+      handleSearch(); // Execute it
+   }, [cepValue, setValue, setFocus]); // Added setFocus to dependencies for safety
 
    function handlePlanChange(value: string) {
       const plan = plans.find((p) => p.value === value);
