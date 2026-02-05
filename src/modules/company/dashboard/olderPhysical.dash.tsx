@@ -23,10 +23,7 @@ export default function OlderPhysicalDash() {
          <CardContent>
             <Table>
                <TableCaption>
-                  Limitado em 5{" "}
-                  <a className="text-primary" href="#" onClick={() => navigate("/avaliacoes")}>
-                     Avaliações
-                  </a>
+                  Limitado em 5 <span className="text-primary">Avaliações</span>
                </TableCaption>
 
                <TableHeader>
