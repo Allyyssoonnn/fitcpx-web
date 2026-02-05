@@ -88,37 +88,33 @@ function ListArchives({ archives, refetch }: { archives: Archive[]; refetch: () 
    const { nConfirm } = useNotificacao();
 
    async function download(awsURL: string, fileName?: string) {
-      if (!awsURL) toast.error("Arquivo sem link.");
+      if (!awsURL) return toast.error("Arquivo sem link.");
 
       try {
-         // 1. Faz o fetch do arquivo como um Blob (Binário)
-         const response = await fetch(awsURL);
+         // ADICIONE cache: 'no-store' para evitar o erro de cache "sujo"
+         const response = await fetch(awsURL, {
+            cache: "no-store",
+            mode: "cors",
+         });
 
          if (!response.ok) throw new Error("Falha ao baixar arquivo");
 
          const blob = await response.blob();
-
-         // 2. Cria uma URL temporária no navegador
          const url = window.URL.createObjectURL(blob);
          const link = document.createElement("a");
          link.href = url;
 
-         // 3. Define o nome do arquivo (Tenta pegar da URL se não informado)
          const name = fileName || awsURL.split("/").pop() || "download";
          link.setAttribute("download", name);
 
-         // 4. Simula o clique e limpa a memória
          document.body.appendChild(link);
          link.click();
 
-         // Limpeza
          link.parentNode?.removeChild(link);
          window.URL.revokeObjectURL(url);
       } catch (err) {
          console.error(err);
-         toast.error("Erro ao baixar. O arquivo pode ser privado ou bloqueado por CORS.");
-
-         // Fallback: Tenta apenas abrir em nova aba se o download falhar
+         toast.error("Erro ao baixar. Abrindo em nova aba...");
          window.open(awsURL, "_blank");
       }
    }
