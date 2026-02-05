@@ -222,7 +222,7 @@ function Account({ usuario, setusuario }) {
                                     {
                                        label: "CEP",
                                        fieldName: "cep_usuario",
-                                       type: "number",
+                                       mask: "cep",
                                     },
                                     {
                                        label: "Cidade",

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { normalizeCep, normalizeCpf, normalizePhone } from "@/utils/utils";
 import { Info, Trash } from "lucide-react";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -26,6 +27,7 @@ type BackBoxUIFieldType = {
    options?: Options;
    fieldName: string;
    type?: "input" | "select" | "phone" | "currency" | "color" | "toggle" | "number";
+   mask?: "cep";
    selectOptions?: SelectOption[] | string[];
    clearSelectButton?: boolean;
    inputType?: React.ComponentProps<"input">["type"];
@@ -417,7 +419,11 @@ function FitFormUI({ fields, errors }: BackBoxUIType) {
                                          })
                                        : {})}
                                     value={value}
-                                    onChange={(e) => setValue(field.fieldName, e.target.value)}
+                                    onChange={(e) => {
+                                       const rawValue = e.target.value;
+                                       const finalValue = field.mask ? maskFunctions[field.mask](rawValue) : rawValue;
+                                       setValue(field.fieldName, finalValue);
+                                    }}
                                     disabled={field.options?.disabled}
                                     id={field.id}
                                     placeholder={field.label}
@@ -459,34 +465,12 @@ function getRandomColor() {
    return color;
 }
 
-const formatValue = (value: string, format?: string) => {
-   if (!value || !format) return value;
+type MaskType = "cpf" | "phone" | "cep";
 
-   const onlyNumbers = value.replace(/\D/g, "");
-
-   switch (format) {
-      case "documentId": // CPF ou CNPJ
-         if (onlyNumbers.length <= 11) {
-            // CPF
-            return onlyNumbers
-               .replace(/^(\d{3})(\d)/, "$1.$2")
-               .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-               .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
-         } else {
-            // CNPJ
-            return onlyNumbers
-               .replace(/^(\d{2})(\d)/, "$1.$2")
-               .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-               .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-               .replace(/(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5");
-         }
-
-      case "CEP":
-         return onlyNumbers.replace(/^(\d{5})(\d)/, "$1-$2");
-
-      default:
-         return value;
-   }
+const maskFunctions: Record<MaskType, (v: string) => string> = {
+   cpf: normalizeCpf,
+   phone: normalizePhone,
+   cep: normalizeCep,
 };
 
 export default FitFormUI;

@@ -223,7 +223,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "CEP",
                                        id: "cep",
-                                       type: "number",
+                                       mask: "cep",
                                        fieldName: "cep_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },

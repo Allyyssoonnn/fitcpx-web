@@ -202,11 +202,10 @@ function CadAluno() {
                               cols: 4,
                               fields: [
                                  {
-                                    format: "CEP",
                                     id: "cep",
                                     label: "CEP",
-                                    type: "number",
                                     fieldName: "cep_aluno",
+                                    mask: "cep",
                                  },
                                  {
                                     id: "state",

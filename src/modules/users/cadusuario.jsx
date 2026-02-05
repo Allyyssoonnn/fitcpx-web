@@ -144,7 +144,7 @@ function CadUsuario() {
                               cols: 4,
                               fields: [
                                  {
-                                    format: "CEP",
+                                    mask: "cep",
                                     id: "cep",
                                     label: "CEP",
                                     fieldName: "cep_usuario",
