@@ -71,6 +71,7 @@ export default function Checkout() {
       formState: { errors },
       watch,
       setFocus,
+      clearErrors,
    } = useForm<CheckoutFormValues>({
       resolver: zodResolver(checkoutSchema),
       defaultValues: {
@@ -88,6 +89,7 @@ export default function Checkout() {
          numero_aluno: "",
          estado_aluno: "",
          metodo_pagamento: "monthly", // Este já tem um valor válido por padrão
+         metodo_recorrencia: "monthly_card",
       },
    });
 
@@ -117,10 +119,16 @@ export default function Checkout() {
          if (cepLimpo.length === 8) {
             try {
                const data = (await searchCEP(cepLimpo)) as any;
-               if (data.city) setValue("cidade_aluno", data.city);
-               if (data.neighbord) setValue("bairro_aluno", data.neighbord);
-               if (data.state) setValue("estado_aluno", data.state);
-               if (data.address) setValue("endereco_aluno", data.address);
+
+               if (!data || data.erro) return;
+
+               if (data.city) setValue("cidade_aluno", data.city, { shouldValidate: true });
+               if (data.neighbord) setValue("bairro_aluno", data.neighbord, { shouldValidate: true });
+               if (data.state) setValue("estado_aluno", data.state, { shouldValidate: true });
+               if (data.address) setValue("endereco_aluno", data.address, { shouldValidate: true });
+
+               // Garante que o erro do campo CEP suma imediatamente
+               clearErrors("cep_aluno");
 
                setTimeout(() => setFocus("numero_aluno"), 100);
             } catch (error) {
@@ -166,6 +174,7 @@ export default function Checkout() {
          valor_total: selectedPlan.price,
          cod_contrato: selectedPlan.contractId,
          cod_empresa: companyId,
+         metodo_recorrencia: data.metodo_recorrencia,
          metodo_pagamento: data.metodo_pagamento,
          parcelas: data.metodo_pagamento === "installments" ? data.parcelas : undefined,
       };

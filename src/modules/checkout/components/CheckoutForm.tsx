@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { calculateInstallment, formatCurrency, states } from "@/utils/utils";
-import { Building2, Coins, CreditCard, RotateCcw, User } from "lucide-react";
+import { AlertCircle, Building2, Coins, CreditCard, RotateCcw, Smartphone, User } from "lucide-react";
 import { Control, Controller, useWatch } from "react-hook-form";
 import { Plan } from "../types";
 import { FormInput } from "./FormInput";
@@ -23,6 +23,31 @@ export function CheckoutForm({
       name: "metodo_pagamento",
    });
 
+   // --- LÓGICA DE VERIFICAÇÃO DE ERROS POR SEÇÃO ---
+
+   // Verifica se algum campo de Dados Pessoais tem erro
+   const hasPersonalErrors = [
+      "nome_aluno",
+      "email_aluno",
+      "cpf_aluno",
+      "telefone_aluno",
+      "data_nascimento_aluno",
+      "sexo_aluno",
+   ].some((field) => errors[field]);
+
+   // Verifica se algum campo de Endereço tem erro
+   const hasAddressErrors = [
+      "cep_aluno",
+      "endereco_aluno",
+      "bairro_aluno",
+      "numero_aluno",
+      "estado_aluno",
+      "cidade_aluno",
+   ].some((field) => errors[field]);
+
+   // Verifica se Pagamento tem erro
+   const hasPaymentErrors = !!errors.metodo_pagamento;
+
    const getParcelaLabel = (num: number) => {
       if (!selectedPlan?.price) return "";
 
@@ -35,6 +60,14 @@ export function CheckoutForm({
       return `${num}x de ${valorFormatado}`;
    };
 
+   // Componente auxiliar para exibir o alerta no Header
+   const ErrorBadge = () => (
+      <div className="ml-auto flex items-center gap-1.5 text-destructive mr-2">
+         <span className="text-xs font-medium hidden sm:block">Verifique os dados</span>
+         <AlertCircle className="h-4 w-4" />
+      </div>
+   );
+
    return (
       <Accordion type="single" collapsible defaultValue="dados-pessoais" className="w-full space-y-2">
          {/* DADOS PESSOAIS */}
@@ -44,6 +77,8 @@ export function CheckoutForm({
                   <User className="h-4 w-4 text-primary" />
                   <Label className="font-medium">Dados Pessoais</Label>
                </div>
+
+               {hasPersonalErrors && <ErrorBadge />}
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 pb-6 space-y-4">
                <div className="grid gap-2">
@@ -131,6 +166,8 @@ export function CheckoutForm({
                   <Building2 className="h-4 w-4 text-primary" />
                   <Label className="font-medium">Endereço de Cobrança</Label>
                </div>
+
+               {hasAddressErrors && <ErrorBadge />}
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 pb-6 space-y-4">
                <div className="grid grid-cols-[120px_1fr] gap-4">
@@ -217,6 +254,8 @@ export function CheckoutForm({
                   <CreditCard className="h-4 w-4 text-primary" />
                   <Label className="font-medium">Pagamento</Label>
                </div>
+
+               {hasPaymentErrors && <ErrorBadge />}
             </AccordionTrigger>
 
             <AccordionContent className="pt-2 px-2 pb-6 text-sm text-muted-foreground">
@@ -235,11 +274,82 @@ export function CheckoutForm({
                         {!!selectedPlan?.duration && selectedPlan?.duration > 1 && selectedPlan?.allowMonthly && (
                            <FieldLabel htmlFor="plan-monthly" className="cursor-pointer">
                               <Field orientation="horizontal">
-                                 <FieldContent>
-                                    <FieldTitle>
-                                       <RotateCcw size={15} className="text-green-600" /> Recorrência
-                                    </FieldTitle>
-                                    <FieldDescription>Pagamento mensal automático.</FieldDescription>
+                                 <FieldContent className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 pr-2">
+                                    <div>
+                                       <FieldTitle>
+                                          <RotateCcw size={15} className="text-green-600" /> Recorrência
+                                       </FieldTitle>
+                                       <FieldDescription>Pagamento mensal.</FieldDescription>
+                                    </div>
+
+                                    {metodoPagamento === "monthly" && (
+                                       <div
+                                          className="w-[140px]"
+                                          // Impede que o clique no select reative o radio (boa prática)
+                                          onClick={(e) => e.stopPropagation()}
+                                       >
+                                          <Controller
+                                             control={control}
+                                             name="metodo_recorrencia"
+                                             render={({ field: selectField }) => (
+                                                <Select
+                                                   defaultValue={selectField.value}
+                                                   onValueChange={selectField.onChange}
+                                                   value={selectField.value}
+                                                >
+                                                   <SelectTrigger className="h-12 w-full bg-background">
+                                                      {selectField.value === "monthly_app" && (
+                                                         <div className="flex items-center gap-2">
+                                                            <Smartphone className="h-4 w-4 text-muted-foreground" />
+                                                            <span className="font-medium">App Manual</span>
+                                                         </div>
+                                                      )}
+
+                                                      {selectField.value === "monthly_card" && (
+                                                         <div className="flex items-center gap-2">
+                                                            <CreditCard className="h-4 w-4 text-primary" />
+                                                            <span className="font-medium">Auto Cartão</span>
+                                                         </div>
+                                                      )}
+
+                                                      {/* Fallback caso não tenha valor */}
+                                                      {!selectField.value && (
+                                                         <span className="text-muted-foreground">Selecione...</span>
+                                                      )}
+                                                   </SelectTrigger>
+
+                                                   <SelectContent>
+                                                      {/* Opção 1: App Manual */}
+                                                      <SelectItem value="monthly_app" className="py-3 cursor-pointer">
+                                                         <div className="flex items-center gap-3 text-left">
+                                                            <Smartphone className="h-5 w-5 text-muted-foreground" />
+                                                            <div className="flex flex-col">
+                                                               <span className="font-medium text-sm">App Manual</span>
+                                                               <span className="text-xs text-muted-foreground text-wrap max-w-[200px]">
+                                                                  Pagamento feito manualmente via App a cada mês.
+                                                               </span>
+                                                            </div>
+                                                         </div>
+                                                      </SelectItem>
+
+                                                      {/* Opção 2: Auto Cartão */}
+                                                      <SelectItem value="monthly_card" className="py-3 cursor-pointer">
+                                                         <div className="flex items-center gap-3 text-left">
+                                                            <CreditCard className="h-5 w-5 text-primary" />
+                                                            <div className="flex flex-col">
+                                                               <span className="font-medium text-sm">Auto Cartão</span>
+                                                               <span className="text-xs text-muted-foreground text-wrap max-w-[200px]">
+                                                                  Cobrança recorrente automática no cartão cadastrado.
+                                                               </span>
+                                                            </div>
+                                                         </div>
+                                                      </SelectItem>
+                                                   </SelectContent>
+                                                </Select>
+                                             )}
+                                          />
+                                       </div>
+                                    )}
                                  </FieldContent>
                                  <RadioGroupItem value="monthly" id="plan-monthly" />
                               </Field>
