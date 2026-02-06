@@ -630,6 +630,7 @@ function Aluno() {
                                     modalShareOnlineSell.show({
                                        studentId: aluno.cod_aluno,
                                        studentName: aluno.nome_aluno,
+                                       studentPhone: aluno.telefone_aluno,
                                        addressJSON: JSON.stringify({
                                           cep_aluno: aluno.cep_aluno ?? "",
                                           endereco_aluno: aluno.endereco_aluno ?? "",

@@ -1,4 +1,5 @@
 import { get } from "@/api/api";
+import { getCheckoutInfo } from "@/api/companies";
 import { onlineContract } from "@/api/contracts";
 import { verifyExists } from "@/api/student";
 import { Button } from "@/components/ui/button";
@@ -17,24 +18,50 @@ import { Company, Plan } from "./types";
 
 export default function Checkout() {
    const params = new URLSearchParams(window.location.search);
-   const token = params.get("token");
-   const companyId = token?.split("-")[1].substring(2);
-   const allowSelectPlan = token?.split("-")[1].substring(0, 1) == "0";
-   const planId = params.get("planId");
-   const studentId = params.get("studentId");
-   const studentName = params.get("studentName");
-   const addressJSON = params.get("addressJSON");
-   const personalJSON = params.get("personalJSON");
-
-   const studentRecieved = {
-      ...(personalJSON ? JSON.parse(personalJSON) : {}),
-      ...(addressJSON ? JSON.parse(addressJSON) : {}),
-   };
+   const sToken = params.get("s");
 
    const [company, setCompany] = useState<Company | null>(null);
    const [plans, setPlans] = useState<Plan[]>([]);
    const [selectedPlan, setSelectedPlan] = useState<Plan | undefined>();
    const [companyNotFound, setCompanyNotFound] = useState(false);
+   const [companyId, setCompanyId] = useState();
+   const [planId, setplanId] = useState();
+   const [studentId, setStudentId] = useState();
+   const [allowSelectPlan, setAllowSelectPlan] = useState(true);
+
+   useQuery({
+      queryKey: ["checkout-info", sToken],
+      queryFn: async () => {
+         if (!sToken) return;
+         const response = (await getCheckoutInfo(sToken)) as any;
+
+         if (response.companyId) setCompanyId(response.companyId);
+         if (response.planId) {
+            setplanId(response.planId);
+            setAllowSelectPlan(false);
+         }
+         if (response.setStudentId) setStudentId(response.setStudentId);
+
+         if (response?.student) {
+            const student = response?.student;
+
+            setValue("telefone_aluno", normalizePhone(student.telefone_aluno));
+            setValue("cpf_aluno", normalizeCpf(student.cpf_aluno));
+            setValue("cep_aluno", normalizeCep(student.cep_aluno));
+
+            setValue("nome_aluno", student.nome_aluno);
+            setValue("email_aluno", student.email_aluno);
+            setValue("data_nascimento_aluno", student.data_nascimento_aluno);
+            setValue("sexo_aluno", student.sexo_aluno);
+            setValue("cidade_aluno", student.cidade_aluno);
+            setValue("endereco_aluno", student.endereco_aluno);
+            setValue("bairro_aluno", student.bairro_aluno);
+            setValue("numero_aluno", student.numero_aluno);
+            setValue("estado_aluno", student.estado_aluno);
+         }
+      },
+      enabled: !!sToken,
+   });
 
    // --- 2. Configuração do Hook Form com Zod ---
    const {
@@ -46,29 +73,22 @@ export default function Checkout() {
       setFocus,
    } = useForm<CheckoutFormValues>({
       resolver: zodResolver(checkoutSchema),
-      defaultValues: studentRecieved
-         ? {
-              ...studentRecieved,
-              telefone_aluno: normalizePhone(studentRecieved.telefone_aluno),
-              cpf_aluno: normalizeCpf(studentRecieved.cpf_aluno),
-              cep_aluno: normalizeCep(studentRecieved.cep_aluno),
-           }
-         : {
-              // É CRUCIAL inicializar tudo com string vazia para evitar erro de "undefined"
-              nome_aluno: "",
-              email_aluno: "",
-              telefone_aluno: "",
-              cpf_aluno: "",
-              data_nascimento_aluno: "",
-              sexo_aluno: "",
-              cep_aluno: "",
-              cidade_aluno: "",
-              endereco_aluno: "",
-              bairro_aluno: "",
-              numero_aluno: "",
-              estado_aluno: "",
-              metodo_pagamento: "monthly", // Este já tem um valor válido por padrão
-           },
+      defaultValues: {
+         // É CRUCIAL inicializar tudo com string vazia para evitar erro de "undefined"
+         nome_aluno: "",
+         email_aluno: "",
+         telefone_aluno: "",
+         cpf_aluno: "",
+         data_nascimento_aluno: "",
+         sexo_aluno: "",
+         cep_aluno: "",
+         cidade_aluno: "",
+         endereco_aluno: "",
+         bairro_aluno: "",
+         numero_aluno: "",
+         estado_aluno: "",
+         metodo_pagamento: "monthly", // Este já tem um valor válido por padrão
+      },
    });
 
    const { isLoading } = useQuery({

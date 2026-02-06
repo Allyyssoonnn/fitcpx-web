@@ -131,10 +131,11 @@ async function post<T = any>(url: string, data: DataObject): Promise<T> {
 }
 
 // GET genérico
-async function get<T = any>(url: string): Promise<T> {
+async function get<T = any>(url: string, params?: any): Promise<T> {
    const cookies = parseCookies(null);
    const resp = await api.get<T>(url, {
       headers: { Authorization: cookies.token },
+      params, // O Axios cuida da serialização aqui
    });
    return resp.data;
 }
