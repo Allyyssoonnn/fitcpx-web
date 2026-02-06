@@ -29,9 +29,10 @@ function CadPlano() {
               ...planoRecebido,
               vende_online: planoRecebido?.vende_online ?? "S",
               vende_recorrencia: planoRecebido?.vende_recorrencia ?? "S",
-              max_installments: planoRecebido?.max_installments ?? 1,
+              maximo_parcelas: planoRecebido?.maximo_parcelas ?? 1,
+              cod_contrato: planoRecebido?.cod_contrato ?? null,
            }
-         : { vende_online: "S", vende_recorrencia: "S", max_installments: 1 },
+         : { vende_online: "S", vende_recorrencia: "S", maximo_parcelas: 1, cod_contrato: null },
    });
    const {
       handleSubmit,
