@@ -4,6 +4,7 @@ import {
    Clipboard,
    Earth,
    Eye,
+   Paperclip,
    PauseCircle,
    Pen,
    Pencil,
@@ -17,7 +18,7 @@ import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getContracts } from "../../api/contracts";
 import { deletePhysicalAssessment, getPhysicalAssessments } from "../../api/physicalAssessments";
-import { createOrUpdateStudent, getStudent, updateImageStudent } from "../../api/student";
+import { createOrUpdateStudent, getStudent, getStudentsAttachments, updateImageStudent } from "../../api/student";
 import { createOrUpdateWorkout, deleteWorkout, getWorkoutHistory, getWorkouts } from "../../api/workouts";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import ImageCropModal from "../../components/cutImg";
@@ -26,6 +27,7 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { modalArchivesStudent } from "../../modals/archivesStudent";
 import { modalAssignWorkout } from "../../modals/assignWorkout";
 import { modalShareOnlineSell } from "../../modals/shareOnlineSell";
 import { useNotificacao } from "../../states/states";
@@ -76,6 +78,13 @@ function Aluno() {
    const { data: workoutHistory } = useQuery({
       queryKey: ["workoutHistory"],
       queryFn: () => getWorkoutHistory(cod_aluno),
+      initialData: [],
+      enabled: !!cod_aluno,
+   });
+
+   const { data: archives } = useQuery({
+      queryKey: ["attachments", cod_aluno],
+      queryFn: ({ queryKey }) => getStudentsAttachments(queryKey[1]),
       initialData: [],
       enabled: !!cod_aluno,
    });
@@ -186,7 +195,8 @@ function Aluno() {
 
          <BackBoxUI />
 
-         <Card className="border-0 rounded-4 overflow-hidden">
+         <Card className="border-0 rounded-4 overflow-hidden p-0 relative">
+            <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
             <CardContent className="p-0">
                {/* Profile Header */}
                <div className="bg-accent p-5">
@@ -197,7 +207,7 @@ function Aluno() {
                               src={
                                  aluno?.imagem_aluno
                                     ? `${aluno?.imagem_aluno}?&t=${new Date().getTime()}`
-                                    : "https://placehold.co/150x150?text=img"
+                                    : "assets/images/placeholder/person.png"
                               }
                               alt="Foto do Aluno"
                               className="img-fluid rounded-circle shadow-lg border border-4 border-white"
@@ -208,7 +218,7 @@ function Aluno() {
                               }}
                            />
                            <label
-                              className="btn btn-success btn-sm position-absolute bottom-0 end-0 rounded-circle shadow d-flex align-items-center justify-content-center"
+                              className="bg-green-500 text-white btn-sm position-absolute bottom-0 end-0 rounded-circle shadow d-flex align-items-center justify-content-center"
                               htmlFor="img_aluno"
                               style={{
                                  width: "40px",
@@ -224,8 +234,8 @@ function Aluno() {
 
                      <div className="col-lg-9 col-md-8">
                         <div className="d-flex flex-column h-100 justify-content-center">
-                           <div className="mb-3">
-                              <h1 className="fw-bold text-dark mb-2" id="student-name">
+                           <div className="mb-2">
+                              <h1 className="fw-bold text-dark mb-2 text-2xl" id="student-name">
                                  {aluno?.nome_aluno}
                               </h1>
                               <div className="d-flex align-items-center gap-3 flex-wrap">
@@ -246,6 +256,21 @@ function Aluno() {
                            </div>
 
                            <div className="d-flex gap-3 flex-wrap">
+                              <Button
+                                 onClick={() =>
+                                    modalArchivesStudent.show({
+                                       studentId: aluno.cod_aluno,
+                                       studentName: aluno.nome_aluno,
+                                    })
+                                 }
+                                 size="sm"
+                                 variant="outline"
+                              >
+                                 <Paperclip />
+                                 Arquivos
+                                 {!!archives?.length && <Badge>{archives.length}</Badge>}
+                              </Button>
+
                               <Button
                                  id="student-edit"
                                  size="sm"
@@ -279,11 +304,21 @@ function Aluno() {
                <div className="p-4">
                   <Tabs defaultValue="informacoesPessoais">
                      <TabsList className="flex-wrap w-[100%] rounded my-3 h-auto">
-                        <TabsTrigger value="informacoesPessoais">Informações Pessoais</TabsTrigger>
-                        <TabsTrigger value="avaliacaoFisica">Avaliações Físicas</TabsTrigger>
-                        <TabsTrigger value="treino">Treinos</TabsTrigger>
-                        <TabsTrigger value="contratos">Contratos</TabsTrigger>
-                        <TabsTrigger value="workoutHistory">Treinos realizados</TabsTrigger>
+                        <TabsTrigger value="informacoesPessoais" className="data-[state=active]:text-green-500">
+                           Informações Pessoais
+                        </TabsTrigger>
+                        <TabsTrigger value="avaliacaoFisica" className="data-[state=active]:text-green-500">
+                           Avaliações Físicas
+                        </TabsTrigger>
+                        <TabsTrigger value="treino" className="data-[state=active]:text-green-500">
+                           Treinos
+                        </TabsTrigger>
+                        <TabsTrigger value="contratos" className="data-[state=active]:text-green-500">
+                           Contratos
+                        </TabsTrigger>
+                        <TabsTrigger value="workoutHistory" className="data-[state=active]:text-green-500">
+                           Treinos realizados
+                        </TabsTrigger>
                      </TabsList>
 
                      <TabsContent value="informacoesPessoais" id="aluno-tab-avaliacaoFisica">
@@ -595,6 +630,7 @@ function Aluno() {
                                     modalShareOnlineSell.show({
                                        studentId: aluno.cod_aluno,
                                        studentName: aluno.nome_aluno,
+                                       studentPhone: aluno.telefone_aluno,
                                        addressJSON: JSON.stringify({
                                           cep_aluno: aluno.cep_aluno ?? "",
                                           endereco_aluno: aluno.endereco_aluno ?? "",

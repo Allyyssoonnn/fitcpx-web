@@ -170,3 +170,29 @@ export const calculateInstallment = (totalPrice: number, installmentCount: numbe
       hasDifference: remainder > 0,
    };
 };
+
+export const searchCEP = async (CEP: string) => {
+   const flatCEP = CEP?.replace(/\D/g, "") ?? "";
+
+   var response = null as any;
+
+   if (flatCEP.length === 8) {
+      try {
+         const resp = await fetch(`https://viacep.com.br/ws/${flatCEP}/json/`);
+         if (!resp.ok) throw new Error("Erro CEP");
+         const data = await resp.json();
+         if (!data.erro) {
+            response = {
+               address: data.logradouro,
+               neighbord: data.bairro,
+               city: data.localidade,
+               state: String(data.uf).toUpperCase(),
+            };
+         }
+      } catch (error: any) {
+         console.error("Erro busca CEP:", error);
+      }
+   }
+
+   return response;
+};

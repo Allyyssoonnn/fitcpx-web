@@ -16,6 +16,10 @@ export const getNotifications = async () => await get("/companies/getNotificatio
 export const saveNotificationsConfig = async (notifications: string) =>
    await post("/companies/saveNotificationsConfig", { notifications });
 export const getNotificationsConfig = async () => await get("/companies/getNotificationsConfig");
+export const getCheckoutLink = async (planId?: string, studentId?: number) =>
+   await get("/companies/getCheckoutLink", { planId, studentId });
+
+export const getCheckoutInfo = async (token: string) => await get("/companies/getCheckoutInfo", { token });
 
 // Checkout
 export const getCompanyAndPlans = async (companyId: string) => await get(`/companies/getCompanyAndPlans/${companyId}`);

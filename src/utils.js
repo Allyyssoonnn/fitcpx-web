@@ -52,12 +52,12 @@ export async function getWorkoutPDF(workout, companyImg, companyName) {
                      ${exercise.repeticao_sessao_exercicio} Reps |
                      ${exercise.intervalo_sessao_exercicio}s Pausa
                      </li>
-                  `
+                  `,
                   )
                   .join("")}
                </ul>
             </section>
-         `
+         `,
       )
       .join("");
 
@@ -586,3 +586,29 @@ export function getReferenciaIMC(aluno, avaliacao) {
    }
    return result;
 }
+
+export const searchCEP = async (CEP) => {
+   const flatCEP = CEP?.replace(/\D/g, "") ?? "";
+
+   var response = null;
+
+   if (flatCEP.length === 8) {
+      try {
+         const resp = await fetch(`https://viacep.com.br/ws/${flatCEP}/json/`);
+         if (!resp.ok) throw new Error("Erro CEP");
+         const data = await resp.json();
+         if (!data.erro) {
+            response = {
+               address: data.logradouro,
+               neighbord: data.bairro,
+               city: data.localidade,
+               state: String(data.uf).toUpperCase(),
+            };
+         }
+      } catch (error) {
+         console.error("Erro busca CEP:", error);
+      }
+   }
+
+   return response;
+};

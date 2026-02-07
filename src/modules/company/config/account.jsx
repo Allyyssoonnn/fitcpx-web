@@ -7,7 +7,7 @@ import FitFormUI from "../../../components/fitUI/fitForm.ui";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
-import { dataURLToBlob, states } from "../../../utils";
+import { dataURLToBlob, searchCEP, states } from "../../../utils";
 
 function Account({ usuario, setusuario }) {
    const { tSuccess } = useNotificacao();
@@ -16,6 +16,7 @@ function Account({ usuario, setusuario }) {
       watch,
       setValue,
       handleSubmit,
+      setFocus,
       formState: { errors },
    } = form;
    const [showModal, setShowModal] = useState(false);
@@ -30,35 +31,30 @@ function Account({ usuario, setusuario }) {
       }
    }, [usuario]);
 
-   let cepAtual = "";
+   const cepValue = watch("cep_usuario");
 
    useEffect(() => {
-      watch((value) => {
-         const { cep_usuario } = value;
+      const handleSearch = async () => {
+         const cepLimpo = String(cepValue)?.replace(/\D/g, "") ?? "";
 
-         if (cep_usuario?.length === 8) {
-            if (cepAtual === cep_usuario) return;
-            cepAtual = cep_usuario;
-            fetch(`https://viacep.com.br/ws/${cep_usuario}/json/`)
-               .then((resp) => {
-                  if (!resp.ok) {
-                     throw new Error("Erro ao buscar informações do CEP.");
-                  }
-                  return resp.json(); // Extrai o corpo da resposta em formato JSON
-               })
-               .then((data) => {
-                  if (data.logradouro) setValue("endereco_usuario", data.logradouro);
-                  if (data.uf) setValue("estado_usuario", data.uf);
-                  if (data.localidade) setValue("cidade_usuario", data.localidade);
-                  if (data.bairro) setValue("bairro_usuario", data.bairro);
-                  if (data.complemento) setValue("complemento_usuario", data.complemento);
-               })
-               .catch((error) => {
-                  console.error("Erro:", error.message);
-               });
+         if (cepLimpo.length === 8) {
+            try {
+               const data = await searchCEP(cepLimpo);
+
+               if (data.city) setValue("cidade_usuario", data.city);
+               if (data.neighbord) setValue("bairro_usuario", data.neighbord);
+               if (data.state) setValue("estado_usuario", data.state);
+               if (data.address) setValue("endereco_usuario", data.address);
+
+               setTimeout(() => setFocus("numero_usuario"), 100);
+            } catch (error) {
+               console.error("Failed to fetch CEP:", error);
+            }
          }
-      });
-   }, [watch]);
+      };
+
+      handleSearch(); // Execute it
+   }, [cepValue, setValue, setFocus]); // Added setFocus to dependencies for safety
 
    const handleFileChange = async (e) => {
       const file = e.target.files[0];
@@ -226,7 +222,7 @@ function Account({ usuario, setusuario }) {
                                     {
                                        label: "CEP",
                                        fieldName: "cep_usuario",
-                                       type: "number",
+                                       mask: "cep",
                                     },
                                     {
                                        label: "Cidade",

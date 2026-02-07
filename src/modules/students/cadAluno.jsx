@@ -10,7 +10,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
-import { limpaForm, states } from "../../utils";
+import { limpaForm, searchCEP, states } from "../../utils";
 
 function CadAluno() {
    const location = useLocation();
@@ -22,42 +22,40 @@ function CadAluno() {
       handleSubmit,
       setValue,
       watch,
+      setFocus,
       formState: { isSubmitting, errors },
    } = form;
    const navigate = useNavigate();
    const [usuario] = useRecoilState(stateUsuario);
 
-   let cepAtual = "";
+   const cepValue = watch("cep_aluno");
+
+   useEffect(() => {
+      const handleSearch = async () => {
+         const cepLimpo = String(cepValue)?.replace(/\D/g, "") ?? "";
+
+         if (cepLimpo.length === 8) {
+            try {
+               const data = await searchCEP(cepLimpo);
+
+               if (data.city) setValue("cidade_aluno", data.city);
+               if (data.neighbord) setValue("bairro_aluno", data.neighbord);
+               if (data.state) setValue("estado_aluno", data.state);
+               if (data.address) setValue("endereco_aluno", data.address);
+
+               setTimeout(() => setFocus("numero_aluno"), 100);
+            } catch (error) {
+               console.error("Failed to fetch CEP:", error);
+            }
+         }
+      };
+
+      handleSearch(); // Execute it
+   }, [cepValue, setValue, setFocus]); // Added setFocus to dependencies for safety
 
    useEffect(() => {
       setValue("cod_usuario", usuario?.cod_usuario);
       setValue("cod_empresa", usuario?.cod_empresa);
-      watch((value) => {
-         const { cep_aluno } = value;
-
-         if (cep_aluno?.length === 8) {
-            if (cepAtual === cep_aluno) return;
-            cepAtual = cep_aluno;
-            fetch(`https://viacep.com.br/ws/${cep_aluno}/json/`)
-               .then((resp) => {
-                  if (!resp.ok) {
-                     throw new Error("Erro ao buscar informações do CEP.");
-                  }
-                  return resp.json(); // Extrai o corpo da resposta em formato JSON
-               })
-               .then((data) => {
-                  if (data.logradouro) setValue("endereco_aluno", data.logradouro);
-                  if (data.uf) setValue("estado_aluno", data.uf);
-                  if (data.localidade) setValue("cidade_aluno", data.localidade);
-                  if (data.bairro) setValue("bairro_aluno", data.bairro);
-                  if (data.complemento) setValue("complemento_aluno", data.complemento);
-                  if (data.cep) setValue("cep_aluno", data.cep);
-               })
-               .catch((error) => {
-                  console.error("Erro:", error.message);
-               });
-         }
-      });
    }, [watch, usuario]);
 
    useEffect(() => {
@@ -204,11 +202,10 @@ function CadAluno() {
                               cols: 4,
                               fields: [
                                  {
-                                    format: "CEP",
                                     id: "cep",
                                     label: "CEP",
-                                    type: "number",
                                     fieldName: "cep_aluno",
+                                    mask: "cep",
                                  },
                                  {
                                     id: "state",

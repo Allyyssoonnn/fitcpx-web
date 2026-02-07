@@ -7,7 +7,7 @@ import FitFormUI from "../../../components/fitUI/fitForm.ui";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
 import { useNotificacao } from "../../../states/states";
-import { dataURLToBlob, states } from "../../../utils";
+import { dataURLToBlob, searchCEP, states } from "../../../utils";
 
 function Business({ empresa, setempresa, usuario }) {
    const { tSuccess } = useNotificacao();
@@ -16,6 +16,7 @@ function Business({ empresa, setempresa, usuario }) {
       setValue,
       handleSubmit,
       watch,
+      setFocus,
       formState: { errors },
    } = form;
    const [showModal, setShowModal] = useState(false);
@@ -30,35 +31,30 @@ function Business({ empresa, setempresa, usuario }) {
       }
    }, [empresa]);
 
-   let cepAtual = "";
+   const cepValue = watch("cep_empresa");
 
    useEffect(() => {
-      watch((value) => {
-         const { cep_empresa } = value;
+      const handleSearch = async () => {
+         const cepLimpo = String(cepValue)?.replace(/\D/g, "") ?? "";
 
-         if (cep_empresa?.length === 8) {
-            if (cepAtual === cep_empresa) return;
-            cepAtual = cep_empresa;
-            fetch(`https://viacep.com.br/ws/${cep_empresa}/json/`)
-               .then((resp) => {
-                  if (!resp.ok) {
-                     throw new Error("Erro ao buscar informações do CEP.");
-                  }
-                  return resp.json(); // Extrai o corpo da resposta em formato JSON
-               })
-               .then((data) => {
-                  if (data.logradouro) setValue("endereco_empresa", data.logradouro);
-                  if (data.uf) setValue("estado_empresa", data.uf);
-                  if (data.localidade) setValue("cidade_empresa", data.localidade);
-                  if (data.bairro) setValue("bairro_empresa", data.bairro);
-                  if (data.complemento) setValue("complemento_empresa", data.complemento);
-               })
-               .catch((error) => {
-                  console.error("Erro:", error.message);
-               });
+         if (cepLimpo.length === 8) {
+            try {
+               const data = await searchCEP(cepLimpo);
+
+               if (data.city) setValue("cidade_empresa", data.city);
+               if (data.neighbord) setValue("bairro_empresa", data.neighbord);
+               if (data.state) setValue("estado_empresa", data.state);
+               if (data.address) setValue("endereco_empresa", data.address);
+
+               setTimeout(() => setFocus("numero_empresa"), 100);
+            } catch (error) {
+               console.error("Failed to fetch CEP:", error);
+            }
          }
-      });
-   }, [watch]);
+      };
+
+      handleSearch(); // Execute it
+   }, [cepValue, setValue, setFocus]); // Added setFocus to dependencies for safety
 
    const handleFileChange = async (e) => {
       const file = e.target.files[0];
@@ -227,7 +223,7 @@ function Business({ empresa, setempresa, usuario }) {
                                     {
                                        label: "CEP",
                                        id: "cep",
-                                       type: "number",
+                                       mask: "cep",
                                        fieldName: "cep_empresa",
                                        disabled: usuario.admin_usuario !== "S",
                                     },

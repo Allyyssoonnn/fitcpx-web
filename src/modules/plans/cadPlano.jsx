@@ -24,7 +24,15 @@ function CadPlano() {
    const { tSuccess } = useNotificacao();
    const [usuario] = useRecoilState(stateUsuario);
    const form = useForm({
-      defaultValues: planoRecebido ?? { vende_online: "S", vende_recorrencia: "S", max_installments: 1 },
+      defaultValues: planoRecebido
+         ? {
+              ...planoRecebido,
+              vende_online: planoRecebido?.vende_online ?? "S",
+              vende_recorrencia: planoRecebido?.vende_recorrencia ?? "S",
+              maximo_parcelas: planoRecebido?.maximo_parcelas ?? 1,
+              cod_contrato: planoRecebido?.cod_contrato ?? null,
+           }
+         : { vende_online: "S", vende_recorrencia: "S", maximo_parcelas: 1, cod_contrato: null },
    });
    const {
       handleSubmit,

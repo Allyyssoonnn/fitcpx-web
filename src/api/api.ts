@@ -81,7 +81,7 @@ api.interceptors.response.use(
       }
 
       return Promise.reject(error);
-   }
+   },
 );
 
 // Tipagem para dados genéricos
@@ -92,7 +92,7 @@ async function postFile<T = any>(
    url: string,
    data: DataObject,
    fileBlob: Blob,
-   fileName: string = "arquivo.pdf"
+   fileName: string = "arquivo.pdf",
 ): Promise<T | undefined> {
    const cookies = parseCookies(null);
    const formData = new FormData();
@@ -131,10 +131,11 @@ async function post<T = any>(url: string, data: DataObject): Promise<T> {
 }
 
 // GET genérico
-async function get<T = any>(url: string): Promise<T> {
+async function get<T = any>(url: string, params?: any): Promise<T> {
    const cookies = parseCookies(null);
    const resp = await api.get<T>(url, {
       headers: { Authorization: cookies.token },
+      params, // O Axios cuida da serialização aqui
    });
    return resp.data;
 }
@@ -161,4 +162,15 @@ async function postImage<T = any>(url: string, img: Blob | File, data?: Record<s
    return resp.data;
 }
 
-export { api, deleteAPI, get, post, postFile, postImage };
+async function postAttachments<T = any>(url: string, attach: FormData): Promise<T> {
+   const cookies = parseCookies(null);
+   const resp = await api.post<T>(url, attach, {
+      headers: {
+         Authorization: cookies.token,
+         "Access-Control-Allow-Origin": "*",
+      },
+   });
+   return resp.data;
+}
+
+export { api, deleteAPI, get, post, postAttachments, postFile, postImage };

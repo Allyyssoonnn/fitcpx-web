@@ -1,9 +1,10 @@
 import { get } from "@/api/api";
+import { getCheckoutInfo } from "@/api/companies";
 import { onlineContract } from "@/api/contracts";
 import { verifyExists } from "@/api/student";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { normalizeCep, normalizeCpf, normalizePhone } from "@/utils/utils";
+import { normalizeCep, normalizeCpf, normalizePhone, searchCEP } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod"; // Importante
 import { ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,24 +18,50 @@ import { Company, Plan } from "./types";
 
 export default function Checkout() {
    const params = new URLSearchParams(window.location.search);
-   const token = params.get("token");
-   const companyId = token?.split("-")[1].substring(2);
-   const allowSelectPlan = token?.split("-")[1].substring(0, 1) == "0";
-   const planId = params.get("planId");
-   const studentId = params.get("studentId");
-   const studentName = params.get("studentName");
-   const addressJSON = params.get("addressJSON");
-   const personalJSON = params.get("personalJSON");
-
-   const studentRecieved = {
-      ...(personalJSON ? JSON.parse(personalJSON) : {}),
-      ...(addressJSON ? JSON.parse(addressJSON) : {}),
-   };
+   const sToken = params.get("s");
 
    const [company, setCompany] = useState<Company | null>(null);
    const [plans, setPlans] = useState<Plan[]>([]);
    const [selectedPlan, setSelectedPlan] = useState<Plan | undefined>();
    const [companyNotFound, setCompanyNotFound] = useState(false);
+   const [companyId, setCompanyId] = useState();
+   const [planId, setplanId] = useState();
+   const [studentId, setStudentId] = useState();
+   const [allowSelectPlan, setAllowSelectPlan] = useState(true);
+
+   useQuery({
+      queryKey: ["checkout-info", sToken],
+      queryFn: async () => {
+         if (!sToken) return;
+         const response = (await getCheckoutInfo(sToken)) as any;
+
+         if (response.companyId) setCompanyId(response.companyId);
+         if (response.planId) {
+            setplanId(response.planId);
+            setAllowSelectPlan(false);
+         }
+         if (response.setStudentId) setStudentId(response.setStudentId);
+
+         if (response?.student) {
+            const student = response?.student;
+
+            setValue("telefone_aluno", normalizePhone(student.telefone_aluno));
+            setValue("cpf_aluno", normalizeCpf(student.cpf_aluno));
+            setValue("cep_aluno", normalizeCep(student.cep_aluno));
+
+            setValue("nome_aluno", student.nome_aluno);
+            setValue("email_aluno", student.email_aluno);
+            setValue("data_nascimento_aluno", student.data_nascimento_aluno);
+            setValue("sexo_aluno", student.sexo_aluno);
+            setValue("cidade_aluno", student.cidade_aluno);
+            setValue("endereco_aluno", student.endereco_aluno);
+            setValue("bairro_aluno", student.bairro_aluno);
+            setValue("numero_aluno", student.numero_aluno);
+            setValue("estado_aluno", student.estado_aluno);
+         }
+      },
+      enabled: !!sToken,
+   });
 
    // --- 2. Configuração do Hook Form com Zod ---
    const {
@@ -44,31 +71,26 @@ export default function Checkout() {
       formState: { errors },
       watch,
       setFocus,
+      clearErrors,
    } = useForm<CheckoutFormValues>({
       resolver: zodResolver(checkoutSchema),
-      defaultValues: studentRecieved
-         ? {
-              ...studentRecieved,
-              telefone_aluno: normalizePhone(studentRecieved.telefone_aluno),
-              cpf_aluno: normalizeCpf(studentRecieved.cpf_aluno),
-              cep_aluno: normalizeCep(studentRecieved.cep_aluno),
-           }
-         : {
-              // É CRUCIAL inicializar tudo com string vazia para evitar erro de "undefined"
-              nome_aluno: "",
-              email_aluno: "",
-              telefone_aluno: "",
-              cpf_aluno: "",
-              data_nascimento_aluno: "",
-              sexo_aluno: "",
-              cep_aluno: "",
-              cidade_aluno: "",
-              endereco_aluno: "",
-              bairro_aluno: "",
-              numero_aluno: "",
-              estado_aluno: "",
-              metodo_pagamento: "monthly", // Este já tem um valor válido por padrão
-           },
+      defaultValues: {
+         // É CRUCIAL inicializar tudo com string vazia para evitar erro de "undefined"
+         nome_aluno: "",
+         email_aluno: "",
+         telefone_aluno: "",
+         cpf_aluno: "",
+         data_nascimento_aluno: "",
+         sexo_aluno: "",
+         cep_aluno: "",
+         cidade_aluno: "",
+         endereco_aluno: "",
+         bairro_aluno: "",
+         numero_aluno: "",
+         estado_aluno: "",
+         metodo_pagamento: "monthly", // Este já tem um valor válido por padrão
+         metodo_recorrencia: "monthly_card",
+      },
    });
 
    const { isLoading } = useQuery({
@@ -91,31 +113,32 @@ export default function Checkout() {
    const cepValue = watch("cep_aluno");
 
    useEffect(() => {
-      // 2. Remova tudo que não é número para validar o tamanho
-      const cepLimpo = cepValue?.replace(/\D/g, "") ?? "";
+      const handleSearch = async () => {
+         const cepLimpo = cepValue?.replace(/\D/g, "") ?? "";
 
-      // 3. Verifique se tem 8 NÚMEROS (ignorando o traço da máscara)
-      if (cepLimpo.length === 8) {
-         fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
-            .then((resp) => {
-               if (!resp.ok) throw new Error("Erro CEP");
-               return resp.json();
-            })
-            .then((data) => {
-               if (!data.erro) {
-                  // O setValue atualiza os campos automaticamente
-                  setValue("endereco_aluno", data.logradouro);
-                  setValue("bairro_aluno", data.bairro);
-                  setValue("cidade_aluno", data.localidade);
-                  setValue("estado_aluno", String(data.uf).toUpperCase());
+         if (cepLimpo.length === 8) {
+            try {
+               const data = (await searchCEP(cepLimpo)) as any;
 
-                  // Dica de UX: Se quiser focar no número após preencher:
-                  setTimeout(() => setFocus("numero_aluno"), 100);
-               }
-            })
-            .catch((error) => console.error("Erro busca CEP:", error));
-      }
-   }, [cepValue, setValue]);
+               if (!data || data.erro) return;
+
+               if (data.city) setValue("cidade_aluno", data.city, { shouldValidate: true });
+               if (data.neighbord) setValue("bairro_aluno", data.neighbord, { shouldValidate: true });
+               if (data.state) setValue("estado_aluno", data.state, { shouldValidate: true });
+               if (data.address) setValue("endereco_aluno", data.address, { shouldValidate: true });
+
+               // Garante que o erro do campo CEP suma imediatamente
+               clearErrors("cep_aluno");
+
+               setTimeout(() => setFocus("numero_aluno"), 100);
+            } catch (error) {
+               console.error("Failed to fetch CEP:", error);
+            }
+         }
+      };
+
+      handleSearch(); // Execute it
+   }, [cepValue, setValue, setFocus]); // Added setFocus to dependencies for safety
 
    function handlePlanChange(value: string) {
       const plan = plans.find((p) => p.value === value);
@@ -151,6 +174,7 @@ export default function Checkout() {
          valor_total: selectedPlan.price,
          cod_contrato: selectedPlan.contractId,
          cod_empresa: companyId,
+         metodo_recorrencia: data.metodo_recorrencia,
          metodo_pagamento: data.metodo_pagamento,
          parcelas: data.metodo_pagamento === "installments" ? data.parcelas : undefined,
       };
@@ -162,6 +186,7 @@ export default function Checkout() {
          existingStudent = await verifyExists({
             email: data.email_aluno,
             cpf: rawPayload.cpf_aluno,
+            companyId,
          });
       } catch (error) {
          console.error("Erro ao verificar aluno", error);

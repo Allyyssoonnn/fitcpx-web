@@ -1,6 +1,13 @@
-import { deleteAPI, get, post, postImage } from "./api";
+import { deleteAPI, get, post, postAttachments, postImage } from "./api";
 
 export const getStudents = async (deleted: boolean) => await get(`/students?deleted=${deleted}`);
+
+export const getStudentsAttachments = async (studentId: string) =>
+   await get(`/students/attachments?studentId=${studentId}`);
+export const sendStudentsAttachments = async (attach: FormData, studentId: string) =>
+   await postAttachments(`/students/attachments?studentId=${studentId}`, attach);
+export const deleteAttachment = async (id: number) => await deleteAPI(`/students/attachments?id=${id}`);
+
 export const getStudent = async (id: number) => await get(`students/${id}`);
 export const createOrUpdateStudent = async (data: any) => await post("/students", data);
 export const deleteStudent = async (id: number) => await deleteAPI(`/students/${id}`);
