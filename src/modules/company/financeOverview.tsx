@@ -8,13 +8,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import {
    DropdownMenu,
+   DropdownMenuCheckboxItem,
    DropdownMenuContent,
    DropdownMenuItem,
+   DropdownMenuLabel,
+   DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { stateEmpresa } from "@/states/states";
@@ -26,7 +28,7 @@ import {
    getPaginationRowModel,
    useReactTable,
 } from "@tanstack/react-table";
-import { BanknoteArrowDown, Check, Clipboard, Coins, HandCoins, MoreHorizontal, Paperclip } from "lucide-react";
+import { BanknoteArrowDown, Check, Clipboard, Coins, Eye, HandCoins, MoreHorizontal, Paperclip } from "lucide-react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
@@ -176,6 +178,18 @@ export default function FinanceOverview() {
    );
 }
 
+const fields = [
+   { key: "all", label: "Todos os status" },
+   { key: "Pending", label: "Pendente" },
+   { key: "confirmed", label: "Processando" },
+   { key: "overdue", label: "Vencido" },
+   { key: "succeeded", label: "Disponível" },
+   { key: "deleted", label: "Removida" },
+   { key: "refunded", label: "Reembolsada" },
+   { key: "paid", label: "Repassado" },
+   { key: "receivedCash", label: "Recebido Manual" },
+];
+
 function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
    const navigate = useNavigate();
    const [pagination, setPagination] = useState({
@@ -184,6 +198,56 @@ function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
    });
    const [globalFilter, setGlobalFilter] = useState(null);
    const [columnFilters, setColumnFilters] = useState([]);
+   const [visibleFields, setVisibleFields] = useState(() => {
+      const saved: Record<string, boolean> = {};
+      fields.forEach((field) => {
+         // Se existir no localStorage, usa o valor (parseando se for string), senão true
+         const stored = localStorage.getItem(`hidden-finance-${field.key}`);
+         saved[field.key] = stored ? false : true;
+      });
+      return saved;
+   });
+
+   useEffect(() => {
+      fields.forEach((field) => {
+         if (visibleFields[field.key]) {
+            localStorage.removeItem(`hidden-finance-${field.key}`);
+         } else {
+            localStorage.setItem(`hidden-finance-${field.key}`, "true");
+         }
+      });
+   }, [visibleFields]);
+
+   useEffect(() => {
+      // Filtra apenas as chaves que estão true E QUE NÃO SÃO "all"
+      const activeStatuses = Object.keys(visibleFields).filter((key) => visibleFields[key] === true && key !== "all");
+
+      setColumnFilters((prev) => {
+         const otherFilters = prev.filter((f) => f.id !== "status");
+         return [...otherFilters, { id: "status", value: activeStatuses }];
+      });
+   }, [visibleFields]);
+
+   const handleCheckboxChange = (key: string, checked: boolean) => {
+      setVisibleFields((prev) => {
+         const newState = { ...prev, [key]: checked };
+
+         if (key === "all") {
+            // Caso 1: Clicou em "Todos" -> Marca/Desmarca todo mundo
+            fields.forEach((f) => (newState[f.key] = checked));
+         } else {
+            // Caso 2: Clicou em um item individual
+            // Vamos verificar se AGORA todos os itens (exceto "all") estão true
+            const allIndividualStatus = fields.filter((f) => f.key !== "all");
+
+            // Verifica se todos da lista estão true no novo estado
+            const allChecked = allIndividualStatus.every((f) => newState[f.key] === true);
+
+            newState["all"] = allChecked;
+         }
+         return newState;
+      });
+   };
 
    const getColumns = useMemo(() => getPaymentColumns(navigate, onRecieved), [navigate, onRecieved]) as any;
 
@@ -271,34 +335,35 @@ function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
                   className="max-w-sm"
                />
 
-               <Select
-                  value={table.getColumn("status")?.getFilterValue() ?? ""}
-                  onValueChange={(value) =>
-                     table.getColumn("status")?.setFilterValue(value == "all" ? undefined : value)
-                  }
-                  className="max-w-sm"
-               >
-                  <SelectTrigger>
-                     <SelectValue placeholder="Todos os status" />
-                  </SelectTrigger>
+               <DropdownMenu>
+                  <DropdownMenuTrigger className="max-w-sm">
+                     <Button variant="outline">
+                        <Eye />
+                        Exibição
+                     </Button>
+                  </DropdownMenuTrigger>
 
-                  <SelectContent>
-                     <SelectItem value="all">Todos os status</SelectItem>
-                     <SelectItem value="Pending">Pendente</SelectItem>
-                     <SelectItem value="overdue">Vencido</SelectItem>
-                     <SelectItem value="succeeded">Disponível</SelectItem>
-                     <SelectItem value="deleted">Removida</SelectItem>
-                     <SelectItem value="refunded">Reembolsada</SelectItem>
-                     <SelectItem value="paid">Repassado</SelectItem>
-                     <SelectItem value="receivedCash">Recebido Manual</SelectItem>
-                  </SelectContent>
-               </Select>
+                  <DropdownMenuContent className="w-56">
+                     <DropdownMenuLabel>Status Visíveis</DropdownMenuLabel>
+                     <DropdownMenuSeparator />
+                     {fields.map((field) => (
+                        <DropdownMenuCheckboxItem
+                           onSelect={(e) => e.preventDefault()}
+                           key={field.key}
+                           checked={visibleFields[field.key]}
+                           onCheckedChange={(checked) => handleCheckboxChange(field.key, checked as boolean)}
+                        >
+                           {field.label}
+                        </DropdownMenuCheckboxItem>
+                     ))}
+                  </DropdownMenuContent>
+               </DropdownMenu>
             </div>
          </CardHeader>
 
-         <CardContent>
-            <div className="border rounded-md min-h-100">
-               <Table className="min-h-100">
+         <CardContent className="min-h-100">
+            <div className="border rounded-md">
+               <Table>
                   <TableHeader>
                      {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow id={headerGroup.id}>
@@ -352,7 +417,23 @@ const getPaymentColumns = (navigate, onRecieved) => [
       id: "status",
       header: "Status",
       accessorFn: (row) => row.status_aluno_contrato_pagamento,
-      filterFn: "includesString",
+      // 'includesString' não funciona com Arrays. Usamos esta função personalizada:
+      filterFn: (row, columnId, filterValue: string[]) => {
+         // Se não houver filtro ou se "all" estiver no array, mostra tudo
+         if (!filterValue || filterValue.length === 0) return false;
+         // Lógica defensiva para caso 'all' seja passado
+         if (filterValue.includes("all")) return true;
+
+         const status = row.getValue(columnId) as string;
+
+         // Normalização para garantir que 'Pendente' (banco) bata com 'Pending' (filtro)
+         let normalizedKey = status;
+         if (status === "Pendente") normalizedKey = "Pending";
+
+         // Verifica se o status da linha existe no array de filtros marcados
+         return filterValue.includes(normalizedKey);
+      },
+      // -----------------------------
       cell: ({ row: { original } }) => {
          const status = original.status_aluno_contrato_pagamento;
          if (status === "receivedCash")
