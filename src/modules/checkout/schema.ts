@@ -23,7 +23,7 @@ export const checkoutSchema = z
 
       // Pagamento
       metodo_pagamento: z
-         .enum(["monthly", "cash", "installments", "monthly_card"])
+         .enum(["monthly", "cash", "installments"])
          .refine((val) => val !== undefined, { message: "Selecione uma forma de pagamento" }),
       metodo_recorrencia: z
          .enum(["monthly_app", "monthly_card"])

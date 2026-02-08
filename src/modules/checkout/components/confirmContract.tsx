@@ -14,10 +14,11 @@ import { useState } from "react";
 interface ConfirmContractProps {
    student: any;
    plan: any;
+   useApp?: boolean;
    onConfirm: () => Promise<void>; // A função que chama a API
 }
 
-export const ConfirmContract = NiceModal.create(({ student, plan, onConfirm }: ConfirmContractProps) => {
+export const ConfirmContract = NiceModal.create(({ student, plan, onConfirm, useApp }: ConfirmContractProps) => {
    const modal = useModal();
    const [isLoading, setIsLoading] = useState(false);
 
@@ -49,37 +50,49 @@ export const ConfirmContract = NiceModal.create(({ student, plan, onConfirm }: C
          <DialogContent className="sm:max-w-md [&>button]:hidden">
             <DialogHeader>
                <DialogTitle>Confirmar Contratação</DialogTitle>
-               <DialogDescription>
-                  {student?.cod_aluno
-                     ? `Olá, ${student?.nome_aluno}. Identificamos que você já possui cadastro.`
-                     : `Olá, ${student?.nome_aluno}. Verifique os dados abaixo antes de finalizar.`}
-               </DialogDescription>
+               {typeof useApp === "undefined" && (
+                  <DialogDescription>
+                     {student?.cod_aluno
+                        ? `Olá, ${student?.nome_aluno}. Identificamos que você já possui cadastro.`
+                        : `Olá, ${student?.nome_aluno}. Verifique os dados abaixo antes de finalizar.`}
+                  </DialogDescription>
+               )}
             </DialogHeader>
 
             {/* Corpo do Modal - Resumo */}
-            <div className="grid gap-4 py-4">
-               <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
-                  <div className="space-y-1">
-                     <p className="text-sm font-medium leading-none">{plan?.nome_plano}</p>
-                     <p className="text-sm text-muted-foreground">{metodoLabel}</p>
+            {useApp !== false && (
+               <div className="grid gap-4 py-4">
+                  <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
+                     <div className="space-y-1">
+                        <p className="text-sm font-medium leading-none">{plan?.nome_plano}</p>
+                        <p className="text-sm text-muted-foreground">{metodoLabel}</p>
+                     </div>
+                     <div className="font-bold text-lg">{valorFormatado}</div>
                   </div>
-                  <div className="font-bold text-lg">{valorFormatado}</div>
-               </div>
 
-               {/* Exemplo: Se for parcelado, mostrar detalhe */}
-               {plan.metodo_pagamento === "installments" && (
+                  {/* Exemplo: Se for parcelado, mostrar detalhe */}
+                  {plan.metodo_pagamento === "installments" && (
+                     <p className="text-xs text-center text-muted-foreground">
+                        As parcelas serão processadas no seu cartão de crédito.
+                     </p>
+                  )}
+               </div>
+            )}
+
+            {useApp === false && (
+               <div className="grid gap-4 py-4">
                   <p className="text-xs text-center text-muted-foreground">
-                     As parcelas serão processadas no seu cartão de crédito.
+                     O sistema não gerará cobranças. Ative a opção Cobrança via Sistema para configurar o pagamento.
                   </p>
-               )}
-            </div>
+               </div>
+            )}
 
             <DialogFooter className="flex-row sm:justify-end gap-2">
                <Button variant="outline" onClick={modal.remove} disabled={isLoading}>
                   Cancelar
                </Button>
                <Button onClick={handleConfirm} disabled={isLoading}>
-                  {isLoading ? "Processando..." : "Confirmar e Pagar"}
+                  {isLoading ? "Processando..." : useApp === false ? "Confirmar" : "Confirmar e Pagar"}
                </Button>
             </DialogFooter>
          </DialogContent>
