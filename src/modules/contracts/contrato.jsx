@@ -79,7 +79,7 @@ function Contrato() {
          <Card>
             <CardHeader>
                <CardTitle>
-                  Contrato do aluno <strong>{aluno?.nome_aluno}</strong>
+                  Contrato de aluno <strong>{aluno?.nome_aluno}</strong>
                </CardTitle>
             </CardHeader>
 
@@ -102,9 +102,9 @@ function Contrato() {
                      Forma de cobrança: <strong>{alunoContrato?.formapagamento_aluno_contrato}</strong>
                   </Label>
 
-                  <Label>
+                  {/* <Label>
                      Forma de pagamento: <strong>{alunoContrato?.tipopagamento_aluno_contrato}</strong>
-                  </Label>
+                  </Label> */}
 
                   <Label>
                      Status do contrato:{" "}

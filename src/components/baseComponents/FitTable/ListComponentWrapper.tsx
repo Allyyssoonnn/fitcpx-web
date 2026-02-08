@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatarData, formatarHora, formatarMoeda, formatarSegundos, getNestedError } from "@/utils";
 import {
    ColumnFiltersState,
    FilterFn,
@@ -17,20 +16,23 @@ import {
    getFilteredRowModel,
    getPaginationRowModel,
    getSortedRowModel,
+   GlobalFilterTableState,
    SortingState,
    useReactTable,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal, PlusCircle } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { formatarData, formatarHora, formatarMoeda, formatarSegundos, getNestedError } from "../../../utils/utils";
 import FitPagination from "../TableComponent/FitPagination";
 import ListComponentFilters from "./ListComponentFilters";
+import ListComponentVisibles from "./ListComponentVisibles";
 
 type ListComponentProps = {
    list: any[];
-   title: string;
-   description: string;
+   title?: string;
+   description?: string;
    buttonText?: string;
-   fieldSearch: string;
+   fieldSearch?: string;
    className?: string;
    rowCount?: number;
    hideSearch?: boolean;
@@ -40,24 +42,29 @@ type ListComponentProps = {
    buttonOnClick?: () => void;
    onClickItem?: (row: any) => void;
    buttonId?: string;
-   children: (filteredList: any[]) => React.ReactNode;
+   children?: React.ReactNode;
    subHeader?: React.ReactNode;
    canSort?: boolean;
+   globalFilter?: GlobalFilterTableState;
+   globalFilterFn?: (row: any, _columnId: string, filterValue: any) => any;
+   rowId?: string;
+   fieldId?: string;
 };
 
 type DataColumnsProp = {
-   rowId?: string;
    fieldId?: string;
    name: string;
    canSort?: boolean;
    header: string;
-   Icon: any;
+   Icon?: any;
    className?: string;
    width?: number;
    visible?: (row: any) => boolean;
    onClick?: (row: any) => void;
    getValue?: (row: any) => any;
    getCell?: (row: any) => any;
+   filterFn?: string | ((row: any, columnId: any, filterValue: string[]) => any);
+   accessorFn?: (row: any) => any;
    onChange?: (row: any, value: any) => void;
    inputProps?: any;
    value?: any;
@@ -84,6 +91,8 @@ export default function ListComponentWrapper({
    hideFooter = false,
    canSort = false,
    subHeader,
+   globalFilter,
+   globalFilterFn,
 }: ListComponentProps) {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -102,11 +111,24 @@ export default function ListComponentWrapper({
       return null;
    }, [children]);
 
+   const childrenVisibles = useMemo(() => {
+      if (React.isValidElement(children) && children?.type === ListComponentVisibles) {
+         return children;
+      }
+      if (Array.isArray(children)) {
+         const childFilters = children.find(
+            (child) => React.isValidElement(child) && child?.type === ListComponentVisibles,
+         );
+         if (childFilters) return childFilters;
+      }
+      return null;
+   }, [children]);
+
    const dataColumns = useMemo(() => {
       return getColumns(columns);
    }, [columns]);
 
-   const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: v[fieldId] || i })), [list, fieldId]);
+   const dataList = useMemo(() => list.map((v, i) => ({ ...v, id: fieldId ? v[fieldId] : i })), [list, fieldId]);
 
    function normalizeText(text: string) {
       return text
@@ -117,7 +139,7 @@ export default function ListComponentWrapper({
    }
 
    const insensitiveIncludes: FilterFn<any> = (row, columnId, filterValue) => {
-      const value = row.getValue(columnId);
+      const value = row.getValue(columnId) as any;
       return normalizeText(value).includes(normalizeText(filterValue));
    };
 
@@ -128,19 +150,30 @@ export default function ListComponentWrapper({
          pagination: pagination,
          columnFilters,
          sorting,
+         globalFilter,
       },
       filterFns: {
          insensitiveIncludes, // adiciona aqui
       },
       getCoreRowModel: getCoreRowModel(),
       manualPagination: false, // deixe false se os dados já estão todos carregados
-      pageCount: Math.ceil(list.length / pagination.pageSize),
+      // ** REMOVIDO - TABLE CONTA SOZINHO
+      // pageCount: Math.ceil(list.length / pagination.pageSize),
       onPaginationChange: setPagination,
       getPaginationRowModel: getPaginationRowModel(),
       onColumnFiltersChange: setColumnFilters,
       getFilteredRowModel: getFilteredRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: setSorting,
+      globalFilterFn,
+   });
+
+   const childrenWithProps = React.Children.map(children, (child) => {
+      if (React.isValidElement(child)) {
+         // Se o filho for o componente de visibilidade ou filtros, passamos o setColumnFilters
+         return React.cloneElement(child as React.ReactElement<any>, { setColumnFilters });
+      }
+      return child;
    });
 
    return (
@@ -149,7 +182,7 @@ export default function ListComponentWrapper({
             <CardHeader>
                <div className="row d-flex justify-content-between">
                   <div className="col-md-4 col-7 d-flex align-items-center gap-2">
-                     {!hideSearch && (
+                     {!hideSearch && fieldSearch && (
                         <Input
                            type="text"
                            placeholder="Pesquisar"
@@ -158,12 +191,15 @@ export default function ListComponentWrapper({
                         />
                      )}
 
-                     {childrenFilters}
+                     {/* Renderiza os filtros injetados */}
+                     {childrenWithProps?.filter((c: any) => c.type === ListComponentFilters)}
                   </div>
 
                   <div className="col-md-3 col-5 d-flex flex-column items-end">
                      <CardTitle>{title}</CardTitle>
                      <CardDescription>{description}</CardDescription>
+                     {/* Renderiza o botão de Exibição injetado */}
+                     {childrenWithProps?.filter((c: any) => c.type === ListComponentVisibles)}
                   </div>
                </div>
 
@@ -299,9 +335,10 @@ const getColumns = (columns: DataColumnsProp[]) => {
             size: col.width,
             className: col.className,
             accessorKey: col.name,
-            filterFn: "insensitiveIncludes",
+            filterFn: col.filterFn || "insensitiveIncludes",
+            accessorFn: col.accessorFn,
             enableSorting: col.canSort ?? false,
-            cell: ({ row: { original } }) => getCell(original, col.name, col.type, col.getValue, col.getCell),
+            cell: ({ row }: { row: any }) => getCell(row.original, col.name, col.type, col.getValue, col.getCell),
          });
       }
    });
@@ -312,15 +349,15 @@ const getColumns = (columns: DataColumnsProp[]) => {
          id: "option",
          header: "",
          enableSorting: false,
-         cell: ({ row: { original } }) => {
-            if (option.visible && !option.visible(original)) return null;
+         cell: ({ row }: { row: any }) => {
+            if (option.visible && !option.visible(row.original)) return null;
             return (
                <Button
                   variant="ghost"
                   size="icon"
                   onClick={(e) => {
                      e.stopPropagation();
-                     option.onClick(original);
+                     option.onClick?.(row.original);
                   }}
                >
                   <option.Icon />
@@ -333,8 +370,8 @@ const getColumns = (columns: DataColumnsProp[]) => {
          id: "options",
          header: "",
          enableSorting: false,
-         cell: ({ row: { original } }) => {
-            const rowOptions = options.filter((opt) => !opt.visible || opt.visible(original));
+         cell: ({ row }: { row: any }) => {
+            const rowOptions = options.filter((opt) => !opt.visible || opt.visible(row.original));
 
             if (rowOptions.length === 0) return null;
             return (
@@ -352,7 +389,7 @@ const getColumns = (columns: DataColumnsProp[]) => {
                            className="cursor-pointer"
                            onClick={(e) => {
                               e.stopPropagation();
-                              option.onClick(original);
+                              option.onClick?.(row.original);
                            }}
                         >
                            <option.Icon />

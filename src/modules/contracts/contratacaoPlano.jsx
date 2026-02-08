@@ -10,7 +10,6 @@ import { newContract } from "../../api/contracts";
 import { getContractsTemplates } from "../../api/contractsTemplates";
 import { getPlans } from "../../api/plans";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
-import Pagamento from "../../components/payment/pagamento";
 import SelectModalidades from "../../components/selectModalidades";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
@@ -20,6 +19,7 @@ import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { Separator } from "../../components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../components/ui/tooltip";
+import { modalPaymentContract } from "../../modals/paymentContract";
 import { stateEmpresa, stateUsuario } from "../../states/states";
 import { adicionarMesData, dividirParcelas, formatarCEP, formatarCNPJ, formatarCPF, formatarMoeda } from "../../utils";
 import { convertNumberToTextWithDecimals } from "../../utils/convertNumberToText";
@@ -33,7 +33,6 @@ function ContratacaoPlano() {
 
    const [aluno, setAluno] = useState();
    const [plano, setPlano] = useState();
-   const [pagando, setPagando] = useState(false);
    const [contratoPreenchido, setContratoPreenchido] = useState();
    const [montandoPlano, setMontandoPlano] = useState(false);
    const [selectContrato, setSelectContrato] = useState();
@@ -213,7 +212,7 @@ function ContratacaoPlano() {
       plano?.juros_atraso,
    ]);
 
-   function confirmar(e) {
+   async function onPayment(e) {
       e.preventDefault();
 
       if (plano?.modalidades.length <= 0) {
@@ -225,28 +224,39 @@ function ContratacaoPlano() {
          toast.error("Nenhum contrato preenchido!");
          return;
       }
+      console.log(plano);
 
-      setPagando(true);
+      modalPaymentContract.show({
+         selectedPlan: {
+            max_installments: plano?.max_installments || 12,
+            price: plano?.valor_plano + (plano?.valor_adesao || 0),
+            allowMonthly: plano?.vende_recorrencia == "S" || true,
+            duration: plano?.duracao_plano,
+            nome_plano: plano.nome_plano,
+         },
+         onConfirm: onPay,
+         student: aluno,
+      });
    }
 
    function updatePlano(field, value) {
       setPlano((prev) => ({ ...prev, [field]: value }));
    }
 
-   async function onPay(formaPagamento, closeLoading, paymentMethodId, formCard, typePayment) {
+   async function onPay(planData) {
       try {
          await newContract({
             ...plano,
             pagamentoInicial,
-            formaPagamento,
             contrato: geraContrato ? contratoPreenchido : null,
             cod_aluno: aluno?.cod_aluno,
             cod_usuario: usuario?.cod_usuario,
             cod_empresa: usuario?.cod_empresa,
-            typePayment,
-            installments: formCard?.installments,
+            ...planData,
          });
-         closeLoading();
+         navigate("/aluno", {
+            state: { cod_aluno: aluno.cod_aluno },
+         });
       } catch (error) {
          console.log(error);
       }
@@ -273,17 +283,6 @@ function ContratacaoPlano() {
    return (
       <div className="container-fluid">
          <BackBoxUI />
-
-         <Pagamento
-            show={pagando}
-            close={() => setPagando(false)}
-            onPay={onPay}
-            callback={() =>
-               navigate("/aluno", {
-                  state: { cod_aluno: aluno.cod_aluno },
-               })
-            }
-         />
 
          <Card>
             <CardHeader>
@@ -583,7 +582,7 @@ function ContratacaoPlano() {
                </CardContent>
 
                <div className="d-flex justify-end px-3">
-                  <Button id="submit" type="submit" disabled={errors.length > 0} onClick={confirmar}>
+                  <Button id="submit" type="submit" disabled={errors.length > 0} onClick={onPayment}>
                      <Check />
                      Confirmar
                   </Button>
