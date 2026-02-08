@@ -1,39 +1,28 @@
 import { getContracts } from "@/api/contracts";
 import { getNextPayout, markPaymentReceived } from "@/api/payments";
 import FitSelectMonthDate, { MONTHS } from "@/components/baseComponents/FitSelectMonthDate";
-import FitPagination from "@/components/baseComponents/TableComponent/FitPagination";
+import { FitTable } from "@/components/baseComponents/FitTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import {
    DropdownMenu,
-   DropdownMenuCheckboxItem,
    DropdownMenuContent,
    DropdownMenuItem,
-   DropdownMenuLabel,
-   DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { stateEmpresa } from "@/states/states";
-import { formatarMoeda } from "@/utils";
-import {
-   flexRender,
-   getCoreRowModel,
-   getFilteredRowModel,
-   getPaginationRowModel,
-   useReactTable,
-} from "@tanstack/react-table";
-import { BanknoteArrowDown, Check, Clipboard, Coins, Eye, HandCoins, MoreHorizontal, Paperclip } from "lucide-react";
+import { BanknoteArrowDown, Check, Clipboard, Coins, HandCoins, MoreHorizontal, Paperclip } from "lucide-react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { formatarMoeda } from "../../utils/utils";
 
 interface CompanyType {
    pix_empresa: string;
@@ -179,106 +168,32 @@ export default function FinanceOverview() {
 }
 
 const fields = [
-   { key: "all", label: "Todos os status" },
-   { key: "Pending", label: "Pendente" },
-   { key: "confirmed", label: "Processando" },
-   { key: "overdue", label: "Vencido" },
-   { key: "succeeded", label: "Disponível" },
-   { key: "deleted", label: "Removida" },
-   { key: "refunded", label: "Reembolsada" },
-   { key: "paid", label: "Repassado" },
-   { key: "receivedCash", label: "Recebido Manual" },
+   { value: "all", label: "Todos os status" },
+   { value: "Pending", label: "Aguardando" },
+   { value: "confirmed", label: "Processando" },
+   { value: "overdue", label: "Vencido" },
+   { value: "succeeded", label: "Disponível" },
+   { value: "deleted", label: "Removida" },
+   { value: "refunded", label: "Reembolsada" },
+   { value: "paid", label: "Repassado" },
+   { value: "receivedCash", label: "Recebido Manual" },
 ];
 
+const globalFilterFn = (row: any, _columnId: string, filterValue: any) => {
+   if (!filterValue) return true; // sem filtro
+   const raw = row.original.expiracao_aluno_contrato_pagamento;
+   if (!raw) return false;
+   const d = new Date(raw);
+   return d.getFullYear() === filterValue.year && d.getMonth() === filterValue.month;
+};
+
 function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
-   const navigate = useNavigate();
-   const [pagination, setPagination] = useState({
-      pageIndex: 0,
-      pageSize: 10,
-   });
-   const [globalFilter, setGlobalFilter] = useState(null);
-   const [columnFilters, setColumnFilters] = useState([]);
-   const [visibleFields, setVisibleFields] = useState(() => {
-      const saved: Record<string, boolean> = {};
-      fields.forEach((field) => {
-         // Se existir no localStorage, usa o valor (parseando se for string), senão true
-         const stored = localStorage.getItem(`hidden-finance-${field.key}`);
-         saved[field.key] = stored ? false : true;
-      });
-      return saved;
-   });
-
-   useEffect(() => {
-      fields.forEach((field) => {
-         if (visibleFields[field.key]) {
-            localStorage.removeItem(`hidden-finance-${field.key}`);
-         } else {
-            localStorage.setItem(`hidden-finance-${field.key}`, "true");
-         }
-      });
-   }, [visibleFields]);
-
-   useEffect(() => {
-      // Filtra apenas as chaves que estão true E QUE NÃO SÃO "all"
-      const activeStatuses = Object.keys(visibleFields).filter((key) => visibleFields[key] === true && key !== "all");
-
-      setColumnFilters((prev) => {
-         const otherFilters = prev.filter((f) => f.id !== "status");
-         return [...otherFilters, { id: "status", value: activeStatuses }];
-      });
-   }, [visibleFields]);
-
-   const handleCheckboxChange = (key: string, checked: boolean) => {
-      setVisibleFields((prev) => {
-         const newState = { ...prev, [key]: checked };
-
-         if (key === "all") {
-            // Caso 1: Clicou em "Todos" -> Marca/Desmarca todo mundo
-            fields.forEach((f) => (newState[f.key] = checked));
-         } else {
-            // Caso 2: Clicou em um item individual
-            // Vamos verificar se AGORA todos os itens (exceto "all") estão true
-            const allIndividualStatus = fields.filter((f) => f.key !== "all");
-
-            // Verifica se todos da lista estão true no novo estado
-            const allChecked = allIndividualStatus.every((f) => newState[f.key] === true);
-
-            newState["all"] = allChecked;
-         }
-         return newState;
-      });
-   };
-
-   const getColumns = useMemo(() => getPaymentColumns(navigate, onRecieved), [navigate, onRecieved]) as any;
-
-   const table = useReactTable({
-      data: payments,
-      getFilteredRowModel: getFilteredRowModel(),
-      onColumnFiltersChange: setColumnFilters,
-      columns: getColumns,
-      state: {
-         pagination,
-         columnFilters,
-         globalFilter,
-      },
-      getRowId: (row: any) => row.cod_aluno_contrato_pagamento.toString(),
-      getCoreRowModel: getCoreRowModel(),
-      manualPagination: false, // deixe false se os dados já estão todos carregados
-      onPaginationChange: setPagination,
-      getPaginationRowModel: getPaginationRowModel(),
-      globalFilterFn: (row: any, _columnId, filterValue) => {
-         if (!filterValue) return true; // sem filtro
-         const raw = row.original.expiracao_aluno_contrato_pagamento;
-         if (!raw) return false;
-         const d = new Date(raw);
-         return d.getFullYear() === filterValue.year && d.getMonth() === filterValue.month;
-      },
-   });
+   const [globalFilter, setGlobalFilter] = useState();
 
    const totals = useMemo(() => {
-      if (!table.getState().globalFilter) return { total: 0, toReceive: 0 };
+      if (!globalFilter) return { total: 0, toReceive: 0 };
 
-      const { year, month } = table.getState().globalFilter;
+      const { year, month } = globalFilter;
 
       let total = 0;
       let toReceive = 0;
@@ -299,11 +214,11 @@ function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
       });
 
       return { total, toReceive };
-   }, [payments, table.getState().globalFilter]);
+   }, [payments, globalFilter]);
 
    useEffect(() => {
       // importante criar um novo objeto para disparar a refiltragem
-      setGlobalFilter(date ? { year: date.getFullYear(), month: date.getMonth() } : null);
+      setGlobalFilter(date ? { year: date.getFullYear(), month: date.getMonth() } : undefined);
    }, [date]);
 
    useEffect(() => {
@@ -326,342 +241,218 @@ function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
                   {MONTHS[date.getMonth()]}/{date.getFullYear()}
                </strong>
             </CardTitle>
-
-            <div className="mt-3 flex justify-between gap-2">
-               <Input
-                  placeholder="Pesquisar aluno"
-                  value={table.getColumn("client")?.getFilterValue() ?? ""}
-                  onChange={(e) => table.getColumn("client")?.setFilterValue(e.target.value)}
-                  className="max-w-sm"
-               />
-
-               <DropdownMenu>
-                  <DropdownMenuTrigger className="max-w-sm">
-                     <Button variant="outline">
-                        <Eye />
-                        Exibição
-                     </Button>
-                  </DropdownMenuTrigger>
-
-                  <DropdownMenuContent className="w-56">
-                     <DropdownMenuLabel>Status Visíveis</DropdownMenuLabel>
-                     <DropdownMenuSeparator />
-                     {fields.map((field) => (
-                        <DropdownMenuCheckboxItem
-                           onSelect={(e) => e.preventDefault()}
-                           key={field.key}
-                           checked={visibleFields[field.key]}
-                           onCheckedChange={(checked) => handleCheckboxChange(field.key, checked as boolean)}
-                        >
-                           {field.label}
-                        </DropdownMenuCheckboxItem>
-                     ))}
-                  </DropdownMenuContent>
-               </DropdownMenu>
-            </div>
          </CardHeader>
 
          <CardContent className="min-h-100">
-            <div className="border rounded-md">
-               <Table>
-                  <TableHeader>
-                     {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow id={headerGroup.id}>
-                           {headerGroup.headers.map((header) => (
-                              <TableHead key={header.id} colSpan={header.colSpan}>
-                                 {header.isPlaceholder
-                                    ? null
-                                    : flexRender(header.column.columnDef.header, header.getContext())}
-                              </TableHead>
-                           ))}
-                        </TableRow>
-                     ))}
-                  </TableHeader>
+            <FitTable.Root
+               globalFilter={globalFilter}
+               globalFilterFn={globalFilterFn}
+               fieldSearch="contract.aluno.nome_aluno"
+               className="shadow-none"
+               columns={[
+                  {
+                     header: "Status",
+                     name: "status_aluno_contrato_pagamento",
+                     getCell: (row) => getStatusBadge(row.status_aluno_contrato_pagamento),
+                     canSort: true,
+                     accessorFn: (row) => row.status_aluno_contrato_pagamento,
+                     // 'includesString' não funciona com Arrays. Usamos esta função personalizada:
+                     filterFn: (row, columnId, filterValue: string[]) => {
+                        // Se não houver filtro ou se "all" estiver no array, mostra tudo
+                        if (!filterValue || filterValue.length === 0) return false;
+                        // Lógica defensiva para caso 'all' seja passado
+                        if (filterValue.includes("all")) return true;
 
-                  <TableBody>
-                     {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => (
-                           <TableRow key={row.id}>
-                              {row.getVisibleCells().map((cell) => (
-                                 <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                 </TableCell>
-                              ))}
-                           </TableRow>
-                        ))
-                     ) : (
-                        <TableRow>
-                           <TableCell colSpan={getColumns.length} className="h-24 text-center">
-                              Nenhum resultado
-                           </TableCell>
-                        </TableRow>
-                     )}
-                  </TableBody>
+                        const status = row.getValue(columnId) as string;
 
-                  <TableFooter>
-                     <TableRow>
-                        <TableCell colSpan={getColumns.length}>
-                           <FitPagination table={table} />
-                        </TableCell>
-                     </TableRow>
-                  </TableFooter>
-               </Table>
-            </div>
+                        // Normalização para garantir que 'Pendente' (banco) bata com 'Pending' (filtro)
+                        let normalizedKey = status;
+                        if (status === "Pendente") normalizedKey = "Pending";
+
+                        // Verifica se o status da linha existe no array de filtros marcados
+                        return filterValue.includes(normalizedKey);
+                     },
+                  },
+                  {
+                     header: "Aluno",
+                     name: "contract.aluno.nome_aluno",
+                     accessorFn: (row) => row.contract?.aluno?.nome_aluno,
+                     filterFn: "includesString",
+                     canSort: true,
+                  },
+                  {
+                     header: "Vencimento",
+                     name: "expiracao_aluno_contrato_pagamento",
+                     type: "date",
+                     canSort: true,
+                  },
+                  {
+                     header: "Pagamento",
+                     name: "pagamento_aluno_contrato_pagamento",
+                     getCell: (row) =>
+                        row.jsonwebhook_aluno_contrato_pagamento &&
+                        JSON.parse(row.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
+                           ? moment(JSON.parse(row.jsonwebhook_aluno_contrato_pagamento).paymentDate).format(
+                                "DD/MM/YYYY",
+                             )
+                           : "-",
+                  },
+                  {
+                     header: "Repasse",
+                     name: "repasse_aluno_contrato_pagamento",
+                     getCell: (row) =>
+                        row.repasse_aluno_contrato_pagamento
+                           ? // ? moment(original.repasse_aluno_contrato_pagamento).format("DD/MM/YYYY")
+                             getNextDate(new Date(row.repasse_aluno_contrato_pagamento))
+                           : "-",
+                  },
+                  {
+                     header: "Forma de pagamento",
+                     name: "forma_aluno_contrato_pagamento",
+                     getCell: (row) => {
+                        const tipo = row?.forma_aluno_contrato_pagamento;
+                        if (tipo === "CREDIT_CARD") return "Crédito";
+                        if (tipo === "PIX") return "PIX";
+                        return tipo;
+                     },
+                     canSort: true,
+                  },
+                  {
+                     header: "Valor",
+                     name: "valor_aluno_contrato_pagamento",
+                     type: "currency",
+                     canSort: true,
+                  },
+                  {
+                     header: "",
+                     name: "option",
+                     getCell: (row) => <PaymentActions row={row} onRecieved={onRecieved} />,
+                  },
+               ]}
+               list={payments}
+            >
+               <FitTable.Visibles options={fields} prefixLocalStorage="hiddne-finance" />
+            </FitTable.Root>
          </CardContent>
       </Card>
    );
 }
 
-const getPaymentColumns = (navigate, onRecieved) => [
-   {
-      id: "status",
-      header: "Status",
-      accessorFn: (row) => row.status_aluno_contrato_pagamento,
-      // 'includesString' não funciona com Arrays. Usamos esta função personalizada:
-      filterFn: (row, columnId, filterValue: string[]) => {
-         // Se não houver filtro ou se "all" estiver no array, mostra tudo
-         if (!filterValue || filterValue.length === 0) return false;
-         // Lógica defensiva para caso 'all' seja passado
-         if (filterValue.includes("all")) return true;
-
-         const status = row.getValue(columnId) as string;
-
-         // Normalização para garantir que 'Pendente' (banco) bata com 'Pending' (filtro)
-         let normalizedKey = status;
-         if (status === "Pendente") normalizedKey = "Pending";
-
-         // Verifica se o status da linha existe no array de filtros marcados
-         return filterValue.includes(normalizedKey);
+function getStatusBadge(status: string) {
+   const pattern: Record<string, { label: string; description: string; type: string }> = {
+      receivedCash: {
+         label: "Manual",
+         description: "Recebimento manual registrado; o app não controla este pagamento.",
+         type: "success",
       },
-      // -----------------------------
-      cell: ({ row: { original } }) => {
-         const status = original.status_aluno_contrato_pagamento;
-         if (status === "receivedCash")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-check-circle-fill text-success" />
-                        Manual
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>Recebimento manual registrado; o app não controla este pagamento.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "overdue")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-x-circle-fill text-danger" />
-                        Vencido
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>A fatura ultrapassou a data de vencimento.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "Pendente" || status === "Pending")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-x-circle-fill text-warning" />
-                        Aguardando
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>O aluno ainda não efetuou o pagamento.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "confirmed")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-check-circle-fill text-info" />
-                        Processando
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>Pagamento efetuado pelo aluno, aguardando confirmação de recebimento.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "succeeded")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-check-circle-fill text-success" />
-                        Aprovado
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>Valor já disponível para repasse.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "paid")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-check-circle-fill text-success" />
-                        Repassado
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>Valor já disponível em sua conta.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "deleted")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-x-circle-fill text-danger" />
-                        Removida
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>Cobraça cancelada e removida.</TooltipContent>
-               </Tooltip>
-            );
-         if (status === "refunded")
-            return (
-               <Tooltip>
-                  <TooltipTrigger>
-                     <Badge variant="outline">
-                        <i className="bi bi-check-circle-fill text-success" />
-                        Reembolsada
-                     </Badge>
-                  </TooltipTrigger>
-
-                  <TooltipContent>Cobrança reembolsada para o cliente.</TooltipContent>
-               </Tooltip>
-            );
+      overdue: { label: "Vencido", description: "A fatura ultrapassou a data de vencimento.", type: "danger" },
+      Pendente: { label: "Aguardando", description: "A fatura ultrapassou a data de vencimento.", type: "warning" },
+      Pending: { label: "Aguardando", description: "O aluno ainda não efetuou o pagamento.", type: "warning" },
+      confirmed: {
+         label: "Processando",
+         description: "Pagamento efetuado pelo aluno, aguardando confirmação de recebimento.",
+         type: "info",
       },
-   },
-   {
-      id: "client",
-      header: "Aluno",
-      accessorFn: (row) => row.contract?.aluno?.nome_aluno,
-      filterFn: "includesString",
-      cell: ({ row: { original } }) => original?.contract?.aluno?.nome_aluno,
-   },
-   {
-      id: "dueDate",
-      header: "Vencimento",
-      cell: ({ row: { original } }) => moment(original?.expiracao_aluno_contrato_pagamento).format("DD/MM/YYYY"),
-   },
-   {
-      id: "payoutDate",
-      header: "Pagamento",
-      cell: ({ row: { original } }) =>
-         original.jsonwebhook_aluno_contrato_pagamento &&
-         JSON.parse(original.jsonwebhook_aluno_contrato_pagamento)?.paymentDate
-            ? moment(JSON.parse(original.jsonwebhook_aluno_contrato_pagamento).paymentDate).format("DD/MM/YYYY")
-            : "-",
-   },
-   {
-      id: "payoutDate",
-      header: "Repasse",
-      cell: ({ row: { original } }) =>
-         original.repasse_aluno_contrato_pagamento
-            ? // ? moment(original.repasse_aluno_contrato_pagamento).format("DD/MM/YYYY")
-              getNextDate(new Date(original.repasse_aluno_contrato_pagamento))
-            : "-",
-   },
-   {
-      id: "type",
-      header: "Forma de pag.",
-      cell: ({ row: { original } }) => {
-         const tipo = original?.forma_aluno_contrato_pagamento;
-         if (tipo === "CREDIT_CARD") return "Crédito";
-         if (tipo === "PIX") return "PIX";
-         return tipo;
-      },
-   },
-   {
-      id: "value",
-      header: "Valor",
-      cell: ({ row: { original } }) => formatarMoeda(original?.valor_aluno_contrato_pagamento),
-   },
-   {
-      id: "options",
-      header: "",
-      cell: ({ row: { original } }) => (
-         <DropdownMenu>
-            <DropdownMenuTrigger>
-               <Button variant="ghost" size="icon">
-                  <MoreHorizontal />
-               </Button>
-            </DropdownMenuTrigger>
+      succeeded: { label: "Processando", description: "Valor já disponível para repasse.", type: "success" },
+      paid: { label: "Repassado", description: "Valor já disponível em sua conta.", type: "success" },
+      deleted: { label: "Removida", description: "Cobraça cancelada e removida.", type: "danger" },
+      refunded: { label: "Reembolsada", description: "Cobrança reembolsada para o cliente.", type: "warning" },
+   };
 
-            <DropdownMenuContent>
-               <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() =>
-                     navigate("/contrato", {
-                        state: {
-                           cod_aluno_contrato: original.contract?.cod_aluno_contrato,
-                           cod_aluno: original.contract?.cod_aluno,
-                        },
-                     })
-                  }
-               >
-                  <Paperclip />
-                  Ver contrato
-               </DropdownMenuItem>
+   const badgeData = pattern[status];
+   if (!badgeData) {
+      return <Badge variant="outline">Desconhecido</Badge>;
+   }
+   const classType = `text-${badgeData.type}`;
 
-               <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => window.open(original?.asaas_url, "_blank", "noopener,noreferrer")}
-               >
-                  <Clipboard />
-                  Link de pagamento
-               </DropdownMenuItem>
+   return (
+      <Tooltip>
+         <TooltipTrigger>
+            <Badge variant="outline">
+               <i className={cn(["bi bi-check-circle-fill", classType])} />
+               {badgeData.label}
+            </Badge>
+         </TooltipTrigger>
 
-               {(original.status_aluno_contrato_pagamento === "Pending" ||
-                  original.status_aluno_contrato_pagamento === "overdue" ||
-                  original.status_aluno_contrato_pagamento === "Pendente") && (
-                  <div>
-                     <Dialog>
-                        <DialogTrigger asChild>
-                           <Button variant="ghost" className="ps-2 py-0.5">
-                              <Check />
-                              Marcar como recebido
-                           </Button>
-                        </DialogTrigger>
+         <TooltipContent>{badgeData.description}</TooltipContent>
+      </Tooltip>
+   );
+}
 
-                        <DialogContent className="col-md-3 col-12">
-                           <DialogHeader>
-                              <h5 className="text-start card-title">Confirmação de pagamento recebido</h5>
-                           </DialogHeader>
+function PaymentActions({ row, onRecieved }: { row: any; onRecieved: (id: string) => void }) {
+   const navigate = useNavigate();
 
-                           <p>
-                              Ao confirmar o pagamento, a cobrança será cancelada automaticamente, pois entendemos que
-                              você recebeu o valor por outro meio manualmente.
-                           </p>
+   return (
+      <DropdownMenu>
+         <DropdownMenuTrigger>
+            <Button variant="ghost" size="icon">
+               <MoreHorizontal />
+            </Button>
+         </DropdownMenuTrigger>
 
-                           <DialogFooter>
-                              <DialogClose>
-                                 <button className="btn btn-danger rounded">Fechar</button>
-                              </DialogClose>
+         <DropdownMenuContent>
+            <DropdownMenuItem
+               className="cursor-pointer"
+               onClick={() =>
+                  navigate("/contrato", {
+                     state: {
+                        cod_aluno_contrato: row.contract?.cod_aluno_contrato,
+                        cod_aluno: row.contract?.cod_aluno,
+                     },
+                  })
+               }
+            >
+               <Paperclip />
+               Ver contrato
+            </DropdownMenuItem>
 
-                              <button className="btn btn-success rounded" onClick={() => onRecieved(original.asaas_id)}>
-                                 Confirmar
-                              </button>
-                           </DialogFooter>
-                        </DialogContent>
-                     </Dialog>
-                  </div>
-               )}
-            </DropdownMenuContent>
-         </DropdownMenu>
-      ),
-   },
-];
+            <DropdownMenuItem
+               className="cursor-pointer"
+               onClick={() => window.open(row?.asaas_url, "_blank", "noopener,noreferrer")}
+            >
+               <Clipboard />
+               Link de pagamento
+            </DropdownMenuItem>
+
+            {(row.status_aluno_contrato_pagamento === "Pending" ||
+               row.status_aluno_contrato_pagamento === "overdue" ||
+               row.status_aluno_contrato_pagamento === "Pendente") && (
+               <div>
+                  <Dialog>
+                     <DialogTrigger asChild>
+                        <Button variant="ghost" className="ps-2 py-0.5">
+                           <Check />
+                           Marcar como recebido
+                        </Button>
+                     </DialogTrigger>
+
+                     <DialogContent className="col-md-3 col-12">
+                        <DialogHeader>
+                           <h5 className="text-start card-title">Confirmação de pagamento recebido</h5>
+                        </DialogHeader>
+
+                        <p>
+                           Ao confirmar o pagamento, a cobrança será cancelada automaticamente, pois entendemos que você
+                           recebeu o valor por outro meio manualmente.
+                        </p>
+
+                        <DialogFooter>
+                           <DialogClose>
+                              <button className="btn btn-danger rounded">Fechar</button>
+                           </DialogClose>
+
+                           <button className="btn btn-success rounded" onClick={() => onRecieved(row.asaas_id)}>
+                              Confirmar
+                           </button>
+                        </DialogFooter>
+                     </DialogContent>
+                  </Dialog>
+               </div>
+            )}
+         </DropdownMenuContent>
+      </DropdownMenu>
+   );
+}
 
 function getNextDate(date: Date) {
    const DAYS = [10, 20, 30];

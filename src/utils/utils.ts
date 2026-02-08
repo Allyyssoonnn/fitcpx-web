@@ -14,6 +14,58 @@ export const formatarData = (data: string | Date | number | null | undefined): s
    });
 };
 
+export const formatarHora = (data: string | Date | number | null | undefined): string => {
+   if (!data) return "";
+
+   // Garante compatibilidade com strings "YYYY-MM-DD HH:mm:ss"
+   if (typeof data === "string") {
+      data = data.replace(" ", "T");
+   }
+
+   const date = new Date(data);
+
+   // Verifica se é uma data/hora válida
+   if (isNaN(date.getTime())) return "";
+
+   // Retorna apenas a hora formatada (ex: 14:30)
+   return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "UTC",
+      // second: "2-digit" // Descomente esta linha se precisar dos segundos (14:30:45)
+   });
+};
+
+export const formatarMoeda = (valor: number | string): string => {
+   return typeof valor == "number"
+      ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor)
+      : "-";
+};
+
+export const formatarSegundos = (segundos: number | string): string => {
+   // Tratamento para valores nulos ou inválidos
+   if (!segundos) return "00:00";
+
+   // Garante que é número
+   const totalSeconds = Number(segundos);
+
+   // Extrai as partes
+   const hours = Math.floor(totalSeconds / 3600);
+   const minutes = Math.floor((totalSeconds % 3600) / 60);
+   const seconds = Math.floor(totalSeconds % 60);
+
+   // Função auxiliar para colocar o zero à esquerda (ex: 5 vira 05)
+   const pad = (num: any) => num.toString().padStart(2, "0");
+
+   // Lógica de exibição:
+   // Se tiver hora, retorna HH:mm:ss. Se não, retorna mm:ss
+   if (hours > 0) {
+      return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+   }
+
+   return `${pad(minutes)}:${pad(seconds)}`;
+};
+
 export const arrayBackgrounds = [
    "bg-amber-400",
    "bg-blue-400",
@@ -148,6 +200,11 @@ export const formatCurrency = (value: number) => {
       style: "currency",
       currency: "BRL",
    }).format(value);
+};
+
+export const getNestedError = (obj: any, path: string): any => {
+   if (!path) return null;
+   return path.split(".").reduce((acc, part) => acc?.[part], obj);
 };
 
 // Simula o cálculo do Asaas para exibição
