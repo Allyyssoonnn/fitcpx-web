@@ -198,7 +198,7 @@ const ChatMessages = forwardRef<HTMLDivElement, ChatMessagesProps>(({ activeChat
                   status={v.status}
                   message={v.message}
                   from={v.from}
-                  name={v.from === "student" ? activeChat?.studentName : v.userName ?? "Você"}
+                  name={v.from === "student" ? activeChat?.studentName : (v.userName ?? "Você")}
                />
             ))}
          </div>
@@ -233,10 +233,11 @@ function ChatContacts({ openChat, recentContacts, startNewChat }: ChatContactsPr
                Nova <span className="d-none d-lg-block">conversa</span>
             </Button>
          </div>
+         {console.log(recentContacts)}
 
          <Command className="bg-white flex flex-col overflow-auto">
             {recentContacts.map((v) => {
-               if (!normalizeText(v.studentName).includes(normalizeText(search))) return;
+               if (!normalizeText(v?.studentName).includes(normalizeText(search))) return;
                return (
                   <ChatContact
                      name={v.studentName}
