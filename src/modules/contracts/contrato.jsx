@@ -94,6 +94,12 @@ function Contrato() {
                      Valor total: <strong>{formatarMoeda(alunoContrato?.total_aluno_contrato)}</strong>
                   </Label>
 
+                  {alunoContrato?.adesao_aluno_contrato && (
+                     <Label>
+                        Valor adesão: <strong>{formatarMoeda(alunoContrato?.adesao_aluno_contrato)}</strong>
+                     </Label>
+                  )}
+
                   <Label>
                      Vencimento: <strong>{formatarData(alunoContrato?.expiracao_aluno_contrato)}</strong>
                   </Label>
