@@ -213,6 +213,7 @@ function UploadArchive({
          toast.error("Selecione os arquivos");
          return;
       }
+      setIsUploading(true);
 
       try {
          const formData = new FormData();
