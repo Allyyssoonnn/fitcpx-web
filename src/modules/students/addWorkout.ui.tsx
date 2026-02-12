@@ -1,7 +1,7 @@
 import { getWorkouts } from "@/api/workouts";
+import { useQuery } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { stateUsuario } from "../../states/states";

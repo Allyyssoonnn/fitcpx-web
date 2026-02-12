@@ -1,5 +1,6 @@
 import { getMessages, getPreviewMessages, getUnreadMessages, sendMessage } from "@/api/chat";
 import { getStudents } from "@/api/student";
+import { useQuery } from "@tanstack/react-query";
 import {
    ArrowDown,
    ArrowLeft,
@@ -11,7 +12,6 @@ import {
    SendHorizonal,
 } from "lucide-react";
 import { forwardRef, useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Command, CommandItem } from "../ui/command";

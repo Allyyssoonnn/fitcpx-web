@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateExercise } from "../../api/exercises";
@@ -85,7 +85,7 @@ function CadExercicio() {
 
    async function confirma(data) {
       const cleanedData = Object.fromEntries(
-         Object.entries(data).map(([key, value]) => [key, value === "" ? null : value])
+         Object.entries(data).map(([key, value]) => [key, value === "" ? null : value]),
       );
       if (cleanedData.base_exercicio === "S") {
          await createOrUpdateExercise({

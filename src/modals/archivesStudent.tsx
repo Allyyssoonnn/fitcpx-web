@@ -5,10 +5,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ScrollArea } from "@/components/ui/scroll-area"; // Importante para listas longas
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns"; // Opcional, para datas
 import { Download, File, FileText, Image as ImageIcon, Trash2, Upload, X } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { toast } from "sonner";
 import { useNotificacao } from "../states/states";
 

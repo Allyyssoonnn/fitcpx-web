@@ -1,6 +1,6 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { RecoilRoot } from "recoil";
 import App from "./App.jsx";
 import "./index.css";
@@ -23,5 +23,5 @@ createRoot(document.getElementById("root")).render(
             <App />
          </NiceModal.Provider>
       </QueryClientProvider>
-   </RecoilRoot>
+   </RecoilRoot>,
 );

@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftCircle, Info, Pencil, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateExercise, deleteExercise, getExercises } from "../../api/exercises";

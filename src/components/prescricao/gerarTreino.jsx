@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { Lightbulb } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
 import { generateWorkout, getMuscleGroups } from "../../api/workouts";
@@ -110,7 +110,7 @@ function Filters({ adicionarSessaoGerada, closeDialog, nivel_treino, desenvolvim
                      cod_articulacao: 2,
                      volume: group.volume || 2,
                      qtd_exercicios: group.qtd_exercicios || 2,
-                  }))
+                  })),
                )
             }
             placeholder="Selecione os grupos de exercícios"

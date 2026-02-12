@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";

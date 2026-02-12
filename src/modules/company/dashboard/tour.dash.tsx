@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 type TourProps = {
    title: string;

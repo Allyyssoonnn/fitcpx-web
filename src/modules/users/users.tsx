@@ -1,6 +1,6 @@
 import { UserType } from "@/types/user";
+import { useQuery } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { getUsers } from "../../api/user";
 import { FitTable } from "../../components/baseComponents/FitTable";

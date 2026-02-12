@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getContractsTemplates } from "../../api/contractsTemplates";

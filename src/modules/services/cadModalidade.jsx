@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, Check, PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateService } from "../../api/services";

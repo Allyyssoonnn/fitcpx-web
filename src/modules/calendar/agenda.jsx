@@ -3,9 +3,9 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getCalendar, newEvent } from "../../api/calendar";
 import { getServices } from "../../api/services";
@@ -96,7 +96,7 @@ function Calendario() {
          setValue("data_inicio", formatDateToLocalInput(new Date(event.start))); // Formato de data para datetime-local
          setValue(
             "data_fim",
-            event.end ? formatDateToLocalInput(new Date(event.end)) : formatDateToLocalInput(new Date(event.start))
+            event.end ? formatDateToLocalInput(new Date(event.end)) : formatDateToLocalInput(new Date(event.start)),
          ); // Caso tenha um horário de término
 
          // Abre o modal
@@ -157,7 +157,7 @@ function Calendario() {
             info.start.getMonth(),
             info.start.getDate(),
             now.getHours(),
-            now.getMinutes()
+            now.getMinutes(),
          );
       } else {
          // Clicou em horário específico: usar exatamente o horário clicado

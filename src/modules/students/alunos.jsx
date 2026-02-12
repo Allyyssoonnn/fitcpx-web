@@ -2,7 +2,7 @@ import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react"; // Adicionado useCallback
 import { useTranslation } from "react-i18next";
 
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateStudent, deleteStudent, getStudents } from "../../api/student";

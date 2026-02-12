@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import {
    Activity,
    BookmarkX,
@@ -10,7 +11,6 @@ import {
    Smartphone,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { toast } from "sonner";
 import { getNotificationsConfig, saveNotificationsConfig } from "../../../api/companies";
 import { Button } from "../../../components/ui/button";

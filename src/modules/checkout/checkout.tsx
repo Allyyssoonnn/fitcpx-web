@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { normalizeCep, normalizeCpf, normalizePhone, searchCEP } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod"; // Importante
+import { useQuery } from "@tanstack/react-query";
 import { ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"; // Importante: Controller
-import { useQuery } from "react-query";
 import { CheckoutForm } from "./components/CheckoutForm";
 import { modalConfirmContract } from "./components/confirmContract";
 import { Resume } from "./components/resume";

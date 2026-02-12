@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import {
    ArrowRight,
    ChartBar,
@@ -14,7 +15,6 @@ import {
    Trash,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getContracts } from "../../api/contracts";
 import { deletePhysicalAssessment, getPhysicalAssessments } from "../../api/physicalAssessments";

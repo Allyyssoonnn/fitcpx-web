@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
@@ -132,7 +132,7 @@ function CadTreino() {
                   if (!set?.cod_exercicio) {
                      podeConfirmar = false;
                      toast.error(
-                        `Exercício de super-set vazio na sessão ${sessao.nome_sessao} do exercício ${exercicio.nome_exercicio}`
+                        `Exercício de super-set vazio na sessão ${sessao.nome_sessao} do exercício ${exercicio.nome_exercicio}`,
                      );
                   }
                }
@@ -150,7 +150,7 @@ function CadTreino() {
             cod_usuario,
             cod_empresa: usuario.cod_empresa,
          },
-         sessoes
+         sessoes,
       );
 
       reset();

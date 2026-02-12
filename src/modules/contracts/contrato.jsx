@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import JoditEditor from "jodit-react";
 import { Check, Clipboard, MoreHorizontal } from "lucide-react";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteContract, downloadContract, getContract } from "../../api/contracts";
 import { markPaymentReceived } from "../../api/payments";

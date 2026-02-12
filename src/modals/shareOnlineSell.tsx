@@ -13,9 +13,9 @@ import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { useQuery } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
 import { stateUsuario } from "../states/states";

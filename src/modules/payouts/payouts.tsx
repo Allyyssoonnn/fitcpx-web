@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatarData, toMoney } from "@/utils/utils";
+import { useQuery } from "@tanstack/react-query";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Download, Eye, LucideReceiptText, Share } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "react-query";
 
 export default function Payouts() {
    const [date, setDate] = useState<Date>(new Date());

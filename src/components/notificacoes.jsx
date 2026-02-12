@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getNotifications } from "../api/companies";

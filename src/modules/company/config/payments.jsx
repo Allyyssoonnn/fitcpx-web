@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
 import { CreditCard } from "lucide-react";
-import { useQuery } from "react-query";
 import { getCompaniesLicenses } from "../../../api/companies";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
