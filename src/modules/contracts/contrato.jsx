@@ -55,12 +55,16 @@ function Contrato() {
    }, []);
 
    async function cancelContract() {
-      nConfirm(null, "Tem certeza que deseja cancelar o contrato?", async () => {
-         nLoading();
-         await deleteContract(cod_aluno_contrato);
-         endLoading();
-         navigate(-1);
-      });
+      nConfirm(
+         "Cancelar contrato?",
+         "Ao cancelar esta venda, apenas as parcelas futuras serão suspensas. As parcelas já pagas devem ser reembolsadas por você diretamente ao aluno. As taxas de processamento não são estornadas.",
+         async () => {
+            nLoading();
+            await deleteContract(cod_aluno_contrato);
+            endLoading();
+            navigate(-1);
+         },
+      );
    }
 
    async function baixarContrato(signed) {
