@@ -160,7 +160,9 @@ function ListArchives({ archives, refetch }: { archives: Archive[]; refetch: () 
                      </div>
 
                      <div className="flex flex-col truncate">
-                        <span className="font-medium text-sm truncate text-foreground">{file.name}</span>
+                        <span className="font-medium text-sm truncate text-foreground">
+                           {formatFileName(file.name)}
+                        </span>
                         <span className="text-xs text-muted-foreground">{format(file.createdAt, "dd/MM/yyyy")}</span>
                      </div>
                   </div>
@@ -189,6 +191,12 @@ function ListArchives({ archives, refetch }: { archives: Archive[]; refetch: () 
          </div>
       </ScrollArea>
    );
+}
+
+function formatFileName(name: string, maxLength: number = 50) {
+   if (name.length <= maxLength) return name;
+   // Pega os primeiros (maxLength - 7) caracteres + "..." + os últimos 4 caracteres
+   return `${name.slice(0, maxLength - 7)}...${name.slice(-4)}`;
 }
 
 // --- Componente de Upload Melhorado ---
@@ -243,7 +251,7 @@ function UploadArchive({
                src={files}
                //Para aceitar multiplos arquivos
                onDrop={(acceptedFiles) => {
-                  if ([...files, ...acceptedFiles].length == 6) {
+                  if ([...files, ...acceptedFiles].length > 5) {
                      toast.error("Limite de upload atingido");
                   } else {
                      setFiles((prev) => [...prev, ...acceptedFiles]);
@@ -287,7 +295,14 @@ function UploadArchive({
                                  <div className="p-1 rounded bg-primary/10 text-primary">
                                     {file.type.includes("pdf") ? <FileText size={14} /> : <ImageIcon size={14} />}
                                  </div>
-                                 <span className="truncate max-w-[180px] text-foreground/90">{file.name}</span>
+
+                                 <span
+                                    className="text-foreground/90 font-medium whitespace-nowrap"
+                                    title={file.name} // Importante: mantém o nome original no tooltip
+                                 >
+                                    {formatFileName(file.name, 25)}
+                                 </span>
+                                 {/* <span className="truncate max-w-[180px] text-foreground/90">{file.name}</span> */}
                               </div>
 
                               <Button

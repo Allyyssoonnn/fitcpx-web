@@ -8,6 +8,12 @@ import { createContext, useContext } from "react";
 import type { DropEvent, DropzoneOptions, FileRejection } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
+function formatFileName(name: string, maxLength: number = 25) {
+   if (name.length <= maxLength) return name;
+   // Pega os primeiros (maxLength - 7) caracteres + "..." + os últimos 4 caracteres
+   return `${name.slice(0, maxLength - 7)}...${name.slice(-4)}`;
+}
+
 interface DropzoneContextType {
    src?: File[];
    accept?: DropzoneOptions["accept"];
@@ -124,9 +130,11 @@ export const DropzoneContent = ({ children, className }: DropzoneContentProps) =
          <p className="my-2 w-full truncate font-medium text-sm">
             {src.length > maxLabelItems
                ? `${new Intl.ListFormat("en").format(
-                    src.slice(0, maxLabelItems).map((file) => file.name),
+                    //   src.slice(0, maxLabelItems).map((file) => file.name),
+                    src.slice(0, maxLabelItems).map((file) => formatFileName(file.name, 25)),
                  )} and ${src.length - maxLabelItems} more`
-               : new Intl.ListFormat("en").format(src.map((file) => file.name))}
+               : // : new Intl.ListFormat("en").format(src.map((file) => file.name))}
+                 new Intl.ListFormat("en").format(src.map((file) => formatFileName(file.name, 25)))}
          </p>
          <p className="w-full text-wrap text-muted-foreground text-xs">
             Drag and drop or click to {maxFiles === 1 ? "replace" : "upload"}
