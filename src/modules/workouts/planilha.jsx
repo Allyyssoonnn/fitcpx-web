@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { Dumbbell } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getStudents } from "../../api/student";
@@ -28,7 +28,7 @@ function Planilha() {
    const toggleSelecao = (index) => {
       if (selecionados.length == 15) return;
       setSelecionados((prevSelecao) =>
-         prevSelecao.includes(index) ? prevSelecao.filter((item) => item !== index) : [...prevSelecao, index]
+         prevSelecao.includes(index) ? prevSelecao.filter((item) => item !== index) : [...prevSelecao, index],
       );
    };
 
@@ -44,8 +44,8 @@ function Planilha() {
                      ?.toLowerCase()
                      .normalize("NFD")
                      .replace(/[\u0300-\u036f]/g, "")
-                     .includes(word)
-               ) && aluno.status_aluno === "A"
+                     .includes(word),
+               ) && aluno.status_aluno === "A",
       );
    }, [alunos, searchTerm]);
 

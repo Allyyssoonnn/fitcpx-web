@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
@@ -12,7 +12,6 @@ import FitFormUI from "../../components/fitUI/fitForm.ui";
 import TreinoInteligente from "../../components/prescricao/treinoInteligente";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
-import { useFormStore } from "../../hooks/useFormStore";
 import { stateUsuario, useNotificacao } from "../../states/states";
 import { preventForm } from "../../utils";
 
@@ -20,9 +19,8 @@ function CadTreino() {
    const location = useLocation();
    const treinoRecebido = location.state?.treino;
    const alunoRecebido = location.state?.aluno;
-   const { formData, setTreinoForm, clearForm } = useFormStore();
    const { tSuccess } = useNotificacao();
-   const form = useForm({ defaultValues: { ...treinoRecebido, sexo_treino: alunoRecebido?.sexo_aluno || "M" } });
+   const form = useForm({ defaultValues: treinoRecebido || { sexo_treino: "M" } });
    const {
       handleSubmit,
       setValue,
@@ -46,17 +44,6 @@ function CadTreino() {
    const [sexo_aluno, setSexo_aluno] = useState(null);
 
    useEffect(() => {
-      if (treinoRecebido) {
-         Object.keys(treinoRecebido).forEach((key) => {
-            setValue(key, treinoRecebido[key]);
-         });
-      } else {
-         if (formData.treino?.cod_aluno == alunoRecebido?.cod_aluno) {
-            Object.keys(formData.treino).forEach((key) => {
-               setValue(key, formData.treino[key]);
-            });
-         }
-      }
       if (alunoRecebido) setValue("cod_aluno", alunoRecebido.cod_aluno);
       if (alunoRecebido) setValue("nome_aluno", alunoRecebido.nome_aluno);
       if (alunoRecebido) {
@@ -64,22 +51,14 @@ function CadTreino() {
          setCodAluno(alunoRecebido.cod_aluno);
          setSexo_aluno(alunoRecebido.sexo_aluno);
          setValue("sexo_treino", alunoRecebido.sexo_aluno);
-      } else {
-         setSexo_aluno("M");
-         setValue("sexo_treino", "M");
       }
+
       var sessaoKey = treinoRecebido?.sessoes?.map((sessao, index) => ({
          ...sessao,
          key: index + 1, // Adiciona a propriedade 'key' usando o 'cod_sessao'
       }));
       if (treinoRecebido?.sessoes) setSessoes(sessaoKey);
    }, [location, setValue, usuario]);
-
-   const watched = watch();
-   useEffect(() => {
-      if (watched?.cod_treino) return;
-      setTreinoForm(watched);
-   }, [JSON.stringify(watched)]);
 
    useEffect(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -132,7 +111,7 @@ function CadTreino() {
                   if (!set?.cod_exercicio) {
                      podeConfirmar = false;
                      toast.error(
-                        `Exercício de super-set vazio na sessão ${sessao.nome_sessao} do exercício ${exercicio.nome_exercicio}`
+                        `Exercício de super-set vazio na sessão ${sessao.nome_sessao} do exercício ${exercicio.nome_exercicio}`,
                      );
                   }
                }
@@ -146,15 +125,14 @@ function CadTreino() {
       await createOrUpdateWorkout(
          {
             ...data,
-            sexo_treino: sexo_aluno ?? data?.sexo_treino,
+            sexo_treino: codAluno ? sexo_aluno : data?.sexo_treino,
             cod_usuario,
             cod_empresa: usuario.cod_empresa,
          },
-         sessoes
+         sessoes,
       );
 
       reset();
-      clearForm();
       tSuccess();
       navigate(-1);
    }

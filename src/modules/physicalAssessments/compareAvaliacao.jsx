@@ -1,13 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
 import BackBoxUI from "../../components/fitUI/backBox.ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion";
 import { Card, CardContent } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "../../components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../components/ui/tooltip";
 import { calcularIdade, formatarData, ordenaAvalicaoData } from "../../utils";
 
@@ -242,32 +243,20 @@ function Imagens({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            {/* Botões de Seleção de Layout */}
-            <div className="btn-group mb-3" role="group" aria-label="Basic radio toggle button group">
-               <input
-                  type="radio"
-                  className="btn-check"
-                  name="btnradio"
-                  id="btnradio-2"
-                  checked={tipoColagem === 2}
-                  onChange={() => setTipoColagem(2)}
-               />
-               <label className="btn btn-outline-primary" htmlFor="btnradio-2">
+            <ToggleGroup
+               variant="outline"
+               type="single"
+               value={tipoColagem}
+               onValueChange={(value) => setTipoColagem(Number(value))}
+               className="mb-3 hidden md:flex"
+            >
+               <ToggleGroupItem value={2} className="data-[state=on]:text-primary">
                   2 Fotos
-               </label>
-
-               <input
-                  type="radio"
-                  className="btn-check"
-                  name="btnradio"
-                  id="btnradio-3"
-                  checked={tipoColagem === 3}
-                  onChange={() => setTipoColagem(3)}
-               />
-               <label className="btn btn-outline-primary" htmlFor="btnradio-3">
+               </ToggleGroupItem>
+               <ToggleGroupItem value={3} className="data-[state=on]:text-primary">
                   3 Fotos
-               </label>
-            </div>
+               </ToggleGroupItem>
+            </ToggleGroup>
 
             {/* Grid de Imagens */}
             <div className={`row g-3 ${tipoColagem === 3 ? "row-cols-3" : "row-cols-2"}`}>
@@ -351,7 +340,7 @@ function Biompedancia({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <row className="row g-3 justify-content-around">
+            <row className="row g-3 justify-content-around overflow-auto">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <tbody>
                      <tr>
@@ -425,7 +414,7 @@ function Perimetria({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <row className="row g-3 justify-content-around">
+            <row className="row g-3 justify-content-around overflow-auto">
                <table id="basic-datatables" className="table table-sm table-striped table-hover">
                   <tbody>
                      <tr>
@@ -521,7 +510,7 @@ function AreaMagraGorda({ avaliacoes }) {
          </AccordionTrigger>
 
          <AccordionContent>
-            <div>
+            <div className="overflow-auto">
                <row className="row g-3 justify-content-around">
                   <table id="basic-datatables" className="table table-sm table-striped table-hover">
                      <tbody>

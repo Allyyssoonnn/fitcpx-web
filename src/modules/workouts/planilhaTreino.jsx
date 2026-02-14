@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Activity, ArrowLeftCircle, Moon, Pause, Play, RefreshCcw, Sun } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { getExercises } from "../../api/exercises";
@@ -68,26 +68,26 @@ function PlanilhaTreino() {
                                              return {
                                                 ...exc,
                                                 sets: exc.sets.map((set, i) =>
-                                                   indexSet == i ? { ...set, [field]: value } : set
+                                                   indexSet == i ? { ...set, [field]: value } : set,
                                                 ),
                                              };
                                           if (indexExc == idxExc && indexSet == null) return { ...exc, [field]: value };
                                           return exc;
                                        }),
                                     }
-                                  : sessao
+                                  : sessao,
                             ),
                          }
-                       : treino
+                       : treino,
                  ),
               }
-            : aluno
+            : aluno,
       );
       setAlunos(attAlunos);
       localStorage.setItem("planilhatreino", JSON.stringify(attAlunos));
       await createOrUpdateWorkout(
          attAlunos[indexAluno].treinos[alunos[indexAluno].indexTreino],
-         attAlunos[indexAluno].treinos[alunos[indexAluno].indexTreino].sessoes
+         attAlunos[indexAluno].treinos[alunos[indexAluno].indexTreino].sessoes,
       );
    }
 
@@ -105,16 +105,16 @@ function PlanilhaTreino() {
                                   ? {
                                        ...sessao,
                                        exercicios: sessao.exercicios.map((exc, idxExc) =>
-                                          indexExc == idxExc ? { ...exc, ...exercicio } : exc
+                                          indexExc == idxExc ? { ...exc, ...exercicio } : exc,
                                        ),
                                     }
-                                  : sessao
+                                  : sessao,
                             ),
                          }
-                       : treino
+                       : treino,
                  ),
               }
-            : aluno
+            : aluno,
       );
       setAlunos(attAlunos);
       localStorage.setItem("planilhatreino", JSON.stringify(attAlunos));
@@ -138,19 +138,19 @@ function PlanilhaTreino() {
                                              ? {
                                                   ...exc,
                                                   sets: exc.sets.map((set, idxSet) =>
-                                                     idxSet == indexSet ? { ...set, ...exercicio } : set
+                                                     idxSet == indexSet ? { ...set, ...exercicio } : set,
                                                   ),
                                                }
-                                             : exc
+                                             : exc,
                                        ),
                                     }
-                                  : sessao
+                                  : sessao,
                             ),
                          }
-                       : treino
+                       : treino,
                  ),
               }
-            : aluno
+            : aluno,
       );
       setAlunos(attAlunos);
       localStorage.setItem("planilhatreino", JSON.stringify(attAlunos));
@@ -284,7 +284,7 @@ function PlanilhaTreino() {
                                                    {sessao.nome_sessao}
                                                 </label>
                                              </div>
-                                          )
+                                          ),
                                        )}
                                     </div>
                                  </div>
@@ -417,7 +417,7 @@ function PlanilhaTreino() {
                                                                idx,
                                                                indexExc,
                                                                "serie_sessao_exercicio",
-                                                               indexSet
+                                                               indexSet,
                                                             )
                                                          }
                                                       />
@@ -431,7 +431,7 @@ function PlanilhaTreino() {
                                                                idx,
                                                                indexExc,
                                                                "repeticao_sessao_exercicio",
-                                                               indexSet
+                                                               indexSet,
                                                             )
                                                          }
                                                       />
@@ -445,7 +445,7 @@ function PlanilhaTreino() {
                                                                idx,
                                                                indexExc,
                                                                "carga_sessao_exercicio",
-                                                               indexSet
+                                                               indexSet,
                                                             )
                                                          }
                                                       />
@@ -460,7 +460,7 @@ function PlanilhaTreino() {
                                                                idx,
                                                                indexExc,
                                                                "observacao_sessao_exercicio",
-                                                               indexSet
+                                                               indexSet,
                                                             )
                                                          }
                                                       />

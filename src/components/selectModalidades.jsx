@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getServices } from "../api/services";
 import { stateUsuario } from "../states/states";

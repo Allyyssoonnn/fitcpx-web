@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import JoditEditor from "jodit-react";
 import { AlertTriangle, Check } from "lucide-react";
 import moment from "moment/moment";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";

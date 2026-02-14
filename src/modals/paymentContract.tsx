@@ -95,7 +95,10 @@ const PaymentContract = NiceModal.create(
          modalConfirmContract.show({
             student: student,
             plan: planData,
-            onConfirm: async () => onConfirm(planData),
+            onConfirm: async () => {
+               await onConfirm(planData);
+               remove();
+            },
             useApp,
          });
       }

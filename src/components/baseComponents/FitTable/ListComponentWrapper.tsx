@@ -44,6 +44,7 @@ type ListComponentProps = {
    buttonId?: string;
    children?: React.ReactNode;
    subHeader?: React.ReactNode;
+   moreButtonsHeader?: React.ReactNode;
    canSort?: boolean;
    globalFilter?: GlobalFilterTableState;
    globalFilterFn?: (row: any, _columnId: string, filterValue: any) => any;
@@ -93,6 +94,7 @@ export default function ListComponentWrapper({
    subHeader,
    globalFilter,
    globalFilterFn,
+   moreButtonsHeader,
 }: ListComponentProps) {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -203,7 +205,8 @@ export default function ListComponentWrapper({
                   </div>
                </div>
 
-               <div className="d-flex justify-content-end align-items-center">
+               <div className="d-flex justify-content-end align-items-center gap-3">
+                  {moreButtonsHeader}
                   {buttonOnClick && (
                      <Button variant="outline" id={buttonId} onClick={buttonOnClick}>
                         <PlusCircle />

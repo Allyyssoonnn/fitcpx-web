@@ -2,8 +2,8 @@ import { getDuePayments } from "@/api/contracts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useQuery } from "@tanstack/react-query";
 import { Clipboard, MessageCircle } from "lucide-react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { formatarData } from "../../../utils/utils";
 
@@ -44,7 +44,7 @@ export default function DuePaymentsDash() {
                      const text = `Olá ${
                         p?.contract?.aluno?.nome_aluno
                      }, identificamos um pagamento pendente com vencimento em ${formatarData(
-                        p?.expiracao_aluno_contrato_pagamento
+                        p?.expiracao_aluno_contrato_pagamento,
                      )}. referente ao seu contrato ${
                         p?.contract?.descricao_aluno_contrato
                      }. Estou encaminhando o link de pagamento.\n\n${p?.asaas_url}`;
@@ -74,7 +74,7 @@ export default function DuePaymentsDash() {
                                  onClick={() =>
                                     window.open(
                                        `https://wa.me/${p?.contract?.aluno?.telefone_aluno}?text=${encodedText}`,
-                                       "_blank"
+                                       "_blank",
                                     )
                                  }
                               >

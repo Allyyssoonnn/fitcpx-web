@@ -1,7 +1,7 @@
 {
    "name": "educapp",
    "private": true,
-   "version": "3.6.1",
+   "version": "3.7.0",
    "type": "module",
    "homepage": "/entrar",
    "scripts": {
@@ -41,6 +41,7 @@
       "@stripe/react-stripe-js": "^3.7.0",
       "@stripe/stripe-js": "^7.3.0",
       "@tailwindcss/vite": "^4.1.10",
+      "@tanstack/react-query": "^5.90.21",
       "@tanstack/react-table": "^8.21.3",
       "ag-grid-community": "^34.1.2",
       "ag-grid-enterprise": "^33.0.4",
@@ -83,7 +84,6 @@
       "react-input-mask": "^2.0.4",
       "react-number-format": "^5.4.4",
       "react-phone-number-input": "^3.4.12",
-      "react-query": "^3.39.3",
       "react-router-dom": "^6.28.0",
       "recharts": "^2.15.4",
       "recoil": "^0.7.7",

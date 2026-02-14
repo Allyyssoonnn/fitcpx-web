@@ -1,8 +1,8 @@
 import { getDashboardInfo } from "@/api/companies";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
 import { ClipboardList, Dumbbell, LucideIcon, User, Users } from "lucide-react";
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 
 type DashboardProps = {

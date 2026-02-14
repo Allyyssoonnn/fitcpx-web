@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { normalizeCep, normalizeCpf, normalizePhone, searchCEP } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod"; // Importante
-import { ShoppingBag } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"; // Importante: Controller
-import { useQuery } from "react-query";
 import { CheckoutForm } from "./components/CheckoutForm";
 import { modalConfirmContract } from "./components/confirmContract";
 import { Resume } from "./components/resume";
@@ -19,6 +19,7 @@ import { Company, Plan } from "./types";
 export default function Checkout() {
    const params = new URLSearchParams(window.location.search);
    const sToken = params.get("s");
+   const register = params.get("register") === "true";
 
    const [company, setCompany] = useState<Company | null>(null);
    const [plans, setPlans] = useState<Plan[]>([]);
@@ -155,24 +156,24 @@ export default function Checkout() {
 
    // --- 3. Função de Submit ---
    async function onSubmit(data: CheckoutFormValues) {
-      if (!selectedPlan) return;
+      if (!selectedPlan && !register) return;
 
       // 1. Prepara os dados brutos (Payload para criar aluno se necessário)
       const rawPayload = {
          ...data,
          cpf_aluno: data.cpf_aluno.replace(/\D/g, ""),
-         telefone_aluno: data.telefone_aluno.replace(/\D/g, ""),
+         telefone_aluno: "+55" + data.telefone_aluno.replace(/\D/g, ""),
          cep_aluno: data.cep_aluno.replace(/\D/g, ""),
-         cod_contrato: selectedPlan.contractId, // Supondo que venha daqui
+         cod_contrato: selectedPlan?.contractId, // Supondo que venha daqui
          cod_empresa: companyId,
       };
 
       // 2. Prepara os dados do plano para exibição e envio
       const planData = {
-         cod_plano: selectedPlan.value,
-         nome_plano: selectedPlan.label,
-         valor_total: selectedPlan.price,
-         cod_contrato: selectedPlan.contractId,
+         cod_plano: selectedPlan?.value,
+         nome_plano: selectedPlan?.label,
+         valor_total: selectedPlan?.price,
+         cod_contrato: selectedPlan?.contractId,
          cod_empresa: companyId,
          metodo_recorrencia: data.metodo_recorrencia,
          metodo_pagamento: data.metodo_pagamento,
@@ -197,6 +198,29 @@ export default function Checkout() {
       var finalStudentData = existingStudent?.cod_aluno ? { ...existingStudent, ...rawPayload } : rawPayload;
       if (studentId && !finalStudentData.cod_aluno) finalStudentData.cod_aluno = studentId;
 
+      if (register) {
+         if (!companyId) return;
+
+         // Chama sua API final
+         const response = await onlineContract(companyId, finalStudentData, planData, register);
+
+         // Debug para garantir que está vindo
+         console.log("Resposta da API:", response);
+
+         // 2. Monta os parâmetros
+         const paramsObj: any = {
+            nome: finalStudentData.nome_aluno,
+            email: finalStudentData.email_aluno,
+            register: true,
+         };
+
+         // 3. Serializa e redireciona
+         const searchParams = new URLSearchParams(paramsObj).toString();
+         window.location.href = `/successPage?${searchParams}`;
+
+         return; // Importante: para evitar que o modal abra após registro
+      }
+
       // 4. ABRE O MODAL
       // Passamos a lógica da API dentro da prop 'onConfirm'
       modalConfirmContract.show({
@@ -207,7 +231,7 @@ export default function Checkout() {
             if (!companyId) return;
 
             // Chama sua API final
-            const response = await onlineContract(companyId, finalStudentData, planData);
+            const response = await onlineContract(companyId, finalStudentData, planData, register);
 
             // Debug para garantir que está vindo
             console.log("Resposta da API:", response);
@@ -230,7 +254,6 @@ export default function Checkout() {
 
             // 3. Serializa e redireciona
             const searchParams = new URLSearchParams(paramsObj).toString();
-            // http://localhost:5173/successPage?nome=Fit+Student&email=fitcomplex%40fitcpx.com&faturaUrl=https%3A%2F%2Fsandbox.asaas.com%2Fi%2Fz10x3ez4jsu21r4m&faturaAdicionalUrl=undefined
             window.location.href = `/successPage?${searchParams}`;
          },
       });
@@ -264,11 +287,12 @@ export default function Checkout() {
                handlePlanChange={handlePlanChange}
                company={company}
                allowSelectPlan={allowSelectPlan}
+               register={register}
             />
 
             <Card className="shadow-sm border-muted-foreground/10 relative overflow-hidden">
                {/* Overlays de bloqueio (mantidos do original) */}
-               {!selectedPlan && (
+               {!selectedPlan && !register && (
                   <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm p-6 transition-all">
                      <div className="bg-yellow-100 text-yellow-800 border border-yellow-200 p-4 rounded-lg shadow-lg text-center max-w-xs">
                         <p className="font-semibold mb-1">Aguardando Seleção</p>
@@ -278,34 +302,46 @@ export default function Checkout() {
                )}
 
                <CardHeader>
-                  <CardTitle className="text-xl">Finalizar Pagamento</CardTitle>
+                  <CardTitle className="text-xl">Finalizar {register ? "Cadastro" : "Pagamento"}</CardTitle>
                   <CardDescription>Preencha seus dados com segurança.</CardDescription>
                </CardHeader>
 
                <CardContent>
                   {/* Envolvemos o formulário aqui */}
                   <form id="checkout-form" onSubmit={handleSubmit(onSubmit)}>
-                     <CheckoutForm selectedPlan={selectedPlan} control={control} errors={errors} />
+                     <CheckoutForm selectedPlan={selectedPlan} control={control} errors={errors} register={register} />
                   </form>
                </CardContent>
 
                <CardFooter>
                   {/* O botão deve ter type="submit" e estar ligado ao form */}
-                  <Button
-                     type="submit"
-                     form="checkout-form"
-                     size="lg"
-                     className="w-full text-md font-semibold gap-2"
-                     disabled={!selectedPlan}
-                  >
-                     <ShoppingBag className="h-5 w-5" />
-                     Pagar{" "}
-                     {selectedPlan?.price
-                        ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-                             selectedPlan.price,
-                          )
-                        : "R$ 0,00"}
-                  </Button>
+                  {!register ? (
+                     <Button
+                        type="submit"
+                        form="checkout-form"
+                        size="lg"
+                        className="w-full text-md font-semibold gap-2"
+                        disabled={!selectedPlan}
+                     >
+                        <ShoppingBag className="h-5 w-5" />
+                        Pagar{" "}
+                        {selectedPlan?.price
+                           ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+                                selectedPlan.price,
+                             )
+                           : "R$ 0,00"}
+                     </Button>
+                  ) : (
+                     <Button
+                        type="submit"
+                        form="checkout-form"
+                        size="lg"
+                        className="w-full text-md font-semibold gap-2"
+                     >
+                        <User />
+                        Confirmar Cadastro
+                     </Button>
+                  )}
                </CardFooter>
             </Card>
          </div>

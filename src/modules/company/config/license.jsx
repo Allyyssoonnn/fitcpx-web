@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import { Check, HelpCircle } from "lucide-react";
 import { setCookie } from "nookies";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "react-query";
 import { cancelCompanyLicense, getCompanyLicense } from "../../../api/companies";
 import { buyLicense, getLicensesAvaliable, sendCoupon } from "../../../api/licenses";
 import { DiscountSticker } from "../../../components/fitUI/DiscountSticker.ui";
@@ -65,7 +65,7 @@ function License() {
             refetch();
             endLoading();
          },
-         () => endLoading()
+         () => endLoading(),
       );
    }
 
@@ -91,7 +91,7 @@ function License() {
             }
             endLoading();
          },
-         () => endLoading()
+         () => endLoading(),
       );
    }
 
@@ -244,7 +244,7 @@ function CardLicenca({ licenca, onCancel, onBuy, atual, isVIP }) {
       "shadow-md transition-all hover:shadow-lg",
       atual && "border border-primary",
       isVIP && "border border-purple-500",
-      isFree && "border border-dashed border-gray-300"
+      isFree && "border border-dashed border-gray-300",
    );
 
    return (

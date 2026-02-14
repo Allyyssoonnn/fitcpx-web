@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import JoditEditor from "jodit-react";
 import { Check, Clipboard, MoreHorizontal } from "lucide-react";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteContract, downloadContract, getContract } from "../../api/contracts";
 import { markPaymentReceived } from "../../api/payments";
@@ -55,12 +55,16 @@ function Contrato() {
    }, []);
 
    async function cancelContract() {
-      nConfirm(null, "Tem certeza que deseja cancelar o contrato?", async () => {
-         nLoading();
-         await deleteContract(cod_aluno_contrato);
-         endLoading();
-         navigate(-1);
-      });
+      nConfirm(
+         "Cancelar contrato?",
+         "Ao cancelar esta venda, apenas as parcelas futuras serão suspensas. As parcelas já pagas devem ser reembolsadas por você diretamente ao aluno. As taxas de processamento não são estornadas.",
+         async () => {
+            nLoading();
+            await deleteContract(cod_aluno_contrato);
+            endLoading();
+            navigate(-1);
+         },
+      );
    }
 
    async function baixarContrato(signed) {
@@ -93,6 +97,12 @@ function Contrato() {
                   <Label>
                      Valor total: <strong>{formatarMoeda(alunoContrato?.total_aluno_contrato)}</strong>
                   </Label>
+
+                  {alunoContrato?.adesao_aluno_contrato && (
+                     <Label>
+                        Valor adesão: <strong>{formatarMoeda(alunoContrato?.adesao_aluno_contrato)}</strong>
+                     </Label>
+                  )}
 
                   <Label>
                      Vencimento: <strong>{formatarData(alunoContrato?.expiracao_aluno_contrato)}</strong>

@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { Funnel, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { getExercises } from "../../api/exercises";
 import {

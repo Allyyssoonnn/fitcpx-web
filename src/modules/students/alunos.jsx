@@ -2,11 +2,14 @@ import { ArrowLeftCircle, Pencil, Trash } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react"; // Adicionado useCallback
 import { useTranslation } from "react-i18next";
 
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
+import { Earth } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { createOrUpdateStudent, deleteStudent, getStudents } from "../../api/student";
 import { FitTable } from "../../components/baseComponents/FitTable";
+import { Button } from "../../components/ui/button";
+import { modalShareOnlineSell } from "../../modals/shareOnlineSell";
 import { stateUsuario } from "../../states/states";
 
 function Alunos() {
@@ -124,6 +127,12 @@ function Alunos() {
                   buttonId="newClient"
                   fieldId="cod_aluno" // IMPORTANTE: Certifique-se que o backend retorna exatamente "cod_aluno"
                   columns={columns} // Passamos a constante memorizada
+                  moreButtonsHeader={
+                     <Button variant="outline" onClick={() => modalShareOnlineSell.show({ registerOnly: true })}>
+                        <Earth className="text-primary" />
+                        Link de cadastro
+                     </Button>
+                  }
                >
                   <FitTable.Filters>
                      <FitTable.Filter value={deleted} onChange={setDeleted} type="switch" name="Registros deletados" />

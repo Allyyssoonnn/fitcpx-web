@@ -10,7 +10,7 @@ export function processaPlano(plano, duracaoPlano, valorAdesao = 0) {
 
    const modalidades = plano.modalidades.map((m) => {
       let valorFinal = 0;
-      let nomeFinal = "";
+      let nomeFinal = null;
       let nomeOriginal = "";
       nomeOriginal = m.nome_modalidade_original ?? m.nome_modalidade;
 
@@ -22,7 +22,7 @@ export function processaPlano(plano, duracaoPlano, valorAdesao = 0) {
             nomeFinal = `${nomeOriginal} - ${variacao.nome_modalidade_variacao}`;
 
             const sub = (variacao.valores || []).filter(
-               (v) => duracaoPlano >= Number(v.quantidade_modalidade_variacao_valor || 0)
+               (v) => duracaoPlano >= Number(v.quantidade_modalidade_variacao_valor || 0),
             );
 
             if (sub.length) {

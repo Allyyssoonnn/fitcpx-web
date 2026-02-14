@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getPhysicalAssessments } from "../../api/physicalAssessments";
 import { FitTable } from "../../components/baseComponents/FitTable";

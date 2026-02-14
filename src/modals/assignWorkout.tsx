@@ -11,8 +11,8 @@ import {
    DialogTitle,
 } from "@/components/ui/dialog";
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { toast } from "sonner";
 
 const AssignWorkout = NiceModal.create(({ workout, navigate }: { workout: any; navigate: any }) => {

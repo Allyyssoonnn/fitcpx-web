@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Label } from "../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 // 1. Tipagem melhorada (opcional, mas recomendada)
 interface ChangelogData {
@@ -28,16 +30,38 @@ const WhatsAppIcon = () => (
 export default function ChangelogUI({ show, closeControlled, changelog }: ChangelogUIProps) {
    // Acesso seguro aos dados da versão
    const version = __APP_VERSION__.substring(0, __APP_VERSION__.lastIndexOf(".")) + ".x";
-   const versionData = changelog?.[version];
+
+   const [selectedVersion, setSelectedVersion] = useState<string>(version || "");
+
+   const versionData = changelog?.[selectedVersion];
    const hasData = versionData && Object.keys(versionData).length > 0;
 
+   function close() {
+      setSelectedVersion(version); // Reseta para a versão atual ao fechar
+      closeControlled();
+   }
+
    return (
-      <Dialog open={show} onOpenChange={closeControlled}>
+      <Dialog open={show} onOpenChange={close}>
          <DialogContent className="w-full max-w-lg max-h-[85vh] flex flex-col p-0 gap-0">
             {/* Header fixo */}
             <DialogHeader className="p-6 pb-2">
-               <DialogTitle>
-                  Novidades da Versão <span className="text-primary">{version}</span>
+               <DialogTitle className="flex gap-2">
+                  Novidades da Versão{" "}
+                  <Select value={selectedVersion} onValueChange={(ver) => setSelectedVersion(ver)}>
+                     <SelectTrigger className="text-primary p-0 h-auto min-h-0 border-0 shadow-none">
+                        <SelectValue placeholder={version} />
+                     </SelectTrigger>
+
+                     <SelectContent>
+                        {changelog &&
+                           Object.keys(changelog).map((ver) => (
+                              <SelectItem key={ver} value={ver}>
+                                 {ver}
+                              </SelectItem>
+                           ))}
+                     </SelectContent>
+                  </Select>
                </DialogTitle>
                <DialogDescription>Confira o que mudou na última atualização.</DialogDescription>
             </DialogHeader>
@@ -79,7 +103,7 @@ export default function ChangelogUI({ show, closeControlled, changelog }: Change
                   Dúvidas / Suporte
                </Button>
 
-               <Button onClick={closeControlled} size="sm" className="w-full sm:w-auto">
+               <Button onClick={close} size="sm" className="w-full sm:w-auto">
                   Fechar
                </Button>
             </DialogFooter>
