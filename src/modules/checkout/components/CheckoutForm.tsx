@@ -13,10 +13,12 @@ export function CheckoutForm({
    selectedPlan,
    control,
    errors,
+   register = false,
 }: {
    selectedPlan?: Plan;
    control: Control<any>;
    errors: any;
+   register: boolean;
 }) {
    const metodoPagamento = useWatch({
       control,
@@ -164,7 +166,7 @@ export function CheckoutForm({
             <AccordionTrigger className="hover:no-underline py-4">
                <div className="flex items-center gap-2 text-left">
                   <Building2 className="h-4 w-4 text-primary" />
-                  <Label className="font-medium">Endereço de Cobrança</Label>
+                  <Label className="font-medium">Endereço {!register && "de Cobrança"}</Label>
                </div>
 
                {hasAddressErrors && <ErrorBadge />}
@@ -248,191 +250,207 @@ export function CheckoutForm({
          </AccordionItem>
 
          {/* PAGAMENTO */}
-         <AccordionItem value="pagamento" className="border rounded-lg px-4 bg-background">
-            <AccordionTrigger className="hover:no-underline py-4">
-               <div className="flex items-center gap-2 text-left">
-                  <CreditCard className="h-4 w-4 text-primary" />
-                  <Label className="font-medium">Pagamento</Label>
-               </div>
+         {!register && (
+            <AccordionItem value="pagamento" className="border rounded-lg px-4 bg-background">
+               <AccordionTrigger className="hover:no-underline py-4">
+                  <div className="flex items-center gap-2 text-left">
+                     <CreditCard className="h-4 w-4 text-primary" />
+                     <Label className="font-medium">Pagamento</Label>
+                  </div>
 
-               {hasPaymentErrors && <ErrorBadge />}
-            </AccordionTrigger>
+                  {hasPaymentErrors && <ErrorBadge />}
+               </AccordionTrigger>
 
-            <AccordionContent className="pt-2 px-2 pb-6 text-sm text-muted-foreground">
-               {/* RadioGroup com Controller */}
-               <Controller
-                  control={control}
-                  name="metodo_pagamento"
-                  render={({ field }) => (
-                     <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                        className="mt-4 space-y-2"
-                     >
-                        {/* Opção Recorrência */}
-                        {!!selectedPlan?.duration && selectedPlan?.duration > 1 && selectedPlan?.allowMonthly && (
-                           <FieldLabel htmlFor="plan-monthly" className="cursor-pointer">
-                              <Field orientation="horizontal">
-                                 <FieldContent className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 pr-2">
-                                    <div>
-                                       <FieldTitle>
-                                          <RotateCcw size={15} className="text-green-600" /> Recorrência
-                                       </FieldTitle>
-                                       <FieldDescription>Pagamento mensal.</FieldDescription>
-                                    </div>
-
-                                    {metodoPagamento === "monthly" && (
-                                       <div
-                                          className="w-[140px]"
-                                          // Impede que o clique no select reative o radio (boa prática)
-                                          onClick={(e) => e.stopPropagation()}
-                                       >
-                                          <Controller
-                                             control={control}
-                                             name="metodo_recorrencia"
-                                             render={({ field: selectField }) => (
-                                                <Select
-                                                   defaultValue={selectField.value}
-                                                   onValueChange={selectField.onChange}
-                                                   value={selectField.value}
-                                                >
-                                                   <SelectTrigger className="h-12 w-full bg-background">
-                                                      {selectField.value === "monthly_app" && (
-                                                         <div className="flex items-center gap-2">
-                                                            <Smartphone className="h-4 w-4 text-muted-foreground" />
-                                                            <span className="font-medium">App Manual</span>
-                                                         </div>
-                                                      )}
-
-                                                      {selectField.value === "monthly_card" && (
-                                                         <div className="flex items-center gap-2">
-                                                            <CreditCard className="h-4 w-4 text-primary" />
-                                                            <span className="font-medium">Auto Cartão</span>
-                                                         </div>
-                                                      )}
-
-                                                      {/* Fallback caso não tenha valor */}
-                                                      {!selectField.value && (
-                                                         <span className="text-muted-foreground">Selecione...</span>
-                                                      )}
-                                                   </SelectTrigger>
-
-                                                   <SelectContent>
-                                                      {/* Opção 1: App Manual */}
-                                                      <SelectItem value="monthly_app" className="py-3 cursor-pointer">
-                                                         <div className="flex items-center gap-3 text-left">
-                                                            <Smartphone className="h-5 w-5 text-muted-foreground" />
-                                                            <div className="flex flex-col">
-                                                               <span className="font-medium text-sm">App Manual</span>
-                                                               <span className="text-xs text-muted-foreground text-wrap max-w-[200px]">
-                                                                  Pagamento feito manualmente via App a cada mês.
-                                                               </span>
-                                                            </div>
-                                                         </div>
-                                                      </SelectItem>
-
-                                                      {/* Opção 2: Auto Cartão */}
-                                                      <SelectItem value="monthly_card" className="py-3 cursor-pointer">
-                                                         <div className="flex items-center gap-3 text-left">
-                                                            <CreditCard className="h-5 w-5 text-primary" />
-                                                            <div className="flex flex-col">
-                                                               <span className="font-medium text-sm">Auto Cartão</span>
-                                                               <span className="text-xs text-muted-foreground text-wrap max-w-[200px]">
-                                                                  Cobrança recorrente automática no cartão cadastrado.
-                                                               </span>
-                                                            </div>
-                                                         </div>
-                                                      </SelectItem>
-                                                   </SelectContent>
-                                                </Select>
-                                             )}
-                                          />
+               <AccordionContent className="pt-2 px-2 pb-6 text-sm text-muted-foreground">
+                  {/* RadioGroup com Controller */}
+                  <Controller
+                     control={control}
+                     name="metodo_pagamento"
+                     render={({ field }) => (
+                        <RadioGroup
+                           onValueChange={field.onChange}
+                           defaultValue={field.value}
+                           value={field.value}
+                           className="mt-4 space-y-2"
+                        >
+                           {/* Opção Recorrência */}
+                           {!!selectedPlan?.duration && selectedPlan?.duration > 1 && selectedPlan?.allowMonthly && (
+                              <FieldLabel htmlFor="plan-monthly" className="cursor-pointer">
+                                 <Field orientation="horizontal">
+                                    <FieldContent className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 pr-2">
+                                       <div>
+                                          <FieldTitle>
+                                             <RotateCcw size={15} className="text-green-600" /> Recorrência
+                                          </FieldTitle>
+                                          <FieldDescription>Pagamento mensal.</FieldDescription>
                                        </div>
-                                    )}
-                                 </FieldContent>
-                                 <RadioGroupItem value="monthly" id="plan-monthly" />
-                              </Field>
-                           </FieldLabel>
-                        )}
 
-                        {/* Opção À Vista */}
-                        <FieldLabel htmlFor="plan-cash" className="cursor-pointer">
-                           <Field orientation="horizontal">
-                              <FieldContent>
-                                 <FieldTitle>
-                                    <Coins size={15} className="text-green-600" /> À vista
-                                 </FieldTitle>
-                                 <FieldDescription>Pagamento do valor total.</FieldDescription>
-                              </FieldContent>
-                              <RadioGroupItem value="cash" id="plan-cash" />
-                           </Field>
-                        </FieldLabel>
+                                       {metodoPagamento === "monthly" && (
+                                          <div
+                                             className="w-[140px]"
+                                             // Impede que o clique no select reative o radio (boa prática)
+                                             onClick={(e) => e.stopPropagation()}
+                                          >
+                                             <Controller
+                                                control={control}
+                                                name="metodo_recorrencia"
+                                                render={({ field: selectField }) => (
+                                                   <Select
+                                                      defaultValue={selectField.value}
+                                                      onValueChange={selectField.onChange}
+                                                      value={selectField.value}
+                                                   >
+                                                      <SelectTrigger className="h-12 w-full bg-background">
+                                                         {selectField.value === "monthly_app" && (
+                                                            <div className="flex items-center gap-2">
+                                                               <Smartphone className="h-4 w-4 text-muted-foreground" />
+                                                               <span className="font-medium">App Manual</span>
+                                                            </div>
+                                                         )}
 
-                        {/* Opção Parcelado */}
-                        {selectedPlan?.max_installments && selectedPlan?.max_installments > 1 && (
-                           <FieldLabel
-                              htmlFor="plan-installments"
-                              className="cursor-pointer transition-all data-[state=active]:me-3"
-                           >
-                              <Field orientation="horizontal">
-                                 <FieldContent className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 pr-2">
-                                    <div>
-                                       <FieldTitle>
-                                          <CreditCard size={15} className="text-green-600" /> Parcelado
-                                       </FieldTitle>
-                                       <FieldDescription>
-                                          Em até {selectedPlan?.max_installments}x sem juros
-                                       </FieldDescription>
-                                    </div>
+                                                         {selectField.value === "monthly_card" && (
+                                                            <div className="flex items-center gap-2">
+                                                               <CreditCard className="h-4 w-4 text-primary" />
+                                                               <span className="font-medium">Auto Cartão</span>
+                                                            </div>
+                                                         )}
 
-                                    {/* Lado Direito: Select (Só aparece se selecionado) */}
-                                    {metodoPagamento === "installments" && (
-                                       <div
-                                          className="w-[140px]"
-                                          // Impede que o clique no select reative o radio (boa prática)
-                                          onClick={(e) => e.stopPropagation()}
-                                       >
-                                          <Controller
-                                             control={control}
-                                             name="parcelas"
-                                             defaultValue={String(selectedPlan.max_installments)} // Valor padrão: max parcelas
-                                             render={({ field: selectField }) => (
-                                                <Select onValueChange={selectField.onChange} value={selectField.value}>
-                                                   <SelectTrigger className="h-8 bg-background">
-                                                      <SelectValue placeholder="Parcelas" />
-                                                   </SelectTrigger>
-                                                   <SelectContent>
-                                                      {/* Gera array de 2 até max_installments */}
-                                                      {Array.from(
-                                                         { length: selectedPlan.max_installments - 1 },
-                                                         (_, i) => i + 2,
-                                                      ).map((num) => (
-                                                         <SelectItem key={num} value={String(num)}>
-                                                            {getParcelaLabel(num)}
+                                                         {/* Fallback caso não tenha valor */}
+                                                         {!selectField.value && (
+                                                            <span className="text-muted-foreground">Selecione...</span>
+                                                         )}
+                                                      </SelectTrigger>
+
+                                                      <SelectContent>
+                                                         {/* Opção 1: App Manual */}
+                                                         <SelectItem
+                                                            value="monthly_app"
+                                                            className="py-3 cursor-pointer"
+                                                         >
+                                                            <div className="flex items-center gap-3 text-left">
+                                                               <Smartphone className="h-5 w-5 text-muted-foreground" />
+                                                               <div className="flex flex-col">
+                                                                  <span className="font-medium text-sm">
+                                                                     App Manual
+                                                                  </span>
+                                                                  <span className="text-xs text-muted-foreground text-wrap max-w-[200px]">
+                                                                     Pagamento feito manualmente via App a cada mês.
+                                                                  </span>
+                                                               </div>
+                                                            </div>
                                                          </SelectItem>
-                                                      ))}
-                                                   </SelectContent>
-                                                </Select>
-                                             )}
-                                          />
-                                       </div>
-                                    )}
-                                 </FieldContent>
 
-                                 <RadioGroupItem value="installments" id="plan-installments" />
+                                                         {/* Opção 2: Auto Cartão */}
+                                                         <SelectItem
+                                                            value="monthly_card"
+                                                            className="py-3 cursor-pointer"
+                                                         >
+                                                            <div className="flex items-center gap-3 text-left">
+                                                               <CreditCard className="h-5 w-5 text-primary" />
+                                                               <div className="flex flex-col">
+                                                                  <span className="font-medium text-sm">
+                                                                     Auto Cartão
+                                                                  </span>
+                                                                  <span className="text-xs text-muted-foreground text-wrap max-w-[200px]">
+                                                                     Cobrança recorrente automática no cartão
+                                                                     cadastrado.
+                                                                  </span>
+                                                               </div>
+                                                            </div>
+                                                         </SelectItem>
+                                                      </SelectContent>
+                                                   </Select>
+                                                )}
+                                             />
+                                          </div>
+                                       )}
+                                    </FieldContent>
+                                    <RadioGroupItem value="monthly" id="plan-monthly" />
+                                 </Field>
+                              </FieldLabel>
+                           )}
+
+                           {/* Opção À Vista */}
+                           <FieldLabel htmlFor="plan-cash" className="cursor-pointer">
+                              <Field orientation="horizontal">
+                                 <FieldContent>
+                                    <FieldTitle>
+                                       <Coins size={15} className="text-green-600" /> À vista
+                                    </FieldTitle>
+                                    <FieldDescription>Pagamento do valor total.</FieldDescription>
+                                 </FieldContent>
+                                 <RadioGroupItem value="cash" id="plan-cash" />
                               </Field>
                            </FieldLabel>
-                        )}
-                     </RadioGroup>
-                  )}
-               />
 
-               {errors.metodo_pagamento && (
-                  <span className="text-xs text-red-500 mt-2 block">{errors.metodo_pagamento.message}</span>
-               )}
-            </AccordionContent>
-         </AccordionItem>
+                           {/* Opção Parcelado */}
+                           {selectedPlan?.max_installments && selectedPlan?.max_installments > 1 && (
+                              <FieldLabel
+                                 htmlFor="plan-installments"
+                                 className="cursor-pointer transition-all data-[state=active]:me-3"
+                              >
+                                 <Field orientation="horizontal">
+                                    <FieldContent className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 pr-2">
+                                       <div>
+                                          <FieldTitle>
+                                             <CreditCard size={15} className="text-green-600" /> Parcelado
+                                          </FieldTitle>
+                                          <FieldDescription>
+                                             Em até {selectedPlan?.max_installments}x sem juros
+                                          </FieldDescription>
+                                       </div>
+
+                                       {/* Lado Direito: Select (Só aparece se selecionado) */}
+                                       {metodoPagamento === "installments" && (
+                                          <div
+                                             className="w-[140px]"
+                                             // Impede que o clique no select reative o radio (boa prática)
+                                             onClick={(e) => e.stopPropagation()}
+                                          >
+                                             <Controller
+                                                control={control}
+                                                name="parcelas"
+                                                defaultValue={String(selectedPlan.max_installments)} // Valor padrão: max parcelas
+                                                render={({ field: selectField }) => (
+                                                   <Select
+                                                      onValueChange={selectField.onChange}
+                                                      value={selectField.value}
+                                                   >
+                                                      <SelectTrigger className="h-8 bg-background">
+                                                         <SelectValue placeholder="Parcelas" />
+                                                      </SelectTrigger>
+                                                      <SelectContent>
+                                                         {/* Gera array de 2 até max_installments */}
+                                                         {Array.from(
+                                                            { length: selectedPlan.max_installments - 1 },
+                                                            (_, i) => i + 2,
+                                                         ).map((num) => (
+                                                            <SelectItem key={num} value={String(num)}>
+                                                               {getParcelaLabel(num)}
+                                                            </SelectItem>
+                                                         ))}
+                                                      </SelectContent>
+                                                   </Select>
+                                                )}
+                                             />
+                                          </div>
+                                       )}
+                                    </FieldContent>
+
+                                    <RadioGroupItem value="installments" id="plan-installments" />
+                                 </Field>
+                              </FieldLabel>
+                           )}
+                        </RadioGroup>
+                     )}
+                  />
+
+                  {errors.metodo_pagamento && (
+                     <span className="text-xs text-red-500 mt-2 block">{errors.metodo_pagamento.message}</span>
+                  )}
+               </AccordionContent>
+            </AccordionItem>
+         )}
       </Accordion>
    );
 }

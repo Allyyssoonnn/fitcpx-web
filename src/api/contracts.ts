@@ -14,5 +14,5 @@ export const getContract = async (id: number) => await get(`/contracts/${id}`);
 export const getDuePayments = async () => await get("/contracts/getDuePayments");
 
 // Checkout
-export const onlineContract = async (companyId: string, student: any, plan: any) =>
-   await post(`/contracts/onlineContract?companyId=${companyId}`, { student, plan });
+export const onlineContract = async (companyId: string, student: any, plan: any, registerOnly: boolean) =>
+   await post(`/contracts/onlineContract?companyId=${companyId}`, { student, plan, registerOnly });

@@ -16,25 +16,22 @@ import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useQuery } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
 import { useState } from "react";
-import { useRecoilState } from "recoil";
 import { toast } from "sonner";
-import { stateUsuario } from "../states/states";
 
 const ShareOnlineSell = NiceModal.create(
    ({
       studentId,
       studentName,
-      addressJSON,
-      personalJSON,
       studentPhone,
+      registerOnly = false,
    }: {
       studentId: number;
       studentName: string;
       addressJSON: string;
       personalJSON: string;
       studentPhone: string;
+      registerOnly: boolean;
    }) => {
-      const [usuario] = useRecoilState(stateUsuario) as any;
       const { visible, remove } = useModal();
       const [planId, setPlanId] = useState<any>();
 
@@ -53,6 +50,7 @@ const ShareOnlineSell = NiceModal.create(
          // TODO: Replace this hardcoded token with a prop or context value if needed
          const paramsObj: Record<string, string> = {
             s: sID,
+            ...(registerOnly ? { register: "true" } : {}),
          };
 
          const searchParams = new URLSearchParams(paramsObj).toString();
@@ -93,48 +91,61 @@ const ShareOnlineSell = NiceModal.create(
          <Dialog open={visible} onOpenChange={remove}>
             <DialogContent>
                <DialogHeader>
-                  <DialogTitle className="text-black">Venda Online</DialogTitle>
-                  <DialogDescription>
-                     Compartilhe o link com {studentName ? <strong>{studentName}</strong> : "seu futuro aluno"} para que
-                     realize a compra de um dos seus planos cadastrados.
-                  </DialogDescription>
+                  {!registerOnly ? (
+                     <>
+                        <DialogTitle className="text-black">Venda Online</DialogTitle>
+                        <DialogDescription>
+                           Compartilhe o link com {studentName ? <strong>{studentName}</strong> : "seu futuro aluno"}{" "}
+                           para que realize a compra de um dos seus planos cadastrados.
+                        </DialogDescription>
+                     </>
+                  ) : (
+                     <>
+                        <DialogTitle className="text-black">Cadastro Online</DialogTitle>
+                        <DialogDescription>
+                           Compartilhe o link com seu futuro aluno para que realize o cadastro.
+                        </DialogDescription>
+                     </>
+                  )}
                </DialogHeader>
 
-               <Field>
-                  <FieldLabel>Selecione um plano (Opcional)</FieldLabel>
-                  <FieldContent className="flex flex-row">
-                     <Select
-                        key={planId ?? "empty"}
-                        value={planId ?? ""}
-                        onValueChange={setPlanId}
-                        disabled={!planos?.length}
-                     >
-                        <SelectTrigger className="w-full">
-                           <SelectValue placeholder="Selecione um plano" />
-                        </SelectTrigger>
+               {!registerOnly && (
+                  <Field>
+                     <FieldLabel>Selecione um plano (Opcional)</FieldLabel>
+                     <FieldContent className="flex flex-row">
+                        <Select
+                           key={planId ?? "empty"}
+                           value={planId ?? ""}
+                           onValueChange={setPlanId}
+                           disabled={!planos?.length}
+                        >
+                           <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Selecione um plano" />
+                           </SelectTrigger>
 
-                        <SelectContent>
-                           {planos.map((plan: any) => (
-                              <SelectItem value={plan.cod_plano}>{plan.nome_plano}</SelectItem>
-                           ))}
-                        </SelectContent>
-                     </Select>
+                           <SelectContent>
+                              {planos.map((plan: any) => (
+                                 <SelectItem value={plan.cod_plano}>{plan.nome_plano}</SelectItem>
+                              ))}
+                           </SelectContent>
+                        </Select>
 
-                     <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setPlanId(undefined)}
-                        disabled={!planId}
-                        title="Limpar seleção"
-                     >
-                        <Trash className="h-4 w-4 text-destructive" />
-                     </Button>
-                  </FieldContent>
+                        <Button
+                           variant="outline"
+                           size="icon"
+                           onClick={() => setPlanId(undefined)}
+                           disabled={!planId}
+                           title="Limpar seleção"
+                        >
+                           <Trash className="h-4 w-4 text-destructive" />
+                        </Button>
+                     </FieldContent>
 
-                  <FieldDescription className="mt-2 text-[11px] text-muted-foreground">
-                     Caso selecione um plano, o aluno não poderá escolher outro e irá direto para o pagamento.
-                  </FieldDescription>
-               </Field>
+                     <FieldDescription className="mt-2 text-[11px] text-muted-foreground">
+                        Caso selecione um plano, o aluno não poderá escolher outro e irá direto para o pagamento.
+                     </FieldDescription>
+                  </Field>
+               )}
 
                <DialogFooter className="flex items-center">
                   {!planos?.length && <Label className="text-[12px] text-destructive">Nenhum plano cadastrado</Label>}
