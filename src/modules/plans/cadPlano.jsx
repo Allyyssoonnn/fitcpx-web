@@ -37,6 +37,7 @@ function CadPlano() {
    const {
       handleSubmit,
       watch,
+      getValues,
       formState: { errors },
    } = form;
    const navigate = useNavigate();
@@ -57,6 +58,16 @@ function CadPlano() {
       if (!planoRecebido) return;
 
       const { planoAtualizado, valorTotal } = processaPlano(planoRecebido, duracaoPlano, valorAdesao);
+      setSelectModalidades(planoAtualizado.modalidades);
+      setValorTotal(valorTotal);
+   }, [planoRecebido, duracaoPlano, valorAdesao]);
+
+   useEffect(() => {
+      const { planoAtualizado, valorTotal } = processaPlano(
+         { ...getValues(), modalidades: selectModalidades },
+         duracaoPlano,
+         valorAdesao,
+      );
       setSelectModalidades(planoAtualizado.modalidades);
       setValorTotal(valorTotal);
    }, [planoRecebido, duracaoPlano, valorAdesao]);
