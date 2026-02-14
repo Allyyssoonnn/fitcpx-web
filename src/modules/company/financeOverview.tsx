@@ -206,8 +206,8 @@ function Payments({ payments, date, refetch, onTotalsChange }: { date: Date }) {
          if (d.getFullYear() === year && d.getMonth() === month) {
             total += payment.valor_aluno_contrato_pagamento;
             if (
-               payment?.status_aluno_contrato_pagamento !== "overdue" &&
-               payment?.status_aluno_contrato_pagamento !== "receivedCash"
+               payment?.status_aluno_contrato_pagamento === "confirmed" ||
+               payment?.status_aluno_contrato_pagamento === "succeeded"
             )
                toReceive += payment.liquido_aluno_contrato_pagamento;
          }
