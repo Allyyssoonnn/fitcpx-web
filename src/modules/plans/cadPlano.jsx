@@ -41,7 +41,7 @@ function CadPlano() {
       formState: { errors },
    } = form;
    const navigate = useNavigate();
-   const [selectModalidades, setSelectModalidades] = useState([]);
+   const [selectModalidades, setSelectModalidades] = useState(planoRecebido?.modalidades || []);
    const [valorTotal, setValorTotal] = useState(0);
 
    const { data: contratos, refetch } = useQuery({
@@ -53,24 +53,15 @@ function CadPlano() {
    const duracaoPlano = Number(watch("duracao_plano")) || 0;
    const valorAdesao = Number(watch("valor_adesao") || 0);
 
-   // Inicializa plano ao montar
    useEffect(() => {
-      if (!planoRecebido) return;
-
-      const { planoAtualizado, valorTotal } = processaPlano(planoRecebido, duracaoPlano, valorAdesao);
-      setSelectModalidades(planoAtualizado.modalidades);
-      setValorTotal(valorTotal);
-   }, [planoRecebido, duracaoPlano, valorAdesao]);
-
-   useEffect(() => {
-      const { planoAtualizado, valorTotal } = processaPlano(
+      const { planoAtualizado, valorTotal: novoValorTotal } = processaPlano(
          { ...getValues(), modalidades: selectModalidades },
          duracaoPlano,
          valorAdesao,
       );
       setSelectModalidades(planoAtualizado.modalidades);
-      setValorTotal(valorTotal);
-   }, [planoRecebido, duracaoPlano, valorAdesao]);
+      setValorTotal(novoValorTotal);
+   }, [duracaoPlano, valorAdesao]);
 
    // Adiciona uma modalidade
    function addModalidade(modalidade) {
