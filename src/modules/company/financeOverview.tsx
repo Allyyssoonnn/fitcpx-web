@@ -17,7 +17,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { stateEmpresa } from "@/states/states";
 import { useQuery } from "@tanstack/react-query";
-import { BanknoteArrowDown, Check, Clipboard, Coins, HandCoins, MoreHorizontal, Paperclip } from "lucide-react";
+import {
+   BanknoteArrowDown,
+   Check,
+   ChevronRight,
+   Clipboard,
+   Coins,
+   HandCoins,
+   HelpCircle,
+   MoreHorizontal,
+   Paperclip,
+   ScrollText,
+   X,
+} from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -53,6 +65,7 @@ interface CompanyType {
 export default function FinanceOverview() {
    const [date, setDate] = useState<Date>(new Date());
    const empresa = useRecoilValue<CompanyType>(stateEmpresa);
+   const [filterStatus, setFilterStatus] = useState<"all" | "total" | "toReceive" | "paid">("all");
 
    const { data: nextPayout } = useQuery({
       queryKey: ["nextPayout"],
@@ -87,9 +100,15 @@ export default function FinanceOverview() {
       const year = date.getFullYear();
       const month = date.getMonth();
 
+      let invoicesToReceive: PaymentType[] = [];
+      let invoicesTotal: PaymentType[] = [];
+      let invoicesPaid: PaymentType[] = [];
+
       let total = 0;
+      let totalConfirmed = 0;
       let toReceive = 0;
       let toReceiveConfirmed = 0; // Se não for usar na UI, não precisa calcular
+      let paid = 0;
 
       const filtered = allPayments.filter((payment) => {
          if (!payment.expiracao_aluno_contrato_pagamento) return false;
@@ -97,24 +116,77 @@ export default function FinanceOverview() {
          return d.getFullYear() === year && d.getMonth() === month;
       });
 
-      filtered.forEach((payment) => {
-         total += payment.valor_aluno_contrato_pagamento;
+      const filteresWithStatus = filtered.filter((payment) => {
+         if (filterStatus === "total") {
+            return ["Pending", "overdue", "Pendente", "confirmed", "succeeded", "receivedCash"].includes(
+               payment.status_aluno_contrato_pagamento,
+            );
+         }
+         if (filterStatus === "toReceive") {
+            return ["Pending", "overdue", "Pendente", "confirmed", "succeeded"].includes(
+               payment.status_aluno_contrato_pagamento,
+            );
+         }
+         if (filterStatus === "paid") {
+            if (!payment.jsonwebhook_aluno_contrato_pagamento) return false;
+            const parsed = JSON.parse(payment.jsonwebhook_aluno_contrato_pagamento);
+            if (!parsed.paymentDate) return false;
+            const d = new Date(parsed.paymentDate);
+            if (d.getFullYear() !== year || d.getMonth() !== month) return false;
+            return ["paid"].includes(payment.status_aluno_contrato_pagamento);
+         }
+         return true;
+      });
 
+      filtered.forEach((payment) => {
          const status = payment.status_aluno_contrato_pagamento;
 
+         if (["Pending", "overdue", "Pendente", "confirmed", "succeeded", "receivedCash"].includes(status)) {
+            total += payment.valor_aluno_contrato_pagamento;
+            invoicesTotal.push(payment);
+         }
+
          // Lógica de "A receber"
-         if (["Pending", "overdue", "Pendente"].includes(status)) {
+         if (["Pending", "overdue", "Pendente", "confirmed", "succeeded"].includes(status)) {
             toReceive += payment.liquido_aluno_contrato_pagamento;
+            invoicesToReceive.push(payment);
          }
 
          // Lógica de "Confirmado" (se necessário futuramente)
          if (["confirmed", "succeeded"].includes(status)) {
             toReceiveConfirmed += payment.liquido_aluno_contrato_pagamento;
          }
+
+         if (["confirmed", "succeeded", "receivedCash"].includes(status)) {
+            totalConfirmed += payment.liquido_aluno_contrato_pagamento;
+         }
+
+         if (["paid"].includes(status)) {
+            if (!payment.jsonwebhook_aluno_contrato_pagamento) return;
+            const parsed = JSON.parse(payment.jsonwebhook_aluno_contrato_pagamento);
+            if (!parsed.paymentDate) return;
+            const d = new Date(parsed.paymentDate);
+            if (d.getFullYear() === year && d.getMonth() === month) {
+               paid += payment.liquido_aluno_contrato_pagamento;
+               invoicesPaid.push(payment);
+            }
+         }
       });
 
-      return { filteredPayments: filtered, totals: { total, toReceive, toReceiveConfirmed } };
-   }, [allPayments, date]);
+      return {
+         filteredPayments: filteresWithStatus,
+         totals: {
+            total,
+            toReceive,
+            toReceiveConfirmed,
+            totalConfirmed,
+            invoicesToReceive,
+            invoicesTotal,
+            paid,
+            invoicesPaid,
+         },
+      };
+   }, [allPayments, date, filterStatus]);
 
    return (
       <div className="w-full p-4 space-y-4">
@@ -130,7 +202,7 @@ export default function FinanceOverview() {
 
          {/* Grid de Cards (Substituído Bootstrap por Tailwind Grid) */}
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="flex flex-col justify-between h-35">
+            <Card>
                <CardHeader>
                   <CardTitle>Resumo financeiro</CardTitle>
                </CardHeader>
@@ -140,22 +212,61 @@ export default function FinanceOverview() {
                </CardContent>
             </Card>
 
-            <Card className="hover:scale-105 transition-all flex flex-col justify-between">
-               <CardHeader>
+            <Card className="flex flex-col justify-between">
+               <CardHeader className="flex justify-between">
                   <CardTitle>Total</CardTitle>
+                  <Tooltip>
+                     <TooltipTrigger>
+                        <HelpCircle size={15} />
+                     </TooltipTrigger>
+                     <TooltipContent className="w-[300px] bg-accent border-1 p-3">
+                        <Label className="text-dark">
+                           Cobranças previstas para recebimento dentro do período com exclusão de cobranças canceladas
+                           ou removidas. Exibindo cobranças que estão aguardando creditar e abaixo as que já foram
+                           creditadas.
+                        </Label>
+                     </TooltipContent>
+                  </Tooltip>
                </CardHeader>
                <CardContent className="flex items-center gap-2">
                   <Coins className="h-5 w-5 text-muted-foreground" />
-                  <h5 className="text-xl font-bold">{formatarMoeda(totals.total)}</h5>
+                  <div>
+                     <h5 className="text-xl font-bold mb-0">{formatarMoeda(totals.total)}</h5>
+                     <Label className="text-primary text-xs">{formatarMoeda(totals.totalConfirmed)}</Label>
+                  </div>
                </CardContent>
-               <CardFooter>
-                  <CardDescription>Valor total de pagamentos</CardDescription>
+               <CardFooter className="flex flex-col items-start gap-1 px-2 py-0">
+                  <Button
+                     variant="ghost"
+                     className={`w-full flex justify-between ${filterStatus === "total" ? "text-red-600 hover:text-red-600" : ""}`}
+                     size="sm"
+                     onClick={() => setFilterStatus((prev) => (prev === "total" ? "all" : "total"))}
+                  >
+                     <div className="flex items-center gap-1">
+                        <ScrollText />
+                        {totals.invoicesTotal.length} Cobranças
+                     </div>
+
+                     {filterStatus === "total" ? <X color="red" /> : <ChevronRight />}
+                  </Button>
                </CardFooter>
             </Card>
 
-            <Card className="hover:scale-105 transition-all flex flex-col justify-between">
-               <CardHeader>
+            {/* <Card className="hover:scale-105 transition-all flex flex-col justify-between"> */}
+            <Card className="flex flex-col justify-between">
+               <CardHeader className="flex justify-between">
                   <CardTitle>A receber</CardTitle>
+                  <Tooltip>
+                     <TooltipTrigger>
+                        <HelpCircle size={15} />
+                     </TooltipTrigger>
+                     <TooltipContent className="w-[300px] bg-accent border-1 p-3">
+                        <Label className="text-dark">
+                           Cobranças recebidas dentro do período pelo aplicativo que estão aguardando creditar e abaixo
+                           as que já foram creditadas.
+                        </Label>
+                     </TooltipContent>
+                  </Tooltip>
                </CardHeader>
                <CardContent className="flex items-center gap-2">
                   <HandCoins className="h-5 w-5 text-muted-foreground" />
@@ -164,24 +275,65 @@ export default function FinanceOverview() {
                      <Label className="text-primary text-xs">{formatarMoeda(totals.toReceiveConfirmed)}</Label>
                   </div>
                </CardContent>
-               <CardFooter className="flex flex-col items-start gap-1">
-                  <CardDescription>Valor total a ser recebido</CardDescription>
-                  <span className="text-xs text-muted-foreground">* Não inclui recebidos manualmente</span>
+               <CardFooter className="flex flex-col items-start gap-1 px-2 py-0">
+                  <Button
+                     variant="ghost"
+                     className={`w-full flex justify-between ${filterStatus === "toReceive" ? "text-red-600 hover:text-red-600" : ""}`}
+                     size="sm"
+                     onClick={() => setFilterStatus((prev) => (prev === "toReceive" ? "all" : "toReceive"))}
+                  >
+                     <div className="flex items-center gap-1">
+                        <ScrollText />
+                        {totals.invoicesToReceive.length} Cobranças
+                     </div>
+
+                     {filterStatus === "toReceive" ? <X color="red" /> : <ChevronRight />}
+                  </Button>
                </CardFooter>
             </Card>
 
-            <Card className="hover:scale-105 transition-all flex flex-col justify-between">
-               <CardHeader>
-                  <CardTitle>Próximo repasse</CardTitle>
+            <Card className="flex flex-col justify-between">
+               <CardHeader className="flex justify-between">
+                  <div>
+                     <CardTitle>Próximo repasse</CardTitle>
+                     <CardDescription>
+                        Transação em <strong className="text-primary">{nextPayout.date || "--/--"}</strong>
+                     </CardDescription>
+                  </div>
+
+                  <Tooltip>
+                     <TooltipTrigger>
+                        <HelpCircle size={15} />
+                     </TooltipTrigger>
+                     <TooltipContent className="w-[300px] bg-accent border-1 p-3">
+                        <Label className="text-dark">
+                           Valor total do próximo repasse programado para o período, abaixo o total de cobranças que já
+                           foram repassadas para sua conta.
+                        </Label>
+                     </TooltipContent>
+                  </Tooltip>
                </CardHeader>
                <CardContent className="flex items-center gap-2">
                   <BanknoteArrowDown className="h-5 w-5 text-muted-foreground" />
-                  <h5 className="text-xl font-bold">{formatarMoeda(nextPayout.value)}</h5>
+                  <div>
+                     <h5 className="text-xl font-bold mb-0">{formatarMoeda(nextPayout.value)}</h5>
+                     <Label className="text-primary text-xs">{formatarMoeda(totals.paid)}</Label>
+                  </div>
                </CardContent>
-               <CardFooter>
-                  <CardDescription>
-                     Transação em <strong className="text-primary">{nextPayout.date || "--/--"}</strong>
-                  </CardDescription>
+               <CardFooter className="flex flex-col items-start gap-1 px-2 py-0">
+                  <Button
+                     variant="ghost"
+                     className={`w-full flex justify-between ${filterStatus === "paid" ? "text-red-600 hover:text-red-600" : ""}`}
+                     size="sm"
+                     onClick={() => setFilterStatus((prev) => (prev === "paid" ? "all" : "paid"))}
+                  >
+                     <div className="flex items-center gap-1">
+                        <ScrollText />
+                        {totals.invoicesPaid.length} Cobranças
+                     </div>
+
+                     {filterStatus === "paid" ? <X color="red" /> : <ChevronRight />}
+                  </Button>
                </CardFooter>
             </Card>
          </div>
@@ -220,7 +372,7 @@ function PaymentsTable({ payments, date, refetch }: { payments: PaymentType[]; d
       <Card>
          <CardHeader>
             <CardTitle>
-               Pagamentos criados em{" "}
+               Pagamentos com vencimento em{" "}
                <strong className="text-green-500">
                   {MONTHS[date.getMonth()]}/{date.getFullYear()}
                </strong>
