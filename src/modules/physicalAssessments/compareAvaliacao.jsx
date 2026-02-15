@@ -176,7 +176,7 @@ function CompareAvaliacao() {
                               ].map(({ label, key, value, type }) => {
                                  const getValue = (data) => {
                                     if (!value) return "Não informado";
-                                    if (type == "completo" && data.tipo_avaliacao !== "completo") return 0;
+                                    // if (type == "completo" && data.tipo_avaliacao !== "completo") return 0;
                                     const raw = value.split(".").reduce((acc, key) => acc?.[key], data);
                                     return raw;
                                  };
@@ -891,7 +891,8 @@ function GraficoNovoNPM({ aluno, avaliacoes }) {
          { name: "Peso", data: [], color: "var(--bs-info)" },
       ];
       for (const av of ordenaAvalicaoData(avaliacoes)) {
-         temp[0].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_muscular : 0));
+         // temp[0].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_muscular : 0));
+         temp[0].data.push(Number(av.result.compositionWeight.massa_muscular));
          temp[1].data.push(Number(av.result.compositionWeight.massa_magra));
          temp[2].data.push(Number(av.result.compositionWeight.gordura));
          temp[3].data.push(Number(av.tipo_avaliacao == "completo" ? av.result.compositionWeight.massa_ossea : 0));
