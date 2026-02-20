@@ -52,6 +52,24 @@ export async function getWorkoutPDF(workout, companyImg, companyName) {
                      ${exercise.repeticao_sessao_exercicio} Reps |
                      ${exercise.intervalo_sessao_exercicio}s Pausa
                      </li>
+
+                     ${
+                        exercise.sets && exercise.sets.length > 0
+                           ? `
+                           ${exercise.sets
+                              .map(
+                                 (set) => `
+                              <li style="margin-left: 15px">
+                                 <strong>${set.nome_exercicio}</strong>
+                                 ${set.serie_sessao_exercicio} Séries |
+                                 ${set.repeticao_sessao_exercicio} Reps
+                              </li>
+                           `,
+                              )
+                              .join("")}
+                        `
+                           : ""
+                     }
                   `,
                   )
                   .join("")}
@@ -64,7 +82,7 @@ export async function getWorkoutPDF(workout, companyImg, companyName) {
    htmlTemplate = htmlTemplate
       .replaceAll("<!-- {{company}} -->", companyName ?? "")
       .replaceAll("{{companyImg}}", companyImg ?? "")
-      .replaceAll("<!-- {{trainer}} -->", workout.usuario.nome_usuario ?? "")
+      .replaceAll("<!-- {{trainer}} -->", workout?.usuario?.nome_usuario ?? "")
       .replaceAll("<!-- {{client}} -->", workout?.aluno?.nome_aluno ?? "Treino Base - (Sem aluno)")
       .replaceAll("<!-- {{workoutBody}} -->", body.toString() ?? "");
 
