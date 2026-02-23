@@ -1,9 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import {
    AlarmClockIcon,
    AlarmClockOff,
    ClipboardList,
    DoorClosed,
    Earth,
+   Handshake,
    HelpCircle,
    Moon,
    Settings,
@@ -15,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { get } from "../api/api";
+import { getStudents } from "../api/student";
 import ChangelogUI from "../components/fitUI/changelog.ui";
 import Notificacoes from "../components/notificacoes";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
@@ -39,6 +42,7 @@ import {
 import { Separator } from "../components/ui/separator";
 import { SidebarTrigger } from "../components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../components/ui/tooltip";
+import { modalIntroduction } from "../modals/introduction";
 import routes from "../routes/routes";
 import { stateUsuario, useStateApp } from "../states/states";
 import { getYouTubeEmbedUrl } from "../utils";
@@ -48,6 +52,18 @@ function Header() {
    // const [openBanner, setOpenBanner] = useState(false);
    const [openChangelog, setOpenChangelog] = useState(false);
    const [changelog, setChangelog] = useState(null);
+
+   const { data: alunos, isLoading } = useQuery({
+      queryKey: ["students"],
+      queryFn: () => getStudents(false),
+      initialData: [],
+   });
+
+   useEffect(() => {
+      if (pathname === "/dashboard" && alunos && alunos.length == 0 && !isLoading) {
+         modalIntroduction.show();
+      }
+   }, [pathname, alunos, isLoading]);
 
    // busca a primeira rota cujo padrão case com a URL atual
    const matched = routes.find((r) => {
@@ -210,6 +226,13 @@ function Header() {
                         </DialogFooter>
                      </DialogContent>
                   </Dialog>
+               )}
+
+               {pageName === "Dashboard" && alunos && alunos.length == 0 && !isLoading && (
+                  <Button onClick={() => modalIntroduction.show()} size="sm" variant="outline">
+                     <Handshake className="text-primary" />
+                     Introdução
+                  </Button>
                )}
             </div>
 

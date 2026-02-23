@@ -5,16 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Earth } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
 import { createOrUpdateStudent, deleteStudent, getStudents } from "../../api/student";
 import { FitTable } from "../../components/baseComponents/FitTable";
 import { Button } from "../../components/ui/button";
 import { modalShareOnlineSell } from "../../modals/shareOnlineSell";
-import { stateUsuario } from "../../states/states";
 
 function Alunos() {
    const { t } = useTranslation("clients");
-   const [usuario] = useRecoilState(stateUsuario);
    const [statusFilter, setStatusFilter] = useState("A");
    const [deleted, setDeleted] = useState(false);
    const navigate = useNavigate();
@@ -23,7 +20,6 @@ function Alunos() {
       queryKey: ["students"],
       queryFn: () => getStudents(deleted),
       initialData: [],
-      enabled: !!usuario.cod_empresa,
    });
 
    useEffect(() => {
