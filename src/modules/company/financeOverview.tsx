@@ -118,12 +118,12 @@ export default function FinanceOverview() {
 
       const filteresWithStatus = filtered.filter((payment) => {
          if (filterStatus === "total") {
-            return ["Pending", "overdue", "Pendente", "confirmed", "succeeded", "receivedCash"].includes(
+            return ["Pending", "overdue", "Pendente", "confirmed", "succeeded", "receivedCash", "paid"].includes(
                payment.status_aluno_contrato_pagamento,
             );
          }
          if (filterStatus === "toReceive") {
-            return ["Pending", "overdue", "Pendente", "confirmed", "succeeded"].includes(
+            return ["Pending", "overdue", "Pendente", "confirmed", "succeeded", "paid"].includes(
                payment.status_aluno_contrato_pagamento,
             );
          }
