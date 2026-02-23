@@ -52,18 +52,20 @@ function Header() {
    // const [openBanner, setOpenBanner] = useState(false);
    const [openChangelog, setOpenChangelog] = useState(false);
    const [changelog, setChangelog] = useState(null);
+   const [showIntroduction, setShowIntroduction] = useState(false);
 
-   const { data: alunos, isLoading } = useQuery({
+   useQuery({
       queryKey: ["students"],
-      queryFn: () => getStudents(false),
+      queryFn: async () => {
+         const response = await getStudents(false);
+         if (response && response.length == 0 && pathname === "/dashboard") {
+            setShowIntroduction(true);
+            modalIntroduction.show();
+         }
+         return response;
+      },
       initialData: [],
    });
-
-   useEffect(() => {
-      if (pathname === "/dashboard" && alunos && alunos.length == 0 && !isLoading) {
-         modalIntroduction.show();
-      }
-   }, [pathname, alunos, isLoading]);
 
    // busca a primeira rota cujo padrão case com a URL atual
    const matched = routes.find((r) => {
@@ -228,7 +230,7 @@ function Header() {
                   </Dialog>
                )}
 
-               {pageName === "Dashboard" && alunos && alunos.length == 0 && !isLoading && (
+               {showIntroduction && (
                   <Button onClick={() => modalIntroduction.show()} size="sm" variant="outline">
                      <Handshake className="text-primary" />
                      Introdução
