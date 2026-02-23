@@ -141,24 +141,24 @@ export default function FinanceOverview() {
       filtered.forEach((payment) => {
          const status = payment.status_aluno_contrato_pagamento;
 
-         if (["Pending", "overdue", "Pendente", "confirmed", "succeeded", "receivedCash"].includes(status)) {
+         if (["Pending", "overdue", "Pendente", "confirmed", "succeeded", "receivedCash", "paid"].includes(status)) {
             total += payment.valor_aluno_contrato_pagamento;
             invoicesTotal.push(payment);
          }
 
+         if (["confirmed", "succeeded", "receivedCash", "paid"].includes(status)) {
+            totalConfirmed += payment.liquido_aluno_contrato_pagamento;
+         }
+
          // Lógica de "A receber"
-         if (["Pending", "overdue", "Pendente", "confirmed", "succeeded"].includes(status)) {
+         if (["Pending", "overdue", "Pendente", "confirmed", "succeeded", "paid"].includes(status)) {
             toReceive += payment.liquido_aluno_contrato_pagamento;
             invoicesToReceive.push(payment);
          }
 
          // Lógica de "Confirmado" (se necessário futuramente)
-         if (["confirmed", "succeeded"].includes(status)) {
+         if (["confirmed", "succeeded", "paid"].includes(status)) {
             toReceiveConfirmed += payment.liquido_aluno_contrato_pagamento;
-         }
-
-         if (["confirmed", "succeeded", "receivedCash"].includes(status)) {
-            totalConfirmed += payment.liquido_aluno_contrato_pagamento;
          }
 
          if (["paid"].includes(status)) {
@@ -221,9 +221,9 @@ export default function FinanceOverview() {
                      </TooltipTrigger>
                      <TooltipContent className="w-[300px] bg-accent border-1 p-3">
                         <Label className="text-dark">
-                           Cobranças previstas para recebimento dentro do período com exclusão de cobranças canceladas
-                           ou removidas. Exibindo cobranças que estão aguardando creditar e abaixo as que já foram
-                           creditadas.
+                           Cobranças previstas para recebimento dentro do período com exclusão de cobranças canceladas,
+                           removidas ou reembolsadas. Exibindo cobranças que estão aguardando creditar e abaixo as que
+                           já foram creditadas.
                         </Label>
                      </TooltipContent>
                   </Tooltip>
