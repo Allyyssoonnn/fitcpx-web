@@ -90,7 +90,7 @@ export default function Notifications() {
                         <Disabled type="email" />
                      )}
 
-                     {typeof config?.whatsapp === "boolean" ? (
+                     {/* {typeof config?.whatsapp === "boolean" ? (
                         <div className="flex gap-3">
                            <Checkbox
                               id={`checked-whatsapp-${index}`}
@@ -111,7 +111,7 @@ export default function Notifications() {
                         </div>
                      ) : (
                         <Disabled type="whatsapp" />
-                     )}
+                     )} */}
                   </ItemActions>
                </Item>
             );
