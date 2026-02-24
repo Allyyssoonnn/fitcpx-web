@@ -762,7 +762,7 @@ function Aluno() {
                                     type: "date",
                                  },
                                  {
-                                    name: "data_treino_execucao",
+                                    name: "createdAt",
                                     header: "Hora",
                                     className: "fw-bold text-black",
                                     canSort: true,
