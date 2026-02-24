@@ -43,7 +43,7 @@ export default function Notifications() {
             const config = notifications[item.key] ?? defaultNotifications[item.key];
 
             return (
-               <Item key={index}>
+               <Item key={index} variant="outline">
                   <ItemMedia className="h-full bg-accent p-3 rounded">
                      <item.icon className="size-5" />
                   </ItemMedia>
