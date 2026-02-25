@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
    ArrowRight,
@@ -132,11 +133,17 @@ function Aluno() {
    };
 
    async function changeStatusAluno() {
-      await createOrUpdateStudent({
-         ...aluno,
-         status_aluno: aluno.status_aluno == "I" ? "A" : "I",
-      });
-      refetchAluno();
+      nConfirm(
+         null,
+         `Tem certeza que deseja ${aluno.status_aluno == "A" ? "desativar" : "ativar"} o aluno?`,
+         async () => {
+            await createOrUpdateStudent({
+               ...aluno,
+               status_aluno: aluno.status_aluno == "I" ? "A" : "I",
+            });
+            refetchAluno();
+         },
+      );
    }
 
    if (isLoading)
@@ -151,7 +158,7 @@ function Aluno() {
    const getStatusBadge = (status) => {
       const statusConfig = {
          A: { variant: "default", text: "Ativo", icon: "bi-check-circle" },
-         B: { variant: "destructive", text: "Bloqueado", icon: "bi-x-circle" },
+         B: { variant: "default", text: "Bloqueado", icon: "bi-x-circle", className: "bg-warning text-dark" },
          I: {
             variant: "destructive",
             text: "Inativo",
@@ -160,7 +167,7 @@ function Aluno() {
       };
       const config = statusConfig[status] || statusConfig["I"];
       return (
-         <Badge variant={config.variant}>
+         <Badge variant={config.variant} className={config.className}>
             <i className={`bi ${config.icon} me-1`}></i>
             {config.text}
          </Badge>
@@ -196,7 +203,15 @@ function Aluno() {
          <BackBoxUI />
 
          <Card className="border-0 rounded-4 overflow-hidden p-0 relative">
-            <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+            <div
+               className={cn(
+                  "absolute top-0 left-0 w-full h-2",
+                  aluno?.status_aluno == "A" ? "bg-primary" : "",
+                  aluno?.status_aluno == "I" ? "bg-destructive" : "",
+                  aluno?.status_aluno == "B" ? "bg-warning" : "",
+               )}
+            />
+
             <CardContent className="p-0">
                {/* Profile Header */}
                <div className="bg-accent p-5">
@@ -210,7 +225,7 @@ function Aluno() {
                                     : "assets/images/placeholder/person.png"
                               }
                               alt="Foto do Aluno"
-                              className="img-fluid rounded-circle shadow-lg border border-4 border-white"
+                              className="img-fluid rounded-circle shadow-lg border-4 border-white"
                               style={{
                                  width: "200px",
                                  height: "200px",
@@ -245,6 +260,10 @@ function Aluno() {
                                  </span>
 
                                  <span id="student-status">{getStatusBadge(aluno?.status_aluno)}</span>
+
+                                 {aluno.status_description && (
+                                    <Badge className="my-2 bg-warning text-dark">{aluno.status_description}</Badge>
+                                 )}
                               </div>
                            </div>
 
