@@ -148,7 +148,9 @@ const ShareOnlineSell = NiceModal.create(
                )}
 
                <DialogFooter className="flex items-center">
-                  {!planos?.length && <Label className="text-[12px] text-destructive">Nenhum plano cadastrado</Label>}
+                  {!planos?.length && !registerOnly && (
+                     <Label className="text-[12px] text-destructive">Nenhum plano cadastrado</Label>
+                  )}
 
                   {studentPhone && (
                      <Button variant="outline" onClick={handleSendLink} disabled={!planos?.length}>
@@ -162,11 +164,11 @@ const ShareOnlineSell = NiceModal.create(
                      </Button>
                   )}
 
-                  <Button variant="outline" onClick={handleOpenLink} disabled={!planos?.length}>
+                  <Button variant="outline" onClick={handleOpenLink} disabled={!planos?.length && !registerOnly}>
                      Abrir Link
                   </Button>
 
-                  <Button onClick={handleCopyLink} disabled={!planos?.length}>
+                  <Button onClick={handleCopyLink} disabled={!planos?.length && !registerOnly}>
                      Copiar Link
                   </Button>
                </DialogFooter>
