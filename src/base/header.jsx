@@ -5,6 +5,7 @@ import {
    ClipboardList,
    DoorClosed,
    Earth,
+   FileWarning,
    Handshake,
    HelpCircle,
    Moon,
@@ -260,12 +261,14 @@ function Header() {
                      closeControlled={() => setOpenChangelog(false)}
                   />
 
-                  {["Trial Active", "Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
+                  {["Trial Active", "Trial Expired", "Expired", "Cancelled", "Blocked"].includes(
+                     cookies.licenseStatus,
+                  ) && (
                      <Tooltip>
                         <TooltipTrigger>
                            <Button
                               variant={
-                                 ["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus)
+                                 ["Trial Expired", "Expired", "Cancelled", "Blocked"].includes(cookies.licenseStatus)
                                     ? "destructive"
                                     : "default"
                               }
@@ -277,6 +280,7 @@ function Header() {
                                  <AlarmClockOff />
                               )}
                               {["Trial Active"].includes(cookies.licenseStatus) && <AlarmClockIcon />}
+                              {["Blocked"].includes(cookies.licenseStatus) && <FileWarning />}
 
                               {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft > 0 && (
                                  <>
@@ -290,6 +294,7 @@ function Header() {
                               {cookies.licenseStatus == "Trial Expired" && <>Teste expirado</>}
                               {cookies.licenseStatus == "Expired" && <>Licença expirada</>}
                               {cookies.licenseStatus == "Cancelled" && <>Licença cancelada</>}
+                              {cookies.licenseStatus == "Blocked" && <>Licença bloqueada</>}
                            </Button>
                         </TooltipTrigger>
 
@@ -306,6 +311,8 @@ function Header() {
                               "Sua licença expirou. Realize o pagamento para continuar utilizando."}
                            {cookies.licenseStatus == "Cancelled" &&
                               "Sua licença foi cancelada. É necessário assinar um plano para continuar."}
+                           {cookies.licenseStatus == "Blocked" &&
+                              "Sua licença foi bloqueada. Verifique os pagamentos ou entre em contato com suporte."}
                         </TooltipContent>
                      </Tooltip>
                   )}
