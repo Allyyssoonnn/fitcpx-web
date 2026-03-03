@@ -205,7 +205,7 @@ function CadAvaliacao() {
 
       // Iterar sobre as imagens capturadas e adicioná-las ao FormData
       Object.entries(capturedImages).forEach(([key, imageData]) => {
-         if (!imageData.includes("media.fitcpx.com")) {
+         if (!imageData.includes("store.fitcpx.com")) {
             const imageBlob = dataURLToBlob(imageData);
             // const imageBlob = imageData;
             const fileSizeMB = (imageBlob.size / (1024 * 1024)).toFixed(2);

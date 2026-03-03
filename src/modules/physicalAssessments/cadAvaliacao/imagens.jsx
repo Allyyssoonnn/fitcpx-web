@@ -135,7 +135,7 @@ function Imagens({
          });
       }
       //Preenche caso já tenha salvo uma imagem para que seja deletada
-      if (capturedImages[option].includes("media.fitcpx.com")) {
+      if (capturedImages[option].includes("store.fitcpx.com")) {
          setDeletedImages((prevImages) => [...prevImages, capturedImages[option]]);
       }
       setCapturedImages((prevImages) => {
@@ -260,7 +260,7 @@ function Imagens({
       }
       setOptions((prevOptions) => prevOptions.filter((o) => o !== option));
       //Preenche caso já tenha salvo uma imagem para que seja deletada
-      if (capturedImages[option].includes("media.fitcpx.com")) {
+      if (capturedImages[option].includes("store.fitcpx.com")) {
          setDeletedImages((prevImages) => [...prevImages, capturedImages[option]]);
       }
       setCapturedImages((prevImages) => {
