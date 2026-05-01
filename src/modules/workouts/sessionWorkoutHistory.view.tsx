@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { formatarData, formatarHora, formatarSegundos } from "@/utils";
+import { formatarSegundos } from "@/utils";
 import { Activity, Dumbbell, Info, MessageSquareMore } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -76,11 +76,7 @@ export default function SessionWorkoutHistoryView() {
                            Sessão: <strong>{session?.sessao?.nome_sessao}</strong>
                         </Label>
                         <Label>
-                           Data:{" "}
-                           <strong>
-                              {formatarData(session?.data_treino_execucao)} -{" "}
-                              {formatarHora(session?.data_treino_execucao)}
-                           </strong>
+                           Data: <strong>{new Date(session?.createdAt).toLocaleString()}</strong>
                         </Label>
                         <Label>
                            Duração: <strong>{formatarSegundos(session?.duracao_treino_execucao)}</strong>

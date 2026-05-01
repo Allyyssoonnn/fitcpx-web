@@ -21,12 +21,13 @@ const Introduction = NiceModal.create(() => {
 
             <Accordion type="single" collapsible className="w-full">
                {[
-                  { title: "Apresentação", url: "https://www.youtube.com/watch?v=n226rzKLYPM" },
-                  {
-                     title: "Como cadastrar alunos?",
-                     url: "https://www.youtube.com/watch?v=BuTcMWsrgOI",
-                  },
-                  { title: "Como acompanhar alunos presenciais?", url: "https://www.youtube.com/watch?v=NtOzCs5VOdw" },
+                  { title: "Apresentação", url: "https://youtu.be/9rvX9C-WByk" },
+                  { title: "Como cadastrar alunos?", url: "https://youtu.be/ohQi1ouTzy0" },
+                  { title: "Como registrar uma avaliação física", url: "https://youtu.be/NEeJQq1wQj0" },
+                  { title: "Como prescrever um treino", url: "https://youtu.be/HKRh8m07_e0" },
+                  { title: "Como instalar o sistema no celular?", url: "https://youtu.be/6iewitod5SU" },
+                  { title: "Como acompanhar alunos presenciais?", url: "https://youtu.be/7wvD0TGt7ug" },
+                  { title: "App do aluno", url: "https://youtu.be/HqT8MDbXCEc" },
                ].map((item, index) => (
                   <AccordionItem key={index} value={`item-${index}`} className="border-0">
                      <AccordionTrigger className="border-1 p-3">

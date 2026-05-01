@@ -5,6 +5,7 @@ import {
    ClipboardList,
    DoorClosed,
    Earth,
+   FileWarning,
    Handshake,
    HelpCircle,
    Moon,
@@ -190,7 +191,7 @@ function Header() {
 
    return (
       <div className="mb-3">
-         <nav className="navbar navbar-expand-lg navbar-light d-flex justify-content-between items-center w-100 shadow-sm min-h-[70px] bg-sidebar">
+         <nav className="navbar navbar-expand-lg navbar-light flex justify-content-between items-center w-100 shadow-sm min-h-[70px] bg-sidebar">
             <div className="d-flex items-center ms-3 gap-3">
                <SidebarTrigger />
 
@@ -238,8 +239,8 @@ function Header() {
                )}
             </div>
 
-            <div className="justify-content-end px-0" id="navbarNav">
-               <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+            <div className="flex items-center px-0">
+               <ul className="flex ms-auto items-center justify-end m-0">
                   <li className={`d-md-none ${isInstalled || isIos ? "d-none" : ""}`}>
                      <Button onClick={handleInstallClick} size="sm">
                         <i className="bi bi-download"></i>
@@ -260,12 +261,14 @@ function Header() {
                      closeControlled={() => setOpenChangelog(false)}
                   />
 
-                  {["Trial Active", "Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus) && (
+                  {["Trial Active", "Trial Expired", "Expired", "Cancelled", "Blocked"].includes(
+                     cookies.licenseStatus,
+                  ) && (
                      <Tooltip>
                         <TooltipTrigger>
                            <Button
                               variant={
-                                 ["Trial Expired", "Expired", "Cancelled"].includes(cookies.licenseStatus)
+                                 ["Trial Expired", "Expired", "Cancelled", "Blocked"].includes(cookies.licenseStatus)
                                     ? "destructive"
                                     : "default"
                               }
@@ -277,6 +280,7 @@ function Header() {
                                  <AlarmClockOff />
                               )}
                               {["Trial Active"].includes(cookies.licenseStatus) && <AlarmClockIcon />}
+                              {["Blocked"].includes(cookies.licenseStatus) && <FileWarning />}
 
                               {cookies.licenseStatus == "Trial Active" && cookies.licenseTrialDaysLeft > 0 && (
                                  <>
@@ -290,6 +294,7 @@ function Header() {
                               {cookies.licenseStatus == "Trial Expired" && <>Teste expirado</>}
                               {cookies.licenseStatus == "Expired" && <>Licença expirada</>}
                               {cookies.licenseStatus == "Cancelled" && <>Licença cancelada</>}
+                              {cookies.licenseStatus == "Blocked" && <>Licença bloqueada</>}
                            </Button>
                         </TooltipTrigger>
 
@@ -306,6 +311,8 @@ function Header() {
                               "Sua licença expirou. Realize o pagamento para continuar utilizando."}
                            {cookies.licenseStatus == "Cancelled" &&
                               "Sua licença foi cancelada. É necessário assinar um plano para continuar."}
+                           {cookies.licenseStatus == "Blocked" &&
+                              "Sua licença foi bloqueada. Verifique os pagamentos ou entre em contato com suporte."}
                         </TooltipContent>
                      </Tooltip>
                   )}

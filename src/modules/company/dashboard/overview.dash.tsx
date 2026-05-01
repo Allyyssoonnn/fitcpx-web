@@ -1,8 +1,9 @@
 import { getDashboardInfo } from "@/api/companies";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableCell, TableRow } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
-import { ClipboardList, Dumbbell, LucideIcon, User, Users } from "lucide-react";
+import { ClipboardList, Dumbbell, LucideIcon, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type DashboardProps = {
@@ -12,6 +13,11 @@ type DashboardProps = {
       physicalAssessments: number;
       clients: number;
    };
+   list: {
+      clients: { id: string; label: string; label2: string }[];
+      physicalAssessments: { id: string; label: string; label2: string }[];
+      workouts: { id: string; label: string; label2: string }[];
+   };
 };
 
 const metrics: {
@@ -20,22 +26,32 @@ const metrics: {
    Icon: LucideIcon;
    route: string;
    key: keyof DashboardProps["lengths"];
+   arrayKey?: keyof DashboardProps["list"];
 }[] = [
-   { label: "Usuários", description: "Quantidade de usuários ativos", key: "users", Icon: User, route: "/users" },
+   // { label: "Usuários", description: "Quantidade de usuários ativos", key: "users", Icon: User, route: "/users" },
    {
-      label: "Treinos",
-      description: "Quantidade de treinos cadastrados",
-      key: "workouts",
-      Icon: Dumbbell,
-      route: "/treinos",
+      label: "Alunos",
+      description: "Quantidade de alunos ativos",
+      key: "clients",
+      Icon: Users,
+      route: "/alunos",
+      arrayKey: "clients",
    },
-   { label: "Alunos", description: "Quantidade de alunos ativos", key: "clients", Icon: Users, route: "/alunos" },
    {
       label: "Avaliações",
       description: "Quantidade de avaliações cadastradas",
       key: "physicalAssessments",
       Icon: ClipboardList,
       route: "#",
+      arrayKey: "physicalAssessments",
+   },
+   {
+      label: "Treinos",
+      description: "Quantidade de treinos cadastrados",
+      key: "workouts",
+      Icon: Dumbbell,
+      route: "/treinos",
+      arrayKey: "workouts",
    },
 ];
 
@@ -51,12 +67,17 @@ export default function OverviewDash() {
             physicalAssessments: 0,
             clients: 0,
          },
+         list: {
+            clients: [],
+            physicalAssessments: [],
+            workouts: [],
+         },
       },
    });
 
    return (
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
-         {metrics.map(({ label, description, route, Icon, key }, i) => (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-3">
+         {metrics.map(({ label, description, route, Icon, key, arrayKey }, i) => (
             <Card
                key={i}
                className="cursor-pointer transition-transform hover:scale-97"
@@ -64,7 +85,7 @@ export default function OverviewDash() {
             >
                <CardHeader>
                   <CardDescription>{label}</CardDescription>
-                  <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                  <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-3xl p-2">
                      {dashboard?.lengths[key] ?? 0}
                   </CardTitle>
 
@@ -76,11 +97,20 @@ export default function OverviewDash() {
                   </CardAction>
                </CardHeader>
 
-               <CardFooter className="flex-col items-start gap-1.5 text-sm">
-                  {/* <div className="line-clamp-1 flex gap-2 font-medium">
-                     Trending up this month <TrendingUp className="size-4" />
-                  </div> */}
-                  <div className="text-muted-foreground">{description}</div>
+               <CardFooter className="flex-col items-start gap-1.5 text-sm border-t p-0">
+                  {/* <div className="text-muted-foreground">{description}</div> */}
+                  {arrayKey && dashboard?.list[arrayKey] && (
+                     <Table>
+                        {dashboard?.list[arrayKey].map((client) => (
+                           <TableRow key={client.id} className="text-[12px] flex justify-between">
+                              <TableCell>
+                                 {client.id}. {client.label}
+                              </TableCell>
+                              <TableCell>{client.label2}</TableCell>
+                           </TableRow>
+                        ))}
+                     </Table>
+                  )}
                </CardFooter>
             </Card>
          ))}

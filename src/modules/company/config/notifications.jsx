@@ -43,7 +43,7 @@ export default function Notifications() {
             const config = notifications[item.key] ?? defaultNotifications[item.key];
 
             return (
-               <Item key={index}>
+               <Item key={index} variant="outline">
                   <ItemMedia className="h-full bg-accent p-3 rounded">
                      <item.icon className="size-5" />
                   </ItemMedia>
@@ -90,7 +90,7 @@ export default function Notifications() {
                         <Disabled type="email" />
                      )}
 
-                     {typeof config?.whatsapp === "boolean" ? (
+                     {/* {typeof config?.whatsapp === "boolean" ? (
                         <div className="flex gap-3">
                            <Checkbox
                               id={`checked-whatsapp-${index}`}
@@ -111,7 +111,7 @@ export default function Notifications() {
                         </div>
                      ) : (
                         <Disabled type="whatsapp" />
-                     )}
+                     )} */}
                   </ItemActions>
                </Item>
             );
