@@ -99,9 +99,9 @@ export default function OverviewDash() {
 
                <CardFooter className="flex-col items-start gap-1.5 text-sm border-t p-0">
                   {/* <div className="text-muted-foreground">{description}</div> */}
-                  {arrayKey && dashboard?.list[arrayKey] && (
+                  {arrayKey && dashboard?.list?.[arrayKey] && (
                      <Table>
-                        {dashboard?.list[arrayKey].map((client) => (
+                        {dashboard?.list?.[arrayKey].map((client) => (
                            <TableRow key={client.id} className="text-[12px] flex justify-between">
                               <TableCell>
                                  {client.id}. {client.label}
