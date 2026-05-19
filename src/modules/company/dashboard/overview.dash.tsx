@@ -27,6 +27,7 @@ const metrics: {
    route: string;
    key: keyof DashboardProps["lengths"];
    arrayKey?: keyof DashboardProps["list"];
+   onClick?: (navigate: ReturnType<typeof useNavigate>, id: any) => void;
 }[] = [
    // { label: "Usuários", description: "Quantidade de usuários ativos", key: "users", Icon: User, route: "/users" },
    {
@@ -36,6 +37,7 @@ const metrics: {
       Icon: Users,
       route: "/alunos",
       arrayKey: "clients",
+      onClick: (navigate: ReturnType<typeof useNavigate>, id: any) => navigate("/aluno", { state: { cod_aluno: id } }),
    },
    {
       label: "Avaliações",
@@ -77,12 +79,8 @@ export default function OverviewDash() {
 
    return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-3">
-         {metrics.map(({ label, description, route, Icon, key, arrayKey }, i) => (
-            <Card
-               key={i}
-               className="cursor-pointer transition-transform hover:scale-97"
-               onClick={() => navigate(route)}
-            >
+         {metrics.map(({ label, description, route, Icon, key, arrayKey, onClick }, i) => (
+            <Card key={i} className="cursor-pointer transition-transform hover:scale-97">
                <CardHeader>
                   <CardDescription>{label}</CardDescription>
                   <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-3xl p-2">
@@ -101,11 +99,17 @@ export default function OverviewDash() {
                   {/* <div className="text-muted-foreground">{description}</div> */}
                   {arrayKey && dashboard?.list?.[arrayKey] && (
                      <Table>
+                        <TableRow className="text-[12px] flex justify-between">
+                           <TableCell className="fw-bold">Nome</TableCell>
+                           <TableCell className="fw-bold">Data Cadastro</TableCell>
+                        </TableRow>
                         {dashboard?.list?.[arrayKey].map((client) => (
-                           <TableRow key={client.id} className="text-[12px] flex justify-between">
-                              <TableCell>
-                                 {client.id}. {client.label}
-                              </TableCell>
+                           <TableRow
+                              key={client.id}
+                              className="text-[12px] flex justify-between"
+                              onClick={() => onClick?.(navigate, client.id)}
+                           >
+                              <TableCell>{client.label}</TableCell>
                               <TableCell>{client.label2}</TableCell>
                            </TableRow>
                         ))}
