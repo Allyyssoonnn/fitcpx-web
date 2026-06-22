@@ -122,7 +122,7 @@ function ShowPayments({ payments }: { payments: any[] }) {
                            <TableRow>
                               <TableCell>{paymentInfo?.cod_aluno_contrato_pagamento}</TableCell>
                               <TableCell>{paymentInfo?.contract.nome_aluno_contrato}</TableCell>
-                              <TableCell>{paymentInfo?.contract.aluno.nome_aluno}</TableCell>
+                              <TableCell>{paymentInfo?.contract?.aluno?.nome_aluno ?? "-Não identificado-"}</TableCell>
                               <TableCell>
                                  {formatarData(new Date(paymentInfo?.expiracao_aluno_contrato_pagamento))}
                               </TableCell>
