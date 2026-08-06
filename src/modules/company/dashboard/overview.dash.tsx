@@ -1,7 +1,5 @@
 import { getDashboardInfo } from "@/api/companies";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableCell, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { ClipboardList, Dumbbell, LucideIcon, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +16,12 @@ type DashboardProps = {
       physicalAssessments: { id: string; label: string; label2: string }[];
       workouts: { id: string; label: string; label2: string }[];
    };
+   monthLengths: {
+      users: number;
+      workouts: number;
+      physicalAssessments: number;
+      clients: number;
+   };
 };
 
 const metrics: {
@@ -31,7 +35,7 @@ const metrics: {
 }[] = [
    // { label: "Usuários", description: "Quantidade de usuários ativos", key: "users", Icon: User, route: "/users" },
    {
-      label: "Alunos",
+      label: "Alunos ativos",
       description: "Quantidade de alunos ativos",
       key: "clients",
       Icon: Users,
@@ -40,7 +44,7 @@ const metrics: {
       onClick: (navigate: ReturnType<typeof useNavigate>, id: any) => navigate("/aluno", { state: { cod_aluno: id } }),
    },
    {
-      label: "Avaliações",
+      label: "Avaliações realizadas",
       description: "Quantidade de avaliações cadastradas",
       key: "physicalAssessments",
       Icon: ClipboardList,
@@ -48,7 +52,7 @@ const metrics: {
       arrayKey: "physicalAssessments",
    },
    {
-      label: "Treinos",
+      label: "Treinos cadastrados",
       description: "Quantidade de treinos cadastrados",
       key: "workouts",
       Icon: Dumbbell,
@@ -74,30 +78,35 @@ export default function OverviewDash() {
             physicalAssessments: [],
             workouts: [],
          },
+         monthLengths: {
+            users: 0,
+            workouts: 0,
+            physicalAssessments: 0,
+            clients: 0,
+         },
       },
    });
 
    return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-3">
-         {metrics.map(({ label, description, route, Icon, key, arrayKey, onClick }, i) => (
-            <Card key={i} className="cursor-pointer transition-transform hover:scale-97">
-               <CardHeader>
-                  <CardDescription>{label}</CardDescription>
-                  <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-3xl p-2">
-                     {dashboard?.lengths[key] ?? 0}
-                  </CardTitle>
+      <Card className="mb-3">
+         <CardContent className="grid grid-cols-3 gap-4">
+            {metrics.map(({ label, description, route, Icon, key, arrayKey, onClick }, i) => (
+               <div
+                  key={i}
+                  className="cursor-pointer transition-transform hover:scale-99 border-l-4 border-l-green-200"
+               >
+                  <CardHeader>
+                     <CardDescription>{label}</CardDescription>
+                     <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                        {dashboard?.lengths[key] ?? 0}
+                     </CardTitle>
+                  </CardHeader>
 
-                  <CardAction>
-                     <Badge variant="outline">
-                        {/* <TrendingUp />0 % */}
-                        <Icon color="green" />
-                     </Badge>
-                  </CardAction>
-               </CardHeader>
-
-               <CardFooter className="flex-col items-start gap-1.5 text-sm border-t p-0">
-                  {/* <div className="text-muted-foreground">{description}</div> */}
-                  {arrayKey && dashboard?.list?.[arrayKey] && (
+                  <CardFooter>
+                     <span className="text-green-600 font-bold me-1">+ {dashboard?.monthLengths[key] ?? 0} </span> este
+                     mês
+                     {/* <div className="text-muted-foreground">{description}</div> */}
+                     {/* {arrayKey && dashboard?.list?.[arrayKey] && (
                      <Table>
                         <TableRow className="text-[12px] flex justify-between">
                            <TableCell className="fw-bold">Nome</TableCell>
@@ -114,10 +123,11 @@ export default function OverviewDash() {
                            </TableRow>
                         ))}
                      </Table>
-                  )}
-               </CardFooter>
-            </Card>
-         ))}
-      </div>
+                  )} */}
+                  </CardFooter>
+               </div>
+            ))}
+         </CardContent>
+      </Card>
    );
 }

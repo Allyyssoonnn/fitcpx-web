@@ -1,6 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -8,42 +7,55 @@ import {
    DropdownMenuShortcut,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Share } from "lucide-react";
 import { toast } from "sonner";
 
-export default function AppMarketingDash() {
+export function FitCpxAlunoCard() {
    return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-3">
-         <AppCard
-            title="FitCpx - Aluno"
-            img="/assets/images/mobile/fitcpx-aluno.png"
-            ios="https://apps.apple.com/br/app/fitcpx-aluno/id6749808580?l"
-            android="https://play.google.com/store/apps/details?id=com.devcomplexlab.alunofitcpx&pcampaignid=web_share"
-         />
-         <AppCard
-            title="Biblioteca de exercícios"
-            badge="Gratuito"
-            img="/assets/images/mobile/fitcpx.png"
-            ios="https://apps.apple.com/br/app/fitcpx/id6749830273"
-            android="https://play.google.com/store/apps/details?id=com.devcomplexlab.fitcpx&pcampaignid=web_share"
-         />
-      </div>
+      <Card className="border-0 bg-gradient-to-bl from-green-100 to-green-50 dark:bg-green-950 dark:bg-gradient-to-b dark:from-green-950 dark:to-green-900">
+         <CardHeader>
+            <CardTitle className="text-lg">FitCpx - Aluno</CardTitle>
+            <CardDescription>
+               Baixe o <strong>FitCpx</strong> e tenha acesso a uma ampla variedade de exercícios para melhorar sua
+               performance física.
+            </CardDescription>
+         </CardHeader>
+
+         <CardFooter className="flex justify-between">
+            <ButtonAppStore
+               ios="https://apps.apple.com/br/app/fitcpx-aluno/id6749808580?l"
+               android="https://play.google.com/store/apps/details?id=com.devcomplexlab.alunofitcpx&pcampaignid=web_share"
+            />
+
+            <img width={50} src="/assets/images/mobile/fitcpx-aluno.png" />
+         </CardFooter>
+      </Card>
    );
 }
 
-function AppCard({
-   title,
-   img,
-   badge,
-   android,
-   ios,
-}: {
-   title?: string;
-   img?: string;
-   badge?: string;
-   android?: string;
-   ios?: string;
-}) {
+export function FitCpxAppCard() {
+   return (
+      <Card className="border-0 bg-gradient-to-bl from-green-100 to-green-50 dark:bg-green-950 dark:bg-gradient-to-b dark:from-green-950 dark:to-green-900">
+         <CardHeader>
+            <CardTitle className="text-lg">FitCpx - Biblioteca de Exercícios</CardTitle>
+            <CardDescription>
+               Baixe o <strong>FitCpx</strong> e tenha acesso a uma ampla variedade de exercícios para melhorar sua
+               performance física.
+            </CardDescription>
+         </CardHeader>
+
+         <CardFooter className="flex justify-between">
+            <ButtonAppStore
+               ios="https://apps.apple.com/br/app/fitcpx/id6749830273"
+               android="https://play.google.com/store/apps/details?id=com.devcomplexlab.fitcpx&pcampaignid=web_share"
+            />
+
+            <img width={50} src="/assets/images/mobile/fitcpx.png" />
+         </CardFooter>
+      </Card>
+   );
+}
+
+function ButtonAppStore({ android, ios }: { android?: string; ios?: string }) {
    function copytoClipboard(link: string | undefined) {
       if (link) {
          navigator.clipboard.writeText(link);
@@ -52,74 +64,28 @@ function AppCard({
    }
 
    return (
-      <Card>
-         <CardHeader className="flex justify-between items-center">
-            <div className="flex gap-2 items-center">
-               <img width={50} src={img} />
-               <div className="d-flex flex-col gap-2">
-                  {badge && <Badge>{badge}</Badge>}
-                  {title}
-               </div>
-            </div>
+      <DropdownMenu>
+         <DropdownMenuTrigger>
+            <Button variant="outline" className="bg-green-100 hover:bg-green-200">
+               Acessar
+            </Button>
+         </DropdownMenuTrigger>
 
-            <DropdownMenu>
-               <DropdownMenuTrigger>
-                  <Button size="sm">
-                     <Share />
-                  </Button>
-               </DropdownMenuTrigger>
+         <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => copytoClipboard(android)}>
+               Google Play{" "}
+               <DropdownMenuShortcut>
+                  <img width="24" height="24" src="https://img.icons8.com/color/48/android-os.png" alt="android-os" />
+               </DropdownMenuShortcut>
+            </DropdownMenuItem>
 
-               <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => copytoClipboard(android)}>
-                     Google Play{" "}
-                     <DropdownMenuShortcut>
-                        <img
-                           width="24"
-                           height="24"
-                           src="https://img.icons8.com/color/48/android-os.png"
-                           alt="android-os"
-                        />
-                     </DropdownMenuShortcut>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem onClick={() => copytoClipboard(ios)}>
-                     App Store{" "}
-                     <DropdownMenuShortcut>
-                        <img
-                           width="24"
-                           height="24"
-                           src="https://img.icons8.com/ios-filled/50/mac-os.png"
-                           alt="mac-os"
-                        />
-                     </DropdownMenuShortcut>
-                  </DropdownMenuItem>
-               </DropdownMenuContent>
-            </DropdownMenu>
-         </CardHeader>
-      </Card>
+            <DropdownMenuItem onClick={() => copytoClipboard(ios)}>
+               App Store{" "}
+               <DropdownMenuShortcut>
+                  <img width="24" height="24" src="https://img.icons8.com/ios-filled/50/mac-os.png" alt="mac-os" />
+               </DropdownMenuShortcut>
+            </DropdownMenuItem>
+         </DropdownMenuContent>
+      </DropdownMenu>
    );
-}
-
-{
-   /* <CardAction className="d-flex w-full justify-center gap-3">
-               <a href="https://apps.apple.com/br/app/fitcpx-aluno/id6749808580?l">
-                  <img width={90} src="/assets/images/mobile/appStore-black.png" />
-               </a>
-
-               <a href="https://play.google.com/store/apps/details?id=com.devcomplexlab.alunofitcpx&pcampaignid=web_share">
-                  <img width={100} src="/assets/images/mobile/googlePlay-black.png" />
-               </a>
-            </CardAction> */
-}
-
-{
-   /* <CardAction className="d-flex w-full justify-center gap-3">
-               <a href="https://apps.apple.com/br/app/fitcpx/id6749830273">
-                  <img width={90} src="/assets/images/mobile/appStore-black.png" />
-               </a>
-
-               <a href="https://play.google.com/store/apps/details?id=com.devcomplexlab.fitcpx&pcampaignid=web_share">
-                  <img width={100} src="/assets/images/mobile/googlePlay-black.png" />
-               </a>
-            </CardAction> */
 }

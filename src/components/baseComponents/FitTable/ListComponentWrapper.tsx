@@ -50,6 +50,7 @@ type ListComponentProps = {
    globalFilterFn?: (row: any, _columnId: string, filterValue: any) => any;
    rowId?: string;
    fieldId?: string;
+   initialColumnFilters?: ColumnFiltersState;
 };
 
 type DataColumnsProp = {
@@ -95,9 +96,10 @@ export default function ListComponentWrapper({
    globalFilter,
    globalFilterFn,
    moreButtonsHeader,
+   initialColumnFilters = [],
 }: ListComponentProps) {
    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: rowCount });
-   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(initialColumnFilters);
    const [sorting, setSorting] = React.useState<SortingState>([]);
 
    const childrenFilters = useMemo(() => {

@@ -15,6 +15,7 @@ type ListComponentVisiblesProps = {
    prefixLocalStorage: string;
    setColumnFilters?: (prev: any) => any;
    filterId?: string;
+   initialValue?: string;
 };
 
 export default function ListComponentVisibles({
@@ -22,14 +23,22 @@ export default function ListComponentVisibles({
    prefixLocalStorage,
    setColumnFilters,
    filterId = "status_aluno_contrato_pagamento",
+   initialValue = "all",
 }: ListComponentVisiblesProps) {
    const [visibleFields, setVisibleFields] = useState(() => {
       const saved: Record<string, boolean> = {};
+
       options.forEach((option) => {
-         // Se existir no localStorage, usa o valor (parseando se for string), senão true
-         const stored = localStorage.getItem(`${prefixLocalStorage}-${option.value}`);
-         saved[option.value] = stored ? false : true;
+         if (option.value === initialValue) {
+            saved[option.value] = true;
+         } else if (initialValue !== "all") {
+            saved[option.value] = false;
+         } else {
+            const stored = localStorage.getItem(`${prefixLocalStorage}-${option.value}`);
+            saved[option.value] = stored ? false : true;
+         }
       });
+
       return saved;
    });
 

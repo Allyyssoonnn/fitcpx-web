@@ -261,7 +261,7 @@ function Aluno() {
 
                                  <span id="student-status">{getStatusBadge(aluno?.status_aluno)}</span>
 
-                                 {aluno.status_description && (
+                                 {aluno?.status_description && (
                                     <Badge className="my-2 bg-warning text-dark">{aluno.status_description}</Badge>
                                  )}
                               </div>

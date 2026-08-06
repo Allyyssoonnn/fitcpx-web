@@ -3,11 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 
 export default function OlderPhysicalDash() {
-   const navigate = useNavigate();
-
    const { data: physicalAssessments } = useQuery({
       queryKey: "olderPhysical",
       queryFn: getOlderPhysicalAssessments,
@@ -42,7 +39,9 @@ export default function OlderPhysicalDash() {
                            {!!p?.ultima_avaliacao && new Date(p?.ultima_avaliacao).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                           <Badge>{p?.dias_sem_avaliacao} Dias</Badge>
+                           <Badge className="bg-green-200 text-green-800 border-green-300">
+                              {p?.dias_sem_avaliacao} Dias
+                           </Badge>
                         </TableCell>
                      </TableRow>
                   ))}

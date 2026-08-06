@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useRecoilValue } from "recoil"; // UseRecoilValue se não for setar o estado
 import { formatarMoeda } from "../../utils/utils";
 
@@ -363,6 +363,9 @@ const fields = [
 ];
 
 function PaymentsTable({ payments, date, refetch }: { payments: PaymentType[]; date: Date; refetch: () => void }) {
+   const [searchParams] = useSearchParams();
+   const initialStatusFilter = searchParams.get("filter") ?? "all";
+
    async function onRecieved(id: string) {
       await markPaymentReceived(id);
       refetch();
@@ -382,6 +385,16 @@ function PaymentsTable({ payments, date, refetch }: { payments: PaymentType[]; d
          <CardContent className="min-h-[400px]">
             <FitTable.Root
                // Removemos globalFilterFn complexo pois os dados já chegam filtrados por data do pai
+               initialColumnFilters={
+                  initialStatusFilter !== "all"
+                     ? [
+                          {
+                             id: "status_aluno_contrato_pagamento",
+                             value: [initialStatusFilter],
+                          },
+                       ]
+                     : []
+               }
                fieldSearch="contract.aluno.nome_aluno"
                className="shadow-none"
                columns={[
@@ -458,7 +471,11 @@ function PaymentsTable({ payments, date, refetch }: { payments: PaymentType[]; d
                ]}
                list={payments}
             >
-               <FitTable.Visibles options={fields} prefixLocalStorage="hidden-finance" />
+               <FitTable.Visibles
+                  options={fields}
+                  prefixLocalStorage="hidden-finance"
+                  initialValue={initialStatusFilter}
+               />
             </FitTable.Root>
          </CardContent>
       </Card>

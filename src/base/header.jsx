@@ -47,6 +47,8 @@ import { modalIntroduction } from "../modals/introduction";
 import routes from "../routes/routes";
 import { stateUsuario, useStateApp } from "../states/states";
 import { getYouTubeEmbedUrl } from "../utils";
+// import MenuBar from "../dashboard/menuBart.dash";
+import MenuBar from "../modules/company/dashboard/menuBart.dash";
 
 function Header() {
    const { pathname } = useLocation();
@@ -236,6 +238,13 @@ function Header() {
                      <Handshake className="text-primary" />
                      Introdução
                   </Button>
+               )}
+
+               {/* Subdiv que encapsula o MenuBar */}
+               {pageName === "Dashboard" && (
+                  <div className="hidden lg:flex items-center h-full">
+                     <MenuBar />
+                  </div>
                )}
             </div>
 
